@@ -4,6 +4,8 @@
  *  Created on: Jun 17, 2010
  *      Author: Stefan
  */
+#include <preprocessor_macros/logging_preprocessor_macros.h>
+
 typedef unsigned short WORD ;
 #ifndef MAXWORD
   #define MAXWORD 65535
@@ -243,15 +245,16 @@ inline float GetClosestGreaterOrEqual(
   return fGreaterOrEqual ;
 }
 
-inline float GetClosestLess(
+inline WORD GetClosestLess(
   float ar_fFloatArray [] ,
   WORD wArraySize ,
   float fReferredValue
   )
 {
-  float fLess = 0.0 ;
+//  float fLess = 0.0 ;
   float fCurrent ;
-  WORD wIndex = 0 ;
+  WORD wArrayIndex = 0 ;
+  WORD wArrayIndexOfCloestLessValue = MAXWORD ;
   WORD wLeftBound = 0 ;
   WORD wRightBound = wArraySize - 1 ;
   //for( WORD wIndex = 0 ; wIndex < wArraySize ; //++ wIndex )
@@ -261,12 +264,16 @@ inline float GetClosestLess(
   {
     //TODO from http://en.wikipedia.org/wiki/Binary_search_algorithm#Iterative:
     //l + ( r - l) / 2 = 2*l/2 + (r-l)/2 = ( 2*l + r - l) / 2 = (l + r) / 2
-    wIndex = wLeftBound + (wRightBound - wLeftBound) / 2 ;
-    fCurrent = ar_fFloatArray[ wIndex] ;
+    wArrayIndex = wLeftBound + (wRightBound - wLeftBound) / 2 ;
+    fCurrent = ar_fFloatArray[ wArrayIndex] ;
+//    LOGN("GetClosestLess--"
+//      << "array index:" << wArrayIndex
+//      << "value at array index:" << fCurrent )
     //The array is sorted: lowest index = lowest value.
     if( fCurrent < fReferredValue )
     {
-      fLess = fCurrent ;
+//      fLess = fCurrent ;
+      wArrayIndexOfCloestLessValue = wArrayIndex ;
 
 //      if( wLeftBound == wRightBound )
 //        break ;
@@ -276,7 +283,7 @@ inline float GetClosestLess(
       //problem: if right-left= 0 or 1,  the left bound does not change:
       //e.g. left=7, right =8: index=7+(8-7)/2= 7+1/2=7+0=7,  left^=index->7
 //      if( wRightBound - wIndex < 2 )
-        wLeftBound = wIndex + 1;
+        wLeftBound = wArrayIndex + 1;
 //      else
 //        wLeftBound = wIndex ;
     }
@@ -294,7 +301,11 @@ inline float GetClosestLess(
 
         //1 2 3 -> 1 2   3
         //l i r    l r,i
-        wRightBound = wIndex - 1 ;
+
+        wRightBound = wArrayIndex - 1 ;
+        //if right bound = 0 it gets 65535
+        if( wRightBound == MAXWORD )
+          break ;
 //      }
 //      else // fCurrentMultiplier == fCalculatedMultiplier
 //      {
@@ -303,9 +314,12 @@ inline float GetClosestLess(
 //      }
     }
   }
-  // "<=" because: If lb=0, index=1 and >= referred value: rb=index-1=lb
+  // "<=" because: If left bound = 0, index = 1
+  //  and value at index 1 >= referred value:
+  //   right bound ^= index-1 = left bound
   while( wLeftBound <= wRightBound ) ;
-  return fLess ;
+//  return fLess ;
+  return wArrayIndexOfCloestLessValue ;
 }
 
 inline float GetClosestLessOrEqual(

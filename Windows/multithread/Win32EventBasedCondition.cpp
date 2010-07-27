@@ -15,6 +15,7 @@ Win32EventBasedCondition::Win32EventBasedCondition()
     ::CreateEvent(
     NULL,               // default security attributes
     TRUE,               // manual-reset event
+//    FALSE ,
     FALSE,              // initial state is nonsignaled
     //"If lpName is NULL, the event object is created without a name."
     NULL //TEXT("WriteEvent")  // object name
@@ -34,9 +35,14 @@ void Win32EventBasedCondition::Broadcast()
   ::SetEvent(m_handleEvent) ;
 }
 
+void Win32EventBasedCondition::ResetEvent()
+{
+  ::ResetEvent(m_handleEvent) ;
+}
+
 void Win32EventBasedCondition::Wait()
 {
   ::WaitForSingleObject(
     m_handleEvent, // event handle
-    INFINITE);    // indefinite wait
+    INFINITE);    // infinite wait
 }

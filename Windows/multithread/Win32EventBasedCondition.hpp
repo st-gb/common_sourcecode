@@ -18,6 +18,7 @@
     ~Win32EventBasedCondition() ;
 
     void Broadcast() ;
+    void ResetEvent() ;
     void Wait() ;
   };
 
