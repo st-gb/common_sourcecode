@@ -9,7 +9,6 @@
 #define THREAD_HPP_
 
 #include <Controller/multithread/I_Thread.hpp>
-#include <wx/thread.h>
 #include <windows.h> //HANDLE
 
 namespace Windows_API

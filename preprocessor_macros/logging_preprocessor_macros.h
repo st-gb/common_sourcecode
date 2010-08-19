@@ -18,13 +18,14 @@
     #endif
   #else //#if defined(COMPILE_FOR_CPUCONTROLLER_DYNLIB) && !defined(_DEBUG)
     //Even release version of the service / GUI should output to the log file.
-    #define COMPILE_WITH_LOG
+//    #define COMPILE_WITH_LOG
     #if defined(_DEBUG)
       #define COMPILE_WITH_DEBUG
     #endif
   #endif//#if defined(COMPILE_FOR_CPUCONTROLLER_DYNLIB) && !defined(_DEBUG)
 
   #ifdef _DEBUG
+    #include <iostream> //for std::cout
     //this macro may NOT be called like the other one with "..."/ "__VA_ARGS__",
     //else many errors
     #define DEBUG_COUT(coutArgs)  {std::cout << coutArgs ; std::cout.flush(); }
@@ -36,27 +37,35 @@
     #define DEBUG_WPRINTFN(...) { wprintf(__VA_ARGS__) ; wprintf(L"\n"); \
       fflush(stdout) ; }
   #else
-    #define DEBUG(...) //->empty
+//    #define DEBUG(...) //->empty
     //#define DEBUG(coutArgs) //->empty
     //#define DEBUG(to_ostream) /*->empty / no instructions*/
-    #define DEBUGN(to_ostream) {} /* block can be used after "if"/"else"*/
-    #define DEBUGWN(to_ostream) /*->empty / no instructions*/
+//    #define DEBUGN(to_ostream) {} /* block can be used after "if"/"else"*/
+//    #define DEBUGWN(to_ostream) /*->empty / no instructions*/
     #define DEBUG_COUT(coutArgs) //->empty
     #define DEBUG_COUTN(coutArgs) //->empty
     #define DEBUG_WCOUTN(coutArgs) //->empty
     #define DEBUG_WPRINTFN(...) //->empty
-    #define DEBUG_SPRINTF(...) { } /* block can be used for "if"/"else"*/
-    #define DEBUGWN_WSPRINTF(...) { } /* block can be used after "if"/"else"*/
+//    #define DEBUG_SPRINTF(...) { } /* block can be used for "if"/"else"*/
+//    #define DEBUGWN_WSPRINTF(...) { } /* block can be used after "if"/"else"*/
   #endif //#ifdef _DEBUG
 
 #ifdef COMPILE_WITH_LOG
 //  #define USE_OWN_LOGGER
   #ifdef USE_OWN_LOGGER
-    #include <Controller/Logger.hpp> //for class Logger
+    #include <Controller/Logger/Logger.hpp> //for class Logger
     extern Logger g_logger ;
-  #define OWN_LOGGER_LOG(stdstr) g_logger.Log( stdstr ) ;
+    #define OWN_LOGGER_LOG(stdstr) g_logger.Log( stdstr ) ;
+#ifdef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+    #define OWN_LOGGER_LOG_ENTER_CRIT_SEC
+    #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC
+#else
+    #define OWN_LOGGER_LOG_ENTER_CRIT_SEC g_logger.m_wxcriticalsectionLogging.Enter() ;
+    #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC g_logger.m_wxcriticalsectionLogging.Leave();
+#endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
   #endif
     #include <string>
+    extern std::string g_stdstrLog ;
     //class Logger ;
     //#ifndef _MSC_VER //else compile errors with gcc
     #include <sstream> //for class std::stringstream
@@ -80,11 +89,17 @@
       /*/for g++ compiler:
       //Because I want to call Log( std::string & ) I have to create an object at
       //first*/ \
-      std::string stdstr = strstream.str() ;\
+      /*std::string stdstr = strstream.str() ;*/ \
+      /*Use critical section for thread sync. else mixed/ corrupted output
+       *  like here: "SendCommandAndGetResponse end\0pe"
+       */ \
+      OWN_LOGGER_LOG_ENTER_CRIT_SEC \
+      g_stdstrLog = strstream.str() ; \
       /*g_logger->Log(to_ostream) ; */ \
       /*g_logger.Log( stdstr ) ;*/ \
-      OWN_LOGGER_LOG( stdstr ) \
-      LOG4CPLUS_INFO(log4cplus_logger, stdstr ); \
+      OWN_LOGGER_LOG( /*stdstr*/ g_stdstrLog ) \
+      OWN_LOGGER_LOG_LEAVE_CRIT_SEC \
+      LOG4CPLUS_INFO(log4cplus_logger, /*stdstr*/ g_stdstrLog ); \
       /*g_logger.Log("test ") ; */ }
 //    #endif
     //#ifdef COMPILE_WITH_LOG
@@ -113,7 +128,7 @@
     #define LOGWN_WSPRINTF(...) { wchar_t arwch_buffer[1000] ; \
       swprintf( arwch_buffer, __VA_ARGS__ ) ; \
       std::wstring stdwstr(arwch_buffer) ; \
-      stdwstr += L'\n' ; \
+      /*stdwstr += L'\n' ;*/ \
       std::string stdstr ( stdwstr.begin(), stdwstr.end() ) ;\
       g_logger.Log( stdstr ) ; \
       }
@@ -144,40 +159,48 @@
     #define WRITE_TO_LOG_FILE_AND_STDOUT_NEWLINE(to_ostream) { \
     LOG(to_ostream << std::endl; ); \
       std::cout << to_ostream << std::endl ; std::cout.flush(); }
-
-  //The DEBUGxx() macros that use / depend on LOGxx(), should be inside the
-  //   #ifdef COMPILE_WITH_LOG
-  #ifdef COMPILE_WITH_DEBUG
-
-    #ifdef _DEBUG
-      //#define DEBUG(...) { g_logger->Log(__VA_ARGS__) ; }
-      //This macro should only be expanded to log outputs on debug versions.
-      #define DEBUG(to_ostream) LOG(to_ostream)
-      #define DEBUG_SPRINTF(...) LOG_SPRINTF(__VA_ARGS__)
-      #define DEBUGN(to_ostream) LOGN(to_ostream)
-      #define DEBUGWN(to_ostream) LOGWN(to_ostream)
-      #define DEBUGWN_WSPRINTF(...) LOGWN_WSPRINTF(__VA_ARGS__)
-    #else
-      #define DEBUGWN_WSPRINTF(...) { } /* block can be used for "if"/"else"*/
-    #endif //#ifdef _DEBUG
-    #define CPP_WRITE_TO_LOG_FILE_AND_STDOUT_NEWLINE(coutArgs) { \
-      std::cout coutArgs ; std::cout.flush(); \
-      g_ofstream coutArgs ; g_ofstream.flush(); }
-    //Use C comment, else compiler warning: multi-line comment because of "\" at
-    // line end.
-    /*#define WRITE_TO_LOG_FILE_AND_STDOUT_NEWLINE(...) { \
-    //  fprintf(fileDebug,__VA_ARGS__); fflush(fileDebug); \
-    //  printf(__VA_ARGS__); fflush(stdout); } */
-    //#ifndef _MSC_VER //else compile errors with gcc
-
-  #else
-  #endif//#ifdef COMPILE_WITH_DEBUG
 #else //#ifdef COMPILE_WITH_LOG
-  #define LOG(to_ostream) /*empty->do not log*/
-  #define LOGN(to_ostream) /*empty->do not log*/
-  #define LOGW(to_ostream) /*empty->do not log*/
-  #define LOGWN(to_ostream) /*empty->do not log*/
+  #define LOG(to_ostream) ; /* ";" for use in "else LOG(...)" -> "else ;" */
+  #define LOG_SPRINTF(...) ; /**/
+  #define LOGN(to_ostream) ;/*empty->do not log*/
+  #define LOGW(to_ostream) ;/*empty->do not log*/
+  #define LOGWN(to_ostream) ;/*empty->do not log*/
+  #define LOGWN_WSPRINTF(...) ;/*empty->do not log*/
+  #define WRITE_TO_LOG_FILE_AND_STDOUT_NEWLINE(...) ;/*empty->do not log*/
 #endif //#ifdef COMPILE_WITH_LOG
+
+//The DEBUGxx() macros that use / depend on LOGxx(), should be inside the
+//   #ifdef COMPILE_WITH_LOG
+#ifdef COMPILE_WITH_DEBUG
+  #ifdef _DEBUG
+    //#define DEBUG(...) { g_logger->Log(__VA_ARGS__) ; }
+    //This macro should only be expanded to log outputs on debug versions.
+    #define DEBUG(to_ostream) LOG(to_ostream)
+    #define DEBUG_SPRINTF(...) LOG_SPRINTF(__VA_ARGS__)
+    #define DEBUGN(to_ostream) LOGN(to_ostream)
+    #define DEBUGWN(to_ostream) LOGWN(to_ostream)
+    #define DEBUGWN_WSPRINTF(...) LOGWN_WSPRINTF(__VA_ARGS__)
+  #else
+    #define DEBUGWN_WSPRINTF(...) { } /* block can be used for "if"/"else"*/
+  #endif //#ifdef _DEBUG
+  #define CPP_WRITE_TO_LOG_FILE_AND_STDOUT_NEWLINE(coutArgs) { \
+    std::cout coutArgs ; std::cout.flush(); \
+    g_ofstream coutArgs ; g_ofstream.flush(); }
+  //Use C comment, else compiler warning: multi-line comment because of "\" at
+  // line end.
+  /*#define WRITE_TO_LOG_FILE_AND_STDOUT_NEWLINE(...) { \
+  //  fprintf(fileDebug,__VA_ARGS__); fflush(fileDebug); \
+  //  printf(__VA_ARGS__); fflush(stdout); } */
+  //#ifndef _MSC_VER //else compile errors with gcc
+#else //#ifndef COMPILE_WITH_DEBUG
+  //The following macros compile to do not log
+  #define DEBUG(to_ostream) ;/*empty->do not log*/
+  #define DEBUG_SPRINTF(...) ;/*empty->do not log*/
+  #define DEBUGN(to_ostream) ;/*empty->do not log*/
+  #define DEBUGWN(to_ostream) ;/*empty->do not log*/
+  #define DEBUGWN_WSPRINTF(...) ;/*empty->do not log*/
+#endif//#ifdef COMPILE_WITH_DEBUG
+
 #ifdef VERBOSE_LOGGING
   #define LOGN_VERBOSE(to_ostream) LOGN(to_ostream)
 #else
