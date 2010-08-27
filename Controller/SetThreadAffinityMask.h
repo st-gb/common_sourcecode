@@ -13,7 +13,8 @@
 #ifdef _WINDOWS
   #include <windows.h> //SetThreadAffinityMask
 
-  unsigned long int SetThreadAffinityMask(DWORD dwThreadAffinityMask)
+  //Use inline->faster, avoid g++ error/ warning
+  inline unsigned long int SetThreadAffinityMask(DWORD dwThreadAffinityMask)
   {
     return
     //http://msdn.microsoft.com/en-us/library/ms686247%28VS.85%29.aspx:

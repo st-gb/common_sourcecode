@@ -8,6 +8,8 @@
 #ifndef WXCONDITIONBASEDI_CONDITION_HPP_
 #define WXCONDITIONBASEDI_CONDITION_HPP_
 
+#include <wx/thread.h> //wxCondition
+
 class wxConditionBasedI_Condition
 {
 public:

@@ -101,11 +101,14 @@ void wxThreadBasedI_Thread::Delete()
         {
         case wxTHREAD_NO_ERROR :
           return I_Thread::no_error ;
-//          wxTHREAD_NO_RESOURCE,       // No resource left to create a new thread
-//              wxTHREAD_RUNNING,           // The thread is already running
-//              wxTHREAD_NOT_RUNNING,       // The thread isn't running
-//              wxTHREAD_KILLED,            // Thread we waited for had to be killed
-//              wxTHREAD_MISC_ERROR         // Some other error
+          //Avoid g++ warnings like
+          //"enumeration value `wxTHREAD_KILLED' not handled in switch"
+        case wxTHREAD_NO_RESOURCE:  // No resource left to create a new thread
+        case wxTHREAD_RUNNING:         // The thread is already running
+        case wxTHREAD_NOT_RUNNING:       // The thread isn't running
+        case wxTHREAD_KILLED:         // Thread we waited for had to be killed
+        case wxTHREAD_MISC_ERROR:         // Some other error
+        	break ;
         }
       }
     }
