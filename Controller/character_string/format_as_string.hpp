@@ -7,7 +7,7 @@
 
 #ifndef FORMAT_AS_STRING_HPP_
 #define FORMAT_AS_STRING_HPP_
-
+#include <string> //for class std::string
 
 std::string format_output_data(
   const unsigned char arbyData [],

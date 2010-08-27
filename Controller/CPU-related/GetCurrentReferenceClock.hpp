@@ -21,6 +21,8 @@
 
 //inline void GetCurrentReferenceClock(float fDivisor) ;
 
+//TODO put variable definitions into a source file (that is not #included)
+// to avoid multiple definitions.
 //Declare and use global variables to be faster (using local variables creates
 //them on stack each time).
 float g_fReferenceClockInHertz ;
@@ -38,18 +40,26 @@ DWORD g_dwTickCountDiffInMilliseconds = //ULONG_MAX ;
 //Define the function in this _header_ file. It cannot be inline if declared in
 // a header file and implemented in a source file?!
 inline
-void
-//float
-GetCurrentReferenceClock( float fDivisor
+  void
+  //float
+  GetCurrentReferenceClock( float fDivisor
   , float & r_fReferenceClockInMHz
   , DWORD dwMinimumTimeDiffInMilliseconds
   , DWORD dwMaximumTimeDiffInMilliseconds
   )
 {
   //Use global var., so it does not need to be created on stack for every time.
-  g_dwTickCountInMilliseconds = ::GetTickCount() ;
+  g_dwTickCountInMilliseconds =
+    //Cites from:
+    //http://msdn.microsoft.com/en-us/library/ms724408%28VS.85%29.aspx:
+    //"The return value is the number of milliseconds that have elapsed since
+    // the system was started."
+    ::GetTickCount() ;
   g_dwTickCountDiffInMilliseconds =
-    //Use this macro in order to take a value wrap into account.
+    //Use this macro in order to take a value wrap into account:
+    //http://msdn.microsoft.com/en-us/library/ms724408%28VS.85%29.aspx:
+    // "[...]the time will wrap around to zero if the system is run
+    //  continuously for 49.7 days"
     ULONG_VALUE_DIFF( g_dwTickCountInMilliseconds,
     g_dwPreviousTickCountInMilliseconds) ;
   DEBUGN("tick count diff in ms: " << g_dwTickCountDiffInMilliseconds )
@@ -65,8 +75,9 @@ GetCurrentReferenceClock( float fDivisor
     g_dwPreviousTickCountInMilliseconds = g_dwTickCountInMilliseconds ;
     //Because the time difference is  too large:take a TSC measurement (again).
     g_ullPreviousTimeStampCounter = //ReadTimeStampCounter() ;
-      //TODO pass thread affinity mask
-      ReadTSCinOrder(1) ;
+      ReadTSCinOrder(
+        //pass thread affinity mask
+        1) ;
     //A bad idea follows because it blocks the execution.
 //    //Wait some milliseconds to get a time difference.
 //    ::Sleep(//500
@@ -106,8 +117,8 @@ GetCurrentReferenceClock( float fDivisor
   //  MessageBox(NULL, stdstrstream.str().c_str() , "info" , MB_OK) ;
 
     g_ullCurrentTimeStampCounter = //ReadTimeStampCounter() ;
-      //TODO pass thread affinity mask
-      ReadTSCinOrder(1) ;
+      ReadTSCinOrder(//pass thread affinity mask
+        1) ;
     g_ullTimeStampCounterDiff = ULONGLONG_VALUE_DIFF(
       g_ullCurrentTimeStampCounter , g_ullPreviousTimeStampCounter ) ;
     DEBUGN("TSC diff: " << g_ullTimeStampCounterDiff )

@@ -8,11 +8,26 @@
 #ifndef WXCONDITIONBASEDI_CONDITION_HPP_
 #define WXCONDITIONBASEDI_CONDITION_HPP_
 
+#include <wx/thread.h> //for class wxCondition
+
 class wxConditionBasedI_Condition
 {
 public:
   wxMutex m_wxmutex ;
   wxCondition m_wxcondition ;
+
+//  inline wxConditionBasedI_Condition() ;
+//  inline wxCondError Broadcast() ;
+//  inline void LockedBroadcast() ;
+//  inline wxMutexError Lock() ;
+//  inline void LockAndWait() ;
+//  inline wxCondError Signal() ;
+//  inline wxCondError Wait() ;
+
+  //The implementations of the functions must be inside the class, else if in
+  //the .cpp file they are not inline.
+  //(this is because if #including a file its whole content is inserted, but
+  // cpp files usually are not being included?!)
   wxConditionBasedI_Condition()
     : m_wxcondition (m_wxmutex)
   {

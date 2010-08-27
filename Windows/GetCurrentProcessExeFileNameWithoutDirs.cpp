@@ -17,13 +17,15 @@ std::tstring GetExeFileNameWithoutDirs()
   TCHAR artchThisExesPath [ MAX_PATH //plus term. 0 char
       + 1] ;
   DWORD dwModuleFileNameReturn =
-  ::GetModuleFileName
+    //Cites from
+    //http://msdn.microsoft.com/en-us/library/ms683197%28VS.85%29.aspx:
+    ::GetModuleFileName
     (
-      //If this parameter is NULL, GetModuleFileName retrieves the path
-      //of the executable file of the current process.
+      //"If this parameter is NULL, GetModuleFileName retrieves the path
+      //of the executable file of the current process."
       NULL,
       artchThisExesPath ,
-      //Size of the lpFilename buffer, in TCHARs.
+      //"Size of the lpFilename buffer, in TCHARs."
       MAX_PATH
     ) ;
   //WRITE_TO_LOG_FILE_AND_STDOUT_NEWLINE(

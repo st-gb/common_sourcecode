@@ -23,15 +23,18 @@ protected:
 public:
   enum errorCodes
   {
-    OpenSCManagerFailed = 1,
+    NoError = 0 ,
+    OpenSCManagerFailed,
     OpenServiceFailed,
-    DeleteServiceFailed
+    DeleteServiceFailed,
+    GetModuleFileNameFailed
   };
   static DWORD ContinueService(
    const TCHAR * tchServiceName
    ) ;
   static DWORD CreateService(
     const TCHAR * tchServiceName
+    , BYTE & r_byErrorPlace
     ) ;
   static DWORD CreateService(
     SC_HANDLE & r_schService 
@@ -50,6 +53,10 @@ public:
     std::string & r_stdstrErrorDescription
     ) ;
   static void GetErrorDescriptionFromRegSvcCtrlHandlerExErrCode(
+    DWORD dwLastError ,
+    std::string & r_stdstrErrorDescription
+    ) ;
+  static void GetErrorDescriptionFromCreateServiceErrCode(
     DWORD dwLastError ,
     std::string & r_stdstrErrorDescription
     ) ;

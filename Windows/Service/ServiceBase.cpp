@@ -159,6 +159,33 @@ void ServiceBase::GetErrorDescriptionFromOpenServiceErrCode(
   }
 }
 
+void ServiceBase::GetErrorDescriptionFromCreateServiceErrCode(
+  DWORD dwLastError ,
+  std::string & r_stdstrErrorDescription
+  )
+{
+  switch(dwLastError)
+  {
+  case ERROR_ACCESS_DENIED:
+    r_stdstrErrorDescription =
+      "The handle to the Service Control Manager database does not have the "
+      "SC_MANAGER_CREATE_SERVICE access right.\n" ;
+    break;
+  case ERROR_DUPLICATE_SERVICE_NAME:
+    r_stdstrErrorDescription =
+      "The display name already exists in the service "
+      "control manager database either as a service name "
+      "or as another display name.\n" ;
+    break;
+  case ERROR_SERVICE_EXISTS:
+    r_stdstrErrorDescription =
+      "The specified service already exists in this database.\n" ;
+    //DeleteService(schSCManager, tchServiceName);
+    //CreateService(schService,tchServiceName,tchPathcToServiceExe);
+    break;
+  } //switch(dwLastError)
+}
+
 DWORD ServiceBase::PauseService(
   const TCHAR * cp_tchServiceName
   , std::string & r_stdstrMsg
@@ -236,23 +263,23 @@ void ServiceBase::GetPossibleSolution(
 //      WRITE_TO_LOG_FILE_AND_STDOUT_NEWLINE(
       //Use std::stringstream (instead of widestring version) for
       //MinGW compatibility
-        std::stringstream strstream ;
-        strstream <<
-        "possible solution:\n"
-        "-close the service control manager in order to let the service be "
-            "deleted\n"
-        "-if you want to install a service and a service with the same name "
-          "is still running->stop the service with the same name first\n"
-        "\n-Stop the execution of the service: \""
-        << tchServiceName
-        << "\"\n"
-        << " -inside the service control manager\n"
-        " -via the task manager\n"
-        " -by another program/ etc.\n"
-        " and try again."
+      std::stringstream strstream ;
+      strstream <<
+      "possible solution:\n"
+      "-close the service control manager in order to let the service be "
+          "deleted\n"
+      "-if you want to install a service and a service with the same name "
+        "is still running->stop the service with the same name first\n"
+      "\n-Stop the execution of the service: \""
+      << tchServiceName
+      << "\"\n"
+      << " -inside the service control manager\n"
+      " -via the task manager\n"
+      " -by another program/ etc.\n"
+      " and try again."
 //        )
-        ;
-        r_stdstrPossibleSolution = strstream.str() ;
+      ;
+    r_stdstrPossibleSolution = strstream.str() ;
     break ;
   }
 }
@@ -260,12 +287,18 @@ void ServiceBase::GetPossibleSolution(
 DWORD ServiceBase::CreateService(
   const TCHAR * tchServiceName
   //, TCHAR * tchPathToServiceExe
+//  //Use number because that enables language-independent messages
+//  , DWORD  & dwErrorCodeFor1stError
+  , BYTE & r_byErrorPlace
   )
 { 
+  DWORD dwLastError = ERROR_SUCCESS ;
 //  BOOL boolReturn = FALSE ;
   SC_HANDLE schSCManager;
   
-  schSCManager = OpenSCManager( 
+  schSCManager =
+    //http://msdn.microsoft.com/en-us/library/ms684323%28VS.85%29.aspx:
+    ::OpenSCManager(
     NULL,                    // local machine 
     NULL,                    // ServicesActive database 
     //SC_MANAGER_ALL_ACCESS
@@ -273,10 +306,11 @@ DWORD ServiceBase::CreateService(
     ////Required to call the DeleteService function to delete the service.
     //| DELETE
     );  // full access rights 
-   
-  if ( schSCManager == NULL ) 
+  //"If the function fails, the return value is NULL. To get extended error
+  // information, call GetLastError."
+  if ( schSCManager == NULL )
   {
-    DWORD dwLastError = GetLastError() ;
+    dwLastError = GetLastError() ;
     ////DEBUG("OpenSCManager failed: error code: \n", dwLastError);
     ////WRITE_TO_LOG_FILE_AND_STDOUT_NEWLINE("Opening Service Control "
     ////    "Manager failed: error code: %d", dwLastError);
@@ -298,7 +332,9 @@ DWORD ServiceBase::CreateService(
   else
   {
     TCHAR szPath[MAX_PATH];
-    if( GetModuleFileName(
+    if(
+      //http://msdn.microsoft.com/en-us/library/ms683197%28VS.85%29.aspx:
+      GetModuleFileName(
       //If this parameter is NULL, GetModuleFileName retrieves the path 
       //of the executable file of the current process. 
       NULL, 
@@ -306,81 +342,36 @@ DWORD ServiceBase::CreateService(
       )
     {
       SC_HANDLE schService ;
-      CreateService(
-          schService
-          , tchServiceName
-          //, tchPathToServiceExe
-          , szPath
-          , schSCManager );
-
-      if (schService == NULL) 
+      dwLastError = CreateService(
+        schService
+        , tchServiceName
+        //, tchPathToServiceExe
+        , szPath
+        , schSCManager );
+      if ( schService )
       {
-          DWORD dwLastError = GetLastError() ;
-          //DEBUG("Creating the service failed: error number:%d\n",
-          // dwLastError);
-          //LOG("Creating the service failed: error number:" << dwLastError 
-          //    << "\n" );
-          //std::cout 
-          WRITE_TO_LOG_FILE_AND_STDOUT_NEWLINE( 
-            "Creating the service failed: error number:" <<
-            dwLastError << "\nError: " << //"\n"
-            LocalLanguageMessageFromErrorCodeA( dwLastError )
-            )
-            ;
-          switch(dwLastError)
-          {
-          case ERROR_ACCESS_DENIED:
-              DEBUG("The handle to the SCM database does not have the "
-                  "SC_MANAGER_CREATE_SERVICE access right.\n");
-              std::cout << "The handle to the SCM database does not have "
-                  "the SC_MANAGER_CREATE_SERVICE access right.\n" ;
-              break;
-          case ERROR_DUPLICATE_SERVICE_NAME:
-              DEBUG("The display name already exists in the service "
-                  "control manager database either as a service name "
-                  "or as another display name.\n");
-              std::cout << "The display name already exists in the service "
-                  "control manager database either as a service name "
-                  "or as another display name.\n" ;
-              break;
-          case ERROR_SERVICE_EXISTS:
-              DEBUG("The specified service already exists in this database.\n");
-              std::cout << "The specified service already exists in this "
-                  "database.\n" ;
-              //DeleteService(schSCManager, tchServiceName);
-              //CreateService(schService,tchServiceName,tchPathcToServiceExe);
-              break;
-          } //switch(dwLastError)
-          std::string stdstrPossibleSolution ;
-          GetPossibleSolution( dwLastError , tchServiceName ,
-            stdstrPossibleSolution ) ;
-          //return FALSE;
-      }//if (schService == NULL) 
-      else
+        CloseServiceHandle(schService);
+      }
+      else //if (schService == NULL)
       {
-          //printf("Creating service succeeded\n");
-          std::cout << "Creating the service succeeded.\n" ;
-          CloseServiceHandle(schService);
-          //return TRUE;
+        //return TRUE;
       }
     }
     else
-
-      {
-          //DEBUG("GetModuleFileName failed (%d)\n", GetLastError());
-          //LOG(
-          WRITE_TO_LOG_FILE_AND_STDOUT_NEWLINE(
-              "Getting file name for THIS executable file failed: " <<
-              LocalLanguageMessageFromErrorCodeA( ::GetLastError() ) << ")" //<< \n"
-              );
-          //return FALSE;
-      }
+    {
+      r_byErrorPlace = GetModuleFileNameFailed ;
+      //"If the function fails, the return value is 0 (zero). To get extended
+      // error information, call GetLastError."
+      dwLastError = GetLastError() ;
+        //return FALSE;
+    }
       //else
       //    //DEBUG("Path of this executable:%s\n", szPath);
       //    LOG("Path of this executable:" << szPath << "\n" );
   }//if ( schSCManager == NULL ) 
   //return boolReturn ;
-  return 0 ;
+//  return 0 ;
+  return dwLastError;
 }
 
 DWORD ServiceBase::CreateService(
@@ -390,7 +381,10 @@ DWORD ServiceBase::CreateService(
   , SC_HANDLE schSCManager
   )
 {
-  r_schService = ::CreateService( 
+  DWORD dwLastError = 0 ;
+  r_schService =
+    //http://msdn.microsoft.com/en-us/library/ms682450%28VS.85%29.aspx:
+    ::CreateService(
     schSCManager,              // SCManager database 
     // name of service 
     //TEXT("GriffinControlService"),
@@ -431,14 +425,17 @@ DWORD ServiceBase::CreateService(
     NULL,                      // no dependencies 
     NULL,                      // LocalSystem account 
     NULL     // NULL = no password 
-    );                     
-    //if (r_schService == NULL)
-    //{
-    //  printf("Creating the service failed\n"); 
-    //}
-    //else
-    //  printf("Creating the service succeeded\n"); 
-  return 0 ;
+    );
+  //"If the function fails, the return value is NULL. To get extended
+  // error information, call GetLastError."
+  if (r_schService == NULL)
+  {
+//      printf("Creating the service failed\n");
+    dwLastError = ::GetLastError() ;
+  }
+  //else
+  //  printf("Creating the service succeeded\n");
+  return dwLastError ;
 }
 
 //Use number because that enables language-independent messaged
