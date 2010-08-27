@@ -11,7 +11,7 @@
 ////ie. SDK version "6.1" .
 //#include <PowrProf.h> // for PowerWriteACValueIndex()
 #include "PowerProfFromWin6DynLinked.hpp"
-#include <Controller/character_string/tchar_conversion.h> //GetCharPointer()
+//#include <Controller/character_string/tchar_conversion.h> //GetCharPointer()
 //#include <Controller/stdtstr.hpp> //for std::tstring 
 #include <exception>
 

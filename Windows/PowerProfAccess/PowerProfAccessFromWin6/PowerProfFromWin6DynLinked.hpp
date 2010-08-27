@@ -1,4 +1,6 @@
 #pragma once //include guard
+#ifndef POWERPROFACCESSFROMWIN6_H_
+  #define POWERPROFACCESSFROMWIN6_H_
 
 #define INCLUDE_POWRPROF_H_IN_PWRPROFDYNLINKED_FROM_VER6_H
 //If the powrprof.h for Windows version >= 6 is already included
@@ -20,11 +22,23 @@
 #include <Controller/character_string/stdtstr.hpp> //for std::tstring
 
 #ifndef _MSC_VER //if not an MS-compiler
-  #if defined( __MINGW32__) || (__GNUC__>=4)
+//Not all MinGW versions provide <specstrings.h> .
+#ifdef INCLUDE_SPECSTRINGS_H
+  //#if defined( __MINGW32__) || (__GNUC__>=4)
     #include <specstrings.h> //for "__in_opt" preprocessor macro etc.
-  #else
+  //#else
     #include <specstrings_strict.h>
-  #endif
+  //#endif
+#else //#ifdef INCLUDE_SPECSTRINGS_H
+  //Defining only the macros needed in this file here is a little bit faster
+  //than including all specstrings.h macros.
+  #define __deref_out
+  #define __in
+  #define __in_opt
+  #define __inout
+  #define __out
+  #define __out_opt
+#endif //#ifdef INCLUDE_SPECSTRINGS_H
   typedef DWORD far           * LPDWORD;
 #endif
 #include <set> //std::set
@@ -233,3 +247,5 @@ public:
     const std::wstring & r_stdwstrPowerSchemeName ) ;
   void SetFunctionPointersToNULL() ;
 };//end class
+
+#endif //#ifndef POWERPROFACCESSFROMWIN6_H_
