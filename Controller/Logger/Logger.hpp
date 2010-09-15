@@ -15,10 +15,13 @@
   #include <data_structures/Trie.hpp>
 #endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
 
-#ifdef _WINDOWS
+#ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
   //Use "windows.h" for g++ because the case matters.
   #include <windows.h> //for SYSTEMTIME
 //  #include <winbase.h> //for SYSTEMTIME
+#else // ->Unix / Linux
+  #include <sys/time.h> // gettimeofday(...)
+  #include <time.h> // localtime(...)
 #endif
 
   #include <windef.h> //for WORD
@@ -26,10 +29,15 @@
 
   class Logger
   {
-#ifdef _WINDOWS
+#ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
     //Use member variable: so it does not need to be created on stack for
     //every call to "Log(...)".
     SYSTEMTIME systemtime ;
+#else
+    //from http://www.gamedev.net/community/forums/topic.asp?topic_id=437062:
+    timeval timevalCurrentTime ;
+    //from http://souptonuts.sourceforge.net/code/gettimeofday.c.html:
+    struct tm * p_tm ;
 #endif
   public:
 #ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
@@ -67,7 +75,7 @@
     #ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
       //Protect access to the trie: if 2 or more threads access the
       // trie then an invalid array index for a trie level might be used?!
-      //If the outpur is _not_ synchronized and 2 or more threads are
+      //If the output is _not_ synchronized and 2 or more threads are
       // logging concurrently: the output may be mixed like:
       // "22010.8.10 2010.99h:824.min 1051 19491msad24hread ID:tC8296ntCP51os
       //  ter getting DOM implementationt("
@@ -94,18 +102,20 @@
         mp_ofstream->good()
         )
       {
-      #ifdef _WINDOWS
-    //    SYSTEMTIME systemtime ;
-        //GetSystemTime(&systemtime);              // gets current time
-        //gets the same time as the Windows clock.
-    //    ::GetLocalTime( & systemtime );
+        //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
+      #ifdef _WIN32
+        //Gets the same time as the Windows clock.
         ::GetLocalTime( & systemtime );
-      #else
-
+      #else // ->Linux
+        //from http://www.gamedev.net/community/forums/topic.asp?topic_id=437062:
+        gettimeofday( & timevalCurrentTime,0);
+        //from http://souptonuts.sourceforge.net/code/gettimeofday.c.html:
+        p_tm = localtime( & timevalCurrentTime.tv_sec ) ;
       #endif
         //m_ofstream << r_stdstr ;
-        *mp_ofstream
-          #ifdef _WINDOWS
+        * mp_ofstream
+          //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
+          #ifdef _WIN32
           << systemtime.wYear << "."
           << systemtime.wMonth << "."
           << systemtime.wDay << " "
@@ -116,10 +126,30 @@
           << " thread ID:" << ::GetCurrentThreadId()
           << ":"
           #else
+//          << timevalCurrentTime.tv_sec << "s"
+          << ( p_tm->tm_year
+            //The years seem to be relative to the year 1900.
+            + 1900 ) << "."
+          << ( p_tm->tm_mon
+            //The 1st month (January) seems to have the index 0.
+              + 1 ) << "."
+          << p_tm->tm_mday << " "
+          << p_tm->tm_hour << "h:"
+          << p_tm->tm_min << "min "
+          << p_tm->tm_sec << "s "
+          << //Milliseconds (10^-3 s) part = microseconds (10^-6 s) / 10^3
+             //e.g. 123456 microseconds / 1000 = 123 milliseconds
+            timevalCurrentTime.tv_usec / 1000 << "ms "
+            //Microseconds (10^-6 s) part = microseconds (10^-6 s) % 10^3
+            //e.g. 123456 microseconds % 1000 = 456 microseconds
+          << timevalCurrentTime.tv_usec % 1000 << "us"
+          << ":"
+//          << timevalCurrentTime.tv_usec << "us"
           #endif
           << r_stdstr
           << "\n"
           ;
+
         //m_ofstream.flush() ;
         mp_ofstream->flush() ;
 //        #ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB

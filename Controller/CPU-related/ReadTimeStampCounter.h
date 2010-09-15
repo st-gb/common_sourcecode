@@ -8,7 +8,9 @@
 #ifndef READTIMESTAMPCOUNTER_H_
 #define READTIMESTAMPCOUNTER_H_
 
-#include <Controller/SetThreadAffinityMask.h>
+#include <Controller/SetThreadAffinityMask.h> //SetThreadAffinityMask(...)
+#include <winnt.h> //for ULONGLONG
+#include <windef.h> //for DWORD
 
 //TODO use affinity mask for reading the TSC
 //http://en.wikipedia.org/wiki/Time_Stamp_Counter:
@@ -74,7 +76,8 @@ inline void ReadTSCinOrder(
   {
     //http://www.ccsl.carleton.ca/~jamuir/rdtscpm1.pdf:
 //    CPUID(); //"force all previous instructions to complete"
-    //from http://en.wikipedia.org/wiki/CPUID#Accessing_the_id_from_other_languages:
+    //from http://en.wikipedia.org/wiki/CPUID
+    // #Accessing_the_id_from_other_languages:
     asm ( "mov 1, %%eax; " // a into eax
            "cpuid" ) ;
     ReadTimeStampCounter(r_dwLowEAX, r_dwHighEDX ) ;
@@ -84,6 +87,7 @@ inline void ReadTSCinOrder(
 
 inline ULONGLONG ReadTSCinOrder( DWORD dwThreadAffinityMask )
 {
+  ULONGLONG ull = 0 ;
   //http://en.wikipedia.org/wiki/Rdtsc:
   //"There is no promise that the timestamp counters of multiple CPUs on a
   //single motherboard will be synchronized. In such cases, programmers can
@@ -94,7 +98,8 @@ inline ULONGLONG ReadTSCinOrder( DWORD dwThreadAffinityMask )
   {
     //http://www.ccsl.carleton.ca/~jamuir/rdtscpm1.pdf:
 //    CPUID(); //"force all previous instructions to complete"
-    //from http://en.wikipedia.org/wiki/CPUID#Accessing_the_id_from_other_languages:
+    //from http://en.wikipedia.org/wiki/CPUID
+    // #Accessing_the_id_from_other_languages:
 //    asm ( "mov 1, %%eax; " // a into eax
 //           "cpuid" ) ;
 
@@ -106,9 +111,10 @@ inline ULONGLONG ReadTSCinOrder( DWORD dwThreadAffinityMask )
     //http://www.ccsl.carleton.ca/~jamuir/rdtscpm1.pdf,
     //  chapter 3.1. Out-of-Order-Execution
     asm ( "cpuid" ) ; //this forces all previous operations to complete.
-    return ReadTimeStampCounter() ;
+    ull = ReadTimeStampCounter() ;
     ::SetThreadAffinityMask( dwPreviousAffMask ) ;
   }
+  return ull ;
 }
 
 #endif /* READTIMESTAMPCOUNTER_H_ */

@@ -9,6 +9,7 @@
 #define TRIE_HPP_
 
 #include <windef.h> //for BYTE etc.
+#include <string.h> //memset(...)
 
 #define DIFFERENT_VALUES_PER_LEVEL 256
 

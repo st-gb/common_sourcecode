@@ -8,13 +8,22 @@
 #ifndef XERCESATTRIBUTESHELPER_HPP_
 #define XERCESATTRIBUTESHELPER_HPP_
 
+//for XERCES_CPP_NAMESPACE::Attributes for function defined in _this_ file
 #include <xercesc/sax2/Attributes.hpp>
-#include <xercesc/util/xmlstring.hpp> //for XMLString::transcode(...)
-#include <string>
+//for XERCES_CPP_NAMESPACE::XMLString::transcode(...)
+#include <xercesc/util/XMLString.hpp>
+#include <string> //std::string
 #include <sstream> //std::istringstream
+#include <windef.h> //for BYTE
+
+#define XERCES_ATTRIBUTE_VALUE_INVALID_DATA_FORMAT 2
+#define XERCES_ERROR_GETTING_ATTRIBUTE_NAME 3
+#define XERCES_ERROR_CONVERTING_ATTRIBUTE_VALUE_TO_C_STRING 4
+#define XERCES_ATTRIBUTE_VALUE_DOES_NOT_EXIST 5
+#define XERCES_ERROR_CONVERTING_ATTRIBUTE_NAME_TO_XERCES_STRING 6
 
 class XercesAttributesHelper
-: public  XERCES_CPP_NAMESPACE::Attributes
+//  : public XERCES_CPP_NAMESPACE::Attributes
 {
 public:
   XercesAttributesHelper();
@@ -73,6 +82,80 @@ public:
 //    }
 //    return false ;
 //  }
+  static BYTE GetAttributeValue(
+    const XERCES_CPP_NAMESPACE::Attributes & attrs,
+    const char * pc_chAttributeName,
+    bool & rbValue
+    ) ;
+  static inline BYTE GetAttributeValue
+    (
+    const XERCES_CPP_NAMESPACE::Attributes & xercesc_attributes,
+    const std::string & cr_stdstrAttributeName,
+    std::string & r_strValue
+    ) ;
+  static BYTE GetAttributeValue(
+    const XERCES_CPP_NAMESPACE::Attributes & attrs,
+    char * lpctstrAttrName,
+    BYTE & rbyValue
+    ) ;
+  BYTE GetAttributeValue(
+    const XERCES_CPP_NAMESPACE::Attributes & attrs,
+    const char * lpctstrAttrName,
+    //DWORD & r_dwValue
+    //StdStringToDestFormat & r_stdstringtodestformat ,
+    BYTE ( * pfn)(
+      std::string & strAttributeValue ,
+      void * pv_AttributeValue ) ,
+    //PVOID
+    void * pv_AttributeValue
+    ) ;
+  //Decrease code redundancy:
+  //This function has the code to get the Xerces attribute value
+  //that should be identical for all data types and calls the
+  //converter functions (member functions of this class).
+  //For possibility to interact with the user interface in case of convert errors
+  //the converter functions are member functions and so they have
+  //the user interface member variable.
+  BYTE GetAttributeValue(
+    const XERCES_CPP_NAMESPACE::Attributes & attrs,
+    const char * lpctstrAttrName,
+    //DWORD & r_dwValue
+    //StdStringToDestFormat & r_stdstringtodestformat ,
+    BYTE ( XercesAttributesHelper::*pfn )(
+      //const XercesHelper * cp_xerceshelper ,
+      std::string & strAttributeValue ,
+      void * pv_AttributeValue ) ,
+    //const XercesHelper * cp_xerceshelper ,
+    //PVOID
+    void * pv_AttributeValue
+    ) ;
+  static BYTE GetAttributeValue(
+    const XERCES_CPP_NAMESPACE::Attributes & attrs,
+    const char * lpctstrAttrName,
+    WORD & rwValue
+    ) ;
+  //static
+  BYTE GetAttributeValue(
+    const XERCES_CPP_NAMESPACE::Attributes & attrs,
+    const char * lpctstrAttrName,
+    DWORD & r_dwValue) ;
+  static BYTE GetAttributeValue(
+    const XERCES_CPP_NAMESPACE::Attributes & attrs,
+    const char * lpctstrAttrName,
+    float & rfValue
+    ) ;
+  static BYTE GetAttributeValue(
+    const XERCES_CPP_NAMESPACE::Attributes & attrs,
+    char * lpctstrAttrName,
+//    std::string & r_stdstrAttributeName ,
+    std::string & r_strValue
+    ) ;
+  static BYTE GetAttributeValue
+    (
+    const XERCES_CPP_NAMESPACE::Attributes & attrs,
+    const char * lpctstrAttrName,
+    std::wstring & r_stdwstrValue
+    ) ;
   //template idea for converting string to other data type
   //from http://www.codeguru.com/forum/showthread.php?t=231056:
 //  template <class T>
@@ -85,10 +168,14 @@ public:
 //     const   XMLCh * const    cpc_xmlchLocalName
      //,std::ios_base& (*f)(std::ios_base&)
     ) ;
-  static bool XercesAttributesHelper::getValue(
+  static bool getValue(
      const XERCES_CPP_NAMESPACE::Attributes & cr_xerces_attributes ,
      std::string & r_stdstrAttributeValue ,
       const   XMLCh * const    cpc_xmlchAttributeName
+    ) ;
+  BYTE ToDWORD(
+    std::string & strAttributeValue ,
+    void * pv_AttributeValue
     ) ;
   virtual
   ~XercesAttributesHelper();
@@ -161,13 +248,15 @@ template <class T>
    const XMLCh * const cpc_xmlchAttributeName
   )
 {
-  const XMLCh * cp_xmlchAttributeValue = cr_xerces_attributes.getValue(// const XMLCh *const qName
+  const XMLCh * cp_xmlchAttributeValue = cr_xerces_attributes.getValue(
+    // const XMLCh *const qName
     cpc_xmlchAttributeName
     //"number"
     ) ;
   //If the attribute exists.
   if(cp_xmlchAttributeValue)
   {
+    //Must convert to "char *" because MinGW can't use std::wistringstream.
     char * pchAttributeValue = XERCES_CPP_NAMESPACE::XMLString::transcode(
       cp_xmlchAttributeValue) ;
     if( pchAttributeValue )
@@ -176,7 +265,7 @@ template <class T>
         std::istringstream iss(strAttributeValue);
         //Release memory of dyn. alloc. buffer (else memory leaks).
         XERCES_CPP_NAMESPACE::XMLString::release(&pchAttributeValue);
-        return !(iss //>> f
+        return ! ( iss //>> f
           >> r_templateType
           ).fail();
     }

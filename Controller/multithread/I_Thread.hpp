@@ -11,11 +11,15 @@
 typedef unsigned char BYTE ;
 typedef unsigned long DWORD ;
 
-//Same funxtion signature as for Win32 thread procedures.
+//Same function signature as for Win32 thread procedures.
 //DWORD (WINAPI *LPTHREAD_START_ROUTINE)(LPVOID);
 
 typedef DWORD ( //__stdcall is important for Windows' ::CreateThread()
-  __stdcall * pfnThreadFunc)( void * p ) ;
+//Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
+#ifdef _WIN32 //under Linux g++ error if "__stdcall"
+  __stdcall
+#endif
+  * pfnThreadFunc)( void * p ) ;
 
 class I_Thread
 {

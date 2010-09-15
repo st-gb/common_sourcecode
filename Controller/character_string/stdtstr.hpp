@@ -1,7 +1,9 @@
-#pragma once
+#pragma once //Include guard.
+#ifndef STDTSTR_HPP_ //Include guard.
+  #define STDTSTR_HPP_
 
-#include <string>
-#include <tchar.h> //TCHAR
+#include <string> //std::string, std::wstring
+//#include <tchar.h> //for TCHAR
 //#include <string_typedefs.h> //LPCTSTR
 
 //char * GetCharPointer( LPCTSTR pstr )
@@ -15,26 +17,23 @@
 //#endif
 //}
 
-namespace std {
-
-     #if defined _UNICODE || defined UNICODE
-
-     typedef std::wstring tstring;
-
-     #else
-
-     typedef std::string tstring;
-
-    #endif
-
-   //class tstring
-   //{
-   //    tstring( TCHAR * ptch ) ;
-   //} ;
+namespace std
+{
+  #if defined _UNICODE || defined UNICODE
+    typedef std::wstring tstring;
+  #else
+    typedef std::string tstring;
+  #endif
+ //class tstring
+ //{
+ //    tstring( TCHAR * ptch ) ;
+ //} ;
 }
 
  #if defined _UNICODE || defined UNICODE
- std::tstring operator + ( const std::tstring & r_tstring, const std::string & r_string) ;
+   std::tstring operator + (
+     const std::tstring & r_tstring,
+     const std::string & r_string ) ;
  #endif
 
  std::tstring Getstdtstring(const std::string & str ) ;
@@ -44,3 +43,4 @@ namespace std {
  std::wstring GetStdWstring( const std::string & cr_str ) ;
  std::string GetStdString(const std::string & cr_str ) ;
  std::string GetStdString(const std::wstring & cr_wstr ) ;
+#endif //STDTSTR_HPP_

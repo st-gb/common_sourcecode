@@ -10,18 +10,11 @@
 
 #include <preprocessor_macros/determine_OS.h>
 
-#ifdef _WINDOWS
-  #include <windows.h> //SetThreadAffinityMask
-
-  //Use inline->faster, avoid g++ error/ warning
-  inline unsigned long int SetThreadAffinityMask(DWORD dwThreadAffinityMask)
-  {
-    return
-    //http://msdn.microsoft.com/en-us/library/ms686247%28VS.85%29.aspx:
-    //"If the function fails, the return value is zero."
-    ::SetThreadAffinityMask( ::GetCurrentThread() ,
-      dwThreadAffinityMask) ;
-  }
+#ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
+  #include <Windows/SetThreadAffinityMask.h>
+#endif
+#ifdef __linux__
+  #include <Linux/SetThreadAffinityMask.h>
 #endif
 
 #endif /* SETTHREADAFFINITYMASK_H_ */

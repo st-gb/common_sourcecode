@@ -1,10 +1,10 @@
-#pragma once
+#pragma once //Include guard.
 
 #include <windef.h> //for BYTE etc.
-//from MSVCs Windows v7.0a winnt.h:
 
-//other compilers than Microsoft's usually do not know the follwing.
-#ifndef _MSC_VER 
+//other compilers than Microsoft's usually do not know the following.
+#ifndef _MSC_VER //If not MicroSoft C compiler.
+  //Definitions from MSVCs Windows v7.0a winnt.h:
   typedef enum _LOGICAL_PROCESSOR_RELATIONSHIP {
       RelationProcessorCore,
       RelationNumaNode,
@@ -42,7 +42,8 @@
           CACHE_DESCRIPTOR Cache;
           ULONGLONG  Reserved[2];
       } DUMMYUNIONNAME;
-  } SYSTEM_LOGICAL_PROCESSOR_INFORMATION, *PSYSTEM_LOGICAL_PROCESSOR_INFORMATION;
+  } SYSTEM_LOGICAL_PROCESSOR_INFORMATION,
+    * PSYSTEM_LOGICAL_PROCESSOR_INFORMATION;
 #endif //#ifndef _MSC_VER
 
 WORD GetNumLogicalCPUs() ;

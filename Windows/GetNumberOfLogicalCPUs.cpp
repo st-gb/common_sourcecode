@@ -1,3 +1,5 @@
+//from http://msdn.microsoft.com/en-us/library/ms683194%28VS.85%29.aspx
+
 #include "StdAfx.h"
 //#include <windef.h> //WINAPI
 #include <windows.h> //WINAPI
@@ -5,150 +7,119 @@
 #include <stdlib.h> //malloc()
 //#include <winnt.h>
 
-typedef BOOL (WINAPI *LPFN_GLPI)(
-    PSYSTEM_LOGICAL_PROCESSOR_INFORMATION, 
-    PDWORD);
+typedef BOOL (WINAPI * LPFN_GetLogicalProcessorInformation)(
+  PSYSTEM_LOGICAL_PROCESSOR_INFORMATION,
+  PDWORD);
 
 // Helper function to count set bits in the processor mask.
 DWORD CountSetBits(ULONG_PTR bitMask)
 {
-    DWORD LSHIFT = sizeof(ULONG_PTR)*8 - 1;
-    DWORD bitSetCount = 0;
-    ULONG_PTR bitTest = (ULONG_PTR)1 << LSHIFT;    
-    DWORD i;
-    
-    for (i = 0; i <= LSHIFT; ++i)
-    {
-        bitSetCount += ((bitMask & bitTest)?1:0);
-        bitTest/=2;
-    }
+  DWORD LSHIFT = sizeof(ULONG_PTR) * 8 - 1;
+  DWORD bitSetCount = 0;
+  ULONG_PTR bitTest = (ULONG_PTR) 1 << LSHIFT;
+  DWORD i;
 
-    return bitSetCount;
+  //Compare bitmask with a bitmask that has only 1 bit set moving from the
+  //highmost bit to the lowmost bit.
+  for (i = 0; i <= LSHIFT; ++ i )
+  {
+    bitSetCount += ((bitMask & bitTest) ? 1 : 0 );
+    //Move the set bit 1 bit directing lowmost bit.
+    bitTest /= 2;
+  }
+  return bitSetCount;
 }
 
-//from http://msdn.microsoft.com/en-us/library/ms683194%28VS.85%29.aspx:
-WORD GetNumLogicalCPUs()
+WORD GetNumberOfLogicalCPUcores()
 {
-    LPFN_GLPI glpi;
-    BOOL done = FALSE;
-    PSYSTEM_LOGICAL_PROCESSOR_INFORMATION buffer = NULL;
-    PSYSTEM_LOGICAL_PROCESSOR_INFORMATION ptr = NULL;
-    DWORD returnLength = 0;
-    DWORD logicalProcessorCount = 0;
-//    DWORD numaNodeCount = 0;
-    DWORD processorCoreCount = 0;
-//    DWORD processorL1CacheCount = 0;
-//    DWORD processorL2CacheCount = 0;
-//    DWORD processorL3CacheCount = 0;
-//    DWORD processorPackageCount = 0;
-    DWORD byteOffset = 0;
-    WORD wNumLogicalCPUs = 0 ;
-    //PCACHE_DESCRIPTOR Cache;
+  LPFN_GetLogicalProcessorInformation p_fn_get_logical_processor_information;
+  BOOL done = FALSE;
+  PSYSTEM_LOGICAL_PROCESSOR_INFORMATION ar_system_logical_processor_information
+    = NULL;
+  PSYSTEM_LOGICAL_PROCESSOR_INFORMATION
+    psystem_logical_processor_informationCurrent = NULL;
+  DWORD dwBufferLengthInBytes = 0;
+  WORD wNumberOfLogicalCPUcores = 0;
+//  DWORD processorCoreCount = 0;
+  DWORD byteOffset = 0;
 
-    glpi = (LPFN_GLPI) GetProcAddress(
-                            GetModuleHandle(TEXT("kernel32")),
-                            "GetLogicalProcessorInformation");
-    if (NULL == glpi) 
+  p_fn_get_logical_processor_information = (LPFN_GetLogicalProcessorInformation)
+    GetProcAddress(
+    GetModuleHandle( TEXT("kernel32") ),
+    "GetLogicalProcessorInformation"
+    );
+  if (NULL == p_fn_get_logical_processor_information)
+    //GetLogicalProcessorInformation is not supported.
+  {
+    return (0);
+  }
+  while ( ! done )
+  {
+    DWORD rc =
+      //Cites from http://msdn.microsoft.com/en-us/library/
+      //ms683194%28VS.85%29.aspx ("GetLogicalProcessorInformation Function")
+      //"If the function fails, the return value is FALSE"
+      p_fn_get_logical_processor_information(
+        //"A pointer to a buffer that receives an array of
+        // SYSTEM_LOGICAL_PROCESSOR_INFORMATION structures."
+        ar_system_logical_processor_information,
+      //"If the buffer is not large enough to contain all of the data, the
+      //function fails, GetLastError returns ERROR_INSUFFICIENT_BUFFER, and
+      //ReturnLength is set to the buffer length required to contain all of
+      //the data".
+      & dwBufferLengthInBytes //ReturnLength
+      );
+    if (FALSE == rc)
     {
-        //_tprintf(TEXT("\nGetLogicalProcessorInformation is not supported.\n"));
+      if ( GetLastError() == ERROR_INSUFFICIENT_BUFFER )
+      {
+        if (ar_system_logical_processor_information)
+          free(ar_system_logical_processor_information);
+        ar_system_logical_processor_information =
+          (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION) malloc(
+          dwBufferLengthInBytes);
+        if (NULL == ar_system_logical_processor_information)
+        {//Error: Allocation failure
+          return (0);
+        }
+      }
+      else //Error %d\n"), GetLastError()
+      {
         return (0);
+      }
     }
-
-    while (!done)
+    else
     {
-        DWORD rc = glpi(buffer, &returnLength);
-
-        if (FALSE == rc) 
-        {
-            if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) 
-            {
-                if (buffer) 
-                    free(buffer);
-
-                buffer = (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION)malloc(
-                        returnLength);
-
-                if (NULL == buffer) 
-                {
-                    //_tprintf(TEXT("\nError: Allocation failure\n"));
-                    return (0);
-                }
-            } 
-            else 
-            {
-                //_tprintf(TEXT("\nError %d\n"), GetLastError());
-                return (0);
-            }
-        } 
-        else
-        {
-            done = TRUE;
-        }
+      done = TRUE;
     }
+  }
+  //Begin at/ point to the 1st array element.
+  psystem_logical_processor_informationCurrent =
+    ar_system_logical_processor_information;
 
-    ptr = buffer;
-
-    while (byteOffset + sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION) <= returnLength) 
+  while (byteOffset + sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION) <=
+    dwBufferLengthInBytes )
+  {
+    switch (psystem_logical_processor_informationCurrent->Relationship)
     {
-        switch (ptr->Relationship) 
-        {
-        //case RelationNumaNode:
-        //    // Non-NUMA systems report a single record of this type.
-        //    numaNodeCount++;
-        //    break;
-
-        case RelationProcessorCore:
-            processorCoreCount++;
-
-            // A hyperthreaded core supplies more than one logical processor.
-            logicalProcessorCount += CountSetBits(ptr->ProcessorMask);
-            break;
-
-        //case RelationCache:
-        //    // Cache data is in ptr->Cache, one CACHE_DESCRIPTOR structure for each cache. 
-        //    Cache = &ptr->Cache;
-        //    if (Cache->Level == 1)
-        //    {
-        //        processorL1CacheCount++;
-        //    }
-        //    else if (Cache->Level == 2)
-        //    {
-        //        processorL2CacheCount++;
-        //    }
-        //    else if (Cache->Level == 3)
-        //    {
-        //        processorL3CacheCount++;
-        //    }
-        //    break;
-
-        //case RelationProcessorPackage:
-        //    // Logical processors share a physical package.
-        //    processorPackageCount++;
-        //    break;
-
-        default:
-            //_tprintf(TEXT("\nError: Unsupported LOGICAL_PROCESSOR_RELATIONSHIP value.\n"));
-            break;
-        }
-        byteOffset += sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
-        ptr++;
+    //case RelationNumaNode:
+    case RelationProcessorCore:
+//      processorCoreCount++;
+      // A hyperthreaded core supplies more than one logical processor.
+      wNumberOfLogicalCPUcores += CountSetBits(
+        psystem_logical_processor_informationCurrent->ProcessorMask);
+      break;
+    //case RelationProcessorPackage:
+    default: //Error: Unsupported LOGICAL_PROCESSOR_RELATIONSHIP value.
+      break;
     }
-
- /*   _tprintf(TEXT("\nGetLogicalProcessorInformation results:\n"));
-    _tprintf(TEXT("Number of NUMA nodes: %d\n"), 
-             numaNodeCount);
-    _tprintf(TEXT("Number of physical processor packages: %d\n"), 
-             processorPackageCount);
-    _tprintf(TEXT("Number of processor cores: %d\n"), 
-             processorCoreCount);*/
-    //_tprintf(TEXT("Number of logical processors: %d\n"), 
-    //         logicalProcessorCount);
-    //_tprintf(TEXT("Number of processor L1/L2/L3 caches: %d/%d/%d\n"), 
-    //         processorL1CacheCount,
-    //         processorL2CacheCount,
-    //         processorL3CacheCount);
-
-    wNumLogicalCPUs = logicalProcessorCount ;
-    free(buffer);
-    return wNumLogicalCPUs ;
+    //The next offset starts at the next array element.
+    byteOffset += sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
+    //Advance to the next array element.
+    psystem_logical_processor_informationCurrent ++;
+  }
+//  _tprintf(TEXT("Number of NUMA nodes: %d\n"), numaNodeCount);
+//  _tprintf(TEXT("Number of processor cores: %d\n"), processorCoreCount);
+  free(ar_system_logical_processor_information);
+  return wNumberOfLogicalCPUcores ;
 }

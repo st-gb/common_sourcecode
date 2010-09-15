@@ -13,11 +13,15 @@
 #ifndef GETCURRENTREFERENCECLOCK_HPP_
 #define GETCURRENTREFERENCECLOCK_HPP_
 
-#include <windows.h> // GetTickCount()
+#ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
+  #include <windows.h> // GetTickCount()
+#else
+  #include <Linux/GetTickCount.hpp>
+#endif
+
 #include <preprocessor_macros/value_difference.h> //ULONG_VALUE_DIFF
-#include "ReadTimeStampCounter.h"
-//#include <global.h>
-#include <preprocessor_macros/logging_preprocessor_macros.h>
+#include "ReadTimeStampCounter.h" //ReadTSCinOrder(...)
+#include <preprocessor_macros/logging_preprocessor_macros.h> //DEBUGN(...)
 
 //inline void GetCurrentReferenceClock(float fDivisor) ;
 
@@ -37,8 +41,8 @@ DWORD g_dwTickCountDiffInMilliseconds = //ULONG_MAX ;
     0 ;
 
 //inline: do not compile as function, but expand code for every call (->faster)
-//Define the function in this _header_ file. It cannot be inline if declared in
-// a header file and implemented in a source file?!
+//_Define_ the function in this _header_ file. It cannot be inline if declared
+// in a header file and implemented in a source file if used in another file.
 inline
   void
   //float
@@ -61,7 +65,7 @@ inline
     // "[...]the time will wrap around to zero if the system is run
     //  continuously for 49.7 days"
     ULONG_VALUE_DIFF( g_dwTickCountInMilliseconds,
-    g_dwPreviousTickCountInMilliseconds) ;
+      g_dwPreviousTickCountInMilliseconds) ;
   DEBUGN("tick count diff in ms: " << g_dwTickCountDiffInMilliseconds )
   if( //g_ullTimeStampCounterDiff == _UI64_MAX // ^= "= 0"
       //If at the beginning / for the first time.

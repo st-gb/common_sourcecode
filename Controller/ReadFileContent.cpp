@@ -4,8 +4,9 @@
  *  Created on: Jun 12, 2010
  *      Author: Stefan
  */
-#include <fstream>
-#include <global.h> //LOGN()
+#include <fstream> //for std::ifstream
+//#include <global.h> //LOGN()
+#include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 //#include <windef.h> //BYTE
 typedef unsigned char BYTE ;
 

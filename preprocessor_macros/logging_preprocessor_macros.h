@@ -124,9 +124,15 @@
     #define LOGN(to_ostream) LOG (to_ostream )
     #define LOGN_TYPE(to_ostream, type) LOG_TYPE (to_ostream << "\n" , type)
 
+    #ifdef __linux__ //Linux' swprintf(...) also needs the buffer size
+      #define SWPRINTF(...) swprintf( arwch_buffer, 999, __VA_ARGS__ ) ;
+    #else
+      #define SWPRINTF(...) swprintf( arwch_buffer, __VA_ARGS__ ) ;
+    #endif
     //Necessary for MinGW that does not know "std::wstringstream"
     #define LOGWN_WSPRINTF(...) { wchar_t arwch_buffer[1000] ; \
-      swprintf( arwch_buffer, __VA_ARGS__ ) ; \
+      /*swprintf( arwch_buffer, 999, __VA_ARGS__ ) ;*/ \
+      SWPRINTF(__VA_ARGS__) \
       std::wstring stdwstr(arwch_buffer) ; \
       /*stdwstr += L'\n' ;*/ \
       std::string stdstr ( stdwstr.begin(), stdwstr.end() ) ;\

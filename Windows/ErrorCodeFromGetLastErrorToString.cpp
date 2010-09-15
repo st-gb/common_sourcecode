@@ -19,7 +19,7 @@
 
 //diese Funktion liefert die zum DWORD-(unsigned long-) Wert 
 //der Windows-API-Funktion "DWORD GetLastError(void)" 
-//korrepsondierende Fehlermeldung als Text in der Standard-
+//korrespondierende Fehlermeldung als Text in der Standard-
 //Sprache der laufenden Windows-Sitzung
 //CString 
 //std::string 
@@ -58,6 +58,24 @@ DWORD GetLastErrorMessageString(
     dwRet ;
 }
 
+namespace OperatingSystem
+{
+//  inline DWORD GetLastErrorCode()
+//  {
+//    return ::GetLastError() ;
+//  }
+}
+
+std::string GetErrorMessageFromErrorCodeA( DWORD dwErrorCode )
+{
+  std::string strErrorMessage ;
+  GetLastErrorMessageString(
+    dwErrorCode ,
+    strErrorMessage
+    ) ;
+  return strErrorMessage ;
+}
+
 std::string GetLastErrorMessageString(
   DWORD dwErrorCodeConformToGetLastError
   //std::string & strErrorMessage
@@ -70,3 +88,5 @@ std::string GetLastErrorMessageString(
     ) ;
   return strErrorMessage ;
 }
+
+//#define GetErrorMessageFromErrorCodeA GetLastErrorMessageString ;

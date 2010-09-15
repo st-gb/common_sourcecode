@@ -1,39 +1,41 @@
-#pragma once
+#pragma once //Include guard
+#ifndef STDSTRING_FORMAT_HPP_ //Include guard
+  #define STDSTRING_FORMAT_HPP_
 
 //from http://www.codeguru.com/forum/showthread.php?t=231056:
-#include <string>
+#include <string> //std::string
 #include <sstream> //for std::istringstream
-#include <iostream>
+//#include <iostream>
 
-  #include <exception> //for class std::exception
-  #ifndef WIN32
-    #include <stdexcept> //for class "runtime_error"
-  #endif //#ifndef WIN32
-
-  //#ifdef WIN32
-  class NumberFormatException
-    : public
-    #if defined(__CYGWIN__) || defined(__MINGW32__)
-    //  ::RuntimeException
-      std::exception
-    #else
-      std::runtime_error
-  #endif
-  {
-  public:
-     NumberFormatException(const std::string& s)
-      #ifdef __CYGWIN__
-      //  ::RuntimeException
-      //  std::exception()
-      #else
-        #ifdef _MSC_VER
-        :
-        std::runtime_error(s)
-        #endif
-      #endif
-      {}
-  };
-  //#endif
+//  #include <exception> //for class std::exception
+//  #ifndef WIN32
+//    #include <stdexcept> //for class "runtime_error"
+//  #endif //#ifndef WIN32
+//
+//  //#ifdef WIN32
+//  class NumberFormatException
+//    : public
+//    #if defined(_MSC_VER) //if MicroSoft (C) Compiler
+//      std::runtime_error
+//    #else //Linux, MinGW, Cygwin (,...)
+//      //  ::RuntimeException
+//      std::exception
+//    #endif
+//  {
+//  public:
+//    NumberFormatException(const std::string& s)
+//      #ifdef __CYGWIN__
+//      //  ::RuntimeException
+//      //  std::exception()
+//      #else
+//        #ifdef _MSC_VER
+//        :
+//        std::runtime_error(s)
+//        #endif
+//      #endif
+//      {}
+//  };
+//  //#endif
 
 template <class T>
 std::string to_stdstring(T t//, std::ios_base & (*f)(std::ios_base&)
@@ -62,7 +64,6 @@ std::string to_stdstring(T t//, std::ios_base & (*f)(std::ios_base&)
 //{
 //  std::istringstream iss;
 //  iss.str(stdstr) ;
-//  //int i ;
 //  //iss >> stdstr ;
 //  iss >> //(t) *pv ;
 //    t ;
@@ -73,6 +74,7 @@ std::string to_stdstring(T t//, std::ios_base & (*f)(std::ios_base&)
 //}
 
 template <class T>
+//true: succeeded.
 bool from_stdstring(
    T & r_templateType,
    const std::string & r_stdstr
@@ -82,7 +84,7 @@ bool from_stdstring(
   //DEBUG("from_string:%s\n",s);
 //  LOG("from_string:" << s << "\n" );
   std::istringstream iss(r_stdstr);
-  return !(iss //>> f
+  return ! ( iss //>> f
     >> r_templateType
     ).fail();
 }
@@ -99,7 +101,6 @@ bool from_stdstring(
 //{
 //  std::wistringstream iss;
 //  iss.str(stdwstr) ;
-//  //int i ;
 //  //iss >> stdstr ;
 //  iss >> //(t) *pv ;
 //    t ;
@@ -121,7 +122,6 @@ void from_stdtstring(
 {
   std::istringstream iss;
   iss.str(stdstr) ;
-  //int i ;
   //iss >> stdstr ;
   iss >> //(t) *pv ;
     t ;
@@ -130,3 +130,4 @@ void from_stdtstring(
   //  //str ;
   //  pv ;
 }
+#endif //STDSTRING_FORMAT_HPP_

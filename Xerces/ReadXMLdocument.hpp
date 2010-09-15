@@ -9,7 +9,9 @@
 #define READXMLDOCUMENT_HPP_
 
 //Xerces header files.
+//class XERCES_CPP_NAMESPACE::SAX2XMLReader
 #include <xercesc/sax2/SAX2XMLReader.hpp>
+//Class XERCES_CPP_NAMESPACE::XMLReaderFactory
 #include <xercesc/sax2/XMLReaderFactory.hpp>
 
 #include <string> //for std::wstring
@@ -33,7 +35,7 @@ inline unsigned char ReadXMLdocument(
   )
 {
   unsigned char byReturn = 1 ;
-    //DEBUG("ReadXMLdocumentInitAndTermXerces begin--filename:%s\n",xmlFile);
+    //DEBUG("ReadXMLfileInitAndTermXerces begin--filename:%s\n",xmlFile);
   //Initialize to NULL just to avoid (g++) compiler warning.
   XERCES_CPP_NAMESPACE::SAX2XMLReader * p_sax2xmlreader =
     XERCES_CPP_NAMESPACE::XMLReaderFactory::createXMLReader();
