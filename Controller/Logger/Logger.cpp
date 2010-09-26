@@ -9,7 +9,7 @@
   #include <windows.h> //for SYSTEMTIME
 #endif
 #include "Logger.hpp"
-#include <preprocessor_macros/logging_preprocessor_macros.h>
+//#include <preprocessor_macros/logging_preprocessor_macros.h>
 //#include <Controller/tchar_conversion.h> //GetCharPointer()
 //#include <Controller/character_string/stdtstr.hpp> //GetStdString(...)
 #include <fstream> //for class std::ofstream
@@ -37,12 +37,15 @@ Logger::Logger( std::string & stdstrFilePath )
 
 Logger::~Logger()
 {
-  LOGN("~Logger")
+//  LOGN("~Logger")
+#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+  m_trie.FreeMemory() ;
+#endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
   delete mp_ofstream ;
   //Set to NULL so the calling Log() evaluates the pointer address if it is
   // NULL.
   mp_ofstream = NULL ;
-  LOGN("end of ~Logger")
+//  LOGN("end of ~Logger")
 }
 
 bool Logger::IsOpen()

@@ -19,7 +19,17 @@ std::string GetErrorMessageFromLastErrorCodeA()
   return EnglishMessageFromErrorCode(errno) ;
 }
 
-std::string PossibleSolution(DWORD dwErrorCode)
+std::string GetErrorMessageFromErrorCodeA( //DWORD
+  unsigned long dwErrorCode )
+{
+//  std::string strErrorMessage ;
+  return EnglishMessageFromErrorCode(
+    dwErrorCode
+    ) ;
+}
+
+std::string PossibleSolution(//DWORD
+  unsigned long dwErrorCode)
 {
   std::string strSol = "Possible solution(s):\n" ;
 

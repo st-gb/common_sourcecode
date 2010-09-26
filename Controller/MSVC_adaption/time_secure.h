@@ -8,7 +8,7 @@
 #ifndef _TIME_H
 #define	_TIME_H
 
-#ifdef _WINDOWS
+#ifdef _WIN32 //Built-in macro for MSVC, MinGW (also for 64 bit Windows)
   #include <time.h>
 
 #ifdef __CYGWIN__
@@ -42,7 +42,7 @@ extern "C" {
 #ifdef	__cplusplus
 }
 #endif
-#endif //#ifdef _WINDOWS
+#endif //#ifdef _WIN32
 
 #endif	/* _TIME_H */
 

@@ -8,6 +8,7 @@
 #ifndef TRIE_HPP_
 #define TRIE_HPP_
 
+//#include <preprocessor_macros/logging_preprocessor_macros.h>
 #include <windef.h> //for BYTE etc.
 #include <string.h> //memset(...)
 
@@ -22,9 +23,15 @@ class Trie
   unsigned short m_wBitsPerLevel ;
   WORD wIndex ;
 public:
+  DWORD m_dwNumberOfNodes ;
+  void FreeMemory() ;
   Trie()
+    : m_dwNumberOfNodes(0)
   {
-    memset(m_ar_p_byRoot, 0 , DIFFERENT_VALUES_PER_LEVEL ) ;
+    memset(m_ar_p_byRoot, 0 ,
+      //Number of bytes.
+      sizeof(unsigned char *) * DIFFERENT_VALUES_PER_LEVEL ) ;
+//    DEBUGN("root node array address: " << m_ar_p_byRoot )
   }
   ~Trie() ;
   bool insert( //void

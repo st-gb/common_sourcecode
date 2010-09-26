@@ -207,44 +207,6 @@ template <class T>
  bool ConvertXercesAttributesValue(
   const XERCES_CPP_NAMESPACE::Attributes & cr_xerces_attributes ,
    T & r_templateType,
-//   const std::string & r_stdstr
-//   char * const lpctstrAttrName
-   const std::string & r_stdstrAttributeName
-   //,std::ios_base& (*f)(std::ios_base&)
-  )
-{
-
-  XMLCh * p_xmlchAttributeName = XERCES_CPP_NAMESPACE::XMLString::transcode(
-    //lpctstrAttrName
-    r_stdstrAttributeName.c_str()
-    ) ;
-  if( p_xmlchAttributeName )
-  {
-    return ConvertXercesAttributesValue(
-      cr_xerces_attributes ,
-      r_templateType
-      , p_xmlchAttributeName
-      ) ;
-    //Release memory of dyn. alloc. buffer (else memory leaks).
-    XERCES_CPP_NAMESPACE::XMLString::release(&p_xmlchAttributeName);
-  }
-  return false ;
-}
-
-//template idea for converting string to other data type
-//from http://www.codeguru.com/forum/showthread.php?t=231056:
-//_Must_ be _defined_ here because of the template type: the templates type gets
-// replaced by the actual data type. When the declaration is separated from
-// the definition (what it usual) the template type is replaced by the actual
-//parameter, but the definition's template type is _not_ being replaced.
-//So it gets an error message like
-//"undefined reference to `bool XercesAttributesHelper::getValue<std::string>
-//(std::string&, char*) const'"
-//Also see here: http://www.codeproject.com/KB/cpp/templatesourceorg.aspx
-template <class T>
- bool ConvertXercesAttributesValue(
-  const XERCES_CPP_NAMESPACE::Attributes & cr_xerces_attributes ,
-   T & r_templateType,
    const XMLCh * const cpc_xmlchAttributeName
   )
 {
@@ -273,6 +235,44 @@ template <class T>
     //        byReturn = XERCES_ATTRIBUTE_VALUE_DOES_NOT_EXIST ;
 //        else
 //          byReturn = XERCES_ERROR_CONVERTING_ATTRIBUTE_VALUE_TO_C_STRING ;
+  }
+  return false ;
+}
+
+//template idea for converting string to other data type
+//from http://www.codeguru.com/forum/showthread.php?t=231056:
+//_Must_ be _defined_ here because of the template type: the templates type gets
+// replaced by the actual data type. When the declaration is separated from
+// the definition (what it usual) the template type is replaced by the actual
+//parameter, but the definition's template type is _not_ being replaced.
+//So it gets an error message like
+//"undefined reference to `bool XercesAttributesHelper::getValue<std::string>
+//(std::string&, char*) const'"
+//Also see here: http://www.codeproject.com/KB/cpp/templatesourceorg.aspx
+template <class T>
+ bool ConvertXercesAttributesValue(
+  const XERCES_CPP_NAMESPACE::Attributes & cr_xerces_attributes ,
+   T & r_templateType,
+//   const std::string & r_stdstr
+//   char * const lpctstrAttrName
+   const std::string & r_stdstrAttributeName
+   //,std::ios_base& (*f)(std::ios_base&)
+  )
+{
+
+  XMLCh * p_xmlchAttributeName = XERCES_CPP_NAMESPACE::XMLString::transcode(
+    //lpctstrAttrName
+    r_stdstrAttributeName.c_str()
+    ) ;
+  if( p_xmlchAttributeName )
+  {
+    return ConvertXercesAttributesValue(
+      cr_xerces_attributes ,
+      r_templateType
+      , p_xmlchAttributeName
+      ) ;
+    //Release memory of dyn. alloc. buffer (else memory leaks).
+    XERCES_CPP_NAMESPACE::XMLString::release(&p_xmlchAttributeName);
   }
   return false ;
 }

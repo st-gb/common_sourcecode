@@ -4,7 +4,7 @@
 #ifdef _MSC_VER //if MS-compiler
   #include <AfxWin.h> //for AfxMessageBox(...)->muss MultiThreaded DLL ("/MD") sein
 #endif
-#include <windows.h> //for SERVICE_TABLE_ENTRY, ... CreateService
+#include <windows.h> //for FormatMessageA(...), LocalFree(...)
 #include <sstream> //for class std::ostringstream
 
 std::string LocalLanguageMessageFromErrorCodeA(DWORD dwErrorCode)

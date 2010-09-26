@@ -10,7 +10,11 @@
 ////for XERCES_CPP_NAMESPACE::Attributes
 //#include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/util/XMLString.hpp> //for XMLString::transcode(...)
+#include <errno.h> //for "errno", ERANGE
+//#include <asm-generic/errno-base.h> // ERANGE
 #include <sstream> //std::istringstream
+
+//extern int errno;
 
 #define SUCCESS 1
 #define FAILURE 0

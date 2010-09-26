@@ -83,7 +83,7 @@
     #endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
 
       if(
-        //Fasted evaluatable condition.
+        //Fasted evaluable condition.
         mp_ofstream &&
         //If NOT in the container.
       //Filtering is not used in CPU controller logging.

@@ -33,7 +33,12 @@
         //sizeof(cpu_set_t)
         , sizeof(//DWORD
           unsigned long)
-        , dwThreadAffinityMask
+        , //Convert to avoid Linux g++ error
+        //"cannot convert ‘long unsigned int*’ to ‘const cpu_set_t*’ for
+        //argument ‘3’ to ‘int sched_setaffinity(__pid_t, size_t,
+        //const cpu_set_t*)’"
+          (__const cpu_set_t *)
+          & dwThreadAffinityMask // __const cpu_set_t *__cpuset
         ) ;
 //    return 1 ;
   }

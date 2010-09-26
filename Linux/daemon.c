@@ -171,9 +171,16 @@ void CloseInheritedOpenFiles()
   //  open by the parent process, including file descriptors 0, 1 and 2
   //  (stdin, stdout, stderr)."
   /* Redirect standard files to /dev/null */
-  freopen( "/dev/null", "r", stdin);
-  freopen( "/dev/null", "w", stdout);
-  freopen( "/dev/null", "w", stderr);
+  FILE * p_file ;
+  //Assign return value to avoid g++ warning "ignoring return value of
+  // ‘freopen’, declared with attribute warn_unused_result" "
+  p_file = freopen( "/dev/null", "r", stdin);
+  //Assign return value to avoid g++ warning "ignoring return value of
+  // ‘freopen’, declared with attribute warn_unused_result" "
+  p_file = freopen( "/dev/null", "w", stdout);
+  //Assign return value to avoid g++ warning "ignoring return value of
+  // ‘freopen’, declared with attribute warn_unused_result" "
+  p_file = freopen( "/dev/null", "w", stderr);
 }
 
 //http://en.wikipedia.org/wiki/Daemon_%28computer_software%29#Types_of_daemons:

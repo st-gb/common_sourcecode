@@ -14,15 +14,4 @@
 std::string GetErrorMessageFromLastErrorCodeA() ;
 std::string GetErrorMessageFromErrorCodeA(DWORD dwErrorCode) ;
 
-namespace OperatingSystem
-{
-//  DWORD GetLastErrorCode() ;
-#ifdef _WIN32
-  #include <Windows/GetLastErrorCode.hpp>
-#endif
-#ifdef __linux__
-  #include <Linux/GetLastErrorCode.hpp>
-#endif
-} ;
-
 #endif /* GETERRORMESSAGEFROMLASTERRORCODE_H_ */

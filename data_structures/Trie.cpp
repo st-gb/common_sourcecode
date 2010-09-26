@@ -6,17 +6,21 @@
  */
 #include <preprocessor_macros/logging_preprocessor_macros.h>
 #include <vector>
+#include <sstream> //std::ostringstream
 #include <windef.h> //BYTE etc.
 
 #include "Trie.hpp"
 
-Trie::~Trie()
+void Trie::FreeMemory()
 {
+  char ch ;
   unsigned char ** ar_p_byCurrent ;
   unsigned char ** ar_p_by1LevelAbove = NULL ;
+  WORD wSize ;
+  DEBUGN("data structure: FreeMemory")
+  DEBUGN("root node array address: " << m_ar_p_byRoot )
 //    std::string stdstrCurrent ;
   std::vector<unsigned char> stdvec_by ;
-  LOG("destructor of data structure")
 //  while( //Root is deleted and set to NULL if it has no more children.
 //      m_ar_p_byRoot )
   do
@@ -27,14 +31,18 @@ Trie::~Trie()
     //This loop deleted 1 element at the leaf.
     for( WORD wIndex = 0 ; wIndex < DIFFERENT_VALUES_PER_LEVEL ; ++ wIndex )
     {
-      if( ar_p_byCurrent[ wIndex ] )
+      if( //Array element not NULL <=> character at/ for position "wIndex" is
+          //assigned.
+          ar_p_byCurrent[ wIndex ] )
       {
         ar_p_by1LevelAbove = & ar_p_byCurrent[ wIndex ] ;
         ar_p_byCurrent = //& ar_p_byCurrent[ wIndex ] ;
         (unsigned char **) ar_p_byCurrent[ wIndex ] ;
         //bNoChildNode = false ;
         stdvec_by.push_back( (BYTE) wIndex ) ;
-        DEBUG_COUTN( "entering child node at address " << ar_p_byCurrent )
+        DEBUGN
+        //DEBUG_COUTN
+          ( "entering child node at address " << ar_p_byCurrent )
 
         wIndex = 65535 ; //MAXWORD ;
         //found the 1st child: go 1 level deeper.
@@ -42,18 +50,29 @@ Trie::~Trie()
       }
       else
       {
-        if( wIndex == ( DIFFERENT_VALUES_PER_LEVEL - 1 ) )
+        if( //Index for last array element.
+            wIndex == ( DIFFERENT_VALUES_PER_LEVEL - 1 ) )
         {
 //          DEBUG_COUTN( //"& address : " << & ar_p_byCurrent
 //              "value at address " << ar_p_byCurrent
 //              << ":" << *ar_p_byCurrent )
           //no child node for current node -> delete current node
+          DEBUGN
+          //DEBUG_COUTN
+            ("deleting current array at address" << ar_p_byCurrent )
           delete [] ar_p_byCurrent ;
+          -- m_dwNumberOfNodes ;
           if( ar_p_by1LevelAbove )
             * ar_p_by1LevelAbove = NULL ;
           else
+          {
+            DEBUGN
+            //DEBUG_COUTN
+              ("deleting root array at address" << m_ar_p_byRoot)
 //            m_ar_p_byRoot = NULL ;
             delete [] m_ar_p_byRoot ;
+            -- m_dwNumberOfNodes ;
+          }
 //          break ;
           //mark the end -> do no delete the 2nd time.
 //           & ar_p_byCurrent = NULL ;
@@ -69,22 +88,39 @@ Trie::~Trie()
         }
       }
     }
-    DEBUG_COUT( "data structure: deleted: " )
+//    DEBUG
+    //DEBUG_COUT
+//      ( "data structure: deleted: " )
 //    std::cout << "data structure: deleted: " ;
-    char ch ;
-    WORD wSize = stdvec_by.size() ;
+    std::ostringstream  stdostringstream ;
+//    stdostringstream << "data structure: deleted: " ;
+    wSize = stdvec_by.size() ;
     for( WORD wIndex = 0 ; wIndex < wSize ; ++ wIndex )
     {
       ch = stdvec_by.at( wIndex ) ;
-      DEBUG_COUT( "\"" << ch << "\"/" << (WORD) ch << " " )
+//      DEBUG
+      //DEBUG_COUT
+//        ( "\"" << ch << "\"/" << (WORD) ch << " " )
 //      std::cout <<  "\"" << ch << "\"/" << (WORD) ch << " " ;
+      stdostringstream << "\"" << ch << "\"/" << (WORD) ch << " " ;
     }
-    DEBUG_COUT( "\n" )
+//    DEBUG
+    //DEBUG_COUT
+//      ( "\n" )
+    DEBUG( "data structure: deleted:" << stdostringstream.str() << "# nodes: " <<
+      m_dwNumberOfNodes )
 //    std::cout << "\n" ;
 //      stdstrCurrent.clear() ;
     stdvec_by.clear() ;
   }
   while( ar_p_by1LevelAbove ) ;
+  LOGN("end of FreeMemory")
+}
+
+Trie::~Trie()
+{
+  LOG("destructor of data structure")
+  FreeMemory() ;
   LOG("end of destructor of data structure")
 }
 
@@ -143,7 +179,9 @@ bool Trie::insert( //void
         DIFFERENT_VALUES_PER_LEVEL * sizeof(char*) ) ;
       if( ar_p_byCurrent ) //alloc succeeded
       {
-
+#ifdef _DEBUG
+        ++ m_dwNumberOfNodes ;
+#endif
       }
       else
         return false ;
