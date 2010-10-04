@@ -9,12 +9,14 @@
   #define LINUX_SETTHREADAFFINITYMASK_H_
 
   #include <sched.h> //sched_setaffinity(...)
+  #include <preprocessor_macros/logging_preprocessor_macros.h> //DEBUGN(...)
 //  #include <windef.h> //DWORD
 
   //Use inline->faster, avoid g++ error/ warning
   inline unsigned long int SetThreadAffinityMask(//DWORD
     unsigned long dwThreadAffinityMask)
   {
+    DEBUGN("inline unsigned long int SetThreadAffinityMask(...) begin")
 //    cpu_set_t * cpu_set_tAffinityMask ;
     //TODO check if it is working
     return

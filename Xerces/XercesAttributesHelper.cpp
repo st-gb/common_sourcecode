@@ -141,7 +141,7 @@ bool XercesAttributesHelper::getValue(
  }
 
 BYTE XercesAttributesHelper::GetAttributeValue(
-  const XERCES_CPP_NAMESPACE::Attributes & attrs,
+  const XERCES_CPP_NAMESPACE::Attributes & cr_xercesc_attributes,
   const char * pc_chAttributeName,
   bool & rbValue
   )
@@ -152,7 +152,7 @@ BYTE XercesAttributesHelper::GetAttributeValue(
     pc_chAttributeName) ;
   if( p_xmlchAttributeName )
   {
-    const XMLCh * cp_xmlchAttributeValue = attrs.getValue(
+    const XMLCh * cp_xmlchAttributeValue = cr_xercesc_attributes.getValue(
       // const XMLCh *const qName
       p_xmlchAttributeName
       //"number"
@@ -160,26 +160,45 @@ BYTE XercesAttributesHelper::GetAttributeValue(
     //If the attribute exists.
     if(cp_xmlchAttributeValue)
     {
-      char * pchAttributeValue = XERCES_CPP_NAMESPACE::XMLString::transcode(
-        cp_xmlchAttributeValue) ;
-      if( pchAttributeValue )
+//      char * pchAttributeValue = XERCES_CPP_NAMESPACE::XMLString::transcode(
+//        cp_xmlchAttributeValue) ;
+//      if( pchAttributeValue )
+//      {
+//        if( //if the strings are identical
+//          strcmp(pchAttributeValue,"true") == 0 )
+//        {
+//          rbValue = true;
+//          byReturn = SUCCESS;
+//        }
+//        else
+//          if( strcmp(pchAttributeValue,"false") == 0 )
+//          {
+//            rbValue = false;
+//            byReturn = SUCCESS;
+//          }
+//          //else
+//          //  byReturn = FAILURE;
+//        //Release memory of dyn. alloc. buffer (else memory leaks).
+//        XERCES_CPP_NAMESPACE::XMLString::release(& pchAttributeValue);
+//      }
+      if( //If the strings are identical.
+        ! wcscmp( //Explicitly cast to "wchar_t *" to avoid Linux g++ warning.
+          (wchar_t *) cp_xmlchAttributeValue, L"true" )
+        )
       {
-        if( //if the strings are identical
-          strcmp(pchAttributeValue,"true") == 0 )
+        rbValue = true;
+        byReturn = SUCCESS;
+      }
+      else
+      {
+        if( //If the strings are identical.
+          ! wcscmp(//Explicitly cast to "wchar_t *" to avoid Linux g++ warning.
+            (wchar_t *) cp_xmlchAttributeValue, L"false" )
+          )
         {
-          rbValue = true;
+          rbValue = false;
           byReturn = SUCCESS;
         }
-        else
-          if( strcmp(pchAttributeValue,"false") == 0 )
-          {
-            rbValue = false;
-            byReturn = SUCCESS;
-          }
-          //else
-          //  byReturn = FAILURE;
-        //Release memory of dyn. alloc. buffer (else memory leaks).
-        XERCES_CPP_NAMESPACE::XMLString::release(& pchAttributeValue);
       }
     }
     //Release memory of dyn. alloc. buffer (else memory leaks).

@@ -37,15 +37,11 @@
     #define DEBUG_WPRINTFN(...) { wprintf(__VA_ARGS__) ; wprintf(L"\n"); \
       fflush(stdout) ; }
   #else
-//    #define DEBUG(...) //->empty
-    //#define DEBUG(coutArgs) //->empty
-    //#define DEBUG(to_ostream) /*->empty / no instructions*/
-//    #define DEBUGN(to_ostream) {} /* block can be used after "if"/"else"*/
-//    #define DEBUGWN(to_ostream) /*->empty / no instructions*/
-    #define DEBUG_COUT(coutArgs) //->empty
-    #define DEBUG_COUTN(coutArgs) //->empty
-    #define DEBUG_WCOUTN(coutArgs) //->empty
-    #define DEBUG_WPRINTFN(...) //->empty
+    //Following macros: because of ";": block can be used after "if"/"else"
+    #define DEBUG_COUT(coutArgs) ;/*empty;block can be used after "if"/"else"*/
+    #define DEBUG_COUTN(coutArgs) ;/*empty; can be used after "if"/"else"*/
+    #define DEBUG_WCOUTN(coutArgs) ;//->empty;block can be used after"if"/"else"
+    #define DEBUG_WPRINTFN(...) ;//->empty; block can be used after "if"/"else"
 //    #define DEBUG_SPRINTF(...) { } /* block can be used for "if"/"else"*/
 //    #define DEBUGWN_WSPRINTF(...) { } /* block can be used after "if"/"else"*/
   #endif //#ifdef _DEBUG
@@ -56,12 +52,22 @@
     #include <Controller/Logger/Logger.hpp> //for class Logger
     extern Logger g_logger ;
     #define OWN_LOGGER_LOG(stdstr) g_logger.Log( stdstr ) ;
+    #define OWN_LOGGER_LOG_LOGGER_NAME(logger_name,stdstr) \
+      logger_name.Log( stdstr ) ;
 #ifdef COMPILE_FOR_CPUCONTROLLER_DYNLIB
     #define OWN_LOGGER_LOG_ENTER_CRIT_SEC
     #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC
+    #define OWN_LOGGER_LOG_ENTER_CRIT_SEC_LOGGER_NAME(logger_name)
+    #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger_name)
 #else
-    #define OWN_LOGGER_LOG_ENTER_CRIT_SEC g_logger.m_wxcriticalsectionLogging.Enter() ;
-    #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC g_logger.m_wxcriticalsectionLogging.Leave();
+    #define OWN_LOGGER_LOG_ENTER_CRIT_SEC g_logger.m_wxcriticalsectionLogging.\
+      Enter() ;
+    #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC g_logger.m_wxcriticalsectionLogging.\
+      Leave();
+#define OWN_LOGGER_LOG_ENTER_CRIT_SEC_LOGGER_NAME(logger_name) logger_name.\
+      m_wxcriticalsectionLogging.Enter() ;
+#define OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger_name) logger_name.\
+      m_wxcriticalsectionLogging.Leave();
 #endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
   #endif
     #include <string>
@@ -83,8 +89,12 @@
 #else
   #define LOG4CPLUS_INFO(logger, logEvent) /* ->empty*/
 #endif //#ifdef USE_LOG4CPLUS
-    //LOGxx macros: should log no matter whether release or debug
-    #define LOG(to_ostream) { std::stringstream strstream ; \
+    //LOGxx macros: should log no matter whether release or debug.
+    //Because under _Linux_ unloading a dynamic library with a global g_logger
+    //caused the global g_logger (->same variable name) of the executable the
+    //dyn lib was attached to call the
+    //logger's destructor, provide a macro with different logger variable names.
+    #define LOG_LOGGER_NAME(logger,to_ostream) { std::stringstream strstream ; \
       strstream << to_ostream; \
       /*/for g++ compiler:
       //Because I want to call Log( std::string & ) I have to create an object at
@@ -93,15 +103,16 @@
       /*Use critical section for thread sync. else mixed/ corrupted output
        *  like here: "SendCommandAndGetResponse end\0pe"
        */ \
-      OWN_LOGGER_LOG_ENTER_CRIT_SEC \
+      OWN_LOGGER_LOG_ENTER_CRIT_SEC_LOGGER_NAME(logger) \
       g_stdstrLog = strstream.str() ; \
       /*g_logger->Log(to_ostream) ; */ \
       /*g_logger.Log( stdstr ) ;*/ \
-      OWN_LOGGER_LOG( /*stdstr*/ g_stdstrLog ) \
-      OWN_LOGGER_LOG_LEAVE_CRIT_SEC \
+      OWN_LOGGER_LOG_LOGGER_NAME( logger ,/*stdstr*/ g_stdstrLog ) \
+      OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger) \
       LOG4CPLUS_INFO(log4cplus_logger, /*stdstr*/ g_stdstrLog ); \
       /*g_logger.Log("test ") ; */ }
 //    #endif
+    #define LOG(to_ostream) LOG_LOGGER_NAME(g_logger,to_ostream)
     //#ifdef COMPILE_WITH_LOG
     //Allows easy transition from "printf"
     #define LOG_TYPE(to_ostream, type) { std::stringstream strstream ; \
@@ -122,6 +133,8 @@
     //#define LOGN(to_ostream) LOG (to_ostream << "\n" )
     //TODO newline is appended in Logger::Log(...)
     #define LOGN(to_ostream) LOG (to_ostream )
+    #define LOGN_LOGGER_NAME(logger_name,to_ostream) \
+      LOG_LOGGER_NAME(logger_name,to_ostream )
     #define LOGN_TYPE(to_ostream, type) LOG_TYPE (to_ostream << "\n" , type)
 
     #ifdef __linux__ //Linux' swprintf(...) also needs the buffer size
@@ -184,6 +197,8 @@
     #define DEBUG(to_ostream) LOG(to_ostream)
     #define DEBUG_SPRINTF(...) LOG_SPRINTF(__VA_ARGS__)
     #define DEBUGN(to_ostream) LOGN(to_ostream)
+    #define DEBUGN_LOGGER_NAME(logger_name,to_ostream) \
+      LOGN_LOGGER_NAME(logger_name,to_ostream)
     #define DEBUGWN(to_ostream) LOGWN(to_ostream)
     #define DEBUGWN_WSPRINTF(...) LOGWN_WSPRINTF(__VA_ARGS__)
   #else
@@ -199,12 +214,14 @@
   //  printf(__VA_ARGS__); fflush(stdout); } */
   //#ifndef _MSC_VER //else compile errors with gcc
 #else //#ifndef COMPILE_WITH_DEBUG
-  //The following macros compile to do not log
-  #define DEBUG(to_ostream) ;/*empty->do not log*/
-  #define DEBUG_SPRINTF(...) ;/*empty->do not log*/
-  #define DEBUGN(to_ostream) ;/*empty->do not log*/
-  #define DEBUGWN(to_ostream) ;/*empty->do not log*/
-  #define DEBUGWN_WSPRINTF(...) ;/*empty->do not log*/
+  //The following macros compile to do no logging
+  //Following macros: because of ";": block can be used after "if"/"else":
+  // else DEBUG...(...)" -> "else ;"
+  #define DEBUG(to_ostream) ;/*empty->do not log;can be used after "if"/"else"*/
+  #define DEBUG_SPRINTF(...) ;/*do not log; can be used after "if"/"else"*/
+  #define DEBUGN(to_ostream) ;/*do not log;can be used after "if"/"else"*/
+  #define DEBUGWN(to_ostream) ;/*do not log;can be used after "if"/"else"*/
+  #define DEBUGWN_WSPRINTF(...) ;/*do not log; can be used after "if"/"else"*/
 #endif//#ifdef COMPILE_WITH_DEBUG
 
 #ifdef VERBOSE_LOGGING

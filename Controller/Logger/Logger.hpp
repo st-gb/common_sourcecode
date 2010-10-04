@@ -17,8 +17,8 @@
 
 #ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
   //Use "windows.h" for g++ because the case matters.
-  #include <windows.h> //for SYSTEMTIME
-//  #include <winbase.h> //for SYSTEMTIME
+//  #include <windows.h> //for SYSTEMTIME
+  #include <winbase.h> //for SYSTEMTIME
 #else // ->Unix / Linux
   #include <sys/time.h> // gettimeofday(...)
   #include <time.h> // localtime(...)

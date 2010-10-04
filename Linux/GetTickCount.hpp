@@ -8,6 +8,7 @@
 #ifndef GETTICKCOUNT_HPP_
 #define GETTICKCOUNT_HPP_
 
+  #include <preprocessor_macros/logging_preprocessor_macros.h> //DEBUGN(...)
   #include <sys/time.h> // gettimeofday(...)
 //  #include <windef.h> //DWORD
 
@@ -15,8 +16,9 @@
 
   inline DWORD GetTickCount()
   {
+    DEBUGN("inline DWORD GetTickCount() begin")
     //Static:don't create on stack each time (global variable with local scope)
-    static DWORD dwReturnValue ;
+//    static DWORD dwReturnValue ;
     static timeval timevalCurrentTime ;
     //TODO
     //from http://en.wikipedia.org/wiki/System_time#Operating_systems:
@@ -35,6 +37,7 @@
 //    timeval ts;
 //    gettimeofday(&ts,0);
 //    lGetTickCount = (INT64)(ts.tv_sec * 1000 + (ts.tv_usec / 1000));
+    DEBUGN("inline DWORD GetTickCount() end")
     return
       //seconds to milliseconds
       timevalCurrentTime.tv_sec * 1000 +

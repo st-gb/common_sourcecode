@@ -1,7 +1,7 @@
 //#include "SetExePathAsCurrentDir.h"
 #include <windows.h> //for TCHAR
 //#include <Windows/LocalLanguageMessageFromErrorCode.h>
-#include <global.h> //for WRITE_TO_LOG_FILE_AND_STDOUT_NEWLINE
+//#include <global.h> //for WRITE_TO_LOG_FILE_AND_STDOUT_NEWLINE
 #ifdef __CYGWIN__ //does not have a "tchar.h" shipped.
     #include <Controller/MSVC_adaption/tchar.h> //_tcsrchr()
 #else //MSC, MINGW (,...)

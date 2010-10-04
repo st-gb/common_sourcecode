@@ -1,7 +1,8 @@
 #pragma once
 
-#include <string>
-#include "global.h" //for DWORD 
+#include <string> //class std::string
+//#include "global.h" //for DWORD
+#include <windef.h> //for DWORD
 
 std::string LocalLanguageMessageFromErrorCodeA(DWORD dwErrorCode) ;
 std::string LocalLanguageMessageAndErrorCodeA(DWORD dwErrorCode) ;

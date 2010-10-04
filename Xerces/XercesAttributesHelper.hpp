@@ -277,4 +277,32 @@ template <class T>
   return false ;
 }
 
+template <class T>
+  bool ConvertXercesAttributesValue(
+    const XERCES_CPP_NAMESPACE::Attributes & cr_xerces_attributes ,
+    //   const std::string & r_stdstr
+    //   char * const lpctstrAttrName
+    const std::string & r_stdstrAttributeName ,
+    T & r_templateType
+    //,std::ios_base& (*f)(std::ios_base&)
+  )
+{
+
+  XMLCh * p_xmlchAttributeName = XERCES_CPP_NAMESPACE::XMLString::transcode(
+    //lpctstrAttrName
+    r_stdstrAttributeName.c_str()
+    ) ;
+  if( p_xmlchAttributeName )
+  {
+    return ConvertXercesAttributesValue(
+      cr_xerces_attributes ,
+      r_templateType
+      , p_xmlchAttributeName
+      ) ;
+    //Release memory of dyn. alloc. buffer (else memory leaks).
+    XERCES_CPP_NAMESPACE::XMLString::release(&p_xmlchAttributeName);
+  }
+  return false ;
+}
+
 #endif /* XERCESATTRIBUTESHELPER_HPP_ */

@@ -9,6 +9,7 @@
 #define READTIMESTAMPCOUNTER_H_
 
 #include <Controller/SetThreadAffinityMask.h> //SetThreadAffinityMask(...)
+#include <preprocessor_macros/logging_preprocessor_macros.h> //DEBUGN(...)
 #include <winnt.h> //for ULONGLONG
 #include <windef.h> //for DWORD
 
@@ -88,6 +89,7 @@ inline void ReadTSCinOrder(
 inline ULONGLONG ReadTSCinOrder( DWORD dwThreadAffinityMask )
 {
   ULONGLONG ull = 0 ;
+  DEBUGN("inline ULONGLONG ReadTSCinOrder( DWORD dwThreadAffinityMask ) begin")
   //http://en.wikipedia.org/wiki/Rdtsc:
   //"There is no promise that the timestamp counters of multiple CPUs on a
   //single motherboard will be synchronized. In such cases, programmers can
@@ -106,14 +108,16 @@ inline ULONGLONG ReadTSCinOrder( DWORD dwThreadAffinityMask )
     //from http://ibiblio.org/gferg/ldp/GCC-Inline-Assembly-HOWTO.html#s3
     //  see table "Intel Code             |      AT&T Code"
 
-    //call CPUID function 1:
+//    //call CPUID function 1:
     asm ( "mov $1, %eax") ; // write 1 into register "eax" for "CPUID fct. 1"
-    //http://www.ccsl.carleton.ca/~jamuir/rdtscpm1.pdf,
-    //  chapter 3.1. Out-of-Order-Execution
+//    //http://www.ccsl.carleton.ca/~jamuir/rdtscpm1.pdf,
+//    //  chapter 3.1. Out-of-Order-Execution
     asm ( "cpuid" ) ; //this forces all previous operations to complete.
     ull = ReadTimeStampCounter() ;
+    //Restore the previous thread affinity mask.
     ::SetThreadAffinityMask( dwPreviousAffMask ) ;
   }
+  DEBUGN("inline ULONGLONG ReadTSCinOrder( DWORD dwThreadAffinityMask ) end")
   return ull ;
 }
 
