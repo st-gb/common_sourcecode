@@ -26,13 +26,14 @@ class I_Thread
 protected:
   BYTE m_byThreadType ;
 public:
-  enum {
+  enum thread_type{
     detached ,
     joinable
   };
   enum thread_start
   {
     no_error = 0
+    , error
   };
 //  //else "undefined reference to `vtable for I_Thread'"
 //  I_Thread() {} ;

@@ -29,7 +29,7 @@ class wxThreadBasedI_Thread
 {
   wxThreadFuncStarterThread * mp_wxthreadfuncstarterthread ;
 public:
-  wxThreadBasedI_Thread( BYTE byThreadType ) ;
+  wxThreadBasedI_Thread( BYTE byThreadType = I_Thread::joinable ) ;
   //else "g++ warning: virtual function but non-virtual destructor"s
   virtual ~wxThreadBasedI_Thread() ;
   void Delete() ;

@@ -8,6 +8,8 @@
 #ifndef GETERRORMESSAGEFROMLASTERRORCODE_H_
 #define GETERRORMESSAGEFROMLASTERRORCODE_H_
 
+#include <string> //class std::string
+
 //Implementation/ definition of these functions should be in a file in the
 //appropriate folder ("Windows" / "Linux" ).
 

@@ -1,3 +1,5 @@
+//This file's extension should be ".cpp" in order to compile with g++.
+
 //from http://www-theorie.physik.unizh.ch/~dpotter/howto/daemonize:
 #include <stdio.h> //freopen(...)
 #include <stdlib.h> //exit(...)
@@ -231,7 +233,7 @@ void daemonize(
 
   CreateSessionID() ;
 
-  SetRootDirAsCurrentDir() ;
+//  SetRootDirAsCurrentDir() ;
 
   CloseInheritedOpenFiles() ;
 

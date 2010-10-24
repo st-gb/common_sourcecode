@@ -160,28 +160,40 @@ BYTE XercesAttributesHelper::GetAttributeValue(
     //If the attribute exists.
     if(cp_xmlchAttributeValue)
     {
-//      char * pchAttributeValue = XERCES_CPP_NAMESPACE::XMLString::transcode(
-//        cp_xmlchAttributeValue) ;
-//      if( pchAttributeValue )
-//      {
-//        if( //if the strings are identical
-//          strcmp(pchAttributeValue,"true") == 0 )
-//        {
-//          rbValue = true;
-//          byReturn = SUCCESS;
-//        }
-//        else
-//          if( strcmp(pchAttributeValue,"false") == 0 )
-//          {
-//            rbValue = false;
-//            byReturn = SUCCESS;
-//          }
-//          //else
-//          //  byReturn = FAILURE;
-//        //Release memory of dyn. alloc. buffer (else memory leaks).
-//        XERCES_CPP_NAMESPACE::XMLString::release(& pchAttributeValue);
-//      }
+      //TODO possibly use "GET_WCHAR_STRING_FROM_XERCES_STRING(
+      //cp_xmlchAttributeValue)" or 
+      //"namespace Xerces inline int ansi_or_wchar_string_compare(
+      //const XMLCh * cpc_xmlch,const char * cpc_ch)"
+      //as uniform code for both Linux and Windows instead of the code below.
+      //"wcscmp(...)" does not work with "XMLCh *" under Linux (because it 
+      //has 4 bytes under Linux and wcscmp(...) needs 2 bytes per character)?
+      //->use "strcmp(...)" under Linux
+#ifdef __linux__ 
+      char * pchAttributeValue = XERCES_CPP_NAMESPACE::XMLString::transcode(
+        cp_xmlchAttributeValue) ;
+      if( pchAttributeValue )
+      {
+        if( //if the strings are identical
+          strcmp(pchAttributeValue,"true") == 0 )
+        {
+          rbValue = true;
+          byReturn = SUCCESS;
+        }
+        else
+          if( strcmp(pchAttributeValue,"false") == 0 )
+          {
+            rbValue = false;
+            byReturn = SUCCESS;
+          }
+          //else
+          //  byReturn = FAILURE;
+        //Release memory of dyn. alloc. buffer (else memory leaks).
+        XERCES_CPP_NAMESPACE::XMLString::release(& pchAttributeValue);
+      }//if( pchAttributeValue )
+#else //#ifdef __linux__
       if( //If the strings are identical.
+        //We can use "wcscmp(...)"-> no conversion to "char *" needed->faster
+        // if "XMLCh" takes 2 bytes like "wchar_t".
         ! wcscmp( //Explicitly cast to "wchar_t *" to avoid Linux g++ warning.
           (wchar_t *) cp_xmlchAttributeValue, L"true" )
         )
@@ -200,7 +212,8 @@ BYTE XercesAttributesHelper::GetAttributeValue(
           byReturn = SUCCESS;
         }
       }
-    }
+#endif //#ifdef __linux__
+    }//if(cp_xmlchAttributeValue)
     //Release memory of dyn. alloc. buffer (else memory leaks).
     XERCES_CPP_NAMESPACE::XMLString::release(&p_xmlchAttributeName);
   }

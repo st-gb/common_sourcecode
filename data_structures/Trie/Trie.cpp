@@ -14,6 +14,7 @@
 void Trie::FreeMemory()
 {
   char ch ;
+  //Arrays of pointers.
   unsigned char ** ar_p_byCurrent ;
   unsigned char ** ar_p_by1LevelAbove = NULL ;
   WORD wSize ;
@@ -35,9 +36,25 @@ void Trie::FreeMemory()
           //assigned.
           ar_p_byCurrent[ wIndex ] )
       {
-        ar_p_by1LevelAbove = & ar_p_byCurrent[ wIndex ] ;
+        ar_p_by1LevelAbove =
+          //Address of array element.
+          &
+          //Address of next array/ level directing leaves:
+          //         0x10
+          // [...]   |a|
+          //          |
+          //  +-------+------
+          // 0x10   0x14 0x18 ...  <-- " & r_p_byCurrent[ wIndex ] "
+          //[0x999|0x777|0x123| | | | | ]  <-- r_p_byCurrent[ wIndex ]
+
+          //         " & r_p_byCurrent[ wIndex ] " = "r_p_byCurrent + wIndex" ?
+
+          //Store the address of array element "ar_p_byCurrent[ wIndex ]"
+          //because the current address will be changed to the address of
+          //element by 1 level below (=directing leaves).
+          ar_p_byCurrent[ wIndex ] ;
         ar_p_byCurrent = //& ar_p_byCurrent[ wIndex ] ;
-        (unsigned char **) ar_p_byCurrent[ wIndex ] ;
+          (unsigned char **) ar_p_byCurrent[ wIndex ] ;
         //bNoChildNode = false ;
         stdvec_by.push_back( (BYTE) wIndex ) ;
         DEBUGN
@@ -60,18 +77,43 @@ void Trie::FreeMemory()
           DEBUGN
           //DEBUG_COUTN
             ("deleting current array at address" << ar_p_byCurrent )
-          delete [] ar_p_byCurrent ;
-          -- m_dwNumberOfNodes ;
+          //If at least 2 levels (array should NOT be deleted if it points to
+          //the root node because the root node is created on stack) .
           if( ar_p_by1LevelAbove )
+          {
+            //May NOT be deleted if it points to the root node because the
+            // root node is created on stack .
+            delete [] ar_p_byCurrent ;
+            -- m_dwNumberOfNodes ;
+            //         0x10
+             // [...]   |a|  <-delete and set to NULL because all children are NULL
+             //          |
+             //  +-------+------
+             //0x100  0x114
+             //[0x123|    | | | | | | ]  <-- all empty/ NULL
+            //
+            //The array whose address was stored at e.g. address 0x10 (->
+            // array address "a" ) has been deleted.
+            //So set address of array element to zero to mark the end.
             * ar_p_by1LevelAbove = NULL ;
+            //Now it should look like:
+            //         0x10
+            // [...]  |0x00|  <-set to NULL because array at "a" deleted.
+            //          |
+            //  +-------+------
+            // 0x500 0x514
+            //[0x000|     | | | | | | ]  <-- deleted array
+          }
           else
           {
-            DEBUGN
-            //DEBUG_COUTN
-              ("deleting root array at address" << m_ar_p_byRoot)
+//            DEBUGN
+//            //DEBUG_COUTN
+//              ("deleting root array at address" << m_ar_p_byRoot)
 //            m_ar_p_byRoot = NULL ;
-            delete [] m_ar_p_byRoot ;
-            -- m_dwNumberOfNodes ;
+//            delete [] m_ar_p_byRoot ;
+//            -- m_dwNumberOfNodes ;
+            DEBUGN("We are at the root node.")
+//            m_ar_p_byRoot = NULL ;
           }
 //          break ;
           //mark the end -> do no delete the 2nd time.

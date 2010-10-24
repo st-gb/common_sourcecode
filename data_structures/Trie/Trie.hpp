@@ -18,6 +18,7 @@ class Trie
 {
   bool bExists ;
   BYTE byValue ;
+  //Arrays of char pointers.
   unsigned char * m_ar_p_byRoot [DIFFERENT_VALUES_PER_LEVEL] ;
   unsigned char ** ar_p_byCurrent ;
   unsigned short m_wBitsPerLevel ;

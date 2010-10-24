@@ -43,4 +43,15 @@ namespace std
  std::wstring GetStdWstring( const std::string & cr_str ) ;
  std::string GetStdString(const std::string & cr_str ) ;
  std::string GetStdString(const std::wstring & cr_wstr ) ;
+ std::string GetStdString(const std::wstring & cr_wstr ) ;
+ //Just 1 instruction inside the function->inline does not waste space if
+ //used multiple times, more performance.
+ inline std::string GetStdStringInline(const std::wstring & cr_wstr )
+ {
+   return std::string( cr_wstr.begin(), cr_wstr.end() ) ;
+//   //from http://www.codeproject.com/KB/string/UtfConverter.aspx
+//   std::string stdstr ;
+//   stdstr.assign( cr_wstr.begin(), cr_wstr.end() ) ;
+//   return stdstr ;
+ }
 #endif //STDTSTR_HPP_

@@ -13,9 +13,12 @@ wxThreadFuncStarterThread::wxThreadFuncStarterThread(
   void * p_v ,
   BYTE byThreadType
   )
+  //TODO program crashes here (segmentation fault under Linux)
   : wxThread ( //wxTHREAD_JOINABLE
-    (wxThreadKind) byThreadType )
+    (wxThreadKind) byThreadType
+    )
 {
+  LOGN("starter thread--byThreadType:" << (WORD) byThreadType )
   m_thread_func = pfn_threadfunc ;
   mp_v = p_v ;
 }
@@ -36,6 +39,7 @@ wxThreadFuncStarterThread::Entry()
 wxThreadBasedI_Thread::wxThreadBasedI_Thread( BYTE byThreadType )
   : mp_wxthreadfuncstarterthread( NULL )
 {
+  LOGN("thread type:" << (WORD) byThreadType )
   m_byThreadType = byThreadType ;
 }
 
@@ -65,9 +69,12 @@ void wxThreadBasedI_Thread::Delete()
   }
 }
 
+//@return I_Thread::no_error on success, else I_Thread::error
   //static
   BYTE wxThreadBasedI_Thread::start( pfnThreadFunc pfn_threadfunc, void * p_v )
   {
+    LOGN("wxThreadBasedI_Thread::start(" << (void *) pfn_threadfunc
+        << "," << p_v << ") begin")
     //make the same thread type like Win32 threads.
     //http://docs.wxwidgets.org/2.6/wx_wxthread.html#wxthreadentry:
     //"[...]unlike Win32 threads where all threads are joinable[...]
@@ -111,8 +118,14 @@ void wxThreadBasedI_Thread::Delete()
         	break ;
         }
       }
+      else
+        LOGN("Failed to create starter thread.")
     }
-    return 0 ;
+    else
+    {
+      LOGN("Failed to allocate starter thread.")
+    }
+    return I_Thread::error ;
   }
 
   void * wxThreadBasedI_Thread::WaitForTermination()

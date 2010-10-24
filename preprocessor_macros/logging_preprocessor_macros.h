@@ -8,6 +8,11 @@
 #ifndef LOGGING_PREPROCESSOR_MACROS_H_
 #define LOGGING_PREPROCESSOR_MACROS_H_
 
+//MinGW can't use wide stream (at least low versions of MinGW)
+#ifndef __MINGW32__
+  #define USE_STD_WCOUT
+#endif
+
   //Keep away the dependency on Logger class for dyn libs.
   #if defined(COMPILE_FOR_CPUCONTROLLER_DYNLIB) //&& !defined(_DEBUG)
   //  #define LOG(...) /* ->empty/ no instructions*/
@@ -24,7 +29,7 @@
     #endif
   #endif//#if defined(COMPILE_FOR_CPUCONTROLLER_DYNLIB) && !defined(_DEBUG)
 
-  #ifdef _DEBUG
+  #if defined(_DEBUG) && defined(USE_STD_WCOUT)
     #include <iostream> //for std::cout
     //this macro may NOT be called like the other one with "..."/ "__VA_ARGS__",
     //else many errors
@@ -176,7 +181,8 @@
     #include <iostream> //for std::cout
     //#endif
     #define WRITE_TO_LOG_FILE_AND_STDOUT_NEWLINE(to_ostream) { \
-    LOG(to_ostream << std::endl; ); \
+    /*LOG(to_ostream << std::endl; ); */ \
+    LOGN( to_ostream ) ; \
       std::cout << to_ostream << std::endl ; std::cout.flush(); }
 #else //#ifdef COMPILE_WITH_LOG
   #define LOG(to_ostream) ; /* ";" for use in "else LOG(...)" -> "else ;" */

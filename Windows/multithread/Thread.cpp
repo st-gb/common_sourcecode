@@ -43,6 +43,7 @@ namespace Windows_API
   void * Thread::WaitForTermination()
   {
     DWORD dwExitCode ;
+    //Waits for the end of the thread determined by the handle.
     ::WaitForSingleObject(m_handleThread, INFINITE) ;
     ::GetExitCodeThread(m_handleThread, & dwExitCode ) ;
     return (void *) dwExitCode ;
