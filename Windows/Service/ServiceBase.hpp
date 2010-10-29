@@ -29,6 +29,7 @@ public:
     DeleteServiceFailed,
     GetModuleFileNameFailed
   };
+  static bool CanStartService() ;
   static DWORD ContinueService(
    const TCHAR * tchServiceName
    ) ;
@@ -109,6 +110,11 @@ public:
   static DWORD StartService(
     LPCTSTR lpServiceName ) ;
   static DWORD StartService(
+    SC_HANDLE schSCManager
+    , LPCTSTR lpServiceName ) ;
+  static DWORD StopService(
+    LPCTSTR lpServiceName ) ;
+  static DWORD StopService(
     SC_HANDLE schSCManager
     , LPCTSTR lpServiceName ) ;
 };

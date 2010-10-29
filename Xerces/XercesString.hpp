@@ -99,6 +99,9 @@ namespace Xerces
 //    virtual
 //    ~XercesString();
 //  };
+  //The following function because one can not always cast "XMLCh *" to
+  //"wchar_t *" because "wchar_t" has 2 bytes and "XMLCh" has 4 bytes under
+  //Linux.
   inline std::wstring ConvertXercesStringToStdWstring(
     const XMLCh * cpc_xmlch
     )
@@ -143,8 +146,9 @@ namespace Xerces
     const XMLCh * p_xmlch
     ) ;
 
-  //The following because: wcscmp(...) did not work corectly when compiled
-  //under Linux.
+  //The following because: wcscmp(...) did not work correctly when compiled
+  //under Linux (with "XMLCh *", probably because "XMLCh" has 4 bytes under
+  //Linux).
   #ifdef __linux__
     #define ANSI_OR_WCHAR(string) string
   #else

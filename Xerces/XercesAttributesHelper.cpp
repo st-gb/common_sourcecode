@@ -6,6 +6,7 @@
  */
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 #include <Xerces/XercesAttributesHelper.hpp>
+#include <Xerces/XercesString.hpp>//Xerces::ConvertXercesStringToStdWstring(...)
 
 ////for XERCES_CPP_NAMESPACE::Attributes
 //#include <xercesc/sax2/Attributes.hpp>
@@ -547,15 +548,16 @@ BYTE XercesAttributesHelper::GetAttributeValue(
     lpctstrAttrName) ;
   if( p_xmlchAttributeName )
   {
-    const XMLCh * pxmlch = attrs.getValue(// const XMLCh *const qName
+    const XMLCh * cp_xmlchAttributeValue = attrs.getValue(
+      // const XMLCh *const qName
       p_xmlchAttributeName
       //"number"
       ) ;
     //If the attribute exists.
-    if(pxmlch)
+    if(cp_xmlchAttributeValue)
     {
       char * pchAttributeValue = XERCES_CPP_NAMESPACE::XMLString::transcode(
-        pxmlch) ;
+        cp_xmlchAttributeValue) ;
       if( pchAttributeValue )
       {
         float fAtofResult = 0.0 ;
@@ -634,7 +636,7 @@ BYTE XercesAttributesHelper::GetAttributeValue
 
 BYTE XercesAttributesHelper::GetAttributeValue
   (
-  const XERCES_CPP_NAMESPACE::Attributes & attrs,
+  const XERCES_CPP_NAMESPACE::Attributes & cr_xercesc_attributes,
   char * lpctstrAttrName,
   std::string & r_strValue
   )
@@ -644,15 +646,16 @@ BYTE XercesAttributesHelper::GetAttributeValue
     lpctstrAttrName) ;
   if( p_xmlchAttributeName )
   {
-    const XMLCh * pxmlch = attrs.getValue(// const XMLCh *const qName
+    const XMLCh * cp_xmlchAttributeValue = cr_xercesc_attributes.getValue(
+      // const XMLCh *const qName
       p_xmlchAttributeName
       //"number"
       ) ;
     //If the attribute exists.
-    if(pxmlch)
+    if(cp_xmlchAttributeValue)
     {
       char * pchAttributeValue = XERCES_CPP_NAMESPACE::XMLString::transcode(
-        pxmlch) ;
+        cp_xmlchAttributeValue) ;
       if( pchAttributeValue )
       {
         r_strValue = std::string(pchAttributeValue);
@@ -669,7 +672,7 @@ BYTE XercesAttributesHelper::GetAttributeValue
 
 BYTE XercesAttributesHelper::GetAttributeValue
   (
-  const XERCES_CPP_NAMESPACE::Attributes & attrs,
+  const XERCES_CPP_NAMESPACE::Attributes & cr_xercesc_attributes,
   const char * lpctstrAttrName,
 //  std::string & r_stdstrAttributeName ,
   std::wstring & r_stdwstrValue
@@ -680,19 +683,21 @@ BYTE XercesAttributesHelper::GetAttributeValue
     lpctstrAttrName) ;
   if( p_xmlchAttributeName )
   {
-    const XMLCh * pxmlch = attrs.getValue(// const XMLCh *const qName
+    const XMLCh * cp_xmlchAttributeValue = cr_xercesc_attributes.getValue(
+      // const XMLCh *const qName
       p_xmlchAttributeName
       //"number"
       ) ;
     //If the attribute exists.
-    if(pxmlch)
+    if(cp_xmlchAttributeValue)
     {
-      r_stdwstrValue = std::wstring(
-        //Avoid g++ error "no matching function for call to
-        //‘std::basic_string<wchar_t, std::char_traits<wchar_t>,
-        //std::allocator<wchar_t> >::basic_string(const XMLCh*&)’ "
-        (wchar_t *)
-        pxmlch);
+      r_stdwstrValue = //std::wstring(
+//        //Avoid g++ error "no matching function for call to
+//        //‘std::basic_string<wchar_t, std::char_traits<wchar_t>,
+//        //std::allocator<wchar_t> >::basic_string(const XMLCh*&)’ "
+//        (wchar_t *)
+//        pxmlch);
+        Xerces::ConvertXercesStringToStdWstring(cp_xmlchAttributeValue) ;
       byReturn = SUCCESS;
     }
     //Release memory of dyn. alloc. buffer (else memory leaks).

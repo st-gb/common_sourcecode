@@ -5,6 +5,36 @@
 #include <sstream> //for class std::stringstream
 #include <Windows/LocalLanguageMessageFromErrorCode.h>
 
+bool ServiceBase::CanStartService(
+//  const TCHAR * cp_tchServiceName
+  )
+{
+  SC_HANDLE schSCManager =
+    // Open a handle to the SC Manager database.
+    //Call OpenSCManager for the spec. methods because:
+    //Open with LEAST access rights for the SPECIFIC operation.
+    ::OpenSCManager(
+      NULL,                    // local machine
+      NULL,                    // ServicesActive database
+//      SERVICE_START
+      //Combines the following access types:
+      // -STANDARD_RIGHTS_EXECUTE
+      // -SC_MANAGER_CONNECT
+      // -SC_MANAGER_LOCK
+      GENERIC_EXECUTE
+      );  // full access rights
+  if ( schSCManager )
+  {
+    //http://msdn.microsoft.com/en-us/library/ms684323%28VS.85%29.aspx:
+    //"The returned handle is only valid for the process that called the
+    //OpenSCManager function. It can be closed by calling the
+    //CloseServiceHandle function."
+    ::CloseServiceHandle(schSCManager) ;
+    return true ;
+  }
+  return false ;
+}
+
 DWORD ServiceBase::ContinueService(
   const TCHAR * cp_tchServiceName
   )
@@ -559,6 +589,7 @@ SERVICE_STATUS_HANDLE //WINAPI
 //  return m_service_status_handle ;
 //}
 
+//@return 0=success
 DWORD ServiceBase::StartService(
   LPCTSTR lpServiceName )
 {
@@ -568,7 +599,7 @@ DWORD ServiceBase::StartService(
   schSCManager = 
     //Call OpenSCManager for the spec. methods because:
     //Open with LEAST access rights for the SPECIFIC operation.
-    OpenSCManager( 
+    ::OpenSCManager(
       NULL,                    // local machine 
       NULL,                    // ServicesActive database 
       //SC_MANAGER_ALL_ACCESS
@@ -576,10 +607,11 @@ DWORD ServiceBase::StartService(
       // -STANDARD_RIGHTS_EXECUTE
       // -SC_MANAGER_CONNECT
       // -SC_MANAGER_LOCK
-      GENERIC_EXECUTE 
+      GENERIC_EXECUTE
+//      SERVICE_START
       );  // full access rights 
    
-  if (NULL == schSCManager) 
+  if ( schSCManager == NULL )
   {
     //printf("OpenSCManager failed (%d)\n", GetLastError());
     //return 0 ;
@@ -591,118 +623,535 @@ DWORD ServiceBase::StartService(
   }
   else
     return StartService(schSCManager,lpServiceName) ;
-  return 0 ;
+  return 1 ;
 }
 
+//@return 0=success
+DWORD ServiceBase::StopService(
+  LPCTSTR lpServiceName )
+{
+  SC_HANDLE schSCManager;
+
+  // Open a handle to the SC Manager database.
+  schSCManager =
+    //Call OpenSCManager for the spec. methods because:
+    //Open with LEAST access rights for the SPECIFIC operation.
+    ::OpenSCManager(
+      NULL,                    // local machine
+      NULL,                    // ServicesActive database
+      //SC_MANAGER_ALL_ACCESS
+      //Combines the following access types:
+      // -STANDARD_RIGHTS_EXECUTE
+      // -SC_MANAGER_CONNECT
+      // -SC_MANAGER_LOCK
+      GENERIC_EXECUTE
+//      SERVICE_START
+      );  // full access rights
+
+  if ( schSCManager == NULL )
+  {
+    //printf("OpenSCManager failed (%d)\n", GetLastError());
+    //return 0 ;
+    DWORD dwLastError = ::GetLastError() ;
+    //Throw exception because: an error code can be thrown for
+    //various reasons, so I do not need to return another value for
+    //the cause, e.g. connect to SCM error.
+    throw ConnectToSCMerror( dwLastError ) ;
+  }
+  else
+    return StopService(schSCManager,lpServiceName) ;
+  return 1 ;
+}
+
+//@return 0=success
 DWORD ServiceBase::StartService(
   SC_HANDLE schSCManager
   , LPCTSTR lpServiceName )
 {
-    SC_HANDLE schService;
-    SERVICE_STATUS_PROCESS ssStatus; 
-    DWORD dwOldCheckPoint; 
-    DWORD dwStartTickCount;
-    DWORD dwWaitTime;
-    DWORD dwBytesNeeded;
- 
-    schService = ::OpenService( 
-        schSCManager,          // SCM database 
-        lpServiceName ,          // service name
-        SERVICE_ALL_ACCESS); 
- 
-    if (schService == NULL) 
-    { 
-        return 0; 
-    }
- 
-    if ( ! ::StartService(
-            schService,  // handle to service 
-            0,           // number of arguments 
-            NULL) )      // no arguments 
+  SC_HANDLE schService;
+  SERVICE_STATUS_PROCESS ssStatus;
+  DWORD dwOldCheckPoint;
+  DWORD dwStartTickCount;
+  DWORD dwWaitTime;
+  DWORD dwBytesNeeded;
+
+  schService = ::OpenService(
+    schSCManager,          // SCM database
+    lpServiceName ,          // service name
+    SERVICE_ALL_ACCESS);
+
+  if ( schService == NULL)
+  {
+    return 1;
+  }
+
+  if ( //http://msdn.microsoft.com/en-us/library/ms686321%28VS.85%29.aspx:
+      //"If the function fails, the return value is zero. To get extended
+      //error information, call GetLastError."
+    ! ::StartService(
+      schService,  // handle to service
+      0,           // number of arguments
+      NULL) // no arguments
+    )
+  {
+    return 2;
+  }
+//  else
+//  {
+//      printf("Service start pending.\n");
+//  }
+
+  // Check the status until the service is no longer start pending.
+
+  if ( ! ::QueryServiceStatusEx(
+    schService,             // handle to service
+    SC_STATUS_PROCESS_INFO, // info level
+    (LPBYTE) &ssStatus,              // address of structure
+    sizeof(SERVICE_STATUS_PROCESS), // size of structure
+    &dwBytesNeeded ) // if buffer too small
+    )
+  {
+    return 3;
+  }
+
+  // Save the tick count and initial checkpoint.
+
+  dwStartTickCount = ::GetTickCount();
+  dwOldCheckPoint = ssStatus.dwCheckPoint;
+
+  while (ssStatus.dwCurrentState == SERVICE_START_PENDING)
+  {
+    // Do not wait longer than the wait hint. A good interval is
+    // one tenth the wait hint, but no less than 1 second and no
+    // more than 10 seconds.
+
+    dwWaitTime = ssStatus.dwWaitHint / 10;
+
+    if( dwWaitTime < 1000 )
+        dwWaitTime = 1000;
+    else if ( dwWaitTime > 10000 )
+        dwWaitTime = 10000;
+
+    Sleep( dwWaitTime );
+
+    // Check the status again.
+    if ( ! ::QueryServiceStatusEx(
+          schService,             // handle to service
+          SC_STATUS_PROCESS_INFO, // info level
+          (LPBYTE) &ssStatus,              // address of structure
+          sizeof(SERVICE_STATUS_PROCESS), // size of structure
+          &dwBytesNeeded )
+        )              // if buffer too small
+      break;
+
+    if ( ssStatus.dwCheckPoint > dwOldCheckPoint )
     {
-        return 0; 
+      // The service is making progress.
+      dwStartTickCount = ::GetTickCount();
+      dwOldCheckPoint = ssStatus.dwCheckPoint;
     }
-    else 
+    else
     {
-        printf("Service start pending.\n"); 
+      if( ::GetTickCount() - dwStartTickCount > ssStatus.dwWaitHint)
+      {
+          // No progress made within the wait hint
+          break;
+      }
     }
- 
-    // Check the status until the service is no longer start pending. 
- 
-    if (!QueryServiceStatusEx( 
-            schService,             // handle to service 
-            SC_STATUS_PROCESS_INFO, // info level
-            (LPBYTE) &ssStatus,              // address of structure
-            sizeof(SERVICE_STATUS_PROCESS), // size of structure
-            &dwBytesNeeded ) )              // if buffer too small
-    {
-        return 0; 
-    }
- 
-    // Save the tick count and initial checkpoint.
+  }
 
-    dwStartTickCount = GetTickCount();
-    dwOldCheckPoint = ssStatus.dwCheckPoint;
+  ::CloseServiceHandle(schService);
 
-    while (ssStatus.dwCurrentState == SERVICE_START_PENDING) 
-    { 
-        // Do not wait longer than the wait hint. A good interval is 
-        // one tenth the wait hint, but no less than 1 second and no 
-        // more than 10 seconds. 
- 
-        dwWaitTime = ssStatus.dwWaitHint / 10;
-
-        if( dwWaitTime < 1000 )
-            dwWaitTime = 1000;
-        else if ( dwWaitTime > 10000 )
-            dwWaitTime = 10000;
-
-        Sleep( dwWaitTime );
-
-        // Check the status again. 
- 
-    if (!QueryServiceStatusEx( 
-            schService,             // handle to service 
-            SC_STATUS_PROCESS_INFO, // info level
-            (LPBYTE) &ssStatus,              // address of structure
-            sizeof(SERVICE_STATUS_PROCESS), // size of structure
-            &dwBytesNeeded ) )              // if buffer too small
-            break; 
- 
-        if ( ssStatus.dwCheckPoint > dwOldCheckPoint )
-        {
-            // The service is making progress.
-
-            dwStartTickCount = GetTickCount();
-            dwOldCheckPoint = ssStatus.dwCheckPoint;
-        }
-        else
-        {
-            if(GetTickCount()-dwStartTickCount > ssStatus.dwWaitHint)
-            {
-                // No progress made within the wait hint
-                break;
-            }
-        }
-    } 
-
-    CloseServiceHandle(schService); 
-
-    if (ssStatus.dwCurrentState == SERVICE_RUNNING) 
-    {
-        //printf("StartService SUCCESS.\n"); 
-        return 1;
-    }
-    else 
-    { 
-        //printf("\nService not started. \n");
-        //printf("  Current State: %d\n", ssStatus.dwCurrentState); 
-        //printf("  Exit Code: %d\n", ssStatus.dwWin32ExitCode); 
-        //printf("  Service Specific Exit Code: %d\n", 
-        //    ssStatus.dwServiceSpecificExitCode); 
-        //printf("  Check Point: %d\n", ssStatus.dwCheckPoint); 
-        //printf("  Wait Hint: %d\n", ssStatus.dwWaitHint); 
-        return 0;
-    } 
-  return 0 ;
+  if ( ssStatus.dwCurrentState == SERVICE_RUNNING)
+  {
+    //printf("StartService SUCCESS.\n");
+    return 0;
+  }
+  else
+  {
+    //printf("\nService not started. \n");
+    //printf("  Current State: %d\n", ssStatus.dwCurrentState);
+    //printf("  Exit Code: %d\n", ssStatus.dwWin32ExitCode);
+    //printf("  Service Specific Exit Code: %d\n",
+    //    ssStatus.dwServiceSpecificExitCode);
+    //printf("  Check Point: %d\n", ssStatus.dwCheckPoint);
+    //printf("  Wait Hint: %d\n", ssStatus.dwWaitHint);
+    return 4;
+  }
+  return 5 ;
 }
+
+//@return 0=success
+DWORD ServiceBase::StopService(
+  SC_HANDLE schSCManager
+  , LPCTSTR lpServiceName )
+{
+  DWORD dwOldCheckPoint;
+  DWORD dwStartTickCount;
+  DWORD dwWaitTime;
+  DWORD dwBytesNeeded;
+  SC_HANDLE schService;
+  SERVICE_STATUS_PROCESS ssStatus;
+  SERVICE_STATUS service_status ;
+
+  schService = ::OpenService(
+    schSCManager,          // SCM database
+    lpServiceName ,          // service name
+    SERVICE_ALL_ACCESS);
+
+  if ( schService == NULL)
+  {
+    return 1;
+  }
+
+  if ( //http://msdn.microsoft.com/en-us/library/ms682108%28v=VS.85%29.aspx:
+      // ("ControlService Function")
+      //"If the function fails, the return value is zero. To get extended
+      //error information, call GetLastError."
+    ! ::ControlService(
+      schService,  // handle to service
+      SERVICE_CONTROL_STOP, //__in   DWORD dwControl
+      & service_status // __out  LPSERVICE_STATUS lpServiceStatus
+      )
+    )
+  {
+    return 2;
+  }
+//  else
+//  {
+//      printf("Service start pending.\n");
+//  }
+
+  // Check the status until the service is no longer start pending.
+
+  if ( ! ::QueryServiceStatusEx(
+    schService,             // handle to service
+    SC_STATUS_PROCESS_INFO, // info level
+    (LPBYTE) &ssStatus,              // address of structure
+    sizeof(SERVICE_STATUS_PROCESS), // size of structure
+    &dwBytesNeeded ) // if buffer too small
+    )
+  {
+    return 3;
+  }
+
+  // Save the tick count and initial checkpoint.
+
+  dwStartTickCount = ::GetTickCount();
+  dwOldCheckPoint = ssStatus.dwCheckPoint;
+
+  while (ssStatus.dwCurrentState != SERVICE_STOPPED )
+  {
+    // Do not wait longer than the wait hint. A good interval is
+    // one tenth the wait hint, but no less than 1 second and no
+    // more than 10 seconds.
+
+    dwWaitTime = ssStatus.dwWaitHint / 10;
+
+    if( dwWaitTime < 1000 )
+        dwWaitTime = 1000;
+    else if ( dwWaitTime > 10000 )
+        dwWaitTime = 10000;
+
+    Sleep( dwWaitTime );
+
+    // Check the status again.
+    if ( ! ::QueryServiceStatusEx(
+          schService,             // handle to service
+          SC_STATUS_PROCESS_INFO, // info level
+          (LPBYTE) & ssStatus,              // address of structure
+          sizeof(SERVICE_STATUS_PROCESS), // size of structure
+          & dwBytesNeeded )
+        )              // if buffer too small
+      break;
+
+    if ( ssStatus.dwCheckPoint > dwOldCheckPoint )
+    {
+      // The service is making progress.
+      dwStartTickCount = ::GetTickCount();
+      dwOldCheckPoint = ssStatus.dwCheckPoint;
+    }
+    else
+    {
+      if( ::GetTickCount() - dwStartTickCount > ssStatus.dwWaitHint)
+      {
+          // No progress made within the wait hint
+          break;
+      }
+    }
+  }
+
+  ::CloseServiceHandle(schService);
+
+  if ( ssStatus.dwCurrentState == SERVICE_STOPPED )
+  {
+    //printf("StartService SUCCESS.\n");
+    return 0;
+  }
+  else
+  {
+    //printf("\nService not started. \n");
+    //printf("  Current State: %d\n", ssStatus.dwCurrentState);
+    //printf("  Exit Code: %d\n", ssStatus.dwWin32ExitCode);
+    //printf("  Service Specific Exit Code: %d\n",
+    //    ssStatus.dwServiceSpecificExitCode);
+    //printf("  Check Point: %d\n", ssStatus.dwCheckPoint);
+    //printf("  Wait Hint: %d\n", ssStatus.dwWaitHint);
+    return 4;
+  }
+  return 5 ;
+}
+
+
+//the following code is from
+//http://msdn.microsoft.com/en-us/library/ms686335%28v=VS.85%29.aspx
+////
+//// Purpose:
+////   Stops the service.
+////
+//// Parameters:
+////   None
+////
+//// Return value:
+////   None
+////
+//VOID __stdcall DoStopSvc()
+//{
+//    SERVICE_STATUS_PROCESS ssp;
+//    DWORD dwStartTime = GetTickCount();
+//    DWORD dwBytesNeeded;
+//    DWORD dwTimeout = 30000; // 30-second time-out
+//    DWORD dwWaitTime;
+//
+//    // Get a handle to the SCM database.
+//
+//    schSCManager = OpenSCManager(
+//        NULL,                    // local computer
+//        NULL,                    // ServicesActive database
+//        SC_MANAGER_ALL_ACCESS);  // full access rights
+//
+//    if (NULL == schSCManager)
+//    {
+//        printf("OpenSCManager failed (%d)\n", GetLastError());
+//        return;
+//    }
+//
+//    // Get a handle to the service.
+//
+//    schService = OpenService(
+//        schSCManager,         // SCM database
+//        szSvcName,            // name of service
+//        SERVICE_STOP |
+//        SERVICE_QUERY_STATUS |
+//        SERVICE_ENUMERATE_DEPENDENTS);
+//
+//    if (schService == NULL)
+//    {
+//        printf("OpenService failed (%d)\n", GetLastError());
+//        CloseServiceHandle(schSCManager);
+//        return;
+//    }
+//
+//    // Make sure the service is not already stopped.
+//
+//    if ( !QueryServiceStatusEx(
+//            schService,
+//            SC_STATUS_PROCESS_INFO,
+//            (LPBYTE)&ssp,
+//            sizeof(SERVICE_STATUS_PROCESS),
+//            &dwBytesNeeded ) )
+//    {
+//        printf("QueryServiceStatusEx failed (%d)\n", GetLastError());
+//        goto stop_cleanup;
+//    }
+//
+//    if ( ssp.dwCurrentState == SERVICE_STOPPED )
+//    {
+//        printf("Service is already stopped.\n");
+//        goto stop_cleanup;
+//    }
+//
+//    // If a stop is pending, wait for it.
+//
+//    while ( ssp.dwCurrentState == SERVICE_STOP_PENDING )
+//    {
+//        printf("Service stop pending...\n");
+//
+//        // Do not wait longer than the wait hint. A good interval is
+//        // one-tenth of the wait hint but not less than 1 second
+//        // and not more than 10 seconds.
+//
+//        dwWaitTime = ssp.dwWaitHint / 10;
+//
+//        if( dwWaitTime < 1000 )
+//            dwWaitTime = 1000;
+//        else if ( dwWaitTime > 10000 )
+//            dwWaitTime = 10000;
+//
+//        Sleep( dwWaitTime );
+//
+//        if ( !QueryServiceStatusEx(
+//                 schService,
+//                 SC_STATUS_PROCESS_INFO,
+//                 (LPBYTE)&ssp,
+//                 sizeof(SERVICE_STATUS_PROCESS),
+//                 &dwBytesNeeded ) )
+//        {
+//            printf("QueryServiceStatusEx failed (%d)\n", GetLastError());
+//            goto stop_cleanup;
+//        }
+//
+//        if ( ssp.dwCurrentState == SERVICE_STOPPED )
+//        {
+//            printf("Service stopped successfully.\n");
+//            goto stop_cleanup;
+//        }
+//
+//        if ( GetTickCount() - dwStartTime > dwTimeout )
+//        {
+//            printf("Service stop timed out.\n");
+//            goto stop_cleanup;
+//        }
+//    }
+//
+//    // If the service is running, dependencies must be stopped first.
+//
+//    StopDependentServices();
+//
+//    // Send a stop code to the service.
+//
+//    if ( !ControlService(
+//            schService,
+//            SERVICE_CONTROL_STOP,
+//            (LPSERVICE_STATUS) &ssp ) )
+//    {
+//        printf( "ControlService failed (%d)\n", GetLastError() );
+//        goto stop_cleanup;
+//    }
+//
+//    // Wait for the service to stop.
+//
+//    while ( ssp.dwCurrentState != SERVICE_STOPPED )
+//    {
+//        Sleep( ssp.dwWaitHint );
+//        if ( !QueryServiceStatusEx(
+//                schService,
+//                SC_STATUS_PROCESS_INFO,
+//                (LPBYTE)&ssp,
+//                sizeof(SERVICE_STATUS_PROCESS),
+//                &dwBytesNeeded ) )
+//        {
+//            printf( "QueryServiceStatusEx failed (%d)\n", GetLastError() );
+//            goto stop_cleanup;
+//        }
+//
+//        if ( ssp.dwCurrentState == SERVICE_STOPPED )
+//            break;
+//
+//        if ( GetTickCount() - dwStartTime > dwTimeout )
+//        {
+//            printf( "Wait timed out\n" );
+//            goto stop_cleanup;
+//        }
+//    }
+//    printf("Service stopped successfully\n");
+//
+//stop_cleanup:
+//    CloseServiceHandle(schService);
+//    CloseServiceHandle(schSCManager);
+//}
+//
+//BOOL __stdcall StopDependentServices()
+//{
+//    DWORD i;
+//    DWORD dwBytesNeeded;
+//    DWORD dwCount;
+//
+//    LPENUM_SERVICE_STATUS   lpDependencies = NULL;
+//    ENUM_SERVICE_STATUS     ess;
+//    SC_HANDLE               hDepService;
+//    SERVICE_STATUS_PROCESS  ssp;
+//
+//    DWORD dwStartTime = GetTickCount();
+//    DWORD dwTimeout = 30000; // 30-second time-out
+//
+//    // Pass a zero-length buffer to get the required buffer size.
+//    if ( EnumDependentServices( schService, SERVICE_ACTIVE,
+//         lpDependencies, 0, &dwBytesNeeded, &dwCount ) )
+//    {
+//         // If the Enum call succeeds, then there are no dependent
+//         // services, so do nothing.
+//         return TRUE;
+//    }
+//    else
+//    {
+//        if ( GetLastError() != ERROR_MORE_DATA )
+//            return FALSE; // Unexpected error
+//
+//        // Allocate a buffer for the dependencies.
+//        lpDependencies = (LPENUM_SERVICE_STATUS) HeapAlloc(
+//            GetProcessHeap(), HEAP_ZERO_MEMORY, dwBytesNeeded );
+//
+//        if ( !lpDependencies )
+//            return FALSE;
+//
+//        __try {
+//            // Enumerate the dependencies.
+//            if ( !EnumDependentServices( schService, SERVICE_ACTIVE,
+//                lpDependencies, dwBytesNeeded, &dwBytesNeeded,
+//                &dwCount ) )
+//            return FALSE;
+//
+//            for ( i = 0; i < dwCount; i++ )
+//            {
+//                ess = *(lpDependencies + i);
+//                // Open the service.
+//                hDepService = OpenService( schSCManager,
+//                   ess.lpServiceName,
+//                   SERVICE_STOP | SERVICE_QUERY_STATUS );
+//
+//                if ( !hDepService )
+//                   return FALSE;
+//
+//                __try {
+//                    // Send a stop code.
+//                    if ( !ControlService( hDepService,
+//                            SERVICE_CONTROL_STOP,
+//                            (LPSERVICE_STATUS) &ssp ) )
+//                    return FALSE;
+//
+//                    // Wait for the service to stop.
+//                    while ( ssp.dwCurrentState != SERVICE_STOPPED )
+//                    {
+//                        Sleep( ssp.dwWaitHint );
+//                        if ( !QueryServiceStatusEx(
+//                                hDepService,
+//                                SC_STATUS_PROCESS_INFO,
+//                                (LPBYTE)&ssp,
+//                                sizeof(SERVICE_STATUS_PROCESS),
+//                                &dwBytesNeeded ) )
+//                        return FALSE;
+//
+//                        if ( ssp.dwCurrentState == SERVICE_STOPPED )
+//                            break;
+//
+//                        if ( GetTickCount() - dwStartTime > dwTimeout )
+//                            return FALSE;
+//                    }
+//                }
+//                __finally
+//                {
+//                    // Always release the service handle.
+//                    CloseServiceHandle( hDepService );
+//                }
+//            }
+//        }
+//        __finally
+//        {
+//            // Always free the enumeration buffer.
+//            HeapFree( GetProcessHeap(), 0, lpDependencies );
+//        }
+//    }
+//    return TRUE;
+//}
+
