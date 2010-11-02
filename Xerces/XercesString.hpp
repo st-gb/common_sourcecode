@@ -155,6 +155,7 @@ namespace Xerces
     #define ANSI_OR_WCHAR(string) L ## string
   #endif
 
+  //@return 0=strings equal.
   inline int ansi_or_wchar_string_compare(
     const XMLCh * const cpc_xmlch,
     const wchar_t * const cpc_wch
@@ -174,6 +175,7 @@ namespace Xerces
     return 1 ;
   }
 
+  //@return 0=strings equal.
   inline int ansi_or_wchar_string_compare(
 //    const XMLCh * const cpc_xmlch,
 //    const char * const cpc_ch

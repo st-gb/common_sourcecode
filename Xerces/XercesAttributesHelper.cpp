@@ -4,6 +4,8 @@
  *  Created on: Jun 11, 2010
  *      Author: Stefan
  */
+//for template_character_type_string_compare(...)
+#include <Controller/character_string/generic_string_compare.hpp>
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 #include <Xerces/XercesAttributesHelper.hpp>
 #include <Xerces/XercesString.hpp>//Xerces::ConvertXercesStringToStdWstring(...)
@@ -161,59 +163,26 @@ BYTE XercesAttributesHelper::GetAttributeValue(
     //If the attribute exists.
     if(cp_xmlchAttributeValue)
     {
-      //TODO possibly use "GET_WCHAR_STRING_FROM_XERCES_STRING(
-      //cp_xmlchAttributeValue)" or 
-      //"namespace Xerces inline int ansi_or_wchar_string_compare(
-      //const XMLCh * cpc_xmlch,const char * cpc_ch)"
-      //as uniform code for both Linux and Windows instead of the code below.
       //"wcscmp(...)" does not work with "XMLCh *" under Linux (because it 
       //has 4 bytes under Linux and wcscmp(...) needs 2 bytes per character)?
-      //->use "strcmp(...)" under Linux
-#ifdef __linux__ 
-      char * pchAttributeValue = XERCES_CPP_NAMESPACE::XMLString::transcode(
-        cp_xmlchAttributeValue) ;
-      if( pchAttributeValue )
-      {
-        if( //if the strings are identical
-          strcmp(pchAttributeValue,"true") == 0 )
-        {
-          rbValue = true;
-          byReturn = SUCCESS;
-        }
-        else
-          if( strcmp(pchAttributeValue,"false") == 0 )
-          {
-            rbValue = false;
-            byReturn = SUCCESS;
-          }
-          //else
-          //  byReturn = FAILURE;
-        //Release memory of dyn. alloc. buffer (else memory leaks).
-        XERCES_CPP_NAMESPACE::XMLString::release(& pchAttributeValue);
-      }//if( pchAttributeValue )
-#else //#ifdef __linux__
-      if( //If the strings are identical.
-        //We can use "wcscmp(...)"-> no conversion to "char *" needed->faster
-        // if "XMLCh" takes 2 bytes like "wchar_t".
-        ! wcscmp( //Explicitly cast to "wchar_t *" to avoid Linux g++ warning.
-          (wchar_t *) cp_xmlchAttributeValue, L"true" )
+      //->I want to use a code that avoid a transcoding of "XMLCh" to "char"
+      //under Linux:
+      if( CharacterString::template_character_type_string_compare(
+          cp_xmlchAttributeValue,
+          "true" ) == CharacterString::both_strings_equal
         )
       {
         rbValue = true;
         byReturn = SUCCESS;
       }
-      else
+      else if( CharacterString::template_character_type_string_compare(
+          cp_xmlchAttributeValue,
+          "false" ) == CharacterString::both_strings_equal
+        )
       {
-        if( //If the strings are identical.
-          ! wcscmp(//Explicitly cast to "wchar_t *" to avoid Linux g++ warning.
-            (wchar_t *) cp_xmlchAttributeValue, L"false" )
-          )
-        {
-          rbValue = false;
-          byReturn = SUCCESS;
-        }
+        rbValue = false;
+        byReturn = SUCCESS;
       }
-#endif //#ifdef __linux__
     }//if(cp_xmlchAttributeValue)
     //Release memory of dyn. alloc. buffer (else memory leaks).
     XERCES_CPP_NAMESPACE::XMLString::release(&p_xmlchAttributeName);

@@ -50,7 +50,11 @@ public:
   }
 
   inline bool exists_inline( //void
-    unsigned char * p_vBegin, unsigned short wBytesize, bool bFullMatch )
+    unsigned char * p_vBegin, unsigned short wBytesize,
+    //If e.g. "# of bytes" and "# of bytes: 3": if bFullMatch == true, it
+    // returns "false, else it returns "true".
+    bool bFullMatch
+    )
   {
     bExists = false ;
     //unsigned char ** ar_p_byCurrent = m_ar_p_byRoot ;
@@ -88,6 +92,9 @@ public:
       //If any of the Trie strings exits at least partly in the param string.
        //wIndex > 0
        if( IsTrieLeaf(ar_p_byCurrent)
+           //If trie leaf AND trie is empty (wIndex == 0) then do _not_ return
+           // "true".
+           && wIndex > 0
          //if in trie: "hel" and "hello" and search for "hel" then "hel" is
          // not a leaf.
          || wIndex == wBytesize )
