@@ -606,13 +606,13 @@ BYTE XercesAttributesHelper::GetAttributeValue
 BYTE XercesAttributesHelper::GetAttributeValue
   (
   const XERCES_CPP_NAMESPACE::Attributes & cr_xercesc_attributes,
-  char * lpctstrAttrName,
+  const char * lpcstrAttrName,
   std::string & r_strValue
   )
 {
   BYTE byReturn = FAILURE;
   XMLCh * p_xmlchAttributeName = XERCES_CPP_NAMESPACE::XMLString::transcode(
-    lpctstrAttrName) ;
+    lpcstrAttrName) ;
   if( p_xmlchAttributeName )
   {
     const XMLCh * cp_xmlchAttributeValue = cr_xercesc_attributes.getValue(
@@ -630,11 +630,11 @@ BYTE XercesAttributesHelper::GetAttributeValue
         r_strValue = std::string(pchAttributeValue);
         byReturn = SUCCESS;
         //Release memory of dyn. alloc. buffer (else memory leaks).
-        XERCES_CPP_NAMESPACE::XMLString::release(&pchAttributeValue);
+        XERCES_CPP_NAMESPACE::XMLString::release( & pchAttributeValue);
       }
     }
     //Release memory of dyn. alloc. buffer (else memory leaks).
-    XERCES_CPP_NAMESPACE::XMLString::release(&p_xmlchAttributeName);
+    XERCES_CPP_NAMESPACE::XMLString::release( & p_xmlchAttributeName);
   }
   return byReturn ;
 }

@@ -12,7 +12,7 @@ namespace OperatingSystem
 {
 //  DWORD GetLastErrorCode() ;
 #ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
-  #include <Windows/GetLastErrorCode.hpp>
+  #include <Windows/ErrorCode/GetLastErrorCode.hpp>
 #endif
 #ifdef __linux__
   #include <Linux/GetLastErrorCode.hpp>

@@ -29,15 +29,19 @@
     #endif
   #endif//#if defined(COMPILE_FOR_CPUCONTROLLER_DYNLIB) && !defined(_DEBUG)
 
-  #if defined(_DEBUG) && defined(USE_STD_WCOUT)
+  #if defined(_DEBUG) //&& defined(USE_STD_WCOUT)
     #include <iostream> //for std::cout
     //this macro may NOT be called like the other one with "..."/ "__VA_ARGS__",
     //else many errors
     #define DEBUG_COUT(coutArgs)  {std::cout << coutArgs ; std::cout.flush(); }
     #define DEBUG_COUTN(coutArgs) { std::cout << coutArgs << "\n" ; \
       std::cout.flush(); }
-    #define DEBUG_WCOUTN(coutArgs) { std::wcout << coutArgs << L"\n" ; \
-      std::cout.flush(); }
+    #ifdef USE_STD_WCOUT
+      #define DEBUG_WCOUTN(coutArgs) { std::wcout << coutArgs << L"\n" ; \
+        std::cout.flush(); }
+    #else
+      #define DEBUG_WCOUTN(coutArgs) ;//->empty;block can be used after"if"/"else"
+    #endif
     //MinGW is able to use wprintf() but not std::wcout()
     #define DEBUG_WPRINTFN(...) { wprintf(__VA_ARGS__) ; wprintf(L"\n"); \
       fflush(stdout) ; }

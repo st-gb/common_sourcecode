@@ -12,17 +12,17 @@
 
   #include <Controller/character_string/stdtstr.hpp> //for std::tstring
 #ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
-  #include <data_structures/Trie/Trie.hpp> //class Trie
+  #include <data_structures/Trie/byteTrie/Trie.hpp> //class Trie
 #endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
 
 #ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
   //Use "windows.h" for g++ because the case matters.
-#ifdef _DEBUG
+//#ifdef _DEBUG
   //there were compile errors when windows.h was included.
   #include <windows.h> //for SYSTEMTIME
-#else //#ifdef _DEBUG
-  #include <winbase.h> //for SYSTEMTIME
-#endif //#ifdef _DEBUG
+//#else //#ifdef _DEBUG
+//  #include <winbase.h> //for SYSTEMTIME
+//#endif //#ifdef _DEBUG
 #else // ->Unix / Linux
   #include <sys/time.h> // gettimeofday(...)
   #include <time.h> // localtime(...)

@@ -5,7 +5,7 @@
  *      Author: Stefan
  */
 
-#include <Windows/LocalLanguageMessageFromErrorCode.h>
+#include <Windows/ErrorCode/LocalLanguageMessageFromErrorCode.h>
 #include <windows.h> //WINBASEAPI DWORD WINAPI GetLastError(void);
 
 std::string GetErrorMessageFromLastErrorCodeA()

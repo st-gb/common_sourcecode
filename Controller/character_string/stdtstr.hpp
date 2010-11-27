@@ -38,6 +38,29 @@ namespace std
 
  std::tstring Getstdtstring(const std::string & str ) ;
  std::tstring Getstdtstring(const std::wstring & wstr ) ;
+
+#if defined _UNICODE || defined UNICODE
+ inline std::tstring GetStdTstring_Inline(const std::string & cr_str )
+ {
+   std::wstring wstr( cr_str.begin(), cr_str.end() ) ;
+   return wstr ;
+ }
+ inline std::tstring GetStdTstring_Inline(const std::wstring & cr_wstr )
+ {
+   return cr_wstr ;
+ }
+#else //#if defined _UNICODE || defined UNICODE
+ inline std::tstring GetStdTstring_Inline(const std::string & cr_str )
+ {
+   return cr_str ;
+ }
+ inline std::tstring GetStdTstring_Inline(const std::wstring & cr_wstr )
+ {
+   std::string stdstr( cr_wstr.begin(), cr_wstr.end() ) ;
+   return stdstr ;
+ }
+#endif //#if defined _UNICODE || defined UNICODE
+
  //std::wstring GetStdWstring( const std::tstring & cr_stdtstr ) ;
  std::wstring GetStdWstring( const std::wstring & cr_str ) ;
  std::wstring GetStdWstring( const std::string & cr_str ) ;
@@ -46,12 +69,16 @@ namespace std
  std::string GetStdString(const std::wstring & cr_wstr ) ;
  //Just 1 instruction inside the function->inline does not waste space if
  //used multiple times, more performance.
- inline std::string GetStdStringInline(const std::wstring & cr_wstr )
+ inline std::string GetStdString_Inline(const std::wstring & cr_wstr )
  {
    return std::string( cr_wstr.begin(), cr_wstr.end() ) ;
 //   //from http://www.codeproject.com/KB/string/UtfConverter.aspx
 //   std::string stdstr ;
 //   stdstr.assign( cr_wstr.begin(), cr_wstr.end() ) ;
 //   return stdstr ;
+ }
+ inline std::string GetStdString_Inline(const std::string & cr_stdstr )
+ {
+   return cr_stdstr ;
  }
 #endif //STDTSTR_HPP_

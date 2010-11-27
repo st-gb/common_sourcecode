@@ -13,15 +13,17 @@
 
 void Trie::FreeMemory()
 {
-  char ch ;
+//  char ch ;
   //Arrays of pointers.
   unsigned char ** ar_p_byCurrent ;
   unsigned char ** ar_p_by1LevelAbove = NULL ;
   WORD wSize ;
   DEBUGN("data structure: FreeMemory")
   DEBUGN("root node array address: " << m_ar_p_byRoot )
+#ifdef _DEBUG
 //    std::string stdstrCurrent ;
   std::vector<unsigned char> stdvec_by ;
+#endif //#ifdef _DEBUG
 //  while( //Root is deleted and set to NULL if it has no more children.
 //      m_ar_p_byRoot )
   do
@@ -56,7 +58,9 @@ void Trie::FreeMemory()
         ar_p_byCurrent = //& ar_p_byCurrent[ wIndex ] ;
           (unsigned char **) ar_p_byCurrent[ wIndex ] ;
         //bNoChildNode = false ;
+#ifdef _DEBUG
         stdvec_by.push_back( (BYTE) wIndex ) ;
+#endif //#ifdef _DEBUG
         DEBUGN
         //DEBUG_COUTN
           ( "entering child node at address " << ar_p_byCurrent )
@@ -130,30 +134,9 @@ void Trie::FreeMemory()
         }
       }
     }
-//    DEBUG
-    //DEBUG_COUT
-//      ( "data structure: deleted: " )
-//    std::cout << "data structure: deleted: " ;
-    std::ostringstream  stdostringstream ;
-//    stdostringstream << "data structure: deleted: " ;
-    wSize = stdvec_by.size() ;
-    for( WORD wIndex = 0 ; wIndex < wSize ; ++ wIndex )
-    {
-      ch = stdvec_by.at( wIndex ) ;
-//      DEBUG
-      //DEBUG_COUT
-//        ( "\"" << ch << "\"/" << (WORD) ch << " " )
-//      std::cout <<  "\"" << ch << "\"/" << (WORD) ch << " " ;
-      stdostringstream << "\"" << ch << "\"/" << (WORD) ch << " " ;
-    }
-//    DEBUG
-    //DEBUG_COUT
-//      ( "\n" )
-    DEBUG( "data structure: deleted:" << stdostringstream.str() << "# nodes: " <<
-      m_dwNumberOfNodes )
-//    std::cout << "\n" ;
-//      stdstrCurrent.clear() ;
-    stdvec_by.clear() ;
+#ifdef _DEBUG
+    OutputDeletedByteArray_inline(stdvec_by) ;
+#endif
   }
   while( ar_p_by1LevelAbove ) ;
   LOGN("end of FreeMemory")
@@ -230,4 +213,33 @@ bool Trie::insert( //void
     }
   }
   return true ;
+}
+
+void Trie::OutputDeletedByteArray_inline( std::vector<unsigned char> &
+  stdvec_by )
+{
+//    DEBUG
+  //DEBUG_COUT
+//      ( "data structure: deleted: " )
+//    std::cout << "data structure: deleted: " ;
+  std::ostringstream  stdostringstream ;
+//    stdostringstream << "data structure: deleted: " ;
+  wSize = stdvec_by.size() ;
+  for( WORD wIndex = 0 ; wIndex < wSize ; ++ wIndex )
+  {
+    ch = stdvec_by.at( wIndex ) ;
+//      DEBUG
+    //DEBUG_COUT
+//        ( "\"" << ch << "\"/" << (WORD) ch << " " )
+//      std::cout <<  "\"" << ch << "\"/" << (WORD) ch << " " ;
+    stdostringstream << "\"" << ch << "\"/" << (WORD) ch << " " ;
+  }
+//    DEBUG
+  //DEBUG_COUT
+//      ( "\n" )
+  DEBUG( "data structure: deleted:" << stdostringstream.str()
+    << "# nodes: " << m_dwNumberOfNodes )
+//    std::cout << "\n" ;
+//      stdstrCurrent.clear() ;
+  stdvec_by.clear() ;
 }

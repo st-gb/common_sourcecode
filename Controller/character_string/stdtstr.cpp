@@ -30,7 +30,7 @@
 //   wstring()
 // }
 
- #else
+ #else //#if defined _UNICODE || defined UNICODE
  std::tstring Getstdtstring(const std::string & cr_str )
  {
    return cr_str ;
@@ -40,14 +40,14 @@
    std::string stdstr( cr_wstr.begin(), cr_wstr.end() ) ;
    return stdstr ;
  }
- #endif
+ #endif //#if defined _UNICODE || defined UNICODE
 
-  std::wstring GetStdWstring( const std::wstring & cr_wstr )
+ std::wstring GetStdWstring( const std::wstring & cr_wstr )
  {
    return cr_wstr ;
  }
 
-  std::wstring GetStdWstring( const std::string & cr_str )
+ std::wstring GetStdWstring( const std::string & cr_str )
  {
    std::wstring wstr( cr_str.begin(), cr_str.end() ) ;
    return wstr ;
@@ -59,7 +59,8 @@
  }
  std::string GetStdString(const std::wstring & cr_wstr )
  {
-   std::string stdstr( cr_wstr.begin(), cr_wstr.end() ) ;
-   return stdstr ;
+//   std::string stdstr( cr_wstr.begin(), cr_wstr.end() ) ;
+//   return stdstr ;
+   return GetStdString_Inline( cr_wstr) ;
  }
  //Let newline below to avoid g++ warning "no newline at end of file".

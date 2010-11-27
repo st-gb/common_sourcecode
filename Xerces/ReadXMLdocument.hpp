@@ -9,12 +9,15 @@
 #define READXMLDOCUMENT_HPP_
 
 //Xerces header files.
+#include <xercesc/sax/InputSource.hpp> //class XERCES_CPP_NAMESPACE::InputSource
+//XERCES_CPP_NAMESPACE::DefaultHandler
+#include <xercesc/sax2/DefaultHandler.hpp>
 //class XERCES_CPP_NAMESPACE::SAX2XMLReader
 #include <xercesc/sax2/SAX2XMLReader.hpp>
 //Class XERCES_CPP_NAMESPACE::XMLReaderFactory
 #include <xercesc/sax2/XMLReaderFactory.hpp>
 
-#include <string> //for std::wstring
+#include <string> //for class std::wstring
 
 //Own header files.
 #include <Controller/character_string/stdstring_format.hpp> //for to_strstring()
@@ -23,6 +26,7 @@
 //I do not do "using namespace XERCES_CPP_NAMESPACE" because so the class
 // names are eindeutig.
 
+//@return 0=success
 //"inline" because it may be called from with another function without
 //  an additional function call overhead.
 inline unsigned char ReadXMLdocument(

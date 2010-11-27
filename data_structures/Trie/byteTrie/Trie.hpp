@@ -8,9 +8,12 @@
 #ifndef TRIE_HPP_
 #define TRIE_HPP_
 
-//#include <preprocessor_macros/logging_preprocessor_macros.h>
+//#include <preprocessor_macros/logging_preprocessor_macros.h> //DEBUGN(...)
 #include <windef.h> //for BYTE etc.
 #include <string.h> //memset(...)
+
+#include <sstream> //std::ostringstream
+#include <vector.h> //class std::vector
 
 #define DIFFERENT_VALUES_PER_LEVEL 256
 
@@ -18,10 +21,12 @@ class Trie
 {
   bool bExists ;
   BYTE byValue ;
+  char ch ;
   //Arrays of char pointers.
   unsigned char * m_ar_p_byRoot [DIFFERENT_VALUES_PER_LEVEL] ;
   unsigned char ** ar_p_byCurrent ;
   unsigned short m_wBitsPerLevel ;
+  unsigned short wSize ;
   WORD wIndex ;
 public:
   DWORD m_dwNumberOfNodes ;
@@ -48,6 +53,7 @@ public:
         return false ;
     return true ;
   }
+  inline void OutputDeletedByteArray_inline(std::vector<unsigned char> & stdvec_by) ;
 
   inline bool exists_inline( //void
     unsigned char * p_vBegin, unsigned short wBytesize,

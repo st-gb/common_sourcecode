@@ -9,10 +9,9 @@
 #include <string>
 
 typedef unsigned long DWORD ;
-//diese Funktion liefert die zum DWORD-(unsigned long-) Wert 
-//der Windows-API-Funktion "DWORD GetLastError(void)" 
-//korrepsondierende Fehlermeldung als Text in der Standard-
-//Sprache der laufenden Windows-Sitzung
+//Diese Funktion liefert die zum DWORD-(unsigned long-) Wert der Windows-API-
+//Funktion "DWORD GetLastError(void)" korrepsondierende Fehlermeldung als Text
+//in der Standard-Sprache der laufenden Windows-Sitzung.
 //CString 
 DWORD GetLastErrorMessageString(
   DWORD dwErrorCodeConformToGetLastError ,

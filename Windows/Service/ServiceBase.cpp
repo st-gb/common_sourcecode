@@ -3,7 +3,7 @@
 #include <windows.h> //for SERVICE_TABLE_ENTRY, ... CreateService
 #include <iostream> //std::cout
 #include <sstream> //for class std::stringstream
-#include <Windows/LocalLanguageMessageFromErrorCode.h>
+#include <Windows/ErrorCode/LocalLanguageMessageFromErrorCode.h>
 
 bool ServiceBase::CanStartService(
 //  const TCHAR * cp_tchServiceName

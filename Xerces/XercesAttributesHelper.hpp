@@ -27,7 +27,11 @@ class XercesAttributesHelper
 {
 public:
   XercesAttributesHelper();
-
+  enum return_codes
+  {
+    getting_attribute_value_failed = 0 ,
+    getting_attribute_value_succeeded = 1
+  };
   //_Must_ be _defined_ here because of the template type: the templates type gets
   // replaced by the actual data type. When the declaration is separated from
   // the definition (what it usual) the template type is replaced by the actual
@@ -146,7 +150,7 @@ public:
     ) ;
   static BYTE GetAttributeValue(
     const XERCES_CPP_NAMESPACE::Attributes & attrs,
-    char * lpctstrAttrName,
+    const char * lpcstrAttrName,
 //    std::string & r_stdstrAttributeName ,
     std::string & r_strValue
     ) ;

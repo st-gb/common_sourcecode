@@ -44,6 +44,22 @@ wxString getwxString(const std::wstring & cr_stdwstr )
  return  wxstr ;
 }
 
+
+std::wstring GetStdWstring(wxString & wxstr)
+{
+  //see http://wiki.wxwidgets.org/Converting_everything_to_and_from_wxString
+  // #wxString_to_wchar_t.2A:
+#ifdef UNICODE
+  std::wstring stdwstr = std::wstring( wxstr.wc_str() ) ;
+#else
+  //see http://wiki.wxwidgets.org/Converting_everything_to_and_from_wxString
+  // #wxString_to_char.2A
+  std::string stdstr = std::string( wxstr.mb_str() ) ;
+  std::wstring stdwstr( stdstr.begin(), stdstr.end() ) ;
+#endif
+  return stdwstr ;
+}
+
 std::string GetStdString(wxString & wxstr)
 {
 ////#ifdef wxUSE_WCHAR_T
@@ -60,6 +76,6 @@ std::string GetStdString(wxString & wxstr)
 //#endif
   //from http://wiki.wxwidgets.org/Converting_everything_to_and_from_wxString#
   //  wxString_to_std::string:
-  std::string str = std::string(wxstr.mb_str());
+  std::string str = std::string( wxstr.mb_str() );
  return str ;
 }
