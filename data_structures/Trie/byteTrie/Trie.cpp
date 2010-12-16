@@ -17,7 +17,7 @@ void Trie::FreeMemory()
   //Arrays of pointers.
   unsigned char ** ar_p_byCurrent ;
   unsigned char ** ar_p_by1LevelAbove = NULL ;
-  WORD wSize ;
+  //WORD wSize ;
   DEBUGN("data structure: FreeMemory")
   DEBUGN("root node array address: " << m_ar_p_byRoot )
 #ifdef _DEBUG

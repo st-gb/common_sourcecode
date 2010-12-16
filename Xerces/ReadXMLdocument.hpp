@@ -22,6 +22,9 @@
 //Own header files.
 #include <Controller/character_string/stdstring_format.hpp> //for to_strstring()
 #include <Controller/character_string/stdtstr.hpp> //for GetStdString(...)
+#include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
+
+typedef unsigned char BYTE ;
 
 //I do not do "using namespace XERCES_CPP_NAMESPACE" because so the class
 // names are eindeutig.
@@ -38,6 +41,7 @@ inline unsigned char ReadXMLdocument(
   std::wstring & r_stdwstrErrorMessage
   )
 {
+  LOGN("ReadXMLdocument begin")
   unsigned char byReturn = 1 ;
     //DEBUG("ReadXMLfileInitAndTermXerces begin--filename:%s\n",xmlFile);
   //Initialize to NULL just to avoid (g++) compiler warning.
@@ -59,7 +63,7 @@ inline unsigned char ReadXMLdocument(
       & defaultHandler );
     try
     {
-//      LOGN( "before parsing XML document" );
+      LOGN( "before parsing XML document" );
       p_sax2xmlreader->
       //from SAX2XMLReader::parse(const   InputSource&    source):
 //        * @exception SAXException Any SAX exception, possibly
@@ -176,6 +180,7 @@ inline unsigned char ReadXMLdocument(
   else
     r_stdwstrErrorMessage = std::wstring (
       L"Xerces failed to create an XML reader" );
+  LOGN("ReadXMLdocument end")
 //    return SUCCESS;
   return byReturn ;
 }

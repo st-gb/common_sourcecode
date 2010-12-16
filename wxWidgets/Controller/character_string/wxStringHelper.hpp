@@ -16,7 +16,8 @@ wxString getwxString(const std::string & str ) ;
 //wxString getwxString(std::tstring & tstr ) ;
 wxString getwxString(const std::wstring & stdwstr ) ;
 
-std::string GetStdString(wxString & wxstr) ;
+std::string GetStdString(const wxString & wxstr) ;
+std::wstring GetStdWstring(const wxString & cr_wxstr) ;
 
 inline std::tstring GetStdTstring_Inline( wxString & r_wxstr)
 {

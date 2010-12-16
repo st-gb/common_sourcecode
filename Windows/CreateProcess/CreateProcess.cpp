@@ -21,7 +21,7 @@
 #include <windef.h> //BOOL
 //#include <global.h>
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
-#include <Windows/LocalLanguageMessageFromErrorCode.h>
+#include <Windows/ErrorCode/LocalLanguageMessageFromErrorCode.h>
 //some MinGW installation's <wtsapi32.h> do not declare "WTSQueryUserToken"
 #ifdef USE_WTSQueryUserToken
   #if _WIN32_WINNT < 0x0501

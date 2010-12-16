@@ -13,7 +13,7 @@
 #include <string.h> //memset(...)
 
 #include <sstream> //std::ostringstream
-#include <vector.h> //class std::vector
+#include <vector> //class std::vector
 
 #define DIFFERENT_VALUES_PER_LEVEL 256
 
