@@ -9,6 +9,8 @@
 #include <Windows.h> //for CreateFile(...)
 #include <iostream>
 
+//::GetErrorMessageFromErrorCodeA(DWORD)
+#include <Controller/GetErrorMessageFromLastErrorCode.hpp>
 #include "ReadDirectoryChanges_synchronous.hpp"
 #include "../ProcessReadDirectoryChangesRecords.hpp"
 
@@ -23,17 +25,21 @@ DWORD WINAPI WatchSubTreeThreadProc(LPVOID lpParameter)
     //specified file, device, named pipe, or mail slot.
     //If the function fails, the return value is INVALID_HANDLE_VALUE
     HANDLE handleDirectory ;
-    std::cout << "WatchSubTreeThreadProc\n" ;
-    handleDirectory = GetHandleToDirectory(//ps_fswatch
+    LOGN( "WatchSubTreeThreadProc" )
+    handleDirectory = Windows::ReadDirectoryChangesW::GetHandleToDirectory(
+      //ps_fswatch
       ps_fswatch->stdwstrRootPath) ;
-    std::cout << "CreateFile result: " << handleDirectory << "\n" ;
+    LOGN( "CreateFile result: " << handleDirectory )
     //http://msdn.microsoft.com/en-us/library/aa363858%28VS.85%29.aspx:
     //"If the function fails, the return value is INVALID_HANDLE_VALUE.
     //To get extended error information, call GetLastError."
     if( handleDirectory == INVALID_HANDLE_VALUE )
     {
-      std::cout << "creating dir handle failed\n" ;
-      throw FileSystemEventException( ::GetLastError() ) ;
+      DWORD dwLastError = ::GetLastError() ;
+      LOGN("creating dir handle failed:" << ::GetErrorMessageFromErrorCodeA(
+        dwLastError) )
+//      throw FileSystemEventException(  ) ;
+      return dwLastError ;
     }
     else
     {
@@ -47,10 +53,12 @@ DWORD WINAPI WatchSubTreeThreadProc(LPVOID lpParameter)
         FILE_NOTIFY_CHANGE_SIZE |
         FILE_NOTIFY_CHANGE_LAST_WRITE ;
   //    LPVOID lpvoid ;
-      FILE_NOTIFY_INFORMATION * p_file_notify_information ;
+      FILE_NOTIFY_INFORMATION * p_file_notify_information
+       //Init with NULL to avoid g++'s "might be used uninitialized" warning.
+        = NULL ;
       BYTE arby[READ_DIR_CHANGES_BUFFER_SIZE] ;
       BOOL boolReadDirectoryChangesW_succeeded ;
-      std::cout << "creating dir handle succeeded\n" ;
+      LOGN( "creating dir handle succeeded" )
       //ReadDirectoryChangesW fails with ERROR_INVALID_PARAMETER when the
       //buffer length is greater than 64 KB and the application is monitoring
       //a directory over the network. This is due to a packet size limitation
@@ -85,6 +93,7 @@ DWORD WINAPI WatchSubTreeThreadProc(LPVOID lpParameter)
         );
         if( boolReadDirectoryChangesW_succeeded )
         {
+          LOGN( "ReadDirectoryChangesW succeeded." );
           ProcessReadDirectoryChangesRecords(
             dwCurrentOffset,
             p_file_notify_information,
@@ -93,8 +102,13 @@ DWORD WINAPI WatchSubTreeThreadProc(LPVOID lpParameter)
             ps_fswatch);
         }
         else
-          throw FileSystemEventException( ::GetLastError() ) ;
+        {
+          LOGN( "ReadDirectoryChangesW failed." );
+//          throw FileSystemEventException( ::GetLastError() ) ;
+          return ::GetLastError() ;
+        }
       }
+      ::CloseHandle(handleDirectory);
       LOGN("WatchSubTreeThreadProc--ps_fswatch->m_v_bWatch is false")
     }
   }
@@ -103,10 +117,13 @@ DWORD WINAPI WatchSubTreeThreadProc(LPVOID lpParameter)
 
 using namespace Windows ;
 
-ReadDirectoryChanges_synchronous::ReadDirectoryChanges_synchronous() {
+ReadDirectoryChanges_synchronous::ReadDirectoryChanges_synchronous()
+{
 }
 
-ReadDirectoryChanges_synchronous::ReadDirectoryChanges_synchronous(const ReadDirectoryChanges_synchronous& orig) {
+ReadDirectoryChanges_synchronous::ReadDirectoryChanges_synchronous(
+  const ReadDirectoryChanges_synchronous& orig)
+{
 }
 
 ReadDirectoryChanges_synchronous::~ReadDirectoryChanges_synchronous() {
@@ -120,7 +137,8 @@ ReadDirectoryChanges_synchronous::~ReadDirectoryChanges_synchronous() {
 //}
 
 //Return value: success or failure.
-BYTE ReadDirectoryChanges_synchronous::WatchSubTree( 
+//BYTE
+DWORD ReadDirectoryChanges_synchronous::WatchSubTree(
 //  const std::tstring & tstrRootPath ,
   const std::wstring & cr_stdwstrRootPath ,
 //  void (* callback )( WCHAR * FileName, DWORD FileNameLength, DWORD Action )
@@ -156,7 +174,8 @@ BYTE ReadDirectoryChanges_synchronous::WatchSubTree(
     & dwThreadId
     );   // returns the thread identifier
   ::CloseHandle(handleThread) ;
-  return true ;
+  return //true ;
+    0 ;
 //  std::cout << "after CreateThread\n" ;
 }
 

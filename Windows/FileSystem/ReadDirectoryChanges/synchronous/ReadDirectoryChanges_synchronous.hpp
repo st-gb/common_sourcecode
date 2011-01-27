@@ -20,7 +20,8 @@ namespace Windows
     ReadDirectoryChanges_synchronous();
     ReadDirectoryChanges_synchronous(const ReadDirectoryChanges_synchronous& orig);
     virtual ~ReadDirectoryChanges_synchronous();
-    BYTE WatchSubTree(
+    //BYTE
+    DWORD WatchSubTree(
       const std::tstring & strRootPath ,
   //    const std::wstring & cr_stdwstrRootPath ,
       //Function pointer.

@@ -10,7 +10,8 @@
 
 #include <wx/file.h>
 #include <windef.h> //BOOL
-#include <windows.h> //ULONGLONG
+//#include <windows.h> //ULONGLONG
+#include <winnt.h> //ULONGLONG
 
 //class CFileException ;
 #include "CFileException.hpp"

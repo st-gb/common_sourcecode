@@ -44,13 +44,21 @@ struct S_FSwatch
 class I_FileSystemEvents
 {
 public:
+  enum starting_watch_result
+  {
+    success ,
+    failure
+  };
   //implement destructor because else g++: "warning: `class I_FileSystemEvents'
   //has virtual functions but non-virtual destructor"
   virtual ~I_FileSystemEvents() {}
   std::set<std::tstring> m_stdset_stdtstrWatchedDir ;
   struct S_FSwatch m_s_fs_watch ;
+  virtual bool IsBeingWatched(  const std::tstring & strRootPath )
+    { return false ; }
   //Return value: success or failure.
-  virtual BYTE WatchSubTree(
+  virtual //BYTE
+    DWORD WatchSubTree(
 //    const std::tstring & strRootPath ,
     const std::wstring & cr_stdwstrRootPath ,
 //    void ( * callback )(WCHAR * FileName, DWORD FileNameLength, DWORD Action )

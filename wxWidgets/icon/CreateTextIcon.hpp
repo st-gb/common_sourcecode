@@ -9,9 +9,12 @@
 #define CREATETEXTICON_HPP_
 
 //Forward declarations.
+class wxColour;
 class wxIcon ;
 class wxString ;
 
 void CreateTextIcon( wxIcon & icon, const wxString & r_wxstr ) ;
+void CreateTextIcon( wxIcon & icon, const wxString & r_wxstr, const wxColour & ) ;
+void CreateWhiteTextIcon( wxIcon & icon, const wxString & r_wxstr ) ;
 
 #endif /* CREATETEXTICON_HPP_ */

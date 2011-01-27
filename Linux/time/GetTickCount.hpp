@@ -5,10 +5,15 @@
  *      Author: Stefan
  */
 
-#ifndef GETTICKCOUNT_HPP_
-#define GETTICKCOUNT_HPP_
+//#ifndef GETTICKCOUNT_HPP_
+//#define GETTICKCOUNT_HPP_
 
+#ifdef _DEBUG
   #include <preprocessor_macros/logging_preprocessor_macros.h> //DEBUGN(...)
+#else
+  #define DEBUGN(...) /* ->empty*/
+#endif //#ifdef _DEBUG
+
   #include <sys/time.h> // gettimeofday(...)
 //  #include <windef.h> //DWORD
 
@@ -54,4 +59,4 @@
 //    }
   }
 
-#endif /* GETTICKCOUNT_HPP_ */
+//#endif /* GETTICKCOUNT_HPP_ */

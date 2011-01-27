@@ -1,5 +1,9 @@
-#pragma once
-
+/*
+ * GetFilenameWithoutExtension.cpp
+ *
+ *  Created on: Jan 23, 2011
+ *      Author: Stefan
+ */
 #include <string> //class std::string
 
 std::string GetFilenameWithoutExtension(

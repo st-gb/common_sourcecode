@@ -55,6 +55,16 @@
 //    #define DEBUGWN_WSPRINTF(...) { } /* block can be used after "if"/"else"*/
   #endif //#ifdef _DEBUG
 
+//May be useful for finding logging errors: if the/ a global Logger variable
+//has already been destroyed this leads/ may lead to program crashs.
+#ifdef LOG_LOGGER_OUTPUT_TO_STDOUT_BEFORE
+  #define POSSIBLY_LOG_TO_STDOUT(coutArgs) \
+    { std::cout << coutArgs ; std::cout.flush(); }
+#else
+  #define POSSIBLY_LOG_TO_STDOUT(coutArgs) ; /* ->empty; block can be used
+    after"if"/"else" */
+#endif
+
 #ifdef COMPILE_WITH_LOG
 //  #define USE_OWN_LOGGER
   #ifdef USE_OWN_LOGGER
@@ -116,6 +126,7 @@
       g_stdstrLog = strstream.str() ; \
       /*g_logger->Log(to_ostream) ; */ \
       /*g_logger.Log( stdstr ) ;*/ \
+      POSSIBLY_LOG_TO_STDOUT(g_stdstrLog) \
       OWN_LOGGER_LOG_LOGGER_NAME( logger ,/*stdstr*/ g_stdstrLog ) \
       OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger) \
       LOG4CPLUS_INFO(log4cplus_logger, /*stdstr*/ g_stdstrLog ); \

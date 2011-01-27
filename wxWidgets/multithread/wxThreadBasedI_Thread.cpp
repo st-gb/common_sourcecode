@@ -28,7 +28,9 @@ void *
 wxThreadFuncStarterThread::Entry()
 {
   LOGN("starter thread : before calling the worker function")
-  return (void*) m_thread_func( mp_v ) ;
+  DWORD dwReturn = m_thread_func( mp_v ) ;
+  LOGN("starter thread: return code of the thread function:" << dwReturn)
+  return (void*) dwReturn;
 }
 
 //  BYTE wxThreadBasedI_Thread::Entry( )
@@ -132,14 +134,21 @@ void wxThreadBasedI_Thread::Delete()
   {
     DEBUGN("wxThreadBasedI_Thread::Wait()")
     if( mp_wxthreadfuncstarterthread)
-      //http://docs.wxwidgets.org/stable/wx_wxthread.html#wxthreadwait:
-      //"Waits for a joinable thread to terminate and returns the value the
-      //thread returned from wxThread::Entry  or (ExitCode)-1 on error.
-      //Notice that, unlike Delete  doesn't cancel the thread in any way so
-      //the caller waits for as long as it takes to the thread to exit.
-      //You can only Wait() for joinable (not detached) threads.
-      //This function can only be called from another thread context."
-      return mp_wxthreadfuncstarterthread->Wait() ;
+    {
+      wxThread::ExitCode wxthread_exit_code =
+        //http://docs.wxwidgets.org/stable/wx_wxthread.html#wxthreadwait:
+        //"Waits for a joinable thread to terminate and returns the value the
+        //thread returned from wxThread::Entry  or (ExitCode)-1 on error.
+        //Notice that, unlike Delete  doesn't cancel the thread in any way so
+        //the caller waits for as long as it takes to the thread to exit.
+        //You can only Wait() for joinable (not detached) threads.
+        //This function can only be called from another thread context."
+        mp_wxthreadfuncstarterthread->Wait() ;
+      LOGN("exit code from starter thread:" << wxthread_exit_code )
+      return wxthread_exit_code;
+    }
+    //TODO better return -1 for error?: Wait() also returns (ExitCode)-1" on
+    //error
     return (void *) 1 ;
   }
 //  BYTE wxThreadBasedI_Thread::start( pfnThreadFunc, void * p_v )

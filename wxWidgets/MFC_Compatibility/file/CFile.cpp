@@ -8,6 +8,8 @@
 #include <wx/file.h>
 #include "CFile.hpp"
 #include "CFileException.hpp"
+//GetwxString_Inline( LPCSTR )
+#include <wxWidgets/Controller/character_string/wxStringHelper.hpp>
 
 using namespace MFC_Compatibility ;
 
@@ -43,6 +45,9 @@ inline //virtual
 //  return false ;
 }
 
+//If Unicode then TCHAR->WCHAR, so we can also declare/ define an explicitely
+// "char" version.
+#if defined( _UNICODE) || defined(UNICODE)
 inline //virtual
   //see http://msdn.microsoft.com/de-de/library/hwbccf8z%28VS.80%29.aspx:
   BOOL CFile::Open(
@@ -56,6 +61,7 @@ inline //virtual
     //http://docs.wxwidgets.org/trunk/classwx_file.html
     // #70f2abe0e310dcf77ea6aeaac60df25b:
     // "Opens the file, returning true if successful."
-    Open( lpcstrFileName, wxfile_openmode ) ;
+    Open( GetwxString_Inline( lpcstrFileName ), wxfile_openmode ) ;
 //  return false ;
 }
+#endif //#if defined( _UNICODE) || defined(UNICODE)

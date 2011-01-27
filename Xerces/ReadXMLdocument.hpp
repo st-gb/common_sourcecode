@@ -63,7 +63,11 @@ inline unsigned char ReadXMLdocument(
       & defaultHandler );
     try
     {
-      LOGN( "before parsing XML document" );
+      LOGN( "before parsing XML document"
+//        << GetStdStringInline(
+//            ConvertXercesStringToStdWstring( cr_inputsource.getPublicId() )
+//          )
+        )
       p_sax2xmlreader->
       //from SAX2XMLReader::parse(const   InputSource&    source):
 //        * @exception SAXException Any SAX exception, possibly
@@ -76,6 +80,7 @@ inline unsigned char ReadXMLdocument(
 //          if( model.m_bTruncateLogFileForEveryStartup )
 //              g_logger.TruncateFileToZeroAndRewrite() ;
        byReturn = 0 ;
+       LOGN( "XML document successfully parsed." );
     }
     catch ( const XERCES_CPP_NAMESPACE::XMLException & cr_xmlexception )
     {

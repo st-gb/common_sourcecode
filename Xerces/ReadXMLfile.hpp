@@ -48,6 +48,7 @@ inline BYTE ReadXMLfile_Inline(
   return by ;
 }
 
+//@return 0=success
 inline BYTE ReadXMLfileInitAndTermXerces_Inline(
   const char * const cpc_chXMLfilePath ,
   //Base class of implementing Xerces XML handlers.
@@ -59,13 +60,14 @@ inline BYTE ReadXMLfileInitAndTermXerces_Inline(
 {
   if( InitializeXerces() )
   {
-    ReadXMLfile_Inline(
+    return ReadXMLfile_Inline(
       cpc_chXMLfilePath ,
       pc_defaulthandler ,
       r_stdwstrErrorMessage
       ) ;
     TerminateXerces() ;
   }
+  return 1 ;
 }
 
 #endif /* READXMLFILE_HPP_ */

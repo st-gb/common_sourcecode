@@ -13,8 +13,8 @@ namespace Windows_API
 
   Thread::Thread(BYTE byThreadType)
     :
-      m_byThreadType (byThreadType)
-      , m_handleThread( NULL )
+    m_byThreadType (byThreadType)
+    , m_handleThread( NULL )
   {
 
   }

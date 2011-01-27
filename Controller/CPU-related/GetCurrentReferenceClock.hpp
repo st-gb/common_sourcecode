@@ -13,11 +13,8 @@
 #ifndef GETCURRENTREFERENCECLOCK_HPP_
 #define GETCURRENTREFERENCECLOCK_HPP_
 
-#ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
-  #include <windows.h> // GetTickCount()
-#else
-  #include <Linux/GetTickCount.hpp>
-#endif
+//#include <Controller/time/GetTimeAsMillisecondsValue.h>
+#include <Controller/time/GetTickCount.hpp> //DWORD ::GetTickCount()
 
 #include <preprocessor_macros/value_difference.h> //ULONG_VALUE_DIFF
 #include "ReadTimeStampCounter.h" //ReadTSCinOrder(...)

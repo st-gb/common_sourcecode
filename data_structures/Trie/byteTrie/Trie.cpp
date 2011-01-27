@@ -137,9 +137,10 @@ void Trie::FreeMemory()
 #ifdef _DEBUG
     OutputDeletedByteArray_inline(stdvec_by) ;
 #endif
+    DEBUGN("ar_p_by1LevelAbove:" << ar_p_by1LevelAbove)
   }
   while( ar_p_by1LevelAbove ) ;
-  LOGN("end of FreeMemory")
+  DEBUGN("end of FreeMemory")
 }
 
 Trie::~Trie()

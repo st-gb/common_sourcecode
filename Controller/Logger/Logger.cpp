@@ -39,7 +39,7 @@ Logger::~Logger()
 {
 //  LOGN("~Logger")
 #ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
-  m_trie.FreeMemory() ;
+//  m_trie.FreeMemory() ;
 #endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
   delete mp_ofstream ;
   //Set to NULL so the calling Log() evaluates the pointer address if it is

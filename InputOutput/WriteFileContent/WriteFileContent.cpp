@@ -9,7 +9,7 @@ BYTE WriteFileContent(
   const std::string & cr_stdstrFileContent
   )
 {
-  BYTE by = 0 ;
+  BYTE by = 1 ;
   std::ofstream stdofstream ;
   stdofstream.open( cr_stdstrFilePath.c_str()
     , //std::ifstream::in
@@ -36,7 +36,7 @@ BYTE WriteFileContent(
 //      //string terminating NULL char.
 //      '\0' ;
     stdofstream.close();
-    by = 1 ;
+    by = 0 ;
   }
   else
   {

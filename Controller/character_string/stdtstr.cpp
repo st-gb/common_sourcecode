@@ -3,6 +3,7 @@
 //#endif//#ifdef _MSC_VER
 
 #include "stdtstr.hpp"
+#include <preprocessor_macros/string_typedefs.h> //LPCWSTR
 
  #if defined _UNICODE || defined UNICODE
 
@@ -41,6 +42,11 @@
    return stdstr ;
  }
  #endif //#if defined _UNICODE || defined UNICODE
+
+ std::wstring GetStdWstring( LPCWSTR cp_lpwstr )
+ {
+   return std::wstring(cp_lpwstr);
+ }
 
  std::wstring GetStdWstring( const std::wstring & cr_wstr )
  {

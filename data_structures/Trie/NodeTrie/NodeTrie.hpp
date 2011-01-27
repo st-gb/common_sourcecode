@@ -40,12 +40,13 @@ class NodeTrie
 {
   bool bExists ;
   char ch ;
-#ifdef _DEBUG
+  WORD m_wNodeSizeInByte ;
+//#ifdef _DEBUG
   unsigned long m_dwNumberOfNodes ;
-#endif
+//#endif
   unsigned char byValue ;
   unsigned short m_wNumberOfNodesPerHierarchyLevel ;
-  unsigned short wIndex ;
+  unsigned short m_wIndex ;
   unsigned short wSize ;
   NodeTrieNode ** m_ar_nodetrienodeRoot ;
   NodeTrieNode m_nodetrienodeRoot ;
@@ -54,14 +55,16 @@ class NodeTrie
 public:
   NodeTrie( unsigned short wNumberOfNodes )
     :
-#ifdef _DEBUG
+//#ifdef _DEBUG
     m_dwNumberOfNodes(0) ,
-#endif
+//#endif
     m_wNumberOfNodesPerHierarchyLevel( wNumberOfNodes )
     , m_nodetrienodeRoot(wNumberOfNodes)
   {
 //    m_ar_nodetrienodeRoot = new NodeTrieNode * [
 //      m_wNumberOfNodesPerHierarchyLevel ] ;
+    m_wNodeSizeInByte = sizeof(NodeTrieNode) + sizeof(NodeTrieNode *) *
+      m_wNumberOfNodesPerHierarchyLevel + sizeof(void *) ;
   }
   ~NodeTrie()
   {
@@ -89,17 +92,26 @@ public:
     bool bFullMatch
     )
   {
+#ifdef COMPILE_WITH_LOG
+    std::stringstream strstream ;
+    for(unsigned short wIndex = 0 ; wIndex < wBytesize ; ++ wIndex )
+    {
+      strstream << p_vBegin[ wIndex ] << " " ;
+    }
+    LOGN("NodeTrie::contains_inline(\"" << strstream.str() << "\")" )
+#else
     LOGN("NodeTrie::contains_inline(...," << wBytesize << ")")
+#endif
     bExists = false ;
     //unsigned char ** ar_p_byCurrent = m_ar_p_byRoot ;
     //m_ar_nodetrienodeCurrent = m_ar_nodetrienodeRoot ;
     m_p_nodetrienodeCurrent = & m_nodetrienodeRoot ;
   //  LOGN("Trie::exists")
-    for( wIndex = 0 ; wIndex < wBytesize ; ++ wIndex )
+    for( m_wIndex = 0 ; m_wIndex < wBytesize ; ++ m_wIndex )
     {
-      byValue = p_vBegin[wIndex] ;
+      byValue = p_vBegin[m_wIndex] ;
       LOGN("NodeTrie::contains_inline"
-        << " index:" << wIndex
+        << " index:" << m_wIndex
         << " byValue:" << (WORD) byValue
         )
       //If pointer address is not NULL.
@@ -123,7 +135,7 @@ public:
       )
     {
       //All nodes were found -> match.
-      if( wIndex == wBytesize )
+      if( m_wIndex == wBytesize )
       {
 //        bExists = true ;
         return //m_ar_nodetrienodeCurrent ;
@@ -134,14 +146,14 @@ public:
 //      // "hello" -> full prefix match
 //    {
 //      //If any of the Trie strings exits at least partly in the param string.
-//       //wIndex > 0
+//       //m_wIndex > 0
 //       if( IsTrieLeaf(ar_p_byCurrent)
-//           //If trie leaf AND trie is empty (wIndex == 0) then do _not_ return
+//           //If trie leaf AND trie is empty (m_wIndex == 0) then do _not_ return
 //           // "true".
-//           && wIndex > 0
+//           && m_wIndex > 0
 //         //if in trie: "hel" and "hello" and search for "hel" then "hel" is
 //         // not a leaf.
-//         || wIndex == wBytesize )
+//         || m_wIndex == wBytesize )
 //         bExists = true ;
 //    }
     return //bExists ;
@@ -183,9 +195,9 @@ public:
       {
         bTrieNodeDeleted = false ;
         m_p_nodetrienodeCurrent = & m_nodetrienodeRoot ;
-        for( wIndex = 0 ; wIndex < wBytesize ; ++ wIndex )
+        for( m_wIndex = 0 ; m_wIndex < wBytesize ; ++ m_wIndex )
         {
-          byValue = p_vBegin[wIndex] ;
+          byValue = p_vBegin[m_wIndex] ;
       //    LOGN("Trie::exists ar_p_byCurrent:" << ar_p_byCurrent
       //      << " ar_p_byCurrent[ byValue ]:" << (DWORD) ar_p_byCurrent[ byValue ])
 
@@ -282,7 +294,7 @@ public:
     //Arrays of pointers.
     NodeTrieNode ** ar_p_byCurrent ;
     NodeTrieNode ** ar_p_by1LevelAbove = NULL ;
-    WORD wSize ;
+//    WORD wSize ;
     DEBUGN("data structure: FreeMemory")
     DEBUGN("root node array address: " << & m_ar_nodetrienodeRoot )
 #ifdef _DEBUG
@@ -414,6 +426,18 @@ public:
   NodeTrieNode * insert_inline( //void
     unsigned char * p_vBegin, unsigned short wBytesize)
   {
+#ifdef COMPILE_WITH_LOG
+    std::ostringstream strstream ;
+    for(unsigned short wIndex = 0 ; wIndex < wBytesize ; ++ wIndex )
+    {
+      strstream << (WORD) p_vBegin[ wIndex ] << " " ;
+    }
+    std::string stdstr = strstream.str() ;
+    LOGN("NodeTrie::insert_inline(\"" << stdstr << "\","
+      << wBytesize << ")" )
+#else
+    LOGN("NodeTrie::insert_inline()" )
+#endif
 //    NodeTrieNode ** ar_nodetrienodeCurrent = m_ar_nodetrienodeRoot ;
     NodeTrieNode * p_nodetrienodeCurrent = & m_nodetrienodeRoot ;
 //    NodeTrieNode ** p_p_nodetrienode ;
@@ -421,9 +445,12 @@ public:
     for( WORD wIndex = 0 ; wIndex < wBytesize ; ++ wIndex )
     {
       byValue = p_vBegin[wIndex] ;
-      DEBUGN("address of level: " << p_nodetrienodeCurrent
+      LOGN("address of level: " << p_nodetrienodeCurrent
         << "node address: " << (DWORD) p_nodetrienodeCurrent->
-        m_arp_nodetrienode1LowerLevel[ byValue ] )
+        m_arp_nodetrienode1LowerLevel[ byValue ]
+        << " index:" << wIndex
+        << " character:" << p_vBegin[wIndex]
+        )
       if( //ar_nodetrienodeCurrent[ byValue ]
           p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[ byValue ]
         )
@@ -442,40 +469,49 @@ public:
 
         NodeTrieNode * p_nodetrienode = new NodeTrieNode(
           m_wNumberOfNodesPerHierarchyLevel ) ;
-        DEBUGN("address of node where to create a next level: " <<
-          & p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel [ byValue ]
-          << " address of created array:" << p_nodetrienode )
-
-        //Store the address of the created array at the node.
-//        ar_nodetrienodeCurrent[ byValue ] = (NodeTrieNode *) p_p_nodetrienode ;
-        p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[ byValue ] =
-          p_nodetrienode ;
-
-//        ar_nodetrienodeCurrent = //(unsigned char **) ar_p_byCurrent[ byValue ] ;
-//            p_p_nodetrienode ;
-        //Value will have "abitrary" value -> set to NULL to mark the end.
-        //cites from: http://www.cplusplus.com/reference/clibrary/cstring/memset/
-        memset( //Pointer to the block of memory to fill.
-//          ar_nodetrienodeCurrent,
-          p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel ,
-          //Value to be set.
-          0 ,
-          //Number of bytes to be set to the value.
-          m_wNumberOfNodesPerHierarchyLevel * sizeof(NodeTrieNode *) ) ;
         //Allocation succeeded.
         if( //ar_nodetrienodeCurrent
             p_nodetrienode
           )
         {
-  #ifdef _DEBUG
+          LOGN("# nodes:" << m_dwNumberOfNodes << " overall size="
+            << m_wNodeSizeInByte << "*" << m_dwNumberOfNodes << "="
+            << m_wNodeSizeInByte * m_dwNumberOfNodes
+            << "Address of node where to create a next level: " <<
+            & p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel [ byValue ]
+            << " address of created array:" << p_nodetrienode )
+
+          //Store the address of the created array at the node.
+  //        ar_nodetrienodeCurrent[ byValue ] = (NodeTrieNode *) p_p_nodetrienode ;
+          p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[ byValue ] =
+            p_nodetrienode ;
+
+  //        ar_nodetrienodeCurrent = //(unsigned char **) ar_p_byCurrent[ byValue ] ;
+  //            p_p_nodetrienode ;
+          //Value will have "abitrary" value -> set to NULL to mark the end.
+          //cites from: http://www.cplusplus.com/reference/clibrary/cstring/memset/
+          memset( //Pointer to the block of memory to fill.
+  //          ar_nodetrienodeCurrent,
+            p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel ,
+            //Value to be set.
+            0 ,
+            //Number of bytes to be set to the value.
+            m_wNumberOfNodesPerHierarchyLevel * sizeof(NodeTrieNode *)
+            ) ;
+//  #ifdef _DEBUG
           ++ m_dwNumberOfNodes ;
-  #endif
+//  #endif
         }
         else
+        {
+          LOGN("NodeTrie::insert_inline(...)--allocating a node failed--"
+              "return NULL")
           return //false ;
             NULL ;
+        }
       }
     }
+    LOGN("NodeTrie::insert_inline(...)--return " << p_nodetrienodeCurrent )
     return //true ;
       //ar_nodetrienodeCurrent ;
       p_nodetrienodeCurrent ;

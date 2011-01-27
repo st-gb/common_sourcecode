@@ -9,5 +9,7 @@
 #define WINDEF_H_
 
 #include <preprocessor_macros/Windows_compatible_typedefs.h>
+//from MinGW's windef.h
+typedef unsigned int UINT,*PUINT,*LPUINT;
 
 #endif /* WINDEF_H_ */

@@ -23,6 +23,10 @@ namespace Windows_API
   public:
     void Delete() {} ;
     BYTE start( pfnThreadFunc, void * p_v ) ;
+    Thread()
+      : m_handleThread( NULL )
+    {
+    }
     Thread( BYTE byThreadType );
     virtual
     ~Thread();

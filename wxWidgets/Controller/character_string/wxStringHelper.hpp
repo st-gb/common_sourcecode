@@ -11,10 +11,19 @@
 #include <string> //class std::string
 #include <wx/string.h> //wxString
 #include <Controller/character_string/stdtstr.hpp> //class std::tstring
+//#include <winnt.h> //LPCSTR
+#include <preprocessor_macros/string_typedefs.h> //LPCSTR
 
 wxString getwxString(const std::string & str ) ;
 //wxString getwxString(std::tstring & tstr ) ;
 wxString getwxString(const std::wstring & stdwstr ) ;
+inline wxString GetwxString_Inline( LPCSTR lpcstr )
+{
+  //from http://wiki.wxwidgets.org/Converting_everything_to_and_from_wxString#
+  // std::string_to_wxString
+   wxString wxstr(lpcstr, wxConvUTF8);
+  return  wxstr ;
+}
 
 std::string GetStdString(const wxString & wxstr) ;
 std::wstring GetStdWstring(const wxString & cr_wxstr) ;

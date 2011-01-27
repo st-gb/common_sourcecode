@@ -97,10 +97,11 @@ public:
     {
       //If any of the Trie strings exits at least partly in the param string.
        //wIndex > 0
-       if( IsTrieLeaf(ar_p_byCurrent)
+       if( //Braces around "&&" to avoid Linux g++ warning.
+           ( IsTrieLeaf(ar_p_byCurrent)
            //If trie leaf AND trie is empty (wIndex == 0) then do _not_ return
            // "true".
-           && wIndex > 0
+           && wIndex > 0 )
          //if in trie: "hel" and "hello" and search for "hel" then "hel" is
          // not a leaf.
          || wIndex == wBytesize )
