@@ -6,7 +6,8 @@
 #include <set> //std::set
 //#include <iostream>
 #include "PowerProfDynLinked.hpp"
-#include <Windows/GetWindowsVersion.h>
+//::GetWindowsVersion(...)
+#include <Windows/GetWindowsVersion/GetWindowsVersion.h>
 #include <Windows/PowerProfAccess/PowerProfAccessFromWin6/\
 PowerProfFromWin6DynLinked.hpp>
 #include <Windows/PowerProfAccess/PowerProfAccessUntilWin6/\

@@ -2,13 +2,13 @@
 //#include "StdAfx.h"
 //#endif //#ifdef _MSC_VER
 
+#include "Logger.hpp"  //important for wxWidgets 2.9: include windows.h AFTER
 //If MS compiler etc.
 #if defined(_MSC_VER) || defined(__MINGW32__) || defined(__CYGWIN__)
   //#include <Windows.h> //for SYSTEMTIME
   //Use "windows.h" for g++ because the case matters.
   #include <windows.h> //for SYSTEMTIME
 #endif
-#include "Logger.hpp"
 //#include <preprocessor_macros/logging_preprocessor_macros.h>
 //#include <Controller/tchar_conversion.h> //GetCharPointer()
 //#include <Controller/character_string/stdtstr.hpp> //GetStdString(...)

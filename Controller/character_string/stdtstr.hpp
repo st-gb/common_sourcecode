@@ -4,7 +4,8 @@
 
 #include <string> //std::string, std::wstring
 //#include <tchar.h> //for TCHAR
-#include <preprocessor_macros/string_typedefs.h> //LPCTSTR, LPWSTR
+//#include <preprocessor_macros/string_typedefs.h> //LPCTSTR, LPWSTR
+//#include <winnt.h> //LPWSTR
 
 //char * GetCharPointer( LPCTSTR pstr )
 //{
@@ -62,7 +63,8 @@ namespace std
 #endif //#if defined _UNICODE || defined UNICODE
 
  //std::wstring GetStdWstring( const std::tstring & cr_stdtstr ) ;
- std::wstring GetStdWstring( const LPWSTR cp_lpwstr ) ;
+ std::wstring GetStdWstring( const //LPWSTR
+   wchar_t * cp_lpwstr ) ;
  std::wstring GetStdWstring( const std::wstring & cr_str ) ;
  std::wstring GetStdWstring( const std::string & cr_str ) ;
  std::string GetStdString(const std::string & cr_str ) ;

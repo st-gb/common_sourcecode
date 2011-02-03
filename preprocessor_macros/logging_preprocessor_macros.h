@@ -240,6 +240,8 @@
   // else DEBUG...(...)" -> "else ;"
   #define DEBUG(to_ostream) ;/*empty->do not log;can be used after "if"/"else"*/
   #define DEBUG_SPRINTF(...) ;/*do not log; can be used after "if"/"else"*/
+  #define DEBUGN_LOGGER_NAME(logger_name,to_ostream) \
+    ;/*do not log;can be used after "if"/"else"*/
   #define DEBUGN(to_ostream) ;/*do not log;can be used after "if"/"else"*/
   #define DEBUGWN(to_ostream) ;/*do not log;can be used after "if"/"else"*/
   #define DEBUGWN_WSPRINTF(...) ;/*do not log; can be used after "if"/"else"*/

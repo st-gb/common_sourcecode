@@ -7,14 +7,17 @@
 #include <string.h> //wscmp(wchar_t *,wchar_t *)
 #include <tchar.h> //for "_T(...)"
 #include <string> //std::string
-#include <Windows/LocalLanguageMessageFromErrorCode.h>
+//::LocalLanguageMessageFromErrorCodeA(...)
+#include <Windows/ErrorCode/LocalLanguageMessageFromErrorCode.h>
 //#include <Powrprof.h> //for static linking 
 
  char * PowerProfUntilWin6DynLinked::s_ar_ar_chDynamicThrottle [] = {
-  "PO_THROTTLE_NONE" ,
-  "PO_THROTTLE_CONSTANT" ,
-  "PO_THROTTLE_DEGRADE" ,
-  "PO_THROTTLE_ADAPTIVE"
+  //Use "(char *)" to avoid g++ 4.5.2 warning
+  //"deprecated conversion from string constant to 'char*'"
+  (char *) "PO_THROTTLE_NONE" ,
+  (char *) "PO_THROTTLE_CONSTANT" ,
+  (char *) "PO_THROTTLE_DEGRADE" ,
+  (char *) "PO_THROTTLE_ADAPTIVE"
   } ;
 
 //struct PwrSchemesEnumProcStruct
@@ -535,7 +538,10 @@ unsigned char PowerProfUntilWin6DynLinked::CreatePowerSchemeWithWantedName()
     (LPWSTR) m_stdwstrWantedPowerScheme.c_str() ,
     //buffer_ptr
     //LPWSTR lpszDescription ,
-    L"" ,
+
+    //Use "(LPWSTR)" to avoid g++ 4.5.2 warning
+    //"deprecated conversion from string constant to 'WCHAR*'"
+    (LPWSTR) L"" ,
     //std::wstring & r_stdwstrName ,
     //std::wstring & r_stdwstrDescription ,
     //setzt voraus, dass vorher die ID von m_stdwstrWantedPowerScheme
@@ -748,7 +754,10 @@ bool PowerProfUntilWin6DynLinked::DisableFrequencyScalingByOS()
     //std::wstring wstr = m_strWantedPowerScheme ;
     //LPTSTR lptstr = _T("CPUcontrol") ;
     //LPWSTR lpwstr = L"CPUcontrol" ;
-    LPWSTR lpwstrDescription = L"for an own Dynamic Voltage & Frequency Scaling" ;
+    LPWSTR lpwstrDescription =
+      //Use "(LPWSTR)" to avoid g++ 4.5.2 warning
+      //"deprecated conversion from string constant to 'WCHAR*'"
+      (LPWSTR) L"for an own Dynamic Voltage & Frequency Scaling" ;
     if( CreatePowerScheme( //m_strWantedPowerScheme.c_str() , 
         //wstr.c_str() ,
         //lptstr ,
@@ -895,7 +904,7 @@ BOOLEAN PowerProfUntilWin6DynLinked::EnumPwrSchemes(
       //  );
       if( dwGetLastError )
       {
-        std::string str = LocalLanguageMessageFromErrorCodeA(dwGetLastError) ;
+        std::string str = ::LocalLanguageMessageFromErrorCodeA(dwGetLastError) ;
         LOGN( "enumerating power schemes failed: " << str ) ;
       }
       else //dwGetLastError == ERROR_SUCCESS
@@ -1078,7 +1087,7 @@ BOOLEAN WINAPI PowerProfUntilWin6DynLinked::ReadProcessorPwrScheme(
     if( ! booleanRet )
     {
       DWORD dwErrorCode = ::GetLastError() ;
-      std::string str = LocalLanguageMessageFromErrorCodeA(dwErrorCode) ;
+      std::string str = ::LocalLanguageMessageFromErrorCodeA(dwErrorCode) ;
       LOGN("error getting CPU power info: error code: " << dwErrorCode << str )
     }
     //If the function succeeds, the return value is nonzero.
