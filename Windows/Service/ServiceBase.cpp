@@ -4,6 +4,7 @@
 #include <iostream> //std::cout
 #include <sstream> //for class std::stringstream
 #include <Windows/ErrorCode/LocalLanguageMessageFromErrorCode.h>
+#include <Controller/character_string/stdtstr.hpp> //GetStdString_Inline(...)
 
 bool ServiceBase::CanStartService(
 //  const TCHAR * cp_tchServiceName
@@ -289,27 +290,50 @@ void ServiceBase::GetPossibleSolution(
 {
   switch(dwWinError)
   {
+    case ERROR_ACCESS_DENIED:
+    {
+      std::stringstream strstream ;
+      strstream <<
+        "possible solution:\n"
+        "-start _this_ program/ process as appropriate user (e.g. as "
+        "\"administrator\" / with appropriate (elevated) rights\n"
+        "-if you want to install a service and a service with the same name "
+          "is still running->stop the service with the same name first\n"
+        "\n-Stop the execution of the service: \""
+        << GetStdString_Inline( std::tstring(tchServiceName) )
+        << "\"\n"
+        << " -inside the service control manager\n"
+        " -via the task manager\n"
+        " -by another program/ etc.\n"
+        " and try again."
+  //        )
+        ;
+      r_stdstrPossibleSolution = strstream.str() ;
+    }
+    break ;
     case ERROR_SERVICE_MARKED_FOR_DELETE:
+    {
 //      WRITE_TO_LOG_FILE_AND_STDOUT_NEWLINE(
       //Use std::stringstream (instead of widestring version) for
       //MinGW compatibility
       std::stringstream strstream ;
       strstream <<
-      "possible solution:\n"
-      "-close the service control manager in order to let the service be "
-          "deleted\n"
-      "-if you want to install a service and a service with the same name "
-        "is still running->stop the service with the same name first\n"
-      "\n-Stop the execution of the service: \""
-      << tchServiceName
-      << "\"\n"
-      << " -inside the service control manager\n"
-      " -via the task manager\n"
-      " -by another program/ etc.\n"
-      " and try again."
-//        )
-      ;
-    r_stdstrPossibleSolution = strstream.str() ;
+        "possible solution:\n"
+        "-close the service control manager in order to let the service be "
+            "deleted\n"
+        "-if you want to install a service and a service with the same name "
+          "is still running->stop the service with the same name first\n"
+        "\n-Stop the execution of the service: \""
+        << tchServiceName
+        << "\"\n"
+        << " -inside the service control manager\n"
+        " -via the task manager\n"
+        " -by another program/ etc.\n"
+        " and try again."
+  //        )
+        ;
+      r_stdstrPossibleSolution = strstream.str();
+    }
     break ;
   }
 }
@@ -500,13 +524,13 @@ BYTE ServiceBase::DeleteService(
   }
   else
   {
-    SC_HANDLE schService = OpenService(
-        schSCManager,       // SCManager database
+    SC_HANDLE schService = ::OpenService(
+        schSCManager, // SCManager database
         // name of service
         //TEXT("Sample_Srv"),
         tchServiceName ,
-        DELETE);            // only need DELETE access
-
+        DELETE); // only need DELETE access
+    ::CloseServiceHandle(schSCManager);
     if ( schService == NULL)
     {
       dwErrorCodeFor1stError = ::GetLastError() ;

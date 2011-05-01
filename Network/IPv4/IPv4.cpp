@@ -7,6 +7,7 @@
 #endif
 #include <windef.h> //BYTE, DWORD
 #include <stdlib.h> //atoi(...)
+#include <string.h> //strtok(...), strcmp(...)
 
   DWORD GetIPv4AddressAsDWORD(char * pchIPv4Address)
   {

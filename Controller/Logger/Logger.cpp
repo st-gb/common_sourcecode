@@ -103,18 +103,18 @@ void Logger::LogW(//ostream & ostr
       mp_ofstream && mp_ofstream->good() 
       )
   {
-    SYSTEMTIME systemtime ;
-    //GetSystemTime( & systemtime); // gets current time in UTC / GMT? time zome
-    ::GetLocalTime( & systemtime ); //gets the same time as the Windows clock.
+//    SYSTEMTIME m_systemtime ;
+    //GetSystemTime( & m_systemtime); // gets current time in UTC / GMT? time zome
+    ::GetLocalTime( & m_systemtime ); //gets the same time as the Windows clock.
     //m_ofstream << r_stdstr ;
     *mp_ofstream
-        << systemtime.wYear
-        << "." << systemtime.wMonth
-        << "." << systemtime.wDay
-        << " " << systemtime.wHour
-        << "h:" << systemtime.wMinute
-        << "min " << systemtime.wSecond
-        << "s " << systemtime.wMilliseconds
+        << m_systemtime.wYear
+        << "." << m_systemtime.wMonth
+        << "." << m_systemtime.wDay
+        << " " << m_systemtime.wHour
+        << "h:" << m_systemtime.wMinute
+        << "min " << m_systemtime.wSecond
+        << "s " << m_systemtime.wMilliseconds
         << "ms:" << r_stdstr.c_str() ;
     //m_ofstream.flush() ;
     mp_ofstream->flush() ;

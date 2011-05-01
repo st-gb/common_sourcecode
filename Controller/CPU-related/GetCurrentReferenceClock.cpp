@@ -5,6 +5,7 @@
  *      Author: Stefan
  */
 
+typedef unsigned long DWORD;
 //  //Declare and use global variables to be faster (using local variables creates
 //  //them on stack each time).
 //  float g_fReferenceClockInHertz ;
@@ -12,9 +13,9 @@
 //  unsigned long long int g_ullPreviousTimeStampCounter ;
 //  unsigned long long int g_ullCurrentTimeStampCounter ;
 //  unsigned long long int g_ullTimeStampCounterDiff = 0 ;
-//  DWORD g_dwPreviousTickCountInMilliseconds ;
-//  DWORD g_dwTickCountInMilliseconds ;
-//  DWORD g_dwTickCountDiffInMilliseconds ;
+  DWORD g_dwPreviousTickCountInMilliseconds ;
+  DWORD g_dwTickCountInMilliseconds ;
+  DWORD g_dwTickCountDiffInMilliseconds = 0;
 //
 //  //inline: do not compile as function, but expand code for every call (->faster)
 //  //inline

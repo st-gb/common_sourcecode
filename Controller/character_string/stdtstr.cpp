@@ -26,6 +26,12 @@
  {
    return cr_wstr ;
  }
+ inline std::string GetStdtString_Inline(const wchar_t * cp_wch )
+ {
+   std::wstring std_wstr(cp_wch);
+   std::string std_str( std_wstr.begin(), std_wstr.end() ) ;
+   return std_str;
+ }
 // tstring::tstring( TCHAR * ptch )
 // {
 //   wstring()

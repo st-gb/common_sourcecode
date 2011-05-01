@@ -10,5 +10,5 @@
 
 std::string GetErrorMessageFromLastErrorCodeA()
 {
-  return LocalLanguageMessageAndErrorCodeA( ::GetLastError() ) ;
+  return ::LocalLanguageMessageAndErrorCodeA( ::GetLastError() ) ;
 }

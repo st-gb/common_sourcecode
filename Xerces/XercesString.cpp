@@ -29,7 +29,7 @@ namespace Xerces
     if(p_xmlch)
     {
       char * pchAttributeValue = XERCES_CPP_NAMESPACE::XMLString::transcode(
-        p_xmlch) ;
+        (const XMLCh * const) p_xmlch) ;
       if( pchAttributeValue )
       {
         strValue = std::string(pchAttributeValue);

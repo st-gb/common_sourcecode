@@ -33,7 +33,9 @@ public:
   bool ChangeOtherDVFSaccessPossible() ;
   BYTE CreatePowerScheme(const std::wstring & wstr ) ;
   virtual unsigned char CreatePowerSchemeWithWantedName() { return 0 ; }
-  BYTE DeletePowerScheme( const std::tstring & cr_stdtstrPowerSchemeName ) ;
+  BYTE DeletePowerScheme( //const std::tstring & cr_stdtstrPowerSchemeName
+    //Power scheme names are in wide char for Win XP etc.
+    const std::wstring & cr_std_wstrPowerSchemeName) ;
   bool DisableFrequencyScalingByOS() ;
   unsigned char EnableFrequencyScalingByOS() ;
   bool EnablingIsPossible() ;

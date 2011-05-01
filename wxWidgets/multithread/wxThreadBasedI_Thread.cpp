@@ -56,13 +56,21 @@ void wxThreadBasedI_Thread::Delete()
   DEBUGN("wxThreadBasedI_Thread::Delete()")
   LOGN("..ThreadBasedI_Thread::Delete()  starter thread pointer:" <<
     mp_wxthreadfuncstarterthread)
-  if( mp_wxthreadfuncstarterthread)
+  if( mp_wxthreadfuncstarterthread
+      //only delete when joinable (detached wxThreads are auto-deleted: else
+      //the program may crash: terminated unexpectedly)
+      && m_byThreadType == I_Thread::joinable)
   {
     LOGN("before deleting the thread with ID "
       << mp_wxthreadfuncstarterthread->GetId() )
     //http://docs.wxwidgets.org/2.6/wx_wxthread.html#wxthreadwait:
     //"and you also must delete the corresponding wxThread
     //object yourself"
+
+    //http://docs.wxwidgets.org/2.8/wx_wxthread.html#deletionwxthread:
+    //"If you created a joinable thread on the heap, remember to delete it
+    //manually with the delete operator or similar means as only detached
+    //threads handle this type of memory management."
     delete mp_wxthreadfuncstarterthread ;
     //If this function is not called in the destructor of this class, we
     //set to NULL to prevent a second "delete".

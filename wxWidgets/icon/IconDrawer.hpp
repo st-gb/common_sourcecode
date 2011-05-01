@@ -13,7 +13,9 @@
 #include <wx/icon.h> //class wxIcon
 #include <windef.h> //WORD
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
-#include <wx/msw/winundef.h> //to not replace DrawText with DrawTextW
+#ifdef _WIN32 //pre-defined macro under Windows, also 64t
+	#include <wx/msw/winundef.h> //to not replace DrawText with DrawTextW
+#endif
 
 inline void FillWhiteIfNonMonochromeBitmap_Inline(wxMemoryDC & r_wxmemorydc)
 {
@@ -73,14 +75,20 @@ public:
       << m_p_wxbitmapMask)
     if( m_p_wxbitmapMask )
     {
-      m_p_wxbitmapMask->FreeResource();
+      LOGN("wxIconDrawer::ReleaseRessources freeing resources for the mask "
+        "bitmap")
+//      m_p_wxbitmapMask->FreeResource();
       delete m_p_wxbitmapMask;
-      delete m_p_wxbitmapToDrawOn;
+      //http://docs.wxwidgets.org/2.8/wx_wxbitmap.html#wxbitmapdtor:
+      //"Do not delete a bitmap that is selected into a memory device context."
+//      delete m_p_wxbitmapToDrawOn;
+
       //Is allocated when m_p_wxbitmapMask is <> NULL.
       delete [] m_ar_chBits;
       //Prevent another deletion of the memory at this address
       m_p_wxbitmapMask = NULL;
-      m_wxmemorydc.UnRef();
+
+//      m_wxmemorydc.UnRef();
 //      m_wxbitmap.FreeResource();
 //      m_wxmask.FreeResource();
 //      m_wxbitmapMask.FreeResource();
@@ -93,7 +101,7 @@ public:
   }
   ~wxIconDrawer()
   {
-    LOGN("~wxIconDrawer begin")
+    LOGN("~wxIconDrawer (address:" << this << ") begin")
     ReleaseRessources();
     LOGN("~wxIconDrawer end")
   }
@@ -192,7 +200,7 @@ public:
     //http://docs.wxwidgets.org/stable/wx_wxmemorydc.html#wxmemorydc:
     //"Use the IsOk member to test whether the constructor was
     //successful in creating a usable device context."
-    if( m_p_wxbitmapToDrawOn &&m_wxmemorydc.IsOk() )
+    if( m_p_wxbitmapToDrawOn && m_wxmemorydc.IsOk() )
     {
 //    FillWhiteIfNonMonochromeBitmap_Inline(m_wxmemorydc);
       m_wxmemorydc.Clear();

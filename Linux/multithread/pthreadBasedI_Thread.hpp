@@ -25,7 +25,8 @@ namespace Linux
     virtual
     ~pthreadBasedI_Thread();
     BYTE start(pfnThreadFunc, void * p_v ) ;
-    inline void * WaitForTermination() ;
+    //inline
+      void * WaitForTermination() ;
   };
 
 }

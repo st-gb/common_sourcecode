@@ -102,7 +102,10 @@ public:
     , GUID & guidNewPowerScheme ) ;
   unsigned char CreatePowerSchemeWithWantedName() ;
   BYTE DeletePowerScheme( 
-    const std::tstring & cr_stdtstrPowerSchemeName ) ;
+    //const std::tstring & cr_stdtstrPowerSchemeName
+    //Power scheme names are in wide char for Win XP etc.
+    const std::wstring & cr_std_wstrPowerSchemeName
+    ) ;
   BYTE DisableDVFSforAlternateCurrent(
     const GUID * cp_guidPowerScheme
     , DWORD dwProcThrottleValue ) ;

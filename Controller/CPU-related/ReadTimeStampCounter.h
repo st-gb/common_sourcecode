@@ -109,7 +109,7 @@ inline ULONGLONG ReadTSCinOrder( DWORD dwThreadAffinityMask )
     //  see table "Intel Code             |      AT&T Code"
 
 //    //call CPUID function 1:
-    asm ( "mov $1, %eax") ; // write 1 into register "eax" for "CPUID fct. 1"
+    asm ( "mov $1, %eax") ; //write "1" into register "eax" for "CPUID fct. "1"
 //    //http://www.ccsl.carleton.ca/~jamuir/rdtscpm1.pdf,
 //    //  chapter 3.1. Out-of-Order-Execution
     asm ( "cpuid" ) ; //this forces all previous operations to complete.

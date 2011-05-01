@@ -103,6 +103,8 @@ inline void ProcessReadDirectoryChangesRecords(
   {
     p_file_notify_information = (FILE_NOTIFY_INFORMATION * )(
       & arby[dwCurrentOffset] );
+    //Make a copy because the buffer is overwritten the next
+    //time.
     file_or_dir_watch_info.m_byAction = p_file_notify_information->Action;
 //    file_or_dir_watch_info.m_dwFileNameLength = p_file_notify_information->
 //      FileNameLength;
@@ -125,6 +127,8 @@ inline void ProcessReadDirectoryChangesRecords(
     case FILE_ACTION_ADDED:
     case FILE_ACTION_REMOVED:
     case FILE_ACTION_RENAMED_NEW_NAME:
+      //Make a copy of the strings because the buffer is overwritten the next
+      //time.
       file_or_dir_watch_info.m_stdwstrCurrentFileOrDirPath = std::wstring(
         p_file_notify_information->FileName,
         //Length is in byte? -> 2 bytes per wide character.
@@ -141,6 +145,8 @@ inline void ProcessReadDirectoryChangesRecords(
     case FILE_ACTION_MODIFIED:
       break ;
     case FILE_ACTION_RENAMED_OLD_NAME:
+      //Make a copy of the strings because the buffer is overwritten the next
+      //time.
       file_or_dir_watch_info.m_stdwstrOldFileOrDirPath = std::wstring(
         p_file_notify_information->FileName,
         //Length is in byte? -> 2 bytes per wide character.

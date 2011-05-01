@@ -19,6 +19,8 @@
 #include <preprocessor_macros/value_difference.h> //ULONG_VALUE_DIFF
 #include "ReadTimeStampCounter.h" //ReadTSCinOrder(...)
 #include <preprocessor_macros/logging_preprocessor_macros.h> //DEBUGN(...)
+#include <preprocessor_macros/show_via_GUI.h> //SHOW_VIA_GUI(...)
+#include <tchar.h>
 
 //inline void GetCurrentReferenceClock(float fDivisor) ;
 
@@ -32,10 +34,13 @@ extern float g_fReferenceClockInMHz ;
 unsigned long long int g_ullPreviousTimeStampCounter ;
 unsigned long long int g_ullCurrentTimeStampCounter ;
 unsigned long long int g_ullTimeStampCounterDiff = _UI64_MAX ;
-DWORD g_dwPreviousTickCountInMilliseconds ;
-DWORD g_dwTickCountInMilliseconds ;
-DWORD g_dwTickCountDiffInMilliseconds = //ULONG_MAX ;
-    0 ;
+//DWORD g_dwPreviousTickCountInMilliseconds ;
+//DWORD g_dwTickCountInMilliseconds ;
+//DWORD g_dwTickCountDiffInMilliseconds = //ULONG_MAX ;
+//    0 ;
+extern DWORD g_dwPreviousTickCountInMilliseconds ;
+extern DWORD g_dwTickCountInMilliseconds ;
+extern DWORD g_dwTickCountDiffInMilliseconds;
 
 //inline: do not compile as function, but expand code for every call (->faster)
 //_Define_ the function in this _header_ file. It cannot be inline if declared
@@ -43,12 +48,14 @@ DWORD g_dwTickCountDiffInMilliseconds = //ULONG_MAX ;
 inline
   void
   //float
-  GetCurrentReferenceClock( float fDivisor
-  , float & r_fReferenceClockInMHz
-  , DWORD dwMinimumTimeDiffInMilliseconds
-  , DWORD dwMaximumTimeDiffInMilliseconds
+  GetCurrentReferenceClock(
+    float fDivisor
+    , float & r_fReferenceClockInMHz
+    , DWORD dwMinimumTimeDiffInMilliseconds
+    , DWORD dwMaximumTimeDiffInMilliseconds
   )
 {
+//  SHOW_VIA_GUI( _T("GetCurrentReferenceClock begin") )
   //Use global var., so it does not need to be created on stack for every time.
   g_dwTickCountInMilliseconds =
     //Cites from:
@@ -103,12 +110,15 @@ inline
 //    ULONG_VALUE_DIFF( g_dwTickCountInMilliseconds,
 //    g_dwPreviousTickCountInMilliseconds) ;
 
+//  SHOW_VIA_GUI( _T("GetCurrentReferenceClock before tick count comp") )
   //If getcurrentpstate for core 0 and directly afterwards for core 1,
   //g_dwTickCountDiffInMilliseconds may be too small->too inexact,
   //if g_dwTickCountDiffInMilliseconds=0: division by zero.
   if( g_dwTickCountDiffInMilliseconds >= //1000
     dwMinimumTimeDiffInMilliseconds )
   {
+//    SHOW_VIA_GUI( _T("GetCurrentReferenceClock g_dwTickCountDiffInMilliseconds"
+//      " >=dwMinimumTimeDiffInMilliseconds") )
     DEBUGN("GetCurrentReferenceClock(...) tick count diff ("
       << g_dwTickCountDiffInMilliseconds << ") > min time span("
       << dwMinimumTimeDiffInMilliseconds << ")" )
@@ -117,9 +127,13 @@ inline
   //  stdstrstream << g_dwTickCountDiffInMilliseconds ;
   //  MessageBox(NULL, stdstrstream.str().c_str() , "info" , MB_OK) ;
 
+//    SHOW_VIA_GUI( _T("GetCurrentReferenceClock before ReadTSCinOrder") )
+
     g_ullCurrentTimeStampCounter = //ReadTimeStampCounter() ;
       ReadTSCinOrder(//pass thread affinity mask
         1) ;
+//    SHOW_VIA_GUI( _T("GetCurrentReferenceClock after ReadTSCinOrder") )
+
     g_ullTimeStampCounterDiff = ULONGLONG_VALUE_DIFF(
       g_ullCurrentTimeStampCounter , g_ullPreviousTimeStampCounter ) ;
     DEBUGN("TSC diff: " << g_ullTimeStampCounterDiff )
@@ -141,7 +155,12 @@ inline
   //  MessageBox(NULL, stdstrstream.str().c_str() , "info" , MB_OK) ;
   }
   else
+  {
+//    SHOW_VIA_GUI(_T("GetCurrentReferenceClock setting ref clock to 0") )
+    SHOW_VIA_GUI( _T("GetCurrentReferenceClock BEFORE setting ref clock to 0") )
     r_fReferenceClockInMHz = 0.0 ;
+    SHOW_VIA_GUI( _T("GetCurrentReferenceClock AFTER setting ref clock to 0") )
+  }
 }
 
 #endif /* GETCURRENTREFERENCECLOCK_HPP_ */

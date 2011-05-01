@@ -16,16 +16,23 @@ std::string format_output_data(
   BYTE byCharactersPerColumn )
 {
   std::string stdstrBytes ;
+  std::ostringstream std_ostr_streamBytes ;
   for(WORD wIndex = 0 ; wIndex < dwByteSize ; ++ wIndex )
   {
     if( wIndex % byCharactersPerColumn == 0 )
-      stdstrBytes += "\n" ;
+//      stdstrBytes += "\n" ;
+      std_ostr_streamBytes << "\n";
     if( ar_byData[wIndex] > 32 )
-      stdstrBytes += ar_byData[wIndex] ;
+      //stdstrBytes += ar_byData[wIndex] ;
+      std_ostr_streamBytes << ar_byData[wIndex];
     else
-      stdstrBytes += " " ;
+//      stdstrBytes += " " ;
+      std_ostr_streamBytes <<
+      //see http://gcc.gnu.org/onlinedocs/libstdc++/libstdc++-html-USERS-3.4/classstd_1_1ios__base.html:
+      std::ios_base::hex << (WORD) ar_byData[wIndex] << " ";
   }
-  return stdstrBytes ;
+  return //stdstrBytes ;
+    std_ostr_streamBytes.str();
 }
 
 //Use an object class like std::string instead of "char *". Advantage:

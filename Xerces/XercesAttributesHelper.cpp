@@ -13,12 +13,13 @@
 ////for XERCES_CPP_NAMESPACE::Attributes
 //#include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/util/XMLString.hpp> //for XMLString::transcode(...)
+
 #include <errno.h> //for "errno", ERANGE
+#include <limits.h> //ULONG_MAX
 //#include <asm-generic/errno-base.h> // ERANGE
 #include <sstream> //std::istringstream
 
 //extern int errno;
-
 #define SUCCESS 1
 #define FAILURE 0
 
@@ -173,7 +174,8 @@ BYTE XercesAttributesHelper::GetAttributeValue(
         )
       {
         rbValue = true;
-        byReturn = SUCCESS;
+        byReturn = //SUCCESS;
+            getting_attribute_value_succeeded;
       }
       else if( CharacterString::template_character_type_string_compare(
           cp_xmlchAttributeValue,
@@ -181,7 +183,8 @@ BYTE XercesAttributesHelper::GetAttributeValue(
         )
       {
         rbValue = false;
-        byReturn = SUCCESS;
+        byReturn = //SUCCESS;
+            getting_attribute_value_succeeded;
       }
     }//if(cp_xmlchAttributeValue)
     //Release memory of dyn. alloc. buffer (else memory leaks).
@@ -230,7 +233,8 @@ BYTE XercesAttributesHelper::GetAttributeValue(
             )
           )
         {
-          byReturn = SUCCESS;
+          byReturn = //SUCCESS;
+              getting_attribute_value_succeeded;
           rbyValue = nAtoiResult ;
         }
         //Release memory of dyn. alloc. buffer (else memory leaks).
@@ -428,7 +432,8 @@ BYTE XercesAttributesHelper::GetAttributeValue(
             )
           )
         {
-          byReturn = SUCCESS;
+          byReturn = //SUCCESS;
+              getting_attribute_value_succeeded;
           rwValue = nAtoiResult ;
           LOGN("successfully got \"" << lpctstrAttrName <<
             "\" attribute value: " << rwValue )
@@ -572,7 +577,8 @@ BYTE XercesAttributesHelper::GetAttributeValue(
             )
           )
         {
-          byReturn = SUCCESS;
+          byReturn = //SUCCESS;
+              getting_attribute_value_succeeded;
           rfValue = fAtofResult ;
           LOGN("successfully got \"" << lpctstrAttrName <<
             "\" attribute value: " << rfValue )
@@ -628,7 +634,8 @@ BYTE XercesAttributesHelper::GetAttributeValue
       if( pchAttributeValue )
       {
         r_strValue = std::string(pchAttributeValue);
-        byReturn = SUCCESS;
+        byReturn = //SUCCESS;
+            getting_attribute_value_succeeded;
         //Release memory of dyn. alloc. buffer (else memory leaks).
         XERCES_CPP_NAMESPACE::XMLString::release( & pchAttributeValue);
       }
@@ -667,7 +674,8 @@ BYTE XercesAttributesHelper::GetAttributeValue
 //        (wchar_t *)
 //        pxmlch);
         Xerces::ConvertXercesStringToStdWstring(cp_xmlchAttributeValue) ;
-      byReturn = SUCCESS;
+      byReturn = //SUCCESS;
+          getting_attribute_value_succeeded;
     }
     //Release memory of dyn. alloc. buffer (else memory leaks).
     XERCES_CPP_NAMESPACE::XMLString::release( & p_xmlchAttributeName);
@@ -721,7 +729,8 @@ BYTE XercesAttributesHelper::ToDWORD(
   else
   {
     //dwRes = i64 ;
-    byReturn = SUCCESS;
+    byReturn = //SUCCESS;
+        getting_attribute_value_succeeded;
     *((DWORD*) pv_AttributeValue ) = //(DWORD) i64; //(void*) () ;
       dwResult ;
   }

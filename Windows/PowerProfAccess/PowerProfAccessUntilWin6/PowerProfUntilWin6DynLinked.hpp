@@ -107,7 +107,10 @@ public:
     UINT uiIndex
   );
   BYTE DeletePowerScheme( 
-    const std::tstring & cr_stdtstrPowerSchemeName ) ;
+    //const std::tstring & cr_stdtstrPowerSchemeName
+    //Power scheme names are in wide char for Win XP etc.
+    const std::wstring & cr_std_wstrPowerSchemeName
+    ) ;
   BYTE DisableDVFSforPowerSchemeToSet() ;
   BYTE DisableCPUscaling(UINT uiPowerSchemeIndex) ;
   bool DisableFrequencyScalingByOS() //{ return true ; } 

@@ -22,6 +22,9 @@
 #define XERCES_ATTRIBUTE_VALUE_DOES_NOT_EXIST 5
 #define XERCES_ERROR_CONVERTING_ATTRIBUTE_NAME_TO_XERCES_STRING 6
 
+//#define SUCCESS 1
+//#define FAILURE 0
+
 class XercesAttributesHelper
 //  : public XERCES_CPP_NAMESPACE::Attributes
 {

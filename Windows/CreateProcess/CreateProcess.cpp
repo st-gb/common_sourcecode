@@ -52,13 +52,26 @@ using namespace Windows_API ;
 
 namespace Windows_API
 {
-CreateProcess::CreateProcess(//ServiceAttributes & r_service_attrs
-  CreateProcessAsUserAttributesW & r_createprocessasuserattributesw )
-  :
-  m_r_createprocessasuserattributesw (r_createprocessasuserattributesw)
-{
+  CreateProcess::CreateProcess(//ServiceAttributes & r_service_attrs
+    //Use a struct to make passing arguments to "::CreateProcessAsUserW(...)"
+    //more flexible(->only 1 parameter for the struct instead of changes in the
+    //parameter list).
+    CreateProcessAsUserAttributesW & r_createprocessasuserattributesw )
+    //:
+  {
+    m_p_createprocessasuserattributesw = new CreateProcessAsUserAttributesW(
+      r_createprocessasuserattributesw);
+  }
+  CreateProcess::CreateProcess(//ServiceAttributes & r_service_attrs
+    //Use a struct to make passing arguments to "::CreateProcessAsUserW(...)"
+    //more flexible(->only 1 parameter for the struct instead of changes in the
+    //parameter list).
+    CreateProcessAsUserAttributesW * p_createprocessasuserattributesw )
+    :
+    m_p_createprocessasuserattributesw ( p_createprocessasuserattributesw)
+  {
 
-}
+  }
 
 void LogTokenInfo(HANDLE TokenHandle)
 {
@@ -282,11 +295,11 @@ BOOL CreateProcess::CreateProcessAsNeeded(
   HANDLE handleToken
   )
 {
-  LOGWN_WSPRINTF(L"before starting process %ls with current dir %ls",
+  LOGWN_WSPRINTF(L"before starting process \"%ls\" with current dir \"%ls\"",
 //    m_r_service_attrs.m_stdwstrPathToGUIexe.c_str() ,
-    m_r_createprocessasuserattributesw.m_stdwstrCommandLine.c_str() ,
+    m_p_createprocessasuserattributesw->m_stdwstrCommandLine.c_str() ,
 //    m_r_service_attrs.m_stdwstrGUICurrentDirFullPathTo.c_str()
-    m_r_createprocessasuserattributesw.m_stdwstrCurrentDirectory.c_str()
+    m_p_createprocessasuserattributesw->m_stdwstrCurrentDirectory.c_str()
     )
 //  std::stdwstrPathToGUIexe = m_r_service_attrs.m_stdwstrPathToGUIexe ;
   return
@@ -294,9 +307,7 @@ BOOL CreateProcess::CreateProcessAsNeeded(
   //Must use CreateProcessAsUser because we need to specify the token modified
   // to run on the specific session.
   ::CreateProcessAsUserW(
-    //"A handle to the
-    //primary token
-    //that represents a user."
+    //"A handle to the primary token that represents a user."
     //". The handle must have the TOKEN_QUERY, TOKEN_DUPLICATE, and
     //TOKEN_ASSIGN_PRIMARY access rights. "
   //  hTokenDup,
@@ -310,7 +321,7 @@ BOOL CreateProcess::CreateProcessAsNeeded(
   //      _T("c:\\windows\\notepad.exe"),
   //  Getstdtstring( m_r_service_attrs.m_stdstrPathToGUIexe )
 //    (WCHAR*) m_r_service_attrs.m_stdwstrPathToGUIexe.c_str() ,
-    (WCHAR*) m_r_createprocessasuserattributesw.m_stdwstrCommandLine.c_str() ,
+    (WCHAR*) m_p_createprocessasuserattributesw->m_stdwstrCommandLine.c_str() ,
   //"The default security descriptor is that of the user referenced in the
   //hToken  parameter"
      NULL,
@@ -339,7 +350,7 @@ BOOL CreateProcess::CreateProcessAsNeeded(
     //The string can also specify a UNC path. "
     //       NULL,
 //    m_r_service_attrs.m_stdwstrGUICurrentDirFullPathTo.c_str() ,
-    m_r_createprocessasuserattributesw.m_stdwstrCurrentDirectory.c_str() ,
+    m_p_createprocessasuserattributesw->m_stdwstrCurrentDirectory.c_str() ,
     & startupinfo,
     & process_information
     );
@@ -396,6 +407,11 @@ DWORD GetSecurityDescriptorAndAssignToSecurityAttributes(
   return dwRtnCode ;
 }
 
+void CreateProcess::StartProcess()
+{
+  StartProcess(m_p_createprocessasuserattributesw->m_dwSessionID);
+}
+
 void CreateProcess::StartProcess(DWORD dwSessionID)
 {
   // Local Variable Declarations
@@ -413,7 +429,11 @@ void CreateProcess::StartProcess(DWORD dwSessionID)
   //of the STARTUPINFO structure that was used when the process was
   //created, the process connects to the specified window station."
 //  startupinfo.lpDesktop = _T("Winsta0\\Default");
-  startupinfo.lpDesktop = L"Winsta0\\Default" ;
+  startupinfo.lpDesktop =
+    //Cast to avoid g++ warning "warning: deprecated conversion from string
+    //constant to 'WCHAR*'"
+    (WCHAR *)
+    L"Winsta0\\Default" ;
 
 //  DWORD  dwCreationFlag = NORMAL_PRIORITY_CLASS | CREATE_NEW_CONSOLE;
 

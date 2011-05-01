@@ -616,21 +616,26 @@ BOOLEAN PowerProfUntilWin6DynLinked::DeletePwrScheme(
 }
 
 BYTE PowerProfUntilWin6DynLinked::DeletePowerScheme( 
-    const std::tstring & cr_stdtstrPowerSchemeName )
+  //const std::tstring & cr_stdtstrPowerSchemeName
+  //Power scheme names are in wide char for Win XP etc.
+  const std::wstring & cr_std_wstrPowerSchemeName
+  )
 {
   UINT uiPowerSchemeIndex ;
   LOGN( "should delete power scheme \"" << 
-    GetStdString( cr_stdtstrPowerSchemeName ) << "\"" ) ;
+    GetStdString( cr_std_wstrPowerSchemeName ) << "\"" ) ;
   //1st: get ID for power scheme named "cr_stdtstrPowerSchemeName".
   if( GetPowerSchemeIndex( 
-    GetStdWstring( cr_stdtstrPowerSchemeName )
+//    GetStdWstring( cr_stdtstrPowerSchemeName )
+    cr_std_wstrPowerSchemeName
     , uiPowerSchemeIndex )
     )
   {
     BOOL bool_ = DeletePwrScheme( uiPowerSchemeIndex ) ;
     LOGN( "Deleting power scheme \"" << 
       //Getstdtstring( cr_stdtstrPowerSchemeName ) << "\"" << 
-      GetStdString( cr_stdtstrPowerSchemeName ) << "\"" << 
+      GetStdString( //cr_stdtstrPowerSchemeName
+        cr_std_wstrPowerSchemeName ) << "\"" <<
       ( bool_ ? "succeeded" : "failed" )
       ) ;
     return  bool_ ;

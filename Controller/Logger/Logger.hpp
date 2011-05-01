@@ -7,7 +7,9 @@
   #include <string> //for std::wstring
   //#include <sstream>
 #ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
-  #include <wx/thread.h> //wxCriticalSection
+  //#include <wx/thread.h> //wxCriticalSection
+//  #include <Windows/multithread/I_CriticalSection.hpp>
+  #include <Controller/multithread/nativeCriticalSectionType.hpp>
 #endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
 
   #include <Controller/character_string/stdtstr.hpp> //for std::tstring
@@ -36,7 +38,9 @@
 #ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
     //Use member variable: so it does not need to be created on stack for
     //every call to "Log(...)".
-    SYSTEMTIME systemtime ;
+    SYSTEMTIME m_systemtime ;
+    typedef //OperatingSystem::Windows::I_CriticalSection
+      nativeCriticalSection CriticalSection_type;
 #else
     //from http://www.gamedev.net/community/forums/topic.asp?topic_id=437062:
     timeval timevalCurrentTime ;
@@ -46,7 +50,8 @@
   public:
 #ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
     //Make public because accessed from preprocessor macro.
-    wxCriticalSection m_wxcriticalsectionLogging ;
+    //wxCriticalSection m_critical_section_typeLogging ;
+    CriticalSection_type m_critical_section_typeLogging ;
 #endif
     enum log_class
     {
@@ -70,6 +75,57 @@
     //    std::ostrstream & r_ostrstream
     //    ) ;
 
+    inline void OutputTimeStampEtc_Inline(const std::string & r_stdstr)
+    {
+      //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
+    #ifdef _WIN32
+      //Gets the same time as the Windows clock.
+      ::GetLocalTime( & m_systemtime );
+    #else // ->Linux
+      //from http://www.gamedev.net/community/forums/topic.asp?topic_id=437062:
+      gettimeofday( & timevalCurrentTime,0);
+      //from http://souptonuts.sourceforge.net/code/gettimeofday.c.html:
+      p_tm = localtime( & timevalCurrentTime.tv_sec ) ;
+    #endif
+      //m_ofstream << r_stdstr ;
+      * mp_ofstream
+        //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
+        #ifdef _WIN32
+        << m_systemtime.wYear << "."
+        << m_systemtime.wMonth << "."
+        << m_systemtime.wDay << " "
+        << m_systemtime.wHour << "h:"
+        << m_systemtime.wMinute << "min "
+        << m_systemtime.wSecond << "s "
+        << m_systemtime.wMilliseconds << "ms"
+        << " thread ID:" << ::GetCurrentThreadId()
+        << ":"
+        #else
+  //          << timevalCurrentTime.tv_sec << "s"
+        << ( p_tm->tm_year
+          //The years seem to be relative to the year 1900.
+          + 1900 ) << "."
+        << ( p_tm->tm_mon
+          //The 1st month (January) seems to have the index 0.
+            + 1 ) << "."
+        << p_tm->tm_mday << " "
+        << p_tm->tm_hour << "h:"
+        << p_tm->tm_min << "min "
+        << p_tm->tm_sec << "s "
+        << //Milliseconds (10^-3 s) part = microseconds (10^-6 s) / 10^3
+           //e.g. 123456 microseconds / 1000 = 123 milliseconds
+          timevalCurrentTime.tv_usec / 1000 << "ms "
+          //Microseconds (10^-6 s) part = microseconds (10^-6 s) % 10^3
+          //e.g. 123456 microseconds % 1000 = 456 microseconds
+        << timevalCurrentTime.tv_usec % 1000 << "us"
+        << ":"
+  //          << timevalCurrentTime.tv_usec << "us"
+        #endif
+        << r_stdstr
+        << "\n"
+        ;
+    }
+
     void Log(//ostream & ostr
         std::string & r_stdstr
         )
@@ -83,7 +139,7 @@
       // logging concurrently: the output may be mixed like:
       // "22010.8.10 2010.99h:824.min 1051 19491msad24hread ID:tC8296ntCP51os
       //  ter getting DOM implementationt("
-//      m_wxcriticalsectionLogging.Enter() ;
+//      m_critical_section_typeLogging.Enter() ;
     #endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
 
       if(
@@ -106,58 +162,12 @@
         mp_ofstream->good()
         )
       {
-        //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
-      #ifdef _WIN32
-        //Gets the same time as the Windows clock.
-        ::GetLocalTime( & systemtime );
-      #else // ->Linux
-        //from http://www.gamedev.net/community/forums/topic.asp?topic_id=437062:
-        gettimeofday( & timevalCurrentTime,0);
-        //from http://souptonuts.sourceforge.net/code/gettimeofday.c.html:
-        p_tm = localtime( & timevalCurrentTime.tv_sec ) ;
-      #endif
-        //m_ofstream << r_stdstr ;
-        * mp_ofstream
-          //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
-          #ifdef _WIN32
-          << systemtime.wYear << "."
-          << systemtime.wMonth << "."
-          << systemtime.wDay << " "
-          << systemtime.wHour << "h:"
-          << systemtime.wMinute << "min "
-          << systemtime.wSecond << "s "
-          << systemtime.wMilliseconds << "ms"
-          << " thread ID:" << ::GetCurrentThreadId()
-          << ":"
-          #else
-//          << timevalCurrentTime.tv_sec << "s"
-          << ( p_tm->tm_year
-            //The years seem to be relative to the year 1900.
-            + 1900 ) << "."
-          << ( p_tm->tm_mon
-            //The 1st month (January) seems to have the index 0.
-              + 1 ) << "."
-          << p_tm->tm_mday << " "
-          << p_tm->tm_hour << "h:"
-          << p_tm->tm_min << "min "
-          << p_tm->tm_sec << "s "
-          << //Milliseconds (10^-3 s) part = microseconds (10^-6 s) / 10^3
-             //e.g. 123456 microseconds / 1000 = 123 milliseconds
-            timevalCurrentTime.tv_usec / 1000 << "ms "
-            //Microseconds (10^-6 s) part = microseconds (10^-6 s) % 10^3
-            //e.g. 123456 microseconds % 1000 = 456 microseconds
-          << timevalCurrentTime.tv_usec % 1000 << "us"
-          << ":"
-//          << timevalCurrentTime.tv_usec << "us"
-          #endif
-          << r_stdstr
-          << "\n"
-          ;
+        OutputTimeStampEtc_Inline(r_stdstr);
 
         //m_ofstream.flush() ;
         mp_ofstream->flush() ;
 //        #ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
-//        m_wxcriticalsectionLogging.Leave() ;
+//        m_critical_section_typeLogging.Leave() ;
 //        #endif
         //TODO write into RAM for having 2 possibilties:
         //-truncate the log file to zero for every startup
@@ -176,10 +186,10 @@
       }
 //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
 //      else
-//        m_wxcriticalsectionLogging.Leave() ;
+//        m_critical_section_typeLogging.Leave() ;
 //#endif
 #ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
-//      m_wxcriticalsectionLogging.Leave() ;
+//      m_critical_section_typeLogging.Leave() ;
 #endif
 
 //      #endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB

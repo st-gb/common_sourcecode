@@ -8,6 +8,13 @@
 #ifndef LOGGING_PREPROCESSOR_MACROS_H_
 #define LOGGING_PREPROCESSOR_MACROS_H_
 
+//see http://gcc.gnu.org/onlinedocs/gcc/Function-Names.html
+#define FULL_FUNC_NAME \
+  /*__PRETTY_FUNCTION__ expands to: >>return type<< >>class name<< "::"
+   * >>function name<< >>parameters list (only data type, no identifiers )<<
+   * */ \
+  __PRETTY_FUNCTION__
+
 //MinGW can't use wide stream (at least low versions of MinGW)
 #ifndef __MINGW32__
   #define USE_STD_WCOUT
@@ -79,14 +86,14 @@
     #define OWN_LOGGER_LOG_ENTER_CRIT_SEC_LOGGER_NAME(logger_name)
     #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger_name)
 #else
-    #define OWN_LOGGER_LOG_ENTER_CRIT_SEC g_logger.m_wxcriticalsectionLogging.\
+    #define OWN_LOGGER_LOG_ENTER_CRIT_SEC g_logger.m_critical_section_typeLogging.\
       Enter() ;
-    #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC g_logger.m_wxcriticalsectionLogging.\
+    #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC g_logger.m_critical_section_typeLogging.\
       Leave();
 #define OWN_LOGGER_LOG_ENTER_CRIT_SEC_LOGGER_NAME(logger_name) logger_name.\
-      m_wxcriticalsectionLogging.Enter() ;
+      m_critical_section_typeLogging.Enter() ;
 #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger_name) logger_name.\
-      m_wxcriticalsectionLogging.Leave();
+      m_critical_section_typeLogging.Leave();
 #endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
   #endif
     #include <string>
@@ -132,6 +139,20 @@
       LOG4CPLUS_INFO(log4cplus_logger, /*stdstr*/ g_stdstrLog ); \
       /*g_logger.Log("test ") ; */ }
 //    #endif
+    #define LOG_LOGGER_NAME_THREAD_UNSAFE(logger,to_ostream) \
+      { std::stringstream strstream ; \
+      strstream << to_ostream; \
+      /*/for g++ compiler:
+      //Because I want to call Log( std::string & ) I have to create an object at
+      //first*/ \
+      /*std::string stdstr = strstream.str() ;*/ \
+      g_stdstrLog = strstream.str() ; \
+      /*g_logger->Log(to_ostream) ; */ \
+      /*g_logger.Log( stdstr ) ;*/ \
+      POSSIBLY_LOG_TO_STDOUT(g_stdstrLog) \
+      OWN_LOGGER_LOG_LOGGER_NAME( logger ,/*stdstr*/ g_stdstrLog ) \
+      LOG4CPLUS_INFO(log4cplus_logger, /*stdstr*/ g_stdstrLog ); \
+      /*g_logger.Log("test ") ; */ }
     #define LOG(to_ostream) LOG_LOGGER_NAME(g_logger,to_ostream)
     //#ifdef COMPILE_WITH_LOG
     //Allows easy transition from "printf"
@@ -153,6 +174,7 @@
     //#define LOGN(to_ostream) LOG (to_ostream << "\n" )
     //TODO newline is appended in Logger::Log(...)
     #define LOGN(to_ostream) LOG (to_ostream )
+    #define LOG_FUNC_NAME_LN(to_ostream) LOG( __F << to_ostream )
     #define LOGN_LOGGER_NAME(logger_name,to_ostream) \
       LOG_LOGGER_NAME(logger_name,to_ostream )
     #define LOGN_TYPE(to_ostream, type) LOG_TYPE (to_ostream << "\n" , type)

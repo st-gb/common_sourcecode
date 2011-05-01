@@ -66,11 +66,16 @@ BYTE PowerProfDynLinked::CreatePowerScheme(
 }
 
 BYTE PowerProfDynLinked::DeletePowerScheme( 
-  const std::tstring & cr_stdtstrPowerSchemeName )
+  //const std::tstring & cr_stdtstrPowerSchemeName
+  //Power scheme names are in wide char for Win XP etc.
+  const std::wstring & cr_std_wstrPowerSchemeName
+  )
 {
   if( mp_i_powerprofdynlinked )
     return mp_i_powerprofdynlinked->DeletePowerScheme(
-      cr_stdtstrPowerSchemeName) ;
+//      cr_stdtstrPowerSchemeName
+      cr_std_wstrPowerSchemeName
+      ) ;
   return 0 ;
 }
 

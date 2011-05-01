@@ -4,9 +4,12 @@
 //This MFC CString emulation class is also (Linux) g++ compiler compatible
 //#include <StdString.h>
 #include <string> //class std::string
-#include <windows.h> //LPCSTR
+//#include <windows.h> //LPCSTR
 //#include <winnt.h> //TCHAR
+#include <tchar.h> //TCHAR
 #include <Controller/character_string/stdtstr.hpp> //GetStdString_Inline(...)
+#include <preprocessor_macros/string_typedefs.h> //LPCTSTR
+#include <string.h>
 
 namespace MFC_Compatibility
 {
@@ -138,7 +141,10 @@ namespace MFC_Compatibility
     }
     //see http://msdn.microsoft.com/en-us/library/aa314338%28VS.60%29.aspx:
 //    char GetAt(int pos) const
-    TCHAR GetAt(int pos) const
+    TCHAR GetAt(//int pos
+      //Use same type as size() returns to avoid g++ warning
+      //"comparison between signed and unsigned integer expressions"
+      size_type pos) const
     {
       if( pos >= 0 && pos < size() )
 //        return * this [pos] ;
@@ -246,10 +252,16 @@ namespace MFC_Compatibility
         static_cast<CString> ( substr(length - wNumChars,wNumChars) ) ;
     }
 //    CString Tokenize( char * p_ch, int & r_nCurrentPos) const
-    CString Tokenize( TCHAR * p_tch, int & r_nCurrentPos) const
+    CString Tokenize( TCHAR * p_tch, int & r_nCurrentPos
+//      //Use same type as size() returns to avoid g++ warning
+//      //"comparison between signed and unsigned integer expressions"
+//      size_type & r_nCurrentPos
+      ) const
     {
       CString cstringToken ;
-      if( r_nCurrentPos < size() )
+      if( //Cast same to type as size() returns to avoid g++ warning
+          //"comparison between signed and unsigned integer expressions"
+          (std::basic_string<TCHAR>::size_type) r_nCurrentPos < size() )
       {
 //        std::string stdstrTokenizers(p_ch) ;
         std::basic_string<TCHAR> stdtstrTokenizers(p_tch) ;

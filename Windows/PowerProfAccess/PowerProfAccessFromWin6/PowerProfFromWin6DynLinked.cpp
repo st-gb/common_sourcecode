@@ -187,7 +187,10 @@ unsigned char PowerProfFromWin6DynLinked::CreatePowerSchemeWithWantedName()
 }
 
 BYTE PowerProfFromWin6DynLinked::DeletePowerScheme( 
-  const std::tstring & cr_stdtstrPowerSchemeName )
+  //const std::tstring & cr_stdtstrPowerSchemeName
+  //Power scheme names are in wide char for Win XP etc.
+  const std::wstring & cr_std_wstrPowerSchemeName
+  )
 {
   return 0 ;
 //  //http://msdn.microsoft.com/en-us/library/aa372727%28VS.85%29.aspx:
@@ -418,6 +421,8 @@ BYTE PowerProfFromWin6DynLinked::DisableDVFSforPowerSchemeToSet()
         ) ;
       //The current setting may be the "max. perf" scheme e.g.
       if( m_dwACProcThrottleMaxValue != m_dwACProcThrottleMinValue )
+      //g++ 4.5.2: "warning: suggest explicit braces to avoid ambiguous 'else'"
+      {
         if( guidActivePowerScheme == m_guidPowerSchemeToSet )
         {
           //GUID guidActivePowerScheme ;
@@ -449,6 +454,7 @@ BYTE PowerProfFromWin6DynLinked::DisableDVFSforPowerSchemeToSet()
           if( m_dwACProcThrottleMaxValue != m_dwACProcThrottleMinValue )
             bWriteSetting = true ;
         }
+      }
       if( bWriteSetting )
         DisableDVFSforAlternateCurrent( //mp_guidPowerSchemeToSet ,
           & m_guidPowerSchemeToSet ,

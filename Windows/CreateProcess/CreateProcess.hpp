@@ -23,8 +23,21 @@ class CreateProcessAsUserAttributes
 class CreateProcessAsUserAttributesW
 {
 public:
+  DWORD m_dwSessionID;
   std::wstring m_stdwstrCommandLine ;
   std::wstring m_stdwstrCurrentDirectory ;
+  CreateProcessAsUserAttributesW(
+    const std::wstring & cr_stdwstrCommandLine ,
+    const std::wstring & cr_stdwstrCurrentDirectory,
+    DWORD dwSessionID
+    )
+    :
+      m_dwSessionID(dwSessionID),
+      m_stdwstrCommandLine(cr_stdwstrCommandLine),
+      m_stdwstrCurrentDirectory(cr_stdwstrCurrentDirectory)
+  {
+
+  }
 };
 
 namespace Windows_API
@@ -38,8 +51,11 @@ namespace Windows_API
     STARTUPINFOW startupinfo;
     PROCESS_INFORMATION process_information;
   //  ServiceAttributes & m_r_service_attrs ;
-    CreateProcessAsUserAttributesW & m_r_createprocessasuserattributesw ;
+//    CreateProcessAsUserAttributesW & m_r_createprocessasuserattributesw ;
+    CreateProcessAsUserAttributesW * m_p_createprocessasuserattributesw;
   public:
+    CreateProcess(//ServiceAttributes & r_service_attrs
+      CreateProcessAsUserAttributesW * p_createprocessasuserattributesw );
     CreateProcess(//ServiceAttributes & r_service_attrs
       CreateProcessAsUserAttributesW & r_createprocessasuserattributesw )
   //    :
@@ -50,6 +66,7 @@ namespace Windows_API
       // can be switched easily)
       HANDLE handleToken
       ) ;
+    void StartProcess();
     void StartProcess(DWORD dwSessionID) ;
   };
 }

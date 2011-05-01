@@ -33,7 +33,10 @@ public:
   virtual unsigned char CreatePowerScheme(const std::wstring & wstr) { return 0 ; }
   virtual unsigned char CreatePowerSchemeWithWantedName() { return 0 ; }
   virtual BYTE DeletePowerScheme(
-    const std::tstring & cr_stdtstrPowerSchemeName ) = 0 ;
+    //const std::tstring & cr_stdtstrPowerSchemeName
+    //Power scheme names are in wide char for Win XP etc.
+    const std::wstring & cr_std_wstrPowerSchemeName
+    ) = 0 ;
   bool DisableFrequencyScalingByOS() ;
 
   //unsigned char EnableFrequencyScalingByOS() ;

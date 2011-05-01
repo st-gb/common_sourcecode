@@ -40,7 +40,10 @@ inline //virtual
 {
   wxString wxstrFileName(lpszFileName) ;
   wxFile::OpenMode wxfile_openmode = GetOpenMode(uintOpenFlags) ;
-  return wxFile::Open( //lpszFileName
+  return
+    //http://docs.wxwidgets.org/2.8/wx_wxfile.html#wxfileopen:
+    //"Opens the file, returning true if successful."
+    wxFile::Open( //lpszFileName
     wxstrFileName, wxfile_openmode ) ;
 //  return false ;
 }
