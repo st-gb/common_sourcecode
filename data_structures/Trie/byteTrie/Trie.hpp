@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
+ * You are allowed to modify and use the source code from
+ * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
+ * making profit with it or its adaption. Else you may contact Trilobyte SE.
+ */
 /*
  * Trie.hpp
  *
@@ -54,6 +61,60 @@ public:
     return true ;
   }
   inline void OutputDeletedByteArray_inline(std::vector<unsigned char> & stdvec_by) ;
+
+  inline bool exists_inline(const std::vector<BYTE> & c_r_std_vec_by,
+      //If e.g. "# of bytes" and "# of bytes: 3": if bFullMatch == true, it
+      // returns "false, else it returns "true".
+      bool bFullMatch )
+  {
+    bExists = false ;
+    //unsigned char ** ar_p_byCurrent = m_ar_p_byRoot ;
+    ar_p_byCurrent = m_ar_p_byRoot ;
+  //  LOGN("Trie::exists")
+    std::vector<BYTE>::const_iterator ci = c_r_std_vec_by.begin();
+    for( ; ci != c_r_std_vec_by.end() ; ++ ci )
+    {
+      byValue = * ci ;
+  //    LOGN("Trie::exists ar_p_byCurrent:" << ar_p_byCurrent
+  //      << " ar_p_byCurrent[ byValue ]:" << (DWORD) ar_p_byCurrent[ byValue ])
+
+      //If pointer address is not NULL.
+      if( ar_p_byCurrent[ byValue ] )
+  //      ar_p_byCurrent = & ar_p_byCurrent[ byValue ] ;
+        //next level: current node pointer address.
+  //      * ar_p_byCurrent = ar_p_byCurrent[ byValue ] ;
+        ar_p_byCurrent = (unsigned char **) ar_p_byCurrent[ byValue ] ;
+      else
+      {
+        break ;
+      }
+    }
+    if( bFullMatch //If p_vBegin matches exactly the trie data.
+      )
+    {
+      //All nodes were found -> match.
+      if( ci == c_r_std_vec_by.end() )
+      { //Also return true id in trie: "hello" and search for "hell"
+        bExists = true ;
+      }
+    }
+    else //allow prefix match: e.g. p_vBegin's data: "hello1", data in trie:
+      // "hello" -> full prefix match
+    {
+      //If any of the Trie strings exits at least partly in the param string.
+       //wIndex > 0
+       if( //Braces around "&&" to avoid Linux g++ warning.
+           ( IsTrieLeaf(ar_p_byCurrent)
+           //If trie leaf AND trie is empty (wIndex == 0) then do _not_ return
+           // "true".
+           && ci != c_r_std_vec_by.begin() )
+         //if in trie: "hel" and "hello" and search for "hel" then "hel" is
+         // not a leaf.
+         || ci == c_r_std_vec_by.end() )
+         bExists = true ;
+    }
+    return bExists ;
+  }
 
   inline bool exists_inline( //void
     unsigned char * p_vBegin, unsigned short wBytesize,

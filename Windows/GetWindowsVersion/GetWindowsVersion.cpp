@@ -1,7 +1,14 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
+ * You are allowed to modify and use the source code from
+ * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
+ * making profit with it or its adaption. Else you may contact Trilobyte SE.
+ */
 #include "GetWindowsVersion.h"
 
 //from http://support.microsoft.com/kb/307394
-#include "stdafx.h"
+//#include "stdafx.h"
 #include <Windows.h>
 #ifdef __CYGWIN__ //does not have a "tchar.h" shipped.
     #include <Controller/MSVC_adaption/tchar.h> //_tcsrchr()

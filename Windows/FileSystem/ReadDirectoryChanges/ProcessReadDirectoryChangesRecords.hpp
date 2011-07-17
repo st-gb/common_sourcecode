@@ -122,8 +122,10 @@ inline void ProcessReadDirectoryChangesRecords(
       //A "modified" action occurs immediately after a rename: do not process
       //it.
       if( byPreviousAction == FILE_ACTION_RENAMED_NEW_NAME )
+      {
         bProcess = false ;
-      break ;
+        break ;
+      }
     case FILE_ACTION_ADDED:
     case FILE_ACTION_REMOVED:
     case FILE_ACTION_RENAMED_NEW_NAME:
@@ -133,16 +135,19 @@ inline void ProcessReadDirectoryChangesRecords(
         p_file_notify_information->FileName,
         //Length is in byte? -> 2 bytes per wide character.
         p_file_notify_information->FileNameLength / 2) ;
+      LOGN( FULL_FUNC_NAME << "set current file or dir path to:"
+          << p_file_notify_information->FileName
+          << " " << file_or_dir_watch_info.m_stdwstrCurrentFileOrDirPath )
 //      m_stdwstrOldFileOrDirPath
-    } //switch
+//    } //switch
 #ifdef COMPILE_WITH_LOG
     stdstr = g_ar_stdstrFileActions[file_or_dir_watch_info.m_byAction] ;
 #endif //#ifdef COMPILE_WITH_LOG
-    switch(file_or_dir_watch_info.m_byAction)
-    {
-    case FILE_ACTION_ADDED:
-    case FILE_ACTION_REMOVED:
-    case FILE_ACTION_MODIFIED:
+//    switch(file_or_dir_watch_info.m_byAction)
+//    {
+//    case FILE_ACTION_ADDED:
+//    case FILE_ACTION_REMOVED:
+//    case FILE_ACTION_MODIFIED:
       break ;
     case FILE_ACTION_RENAMED_OLD_NAME:
       //Make a copy of the strings because the buffer is overwritten the next
@@ -167,24 +172,48 @@ inline void ProcessReadDirectoryChangesRecords(
 //        continue ;
 //      }
       break ;
-    case FILE_ACTION_RENAMED_NEW_NAME:
-//      file_or_dir_watch_info.m_stdwstrCurrentFileOrDirPath = std::wstring(
-//        p_file_notify_information->FileName,
-//        p_file_notify_information->FileNameLength) ;
-      break ;
+//    case FILE_ACTION_RENAMED_NEW_NAME:
+////      file_or_dir_watch_info.m_stdwstrCurrentFileOrDirPath = std::wstring(
+////        p_file_notify_information->FileName,
+////        p_file_notify_information->FileNameLength) ;
+//      break ;
     } //switch
 //#endif //#ifdef COMPILE_WITH_LOG
-    LOGN("ProcessReadDirectoryChangesRecords--current file name:\""
-      << GetStdString_Inline( //std::wstring( file_or_dir_watch_info.
-        //m_p_wchFileName )
-        file_or_dir_watch_info.m_stdwstrCurrentFileOrDirPath
-      )
-      << "\" old file name:\"" << GetStdString_Inline( file_or_dir_watch_info.
-        m_stdwstrOldFileOrDirPath)
-      << "\" action:" << (WORD) file_or_dir_watch_info.m_byAction
+    std::string std_strCurrentFileOrDirPath = GetStdString_Inline(
+      //std::wstring( file_or_dir_watch_info.
+      //m_p_wchFileName )
+      file_or_dir_watch_info.m_stdwstrCurrentFileOrDirPath);
+    std::string std_strOldFileOrDirPath = GetStdString_Inline(
+        file_or_dir_watch_info.m_stdwstrOldFileOrDirPath);
+//    LOGN("ProcessReadDirectoryChangesRecords--current file name:\""
+//        )
+//    LOGN(std_strCurrentFileOrDirPath)
+//    css::basic_stringstream<wchar_t> css_basic_stringstream;
+//    css_basic_stringstream << "ProcessReadDirectoryChangesRecords\"";
+//    css_basic_stringstream << std_strCurrentFileOrDirPath;
+//    css_basic_stringstream << "ProcessReadDirectoryChangesRecor" <<
+//        std_strCurrentFileOrDirPath;
+//    LOGN("ProcessReadDirectoryChangesRecords--current file name:\""
+//        << std_strCurrentFileOrDirPath
+//        //file_or_dir_watch_info.m_stdwstrCurrentFileOrDirPath
+//        )
+    std::wcout << "BB" << p_file_notify_information->FileName << "\n";
+    std::wcout << file_or_dir_watch_info.m_stdwstrCurrentFileOrDirPath << "\n";
+    std::wcout << "EE" << "\n";
+    std::cout << "EE" << "\n";
+    LOGN(
+      LOG_CHAR_TYPE("ProcessReadDirectoryChangesRecords--current file name:\"")
+      << std_strCurrentFileOrDirPath
+      << "\" "
+      << "(\"" << file_or_dir_watch_info.m_stdwstrCurrentFileOrDirPath
+      << "\") "
+      << "old file name:\"" << std_strOldFileOrDirPath
+      << "\" (\"" << file_or_dir_watch_info.m_stdwstrOldFileOrDirPath << "\") "
+      << "action:" << (WORD) file_or_dir_watch_info.m_byAction
       << "(" << stdstr << ")"
       )
-
+    LOGN( "ps_fswatch->stdwstrRootPath:" << ps_fswatch->stdwstrRootPath );
+    LOGN( "ps_fswatch->pf_Callback:" << (void *) ps_fswatch->pf_Callback );
     ( * ps_fswatch->pf_Callback) ( file_or_dir_watch_info);
 
     if( p_file_notify_information->NextEntryOffset == 0)

@@ -1,4 +1,12 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
+ * You are allowed to modify and use the source code from
+ * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
+ * making profit with it or its adaption. Else you may contact Trilobyte SE.
+ */
 #pragma once //Include guard.
+
 #ifndef STDTSTR_HPP_ //Include guard.
   #define STDTSTR_HPP_
 
@@ -107,15 +115,28 @@ namespace std
  std::string GetStdString(const std::string & cr_str ) ;
  std::string GetStdString(const std::wstring & cr_wstr ) ;
  std::string GetStdString(const std::wstring & cr_wstr ) ;
+
  //Just 1 instruction inside the function->inline does not waste space if
- //used multiple times, more performance.
- inline std::string GetStdString_Inline(const std::wstring & cr_wstr )
+ //used multiple times, more performant.
+ //the return string has lost information if c_r_wstr[i] is > 255
+ inline std::string GetStdString_Inline(const std::wstring & c_r_wstr )
  {
-   return std::string( cr_wstr.begin(), cr_wstr.end() ) ;
-//   //from http://www.codeproject.com/KB/string/UtfConverter.aspx
-//   std::string stdstr ;
-//   stdstr.assign( cr_wstr.begin(), cr_wstr.end() ) ;
-//   return stdstr ;
+   std::string std_str;
+   //see http://www.cplusplus.com/reference/string/string/reserve/
+   //Prevent array copies if appending and std_str.capacity() < c_r_wstr.size()
+   std_str.reserve(c_r_wstr.length()
+       //string terminating 0 char
+       + 1 );
+   const wchar_t * c_p_wch = c_r_wstr.data();
+   while( * c_p_wch //++
+       )
+     std_str.append( 1, //Number of characters to append.
+         * c_p_wch ++
+         );
+//   std_str.append( 1, //Number of characters to append.
+//       '\0');
+//   return std::string( cr_wstr.begin(), cr_wstr.end() ) ;
+   return std_str;
  }
 
 // //Just 1 instruction inside the function->inline does not waste space if
@@ -123,10 +144,6 @@ namespace std
 // inline std::string GetStdString_Inline(const wchar_t * & crp_wchar_t )
 // {
 //   return std::string( cr_wstr.begin(), cr_wstr.end() ) ;
-////   //from http://www.codeproject.com/KB/string/UtfConverter.aspx
-////   std::string stdstr ;
-////   stdstr.assign( cr_wstr.begin(), cr_wstr.end() ) ;
-////   return stdstr ;
 // }
  inline std::string GetStdString_Inline(const std::string & cr_stdstr )
  {

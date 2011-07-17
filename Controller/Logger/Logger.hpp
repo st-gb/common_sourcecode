@@ -44,7 +44,8 @@
 #else
     //from http://www.gamedev.net/community/forums/topic.asp?topic_id=437062:
     timeval timevalCurrentTime ;
-    //from http://souptonuts.sourceforge.net/code/gettimeofday.c.html:
+    //see http://stackoverflow.com/questions/588307/c-obtaining-milliseconds-time-on-linux-clock-doesnt-seem-to-work-properly
+    // answered Feb 25 '09 at 23:18 by "Jason Punyon"
     struct tm * p_tm ;
 #endif
   public:
@@ -75,7 +76,8 @@
     //    std::ostrstream & r_ostrstream
     //    ) ;
 
-    inline void OutputTimeStampEtc_Inline(const std::string & r_stdstr)
+    inline void OutputTimeStampEtc_Inline(
+        const std::vector<BYTE> & c_r_std_vec_by)
     {
       //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
     #ifdef _WIN32
@@ -83,8 +85,10 @@
       ::GetLocalTime( & m_systemtime );
     #else // ->Linux
       //from http://www.gamedev.net/community/forums/topic.asp?topic_id=437062:
-      gettimeofday( & timevalCurrentTime,0);
-      //from http://souptonuts.sourceforge.net/code/gettimeofday.c.html:
+      // / http://www.linuxquestions.org/questions/programming-9/c-c-api-for-retrieving-system-time-in-micro-or-milliseconds-441519/
+      ::gettimeofday( & timevalCurrentTime,0);
+      //see http://www.unix.com/programming/1991-time-microseconds.html:
+      //  submitted by "Perderabo" on 09-04-2001 :
       p_tm = localtime( & timevalCurrentTime.tv_sec ) ;
     #endif
       //m_ofstream << r_stdstr ;
@@ -121,11 +125,65 @@
         << ":"
   //          << timevalCurrentTime.tv_usec << "us"
         #endif
-        << r_stdstr
+//        << r_stdstr
         << "\n"
         ;
+//      mp_ofstream->wr
     }
-
+    inline void OutputTimeStampEtc_Inline(const std::string & r_stdstr)
+    {
+      //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
+    #ifdef _WIN32
+      //Gets the same time as the Windows clock.
+      ::GetLocalTime( & m_systemtime );
+    #else // ->Linux
+      //from http://www.gamedev.net/community/forums/topic.asp?topic_id=437062:
+      // / http://www.linuxquestions.org/questions/programming-9/c-c-api-for-retrieving-system-time-in-micro-or-milliseconds-441519/
+      ::gettimeofday( & timevalCurrentTime,0);
+      //see http://www.unix.com/programming/1991-time-microseconds.html
+      //  submitted by "Perderabo" on 09-04-2001 :
+      p_tm = ::localtime( & timevalCurrentTime.tv_sec ) ;
+    #endif
+      //m_ofstream << r_stdstr ;
+      * mp_ofstream
+        //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
+        #ifdef _WIN32
+        << m_systemtime.wYear << "."
+        << m_systemtime.wMonth << "."
+        << m_systemtime.wDay << " "
+        << m_systemtime.wHour << "h:"
+        << m_systemtime.wMinute << "min "
+        << m_systemtime.wSecond << "s "
+        << m_systemtime.wMilliseconds << "ms"
+        << " thread ID:" << ::GetCurrentThreadId()
+        << ":"
+        #else
+  //          << timevalCurrentTime.tv_sec << "s"
+        << ( p_tm->tm_year
+          //The years seem to be relative to the year 1900.
+          + 1900 ) << "."
+        << ( p_tm->tm_mon
+          //The 1st month (January) seems to have the index 0.
+            + 1 ) << "."
+        << p_tm->tm_mday << " "
+        << p_tm->tm_hour << "h:"
+        << p_tm->tm_min << "min "
+        << p_tm->tm_sec << "s "
+        << //Milliseconds (10^-3 s) part = microseconds (10^-6 s) / 10^3
+           //e.g. 123456 microseconds / 1000 = 123 milliseconds
+          timevalCurrentTime.tv_usec / 1000 << "ms "
+          //Microseconds (10^-6 s) part = microseconds (10^-6 s) % 10^3
+          //e.g. 123456 microseconds % 1000 = 456 microseconds
+        << timevalCurrentTime.tv_usec % 1000 << "us"
+        << ":"
+  //          << timevalCurrentTime.tv_usec << "us"
+        #endif
+        << r_stdstr
+//        << "\n"
+        ;
+//      //for writing UTF-8 data (else problems writing a char value < 0 ?!)
+//       mp_ofstream->write(r_stdstr.c_str(), r_stdstr.length() );
+    }
     void Log(//ostream & ostr
         std::string & r_stdstr
         )
@@ -195,12 +253,18 @@
 //      #endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
     }
     void Log(//ostream & ostr
+        const std::vector<BYTE> & c_r_std_vec_by);
+    void Log(//ostream & ostr
         std::string & r_stdstr
         , WORD wType
         ) ;
     void Log(//ostream & ostr
         char * p_ch
         ) ;
+//    void Log(std::vector<unsigned char> )
+//    {
+//
+//    }
     #ifdef COMPILE_WITH_WSTRING
     //wide char version for output of Windows power scheme names etc.
     void LogW(//ostream & ostr

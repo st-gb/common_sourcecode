@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
+ * You are allowed to modify and use the source code from
+ * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
+ * making profit with it or its adaption. Else you may contact Trilobyte SE.
+ */
 /*
  * Trie.cpp
  *
@@ -223,7 +230,8 @@ void Trie::OutputDeletedByteArray_inline( std::vector<unsigned char> &
   //DEBUG_COUT
 //      ( "data structure: deleted: " )
 //    std::cout << "data structure: deleted: " ;
-  std::ostringstream  stdostringstream ;
+//  std::ostringstream  stdostringstream ;
+  css::basic_stringstream<LOGGING_CHARACTER_TYPE> stdostringstream ;
 //    stdostringstream << "data structure: deleted: " ;
   wSize = stdvec_by.size() ;
   for( WORD wIndex = 0 ; wIndex < wSize ; ++ wIndex )

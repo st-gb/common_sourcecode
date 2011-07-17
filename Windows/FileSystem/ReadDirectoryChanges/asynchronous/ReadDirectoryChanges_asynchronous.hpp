@@ -21,7 +21,8 @@ namespace Windows
     std::set<ReadDirectoryChangesWparameters *>
       m_stdset_p_readdirectorychangeswparameters ;
   public:
-    void EndWatchSubTree(const std::wstring & cr_stdtstrRootPath)
+    //void
+    BYTE EndWatchSubTree(const std::wstring & cr_stdtstrRootPath)
     {
       LOGN("Should end the watch for root directory"
         << GetStdString_Inline( cr_stdtstrRootPath) )

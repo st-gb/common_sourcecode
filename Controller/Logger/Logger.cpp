@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
+ * You are allowed to modify and use the source code from
+ * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
+ * making profit with it or its adaption. Else you may contact Trilobyte SE.
+ */
 //#if defined( _MSC_VER) 
 //#include "StdAfx.h"
 //#endif //#ifdef _MSC_VER
@@ -79,6 +86,77 @@ bool Logger::IsOpen()
 //{
 //
 //}
+
+void Logger::Log(//ostream & ostr
+    const std::vector<BYTE> & c_r_std_vec_by
+    )
+{
+  //  if(r_stdstr.end().)
+//Synchronization is not used in CPU controller logging.
+#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+  //Protect access to the trie: if 2 or more threads access the
+  // trie then an invalid array index for a trie level might be used?!
+  //If the output is _not_ synchronized and 2 or more threads are
+  // logging concurrently: the output may be mixed like:
+  // "22010.8.10 2010.99h:824.min 1051 19491msad24hread ID:tC8296ntCP51os
+  //  ter getting DOM implementationt("
+//      m_critical_section_typeLogging.Enter() ;
+#endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+
+  if(
+    //Fastest evaluable condition at the beginning.
+    mp_ofstream &&
+    //If NOT in the container.
+  //Filtering is not used in CPU controller logging.
+  #ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+  //      m_stdsetstdstrExcludeFromLogging.find(r_stdstr) ==
+  //      m_stdsetstdstrExcludeFromLogging.end()
+    ! m_trie.exists_inline(
+//      (unsigned char*) r_stdstr.c_str() ,
+      c_r_std_vec_by
+//      (WORD) r_stdstr.length( )
+      ,
+      false // allow prefix match: e.g. "hello" is prefix of "hello1"
+      )
+  //  )
+  //if( //m_ofstream.good()
+  &&
+#endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+    mp_ofstream->good()
+    )
+  {
+    OutputTimeStampEtc_Inline(c_r_std_vec_by);
+
+    //m_ofstream.flush() ;
+    mp_ofstream->flush() ;
+//        #ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+//        m_critical_section_typeLogging.Leave() ;
+//        #endif
+    //TODO write into RAM for having 2 possibilties:
+    //-truncate the log file to zero for every startup
+    //-append to log file at every startup
+
+    //->Write into RAM until the config file that determines which of these
+    //2 possibilities to use is completely read.
+    //If the config says: always append: simply delete the RAM buffer.
+    //If the config says: always truncate:
+    // 1. truncate the log file to zero
+    // 2. write the RAM buffer contents ( that are the same as in
+    //   log file written from startup till then)
+    // 3. delete the RAM buffer.
+    //buffer.add( ofstream.str() ) ;
+//      #ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+  }
+//#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+//      else
+//        m_critical_section_typeLogging.Leave() ;
+//#endif
+#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+//      m_critical_section_typeLogging.Leave() ;
+#endif
+
+//      #endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+}
 
 void Logger::Log(//ostream & ostr
     std::string & r_stdstr

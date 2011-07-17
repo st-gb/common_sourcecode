@@ -238,7 +238,10 @@ bool FileExtensionIsIncluded(
   }
   else
   {
-    strExtension = _T("") ;
+    strExtension =
+      //Avoid g++ warning "deprecated conversion from string constant to
+      //'TCHAR*'"
+      (TCHAR *) _T("") ;
   }
   //for(int nRun=0;nRun<vecstrExtensionsSize;++nRun)
   //Iterator ist vermutlich schneller, da nicht bei jedem
@@ -290,7 +293,10 @@ bool FileExtensionIsIncludedInVector(
     }
     else
     {
-      strExtension = _T("") ;
+      strExtension =
+        //Avoid g++ warning "deprecated conversion from string constant to
+        //'TCHAR*'"
+        (TCHAR *) _T("") ;
     }
     //for(int nRun=0;nRun<vecstrExtensionsSize;++nRun)
     //Iterator ist vermutlich schneller, da nicht bei jedem

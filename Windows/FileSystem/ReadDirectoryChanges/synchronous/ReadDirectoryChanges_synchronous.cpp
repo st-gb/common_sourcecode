@@ -36,7 +36,9 @@ DWORD WINAPI WatchSubTreeThreadProc(LPVOID lpParameter)
     if( handleDirectory == INVALID_HANDLE_VALUE )
     {
       DWORD dwLastError = ::GetLastError() ;
-      LOGN("creating dir handle failed:" << ::GetErrorMessageFromErrorCodeA(
+      LOGN( LOG_CHAR_TYPE("creating dir handle failed:") <<
+        ::GetErrorMessageFromErrorCodeA(
+        //::GetErrorMessageFromErrorCodeW(
         dwLastError) )
 //      throw FileSystemEventException(  ) ;
       return dwLastError ;
@@ -94,6 +96,7 @@ DWORD WINAPI WatchSubTreeThreadProc(LPVOID lpParameter)
         if( boolReadDirectoryChangesW_succeeded )
         {
           LOGN( "ReadDirectoryChangesW succeeded." );
+          if( ps_fswatch->m_v_bWatch )
           ProcessReadDirectoryChangesRecords(
             dwCurrentOffset,
             p_file_notify_information,
@@ -108,8 +111,10 @@ DWORD WINAPI WatchSubTreeThreadProc(LPVOID lpParameter)
           return ::GetLastError() ;
         }
       }
-      ::CloseHandle(handleDirectory);
       LOGN("WatchSubTreeThreadProc--ps_fswatch->m_v_bWatch is false")
+      ::CloseHandle(handleDirectory);
+      //Dyn. created before ::CreateThread(...);
+      delete ps_fswatch;
     }
   }
   return 0 ;
@@ -129,12 +134,23 @@ ReadDirectoryChanges_synchronous::ReadDirectoryChanges_synchronous(
 ReadDirectoryChanges_synchronous::~ReadDirectoryChanges_synchronous() {
 }
 
-//void ReadDirectoryChanges_synchronous::EndWatchSubTree(
-////  const std::wstring & cr_stdwstrRootPath
-//  )
-//{
-//
-//}
+//void
+BYTE ReadDirectoryChanges_synchronous::EndWatchSubTree(
+  const std::wstring & cr_std_wstrRootPath
+  )
+{
+  std::map<std::wstring, struct S_FSwatch>::iterator iter =
+    m_std_map_std_wstringFSWrootPath2s_fs_watch.find(
+      cr_std_wstrRootPath );
+  if( iter != m_std_map_std_wstringFSWrootPath2s_fs_watch.end() )
+  {
+      iter->second.m_v_bWatch = false;
+//      if( m_std_map_std_wstringFSWrootPath2s_fs_watch.erase(iter) )
+      m_std_map_std_wstringFSWrootPath2s_fs_watch.erase(iter);
+      return 0;
+  }
+  return 1;
+}
 
 //Return value: success or failure.
 //BYTE
@@ -153,27 +169,39 @@ DWORD ReadDirectoryChanges_synchronous::WatchSubTree(
 //    m_stdset_stdtstrWatchedDir.insert( tstrRootPath ) ;
   std::pair <std::set<std::wstring>::iterator, bool> stdpair =
     m_stdset_stdtstrWatchedDir.insert( cr_stdwstrRootPath ) ;
-  m_s_fs_watch.pf_Callback = callback ;
-//  m_s_fs_watch.tstrRootPath = tstrRootPath ;
-  m_s_fs_watch.stdwstrRootPath = cr_stdwstrRootPath ;
-  m_s_fs_watch.m_v_bWatch = true ;
-//  std::cout << "before CreateThread\n" ;
-  HANDLE handleThread = ::CreateThread(
-    NULL,                   // default security attributes
-    0,                      // use default stack size
-    WatchSubTreeThreadProc ,       // thread function name
-//    (void *) //cast "const void *" to "void *"
-//    ( //address of std::tstring
-//      &
-//      (* //std::tstring
-//      //iterator
-//      stdpair.first)
-//    )
-    & m_s_fs_watch ,          // argument to thread function
-    0,                      // use default creation flags
-    & dwThreadId
-    );   // returns the thread identifier
-  ::CloseHandle(handleThread) ;
+
+  //Create on heap, else destroyed at the end of this block.
+  struct S_FSwatch * p_s_fs_watch = new struct S_FSwatch(callback,
+      cr_stdwstrRootPath, true );
+  if( p_s_fs_watch )
+  {
+    m_std_map_std_wstringFSWrootPath2s_fs_watch.insert(
+        std::make_pair(cr_stdwstrRootPath, * p_s_fs_watch) );
+//    m_s_fs_watch.pf_Callback = callback ;
+//  //  m_s_fs_watch.tstrRootPath = tstrRootPath ;
+//    m_s_fs_watch.stdwstrRootPath = cr_stdwstrRootPath ;
+//    m_s_fs_watch.m_v_bWatch = true ;
+  //  std::cout << "before CreateThread\n" ;
+    HANDLE handleThread = ::CreateThread(
+      NULL,                   // NULL = default security attributes
+      0,                      // 0 = use default stack size
+      WatchSubTreeThreadProc ,      // thread function name
+      //lpParameter
+  //    (void *) //cast "const void *" to "void *"
+  //    ( //address of std::tstring
+  //      &
+  //      (* //std::tstring
+  //      //iterator
+  //      stdpair.first)
+  //    )
+      // argument to thread function
+//      & m_s_fs_watch ,
+      p_s_fs_watch,
+      0,                      // use default creation flags
+      & dwThreadId
+      );   // returns the thread identifier
+    ::CloseHandle(handleThread) ;
+  }
   return //true ;
     0 ;
 //  std::cout << "after CreateThread\n" ;

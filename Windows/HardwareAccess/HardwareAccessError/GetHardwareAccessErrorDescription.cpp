@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
+ * You are allowed to modify and use the source code from
+ * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
+ * making profit with it or its adaption. Else you may contact Trilobyte SE.
+ */
 /*
  * GetHardwareAccessErrorDescription.cpp
  *
@@ -5,6 +12,7 @@
  *      Author: Stefan
  */
 #include "GetHardwareAccessErrorDescription.hpp"
+//for convertToStdString(...)
 #include <Controller/character_string/stdstring_format.hpp>
 //#include <Windows/ErrorCodeFromGetLastErrorToString.h>
 #include <Windows/ErrorCode/LocalLanguageMessageFromErrorCode.h>
@@ -31,7 +39,7 @@ std::string GetHardwareAccessErrorDescription(
   case ERROR_GEN_FAILURE:
     strErrorMessage += "\nThis error code could mean that " +
     std::string(stdstrHardwareType) + " address \""
-      + to_stdstring<DWORD>(dwIndex) + "\" is not available/ accessible "
+      + convertToStdString<DWORD>(dwIndex) + "\" is not available/ accessible "
       //"on the CPU"
       ;
       break ;

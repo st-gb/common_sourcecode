@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
+ * You are allowed to modify and use the source code from
+ * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
+ * making profit with it or its adaption. Else you may contact Trilobyte SE.
+ */
 /*
  * logging_preprocessor_macros.h
  *
@@ -7,6 +14,8 @@
 
 #ifndef LOGGING_PREPROCESSOR_MACROS_H_
 #define LOGGING_PREPROCESSOR_MACROS_H_
+
+#include "css_basic_stringstream.hpp" //class css::basic_stringstream
 
 //see http://gcc.gnu.org/onlinedocs/gcc/Function-Names.html
 #define FULL_FUNC_NAME \
@@ -78,8 +87,16 @@
     #include <Controller/Logger/Logger.hpp> //for class Logger
     extern Logger g_logger ;
     #define OWN_LOGGER_LOG(stdstr) g_logger.Log( stdstr ) ;
-    #define OWN_LOGGER_LOG_LOGGER_NAME(logger_name,stdstr) \
-      logger_name.Log( stdstr ) ;
+    #include <Controller/character_string/getUTF8string.hpp>
+    #include <vector> /*class std::vector*/
+    #define OWN_LOGGER_LOG_LOGGER_NAME(logger_name, std_basic_string) \
+      std::string std_str = getUTF8string(std_basic_string); \
+        logger_name.Log( std_str ) ; \
+      /*std::vector<unsigned char> std_vec_by;
+      getUTF8string(std_basic_string, std_vec_by);
+      logger_name.Log(
+        std_vec_by
+        ) ;*/
 #ifdef COMPILE_FOR_CPUCONTROLLER_DYNLIB
     #define OWN_LOGGER_LOG_ENTER_CRIT_SEC
     #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC
@@ -97,7 +114,10 @@
 #endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
   #endif
     #include <string>
-    extern std::string g_stdstrLog ;
+    //LOGGING_CHARACTER_TYPE
+    #include <preprocessor_macros/logging_preprocessor_macros_definitions.h>
+    extern std::basic_string<LOGGING_CHARACTER_TYPE>
+      g_std_basicstring_log_char_typeLog;
     //class Logger ;
     //#ifndef _MSC_VER //else compile errors with gcc
     #include <sstream> //for class std::stringstream
@@ -115,13 +135,17 @@
 #else
   #define LOG4CPLUS_INFO(logger, logEvent) /* ->empty*/
 #endif //#ifdef USE_LOG4CPLUS
+
+    //#include "log_logger_name_thread_safe.h"
     //LOGxx macros: should log no matter whether release or debug.
     //Because under _Linux_ unloading a dynamic library with a global g_logger
     //caused the global g_logger (->same variable name) of the executable the
     //dyn lib was attached to call the
     //logger's destructor, provide a macro with different logger variable names.
-    #define LOG_LOGGER_NAME(logger,to_ostream) { std::stringstream strstream ; \
-      strstream << to_ostream; \
+    #define LOG_LOGGER_NAME(logger,to_ostream) { \
+      /*std::basic_stringstream<LOGGING_CHARACTER_TYPE> stringstream ;*/ \
+      css::basic_stringstream<LOGGING_CHARACTER_TYPE> stringstream ; \
+      stringstream << to_ostream; \
       /*/for g++ compiler:
       //Because I want to call Log( std::string & ) I have to create an object at
       //first*/ \
@@ -130,29 +154,17 @@
        *  like here: "SendCommandAndGetResponse end\0pe"
        */ \
       OWN_LOGGER_LOG_ENTER_CRIT_SEC_LOGGER_NAME(logger) \
-      g_stdstrLog = strstream.str() ; \
+      g_std_basicstring_log_char_typeLog = stringstream.str() ; \
       /*g_logger->Log(to_ostream) ; */ \
       /*g_logger.Log( stdstr ) ;*/ \
-      POSSIBLY_LOG_TO_STDOUT(g_stdstrLog) \
-      OWN_LOGGER_LOG_LOGGER_NAME( logger ,/*stdstr*/ g_stdstrLog ) \
+      POSSIBLY_LOG_TO_STDOUT(g_std_basicstring_log_char_typeLog) \
+      OWN_LOGGER_LOG_LOGGER_NAME( logger ,/*stdstr*/ g_std_basicstring_log_char_typeLog ) \
       OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger) \
-      LOG4CPLUS_INFO(log4cplus_logger, /*stdstr*/ g_stdstrLog ); \
+      LOG4CPLUS_INFO(log4cplus_logger, /*stdstr*/ g_std_basicstring_log_char_typeLog ); \
       /*g_logger.Log("test ") ; */ }
 //    #endif
-    #define LOG_LOGGER_NAME_THREAD_UNSAFE(logger,to_ostream) \
-      { std::stringstream strstream ; \
-      strstream << to_ostream; \
-      /*/for g++ compiler:
-      //Because I want to call Log( std::string & ) I have to create an object at
-      //first*/ \
-      /*std::string stdstr = strstream.str() ;*/ \
-      g_stdstrLog = strstream.str() ; \
-      /*g_logger->Log(to_ostream) ; */ \
-      /*g_logger.Log( stdstr ) ;*/ \
-      POSSIBLY_LOG_TO_STDOUT(g_stdstrLog) \
-      OWN_LOGGER_LOG_LOGGER_NAME( logger ,/*stdstr*/ g_stdstrLog ) \
-      LOG4CPLUS_INFO(log4cplus_logger, /*stdstr*/ g_stdstrLog ); \
-      /*g_logger.Log("test ") ; */ }
+    #include "log_logger_name_thread_unsafe.h"
+
     #define LOG(to_ostream) LOG_LOGGER_NAME(g_logger,to_ostream)
     //#ifdef COMPILE_WITH_LOG
     //Allows easy transition from "printf"
@@ -173,7 +185,7 @@
       }
     //#define LOGN(to_ostream) LOG (to_ostream << "\n" )
     //TODO newline is appended in Logger::Log(...)
-    #define LOGN(to_ostream) LOG (to_ostream )
+    #define LOGN(to_ostream) LOG (to_ostream << "\n")
     #define LOG_FUNC_NAME_LN(to_ostream) LOG( __F << to_ostream )
     #define LOGN_LOGGER_NAME(logger_name,to_ostream) \
       LOG_LOGGER_NAME(logger_name,to_ostream )

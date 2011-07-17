@@ -20,6 +20,14 @@ namespace Windows
     ReadDirectoryChanges_synchronous();
     ReadDirectoryChanges_synchronous(const ReadDirectoryChanges_synchronous& orig);
     virtual ~ReadDirectoryChanges_synchronous();
+
+    virtual //void
+      BYTE EndWatchSubTree(
+        const std::wstring & //r_std_wstrMessage
+        cr_std_wstrRootPath);
+//    {
+////      r_std_wstrMessage = L"unwatched on the next file system change/ event";
+//    }
     //BYTE
     DWORD WatchSubTree(
       const std::tstring & strRootPath ,

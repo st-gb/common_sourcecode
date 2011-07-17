@@ -1,5 +1,11 @@
 #pragma once
-
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
+ * You are allowed to modify and use the source code from
+ * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
+ * making profit with it or its adaption. Else you may contact Trilobyte SE.
+ */
 //#include <string>
 //This MFC CString emulation class is also (Linux) g++ compiler compatible
 //#include <StdString.h>
@@ -76,14 +82,14 @@ namespace MFC_Compatibility
     {
       #ifdef UNICODE
       return
-        //http://www.delorie.com/djgpp/doc/libc/libc_761.html:
-        //"This function compares the two strings, disregarding case. "
+        //http://msdn.microsoft.com/en-us/library/k59z8dwe%28v=vs.80%29.aspx:
+        //"Perform a lowercase comparison of strings."
         _wcsicmp( c_str(), //cr_str.c_str()
           cpc_tch ) ;
       #else //#ifdef UNICODE
       return
-        //http://www.delorie.com/djgpp/doc/libc/libc_761.html:
-        //"This function compares the two strings, disregarding case. "
+          //http://msdn.microsoft.com/en-us/library/k59z8dwe%28v=vs.80%29.aspx:
+          //"Perform a lowercase comparison of strings."
         stricmp( c_str(), //cr_str.c_str()
 //          cpc_ch ) ;
           cpc_tch ) ;

@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
+ * You are allowed to modify and use the source code from
+ * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
+ * making profit with it or its adaption. Else you may contact Trilobyte SE.
+ */
 /*
  * ReadXMLdocument.hpp
  *
@@ -20,7 +27,8 @@
 #include <string> //for class std::wstring
 
 //Own header files.
-#include <Controller/character_string/stdstring_format.hpp> //for to_strstring()
+//for convertToStdString(...)
+#include <Controller/character_string/stdstring_format.hpp>
 #include <Controller/character_string/stdtstr.hpp> //for GetStdString(...)
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 
@@ -105,14 +113,14 @@ inline unsigned char ReadXMLdocument(
       r_stdwstrErrorMessage = L"XML exception in document \""
         + std::wstring( cr_inputsource.getSystemId() ) +
         L"\"\n"
-//          + "\", line " + to_stdstring( cr_saxparseexception.getLineNumber() )
-//          + ", column " + to_stdstring( cr_saxparseexception.getColumnNumber() )
+//          + "\", line " + convertToStdString( cr_saxparseexception.getLineNumber() )
+//          + ", column " + convertToStdString( cr_saxparseexception.getColumnNumber() )
         + L"in line " + GetStdWstring( to_stdstring(
           xmlfilelocLineNumber ) )
         + L", column " + GetStdWstring( to_stdstring(
           xmlfilelocColumnNumber ) )
-//          + "\", line " + to_stdstring( cr_saxexception.getLineNumber() )
-//          + ", column " + to_stdstring( cr_saxexception.getColumnNumber() )
+//          + "\", line " + convertToStdString( cr_saxexception.getLineNumber() )
+//          + ", column " + convertToStdString( cr_saxexception.getColumnNumber() )
         + L":\n\"" + cr_saxparseexception.getMessage() ;
       if( ! xmlfilelocColumnNumber && ! xmlfilelocLineNumber )
       {
@@ -143,14 +151,14 @@ inline unsigned char ReadXMLdocument(
       r_stdwstrErrorMessage = L"XML exception in document \""
         + std::wstring( cr_inputsource.getSystemId() ) +
         L"\" :"
-//          + "\", line " + to_stdstring( r_saxparseexception.getLineNumber() )
-//          + ", column " + to_stdstring( r_saxparseexception.getColumnNumber() )
-//          + L"\", line " + GetStdWstring( to_stdstring(
+//          + "\", line " + convertToStdString( r_saxparseexception.getLineNumber() )
+//          + ", column " + convertToStdString( r_saxparseexception.getColumnNumber() )
+//          + L"\", line " + GetStdWstring( convertToStdString(
 //              r_saxparseexception.getLineNumber() ) )
-//          + L", column " + GetStdWstring( to_stdstring(
+//          + L", column " + GetStdWstring( convertToStdString(
 //            r_saxparseexception.getColumnNumber() ) )
-//          + "\", line " + to_stdstring( r_saxexception.getLineNumber() )
-//          + ", column " + to_stdstring( r_saxexception.getColumnNumber() )
+//          + "\", line " + convertToStdString( r_saxexception.getLineNumber() )
+//          + ", column " + convertToStdString( r_saxexception.getColumnNumber() )
 //          + L": " + r_saxparseexception.getMessage()
         + cr_saxexception.getMessage()
         + L"\nIn order to solve this problem you may look into the XML "

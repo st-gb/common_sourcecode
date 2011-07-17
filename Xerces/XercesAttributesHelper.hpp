@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
+ * You are allowed to modify and use the source code from
+ * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
+ * making profit with it or its adaption. Else you may contact Trilobyte SE.
+ */
 /*
  * XercesAttributesHelper.hpp
  *
@@ -173,7 +180,6 @@ public:
   //   const std::string & r_stdstr
     const char * const lpctstrAttrName
 //     const   XMLCh * const    cpc_xmlchLocalName
-     //,std::ios_base& (*f)(std::ios_base&)
     ) ;
   static bool getValue(
      const XERCES_CPP_NAMESPACE::Attributes & cr_xerces_attributes ,
@@ -197,7 +203,6 @@ public:
 ////   const std::string & r_stdstr
 ////   char * const lpctstrAttrName
 //   const std::string & r_stdstr
-//   //,std::ios_base& (*f)(std::ios_base&)
 //  ) ;
 
 //template idea for converting string to other data type
