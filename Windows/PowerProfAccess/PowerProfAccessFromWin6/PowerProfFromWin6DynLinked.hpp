@@ -2,7 +2,7 @@
 #ifndef POWERPROFACCESSFROMWIN6_H_
   #define POWERPROFACCESSFROMWIN6_H_
 
-#define INCLUDE_POWRPROF_H_IN_PWRPROFDYNLINKED_FROM_VER6_H
+//#define INCLUDE_POWRPROF_H_IN_PWRPROFDYNLINKED_FROM_VER6_H
 //If the powrprof.h for Windows version >= 6 is already included
 //MS compiler: "error C2011: '_POWER_DATA_ACCESSOR' : 'enum' type redefinition"
 #ifdef INCLUDE_POWERPROF_FOR_WINDOWS_ABOVE_VERSION6
@@ -10,6 +10,7 @@
 //#else
 #ifdef INCLUDE_POWRPROF_H_IN_PWRPROFDYNLINKED_FROM_VER6_H
 //#ifdef __CYGWIN__ // pwrprof.h != PowerProf.h in gcc (->case matters)
+    //Causes multiple definitions of structs if also included afterwards.
     #include <powrprof.h> // for PowerWriteACValueIndex()
 //#elif defined (_MSC_VER )
 ////This must be the PowrProf.h from the Windows (platform) SDK for Vista,

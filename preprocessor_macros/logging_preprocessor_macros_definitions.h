@@ -25,9 +25,9 @@
 //    #define LOGGING_CHARACTER_TYPE char
 //  #endif
 
-  #define LOGGING_CHARACTER_TYPE_ID 0//1
+//  #define LOGGING_CHARACTER_TYPE_ID 0//1
 
-#if LOGGING_CHARACTER_TYPE_ID == 0//1
+#ifdef LOGGING_CHARACTER_TYPE_ID && LOGGING_CHARACTER_TYPE_ID == 0//1
   #define LOG_CHAR_TYPE(x) L##x
   #define LOGGING_CHARACTER_TYPE wchar_t
 #else

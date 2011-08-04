@@ -215,7 +215,7 @@ public:
 //"undefined reference to `bool XercesAttributesHelper::getValue<std::string>
 //(std::string&, char*) const'"
 //Also see here: http://www.codeproject.com/KB/cpp/templatesourceorg.aspx
-template <class T>
+template <typename T>
  bool ConvertXercesAttributesValue(
   const XERCES_CPP_NAMESPACE::Attributes & cr_xerces_attributes ,
    T & r_templateType,
@@ -237,11 +237,28 @@ template <class T>
     {
         std::string strAttributeValue = std::string(pchAttributeValue);
         std::istringstream iss(strAttributeValue);
+
+        //atof returned 1 for "1.2" on Linux on German because the decimal
+        //point is a "," in German.
+        //http://stackoverflow.com/questions/1333451/c-locale-independent-atof:
+        //"localeconv (in <locale.h>) returns a pointer to struct whose
+        //decimal_point member contains that value. Note that the pointer
+        //is valid until the next localeconv() or setlocale() – "
+        //fAtofResult = (float) atof(pchAttributeValue ) ;
+
+        //Ensure a "." is interpreted as decimal point no matter what the
+        //current locale is.
+        iss.imbue( std::locale("C") );
+
         //Release memory of dyn. alloc. buffer (else memory leaks).
         XERCES_CPP_NAMESPACE::XMLString::release(&pchAttributeValue);
-        return ! ( iss //>> f
-          >> r_templateType
-          ).fail();
+//        return ! ( iss //>> f
+//          >> r_templateType
+//          ).fail();
+        bool b = ! ( iss //>> f
+            >> r_templateType
+            ).fail();
+        return b;
     }
     //      else
     //        byReturn = XERCES_ATTRIBUTE_VALUE_DOES_NOT_EXIST ;
@@ -261,7 +278,7 @@ template <class T>
 //"undefined reference to `bool XercesAttributesHelper::getValue<std::string>
 //(std::string&, char*) const'"
 //Also see here: http://www.codeproject.com/KB/cpp/templatesourceorg.aspx
-template <class T>
+template <typename T>
  bool ConvertXercesAttributesValue(
   const XERCES_CPP_NAMESPACE::Attributes & cr_xerces_attributes ,
    T & r_templateType,
@@ -289,7 +306,7 @@ template <class T>
   return false ;
 }
 
-template <class T>
+template <typename T>
   bool ConvertXercesAttributesValue(
     const XERCES_CPP_NAMESPACE::Attributes & cr_xerces_attributes ,
     //   const std::string & r_stdstr

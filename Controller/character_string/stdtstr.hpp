@@ -12,6 +12,7 @@
 
 #include <string> //std::string, std::wstring
 #include <string.h> //strlen(...)
+#include <tchar.h> //TCHAR
 //#include <tchar.h> //for TCHAR
 //#include <preprocessor_macros/string_typedefs.h> //LPCTSTR, LPWSTR
 //#include <winnt.h> //LPWSTR
@@ -50,22 +51,6 @@ namespace std
  std::tstring Getstdtstring(const std::string & str ) ;
  std::tstring Getstdtstring(const std::wstring & wstr ) ;
 
-#if defined _UNICODE || defined UNICODE
- inline std::tstring GetStdTstring_Inline(const std::string & cr_str )
- {
-   std::wstring wstr( cr_str.begin(), cr_str.end() ) ;
-   return wstr ;
- }
- inline std::tstring GetStdTstring_Inline(const std::wstring & cr_wstr )
- {
-   return cr_wstr ;
- }
- inline std::tstring GetStdTstring_Inline(const char * const cp_ch )
- {
-   std::string std_str(cp_ch);
-   std::wstring wstr( std_str.begin(), std_str.end() ) ;
-   return wstr ;
- }
  inline wchar_t ** //GetTCHARarray_Inline
    Get_wchar_t_Array_Inline(const char ** const ar_cp_ch,
    WORD wNumberOfStrings)
@@ -95,7 +80,31 @@ namespace std
    }
    return ar_p_tch ;
  }
+
+#if defined _UNICODE || defined UNICODE
+ //TCHAR = wchar_t
+ inline std::tstring GetStdTstring_Inline(const std::string & cr_str )
+ {
+   std::wstring wstr( cr_str.begin(), cr_str.end() ) ;
+   return wstr ;
+ }
+ inline std::tstring GetStdTstring_Inline(const std::wstring & cr_wstr )
+ {
+   return cr_wstr ;
+ }
+ inline std::tstring GetStdTstring_Inline(const char * const cp_ch )
+ {
+   std::string std_str(cp_ch);
+   std::wstring wstr( std_str.begin(), std_str.end() ) ;
+   return wstr ;
+ }
+ inline TCHAR ** GetTCHARarray_Inline(const char ** const ar_cp_ch,
+     WORD wNumberOfStrings)
+  {
+     return Get_wchar_t_Array_Inline(ar_cp_ch, wNumberOfStrings);
+  }
 #else //#if defined _UNICODE || defined UNICODE
+ //TCHAR = char
  inline std::tstring GetStdTstring_Inline(const std::string & cr_str )
  {
    return cr_str ;
@@ -105,6 +114,11 @@ namespace std
    std::string stdstr( cr_wstr.begin(), cr_wstr.end() ) ;
    return stdstr ;
  }
+ inline TCHAR ** GetTCHARarray_Inline(const char ** const ar_cp_ch,
+     WORD wNumberOfStrings)
+  {
+     return (TCHAR **) ar_cp_ch;
+  }
 #endif //#if defined _UNICODE || defined UNICODE
 
  //std::wstring GetStdWstring( const std::tstring & cr_stdtstr ) ;

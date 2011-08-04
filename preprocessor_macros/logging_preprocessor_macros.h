@@ -74,12 +74,33 @@
 //May be useful for finding logging errors: if the/ a global Logger variable
 //has already been destroyed this leads/ may lead to program crashs.
 #ifdef LOG_LOGGER_OUTPUT_TO_STDOUT_BEFORE
-  #define POSSIBLY_LOG_TO_STDOUT(coutArgs) \
-    { std::cout << coutArgs ; std::cout.flush(); }
+  #if LOGGING_CHARACTER_TYPE_ID == 0
+    #define POSSIBLY_LOG_TO_STDOUT(coutArgs) \
+      { std::wcout << coutArgs ; std::wcout.flush(); }
+  #else
+    #define POSSIBLY_LOG_TO_STDOUT(coutArgs) \
+      { std::cout << coutArgs ; std::cout.flush(); }
+  #endif //#if LOGGING_CHARACTER_TYPE_ID == 0
 #else
   #define POSSIBLY_LOG_TO_STDOUT(coutArgs) ; /* ->empty; block can be used
     after"if"/"else" */
 #endif
+
+  #include <iostream> //for std::cout
+  #ifdef LOGGING_CHARACTER_TYPE_ID && LOGGING_CHARACTER_TYPE_ID == 0
+    #define WRITE_TO_STD_OUT_AND_FLUSH(to_ostream) \
+      {       \
+      css::basic_stringstream<LOGGING_CHARACTER_TYPE> stringstream ; \
+      stringstream << to_ostream; \
+      std::wcout << stringstream.str() << std::endl ; std::wcout.flush(); }
+  #else
+    #define WRITE_TO_STD_OUT_AND_FLUSH(to_ostream) \
+    { \
+      css::basic_stringstream<LOGGING_CHARACTER_TYPE> stringstream ; \
+      stringstream << to_ostream; \
+      std::cout << stringstream.str() << std::endl ; std::cout.flush(); \
+    }
+  #endif //#if LOGGING_CHARACTER_TYPE_ID == 0
 
 #ifdef COMPILE_WITH_LOG
 //  #define USE_OWN_LOGGER
@@ -89,9 +110,14 @@
     #define OWN_LOGGER_LOG(stdstr) g_logger.Log( stdstr ) ;
     #include <Controller/character_string/getUTF8string.hpp>
     #include <vector> /*class std::vector*/
-    #define OWN_LOGGER_LOG_LOGGER_NAME(logger_name, std_basic_string) \
-      std::string std_str = getUTF8string(std_basic_string); \
-        logger_name.Log( std_str ) ; \
+    #ifdef LOGGING_CHARACTER_TYPE_ID && LOGGING_CHARACTER_TYPE_ID == 0
+      #define OWN_LOGGER_LOG_LOGGER_NAME(logger_name, std_basic_string) \
+        std::string std_str = getUTF8string(std_basic_string); \
+          logger_name.Log( std_str ) ;
+    #else
+      #define OWN_LOGGER_LOG_LOGGER_NAME(logger_name, std_basic_string) \
+        logger_name.Log( std_basic_string ) ;
+    #endif
       /*std::vector<unsigned char> std_vec_by;
       getUTF8string(std_basic_string, std_vec_by);
       logger_name.Log(
@@ -202,7 +228,8 @@
       SWPRINTF(__VA_ARGS__) \
       std::wstring stdwstr(arwch_buffer) ; \
       /*stdwstr += L'\n' ;*/ \
-      std::string stdstr ( stdwstr.begin(), stdwstr.end() ) ;\
+      std::string stdstr ( stdwstr.begin(), stdwstr.end() ); \
+      stdstr += "\n"; \
       g_logger.Log( stdstr ) ; \
       }
     #if defined(__MINGW32__) //MinGW does not know std::wstringstream
@@ -230,9 +257,10 @@
     #include <iostream> //for std::cout
     //#endif
     #define WRITE_TO_LOG_FILE_AND_STDOUT_NEWLINE(to_ostream) { \
-    /*LOG(to_ostream << std::endl; ); */ \
-    LOGN( to_ostream ) ; \
-      std::cout << to_ostream << std::endl ; std::cout.flush(); }
+      /*LOG(to_ostream << std::endl; ); */ \
+      LOGN( to_ostream ) ; \
+      WRITE_TO_STD_OUT_AND_FLUSH(to_ostream) \
+      }
 #else //#ifdef COMPILE_WITH_LOG
   #define LOG(to_ostream) ; /* ";" for use in "else LOG(...)" -> "else ;" */
   #define LOG_SPRINTF(...) ; /**/

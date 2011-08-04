@@ -155,7 +155,8 @@ BYTE XercesAttributesHelper::GetAttributeValue(
   bool & rbValue
   )
 {
-  BYTE byReturn = FAILURE;
+  BYTE byReturn = //FAILURE;
+    getting_attribute_value_failed;
   //Cast to XMLCh for "Attributes::getValue(...)".
   XMLCh * p_xmlchAttributeName = XERCES_CPP_NAMESPACE::XMLString::transcode(
     pc_chAttributeName) ;
@@ -180,7 +181,7 @@ BYTE XercesAttributesHelper::GetAttributeValue(
       {
         rbValue = true;
         byReturn = //SUCCESS;
-            getting_attribute_value_succeeded;
+          getting_attribute_value_succeeded;
       }
       else if( CharacterString::template_character_type_string_compare(
           cp_xmlchAttributeValue,
@@ -189,7 +190,7 @@ BYTE XercesAttributesHelper::GetAttributeValue(
       {
         rbValue = false;
         byReturn = //SUCCESS;
-            getting_attribute_value_succeeded;
+          getting_attribute_value_succeeded;
       }
     }//if(cp_xmlchAttributeValue)
     //Release memory of dyn. alloc. buffer (else memory leaks).
@@ -204,7 +205,8 @@ BYTE XercesAttributesHelper::GetAttributeValue(
   BYTE & rbyValue
   )
 {
-  BYTE byReturn = FAILURE;
+  BYTE byReturn = //FAILURE;
+    getting_attribute_value_failed;
   XMLCh * p_xmlchAttributeName = XERCES_CPP_NAMESPACE::XMLString::transcode(
     lpctstrAttrName) ;
   if( p_xmlchAttributeName )
@@ -239,7 +241,7 @@ BYTE XercesAttributesHelper::GetAttributeValue(
           )
         {
           byReturn = //SUCCESS;
-              getting_attribute_value_succeeded;
+            getting_attribute_value_succeeded;
           rbyValue = nAtoiResult ;
         }
         //Release memory of dyn. alloc. buffer (else memory leaks).
@@ -266,6 +268,7 @@ BYTE XercesAttributesHelper::GetAttributeValue(
   )
 {
   BYTE byReturn = FAILURE;
+    //getting_attribute_value_failed;
   XMLCh * p_xmlchAttributeName = XERCES_CPP_NAMESPACE::XMLString::transcode(
     lpctstrAttrName) ;
   if( p_xmlchAttributeName )
@@ -337,7 +340,8 @@ BYTE XercesAttributesHelper::GetAttributeValue(
   void * pv_AttributeValue
   )
 {
-  BYTE byReturn = FAILURE;
+  BYTE byReturn = //FAILURE;
+    getting_attribute_value_failed;
   XMLCh * p_xmlchAttributeName = XERCES_CPP_NAMESPACE::XMLString::transcode(
     lpctstrAttrName) ;
   if( p_xmlchAttributeName )
@@ -405,7 +409,8 @@ BYTE XercesAttributesHelper::GetAttributeValue(
   WORD & rwValue
   )
 {
-  BYTE byReturn = FAILURE;
+  BYTE byReturn = //FAILURE;
+    getting_attribute_value_failed;
   XMLCh * p_xmlchAttributeName = XERCES_CPP_NAMESPACE::XMLString::transcode(
     lpctstrAttrName) ;
   if( p_xmlchAttributeName )
@@ -438,7 +443,7 @@ BYTE XercesAttributesHelper::GetAttributeValue(
           )
         {
           byReturn = //SUCCESS;
-              getting_attribute_value_succeeded;
+            getting_attribute_value_succeeded;
           rwValue = nAtoiResult ;
           LOGN("successfully got \"" << lpctstrAttrName <<
             "\" attribute value: " << rwValue )
@@ -522,7 +527,8 @@ BYTE XercesAttributesHelper::GetAttributeValue(
   float & rfValue
   )
 {
-  BYTE byReturn = FAILURE;
+  BYTE byReturn = //FAILURE;
+    getting_attribute_value_failed;
   XMLCh * p_xmlchAttributeName = XERCES_CPP_NAMESPACE::XMLString::transcode(
     lpctstrAttrName) ;
   if( p_xmlchAttributeName )
@@ -583,7 +589,7 @@ BYTE XercesAttributesHelper::GetAttributeValue(
           )
         {
           byReturn = //SUCCESS;
-              getting_attribute_value_succeeded;
+            getting_attribute_value_succeeded;
           rfValue = fAtofResult ;
           LOGN("successfully got \"" << lpctstrAttrName <<
             "\" attribute value: " << rfValue )
@@ -621,7 +627,8 @@ BYTE XercesAttributesHelper::GetAttributeValue
   std::string & r_strValue
   )
 {
-  BYTE byReturn = FAILURE;
+  BYTE byReturn = //FAILURE;
+    getting_attribute_value_failed;
   XMLCh * p_xmlchAttributeName = XERCES_CPP_NAMESPACE::XMLString::transcode(
     lpcstrAttrName) ;
   if( p_xmlchAttributeName )
@@ -640,7 +647,7 @@ BYTE XercesAttributesHelper::GetAttributeValue
       {
         r_strValue = std::string(pchAttributeValue);
         byReturn = //SUCCESS;
-            getting_attribute_value_succeeded;
+          getting_attribute_value_succeeded;
         //Release memory of dyn. alloc. buffer (else memory leaks).
         XERCES_CPP_NAMESPACE::XMLString::release( & pchAttributeValue);
       }
@@ -659,7 +666,8 @@ BYTE XercesAttributesHelper::GetAttributeValue
   std::wstring & r_stdwstrValue
   )
 {
-  BYTE byReturn = FAILURE;
+  BYTE byReturn = //FAILURE;
+    getting_attribute_value_failed;
   XMLCh * p_xmlchAttributeName = XERCES_CPP_NAMESPACE::XMLString::transcode(
     lpctstrAttrName) ;
   if( p_xmlchAttributeName )
@@ -680,7 +688,7 @@ BYTE XercesAttributesHelper::GetAttributeValue
 //        pxmlch);
         Xerces::ConvertXercesStringToStdWstring(cp_xmlchAttributeValue) ;
       byReturn = //SUCCESS;
-          getting_attribute_value_succeeded;
+        getting_attribute_value_succeeded;
     }
     //Release memory of dyn. alloc. buffer (else memory leaks).
     XERCES_CPP_NAMESPACE::XMLString::release( & p_xmlchAttributeName);
@@ -693,7 +701,8 @@ BYTE XercesAttributesHelper::ToDWORD(
   void * pv_AttributeValue
   )
 {
-  BYTE byReturn = FAILURE ;
+  BYTE byReturn = //FAILURE ;
+      getting_attribute_value_failed;
   //TCHAR * p_tch ;
   char * p_ch ;
   DWORD dwResult = //strtoul
@@ -726,7 +735,7 @@ BYTE XercesAttributesHelper::ToDWORD(
     )
      //Overflow condition occurred.
   {
-    byReturn = XERCES_ATTRIBUTE_VALUE_INVALID_DATA_FORMAT ;
+//    byReturn = XERCES_ATTRIBUTE_VALUE_INVALID_DATA_FORMAT ;
 //    std::string str = "Error converting \"" + strAttributeValue +
 //      "\" (should be specified as DECIMAL number ) to a number" ;
 //    mp_userinterface->Confirm( str ) ;
@@ -735,7 +744,7 @@ BYTE XercesAttributesHelper::ToDWORD(
   {
     //dwRes = i64 ;
     byReturn = //SUCCESS;
-        getting_attribute_value_succeeded;
+      getting_attribute_value_succeeded;
     *((DWORD*) pv_AttributeValue ) = //(DWORD) i64; //(void*) () ;
       dwResult ;
   }

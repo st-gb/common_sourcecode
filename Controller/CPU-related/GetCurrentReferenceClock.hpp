@@ -28,19 +28,19 @@
 // to avoid multiple definitions.
 //Declare and use global variables to be faster (using local variables creates
 //them on stack each time).
-float g_fReferenceClockInHertz ;
-//float g_fReferenceClockInMHz ;
-extern float g_fReferenceClockInMHz ;
-unsigned long long int g_ullPreviousTimeStampCounter ;
-unsigned long long int g_ullCurrentTimeStampCounter ;
-unsigned long long int g_ullTimeStampCounterDiff = _UI64_MAX ;
+//float g_fReferenceClockInHertz ;
+////float g_fReferenceClockInMHz ;
+//unsigned long long int g_ullPreviousTimeStampCounter ;
+//unsigned long long int g_ullCurrentTimeStampCounter ;
+//unsigned long long int g_ullTimeStampCounterDiff = _UI64_MAX ;
 //DWORD g_dwPreviousTickCountInMilliseconds ;
 //DWORD g_dwTickCountInMilliseconds ;
 //DWORD g_dwTickCountDiffInMilliseconds = //ULONG_MAX ;
 //    0 ;
-extern DWORD g_dwPreviousTickCountInMilliseconds ;
-extern DWORD g_dwTickCountInMilliseconds ;
-extern DWORD g_dwTickCountDiffInMilliseconds;
+//extern DWORD g_dwPreviousTickCountInMilliseconds ;
+//extern DWORD g_dwTickCountInMilliseconds ;
+//extern DWORD g_dwTickCountDiffInMilliseconds;
+//extern float g_fReferenceClockInMHz ;
 
 //inline: do not compile as function, but expand code for every call (->faster)
 //_Define_ the function in this _header_ file. It cannot be inline if declared
@@ -55,6 +55,16 @@ inline
     , DWORD dwMaximumTimeDiffInMilliseconds
   )
 {
+  static float g_fReferenceClockInHertz ;
+  //float g_fReferenceClockInMHz ;
+  static unsigned long long int g_ullPreviousTimeStampCounter ;
+  static unsigned long long int g_ullCurrentTimeStampCounter ;
+  static unsigned long long int g_ullTimeStampCounterDiff = _UI64_MAX ;
+
+  static DWORD g_dwPreviousTickCountInMilliseconds ;
+  static DWORD g_dwTickCountInMilliseconds ;
+  static DWORD g_dwTickCountDiffInMilliseconds;
+  static float g_fReferenceClockInMHz ;
 //  SHOW_VIA_GUI( _T("GetCurrentReferenceClock begin") )
   //Use global var., so it does not need to be created on stack for every time.
   g_dwTickCountInMilliseconds =

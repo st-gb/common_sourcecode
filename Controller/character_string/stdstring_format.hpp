@@ -74,11 +74,38 @@ bool ConvertStdStringToTypename(
   //DEBUG("ConvertStdStringToTypename:%s\n",s);
 //  LOG("ConvertStdStringToTypename:" << s << "\n" );
   //"static" : To not to create each time this function is called->faster.
-  static std::istringstream std_istringstream; //(c_r_std_str);
+
+  //Did not convert sometimes when the string stream object was "static".
+//  static std::istringstream std_istringstream; //(c_r_std_str);
+  std::istringstream std_istringstream;
+
   std_istringstream.str(c_r_std_str);
-  return ! ( std_istringstream //>> f
-    >> r_typename_convert_from_string
-    ).fail();
+
+  //atof returned 1 for "1.2" on Linux on German because the decimal
+  //point is a "," in German.
+  //http://stackoverflow.com/questions/1333451/c-locale-independent-atof:
+  //"localeconv (in <locale.h>) returns a pointer to struct whose
+  //decimal_point member contains that value. Note that the pointer
+  //is valid until the next localeconv() or setlocale() – "
+  //fAtofResult = (float) atof(pchAttributeValue ) ;
+
+  //Ensure a "." is interpreted as decimal point no matter what the
+  //current locale is.
+//  std_istringstream.imbue( std::locale("C") );
+
+//  return ! ( std_istringstream //>> f
+//    >> r_typename_convert_from_string
+//    ).fail();
+  std_istringstream >> r_typename_convert_from_string;
+  bool bGood = //std_istringstream.good();
+    ! std_istringstream.fail();
+  if( ! bGood )
+  {
+    std::string std_str = std_istringstream.str();
+    int n = std_str.length();
+    n += 0;
+  }
+  return bGood;
 }
 
 ////convert std::string to e.g. a float value

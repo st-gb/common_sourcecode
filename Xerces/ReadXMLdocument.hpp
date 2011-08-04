@@ -115,9 +115,9 @@ inline unsigned char ReadXMLdocument(
         L"\"\n"
 //          + "\", line " + convertToStdString( cr_saxparseexception.getLineNumber() )
 //          + ", column " + convertToStdString( cr_saxparseexception.getColumnNumber() )
-        + L"in line " + GetStdWstring( to_stdstring(
+        + L"in line " + GetStdWstring( convertToStdString(
           xmlfilelocLineNumber ) )
-        + L", column " + GetStdWstring( to_stdstring(
+        + L", column " + GetStdWstring( convertToStdString(
           xmlfilelocColumnNumber ) )
 //          + "\", line " + convertToStdString( cr_saxexception.getLineNumber() )
 //          + ", column " + convertToStdString( cr_saxexception.getColumnNumber() )

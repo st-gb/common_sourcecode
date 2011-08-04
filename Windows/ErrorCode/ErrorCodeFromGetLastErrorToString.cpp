@@ -86,7 +86,8 @@ DWORD GetLastErrorMessageString(
       NULL, //lpSource
       dwErrorCodeConformToGetLastError,
       MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-      (LPTSTR) & lpMsgBuf,
+//      (LPTSTR) & lpMsgBuf,
+      (LPWSTR) & lpMsgBuf,
       0, //nSize
       NULL //Arguments
       )

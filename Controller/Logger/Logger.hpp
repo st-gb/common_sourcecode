@@ -5,6 +5,7 @@
   //#include <strstream> //for class std::ostrstream
   #include <set> //for class std::set
   #include <string> //for std::wstring
+  #include <vector> //for std::vector<BYTE>
   //#include <sstream>
 #ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
   //#include <wx/thread.h> //wxCriticalSection
@@ -26,8 +27,9 @@
 //  #include <winbase.h> //for SYSTEMTIME
 //#endif //#ifdef _DEBUG
 #else // ->Unix / Linux
-  #include <sys/time.h> // gettimeofday(...)
-  #include <time.h> // localtime(...)
+//  #include <sys/time.h> // gettimeofday(...)
+//  #include <time.h> // localtime(...)
+  #include "Linux_log_file_prefix.hpp"
 #endif
 
   #include <windef.h> //for WORD
@@ -145,9 +147,9 @@
       p_tm = ::localtime( & timevalCurrentTime.tv_sec ) ;
     #endif
       //m_ofstream << r_stdstr ;
-      * mp_ofstream
         //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
         #ifdef _WIN32
+        * mp_ofstream
         << m_systemtime.wYear << "."
         << m_systemtime.wMonth << "."
         << m_systemtime.wDay << " "
@@ -157,30 +159,34 @@
         << m_systemtime.wMilliseconds << "ms"
         << " thread ID:" << ::GetCurrentThreadId()
         << ":"
-        #else
-  //          << timevalCurrentTime.tv_sec << "s"
-        << ( p_tm->tm_year
-          //The years seem to be relative to the year 1900.
-          + 1900 ) << "."
-        << ( p_tm->tm_mon
-          //The 1st month (January) seems to have the index 0.
-            + 1 ) << "."
-        << p_tm->tm_mday << " "
-        << p_tm->tm_hour << "h:"
-        << p_tm->tm_min << "min "
-        << p_tm->tm_sec << "s "
-        << //Milliseconds (10^-3 s) part = microseconds (10^-6 s) / 10^3
-           //e.g. 123456 microseconds / 1000 = 123 milliseconds
-          timevalCurrentTime.tv_usec / 1000 << "ms "
-          //Microseconds (10^-6 s) part = microseconds (10^-6 s) % 10^3
-          //e.g. 123456 microseconds % 1000 = 456 microseconds
-        << timevalCurrentTime.tv_usec % 1000 << "us"
-        << ":"
-  //          << timevalCurrentTime.tv_usec << "us"
-        #endif
         << r_stdstr
-//        << "\n"
         ;
+        #else
+//  //          << timevalCurrentTime.tv_sec << "s"
+//        << ( p_tm->tm_year
+//          //The years seem to be relative to the year 1900.
+//          + 1900 ) << "."
+//        << ( p_tm->tm_mon
+//          //The 1st month (January) seems to have the index 0.
+//            + 1 ) << "."
+//        << p_tm->tm_mday << " "
+//        << p_tm->tm_hour << "h:"
+//        << p_tm->tm_min << "min "
+//        << p_tm->tm_sec << "s "
+//        << //Milliseconds (10^-3 s) part = microseconds (10^-6 s) / 10^3
+//           //e.g. 123456 microseconds / 1000 = 123 milliseconds
+//          timevalCurrentTime.tv_usec / 1000 << "ms "
+//          //Microseconds (10^-6 s) part = microseconds (10^-6 s) % 10^3
+//          //e.g. 123456 microseconds % 1000 = 456 microseconds
+//        << timevalCurrentTime.tv_usec % 1000 << "us"
+//        << ":"
+//  //          << timevalCurrentTime.tv_usec << "us"
+        outputLogFilePrefix(* mp_ofstream);
+        * mp_ofstream << r_stdstr;
+        #endif
+//
+////        << "\n"
+//        ;
 //      //for writing UTF-8 data (else problems writing a char value < 0 ?!)
 //       mp_ofstream->write(r_stdstr.c_str(), r_stdstr.length() );
     }
