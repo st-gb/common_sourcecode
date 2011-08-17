@@ -500,12 +500,12 @@ void CreateProcess::StartProcess(DWORD dwSessionID)
   }
 
 //  CloseHandle( hToken );
-  CloseHandle(hTokenService) ;
+ ::CloseHandle(hTokenService) ;
 //    CloseHandle( hTokenDup );
 //  LocalFree(p_security_descriptor) ;
 
 //  env_block_dyn_linked.DestroyEnvironmentBlock() ;
-  CloseHandle( hTokenDup );
+  ::CloseHandle( hTokenDup );
 }
 
 DWORD WINAPI StartProcessThread( LPVOID lpParam )

@@ -17,8 +17,15 @@
 //  #include <Linux/GetNumberOfLogicalCPUs.h> //GetNumLogicalCPUs()
 //#endif
 
-//Implementation/ definition of this function should be in a source file within
-//the appropriate folder ( "[...]/Windows[...]" / "[...]/Linux[...]" etc.)
-WORD GetNumberOfLogicalCPUcores() ;
+#ifdef _WIN32
+  #include <Windows/NumberOfLogicalCPUcores/GetNumberOfLogicalCPUs.h>
+  //For writing "GetNumberOfLogicalCPUcores()" instead of
+  //"Windows::GetNumberOfLogicalCPUcores()"
+  using namespace Windows;
+#else
+  //Implementation/ definition of this function should be in a source file within
+  //the appropriate folder ( "[...]/Windows[...]" / "[...]/Linux[...]" etc.)
+  WORD GetNumberOfLogicalCPUcores() ;
+#endif
 
 #endif /* GETNUMBEROFLOGICALCPUS_H_ */

@@ -7,6 +7,7 @@
 #include "StdAfx.h"
 
 #include <string> //std::wstring
+#include <stdlib.h> //_itow(...)
 
 //#ifndef _MSC_VER
 //  #include <Windows_compatible_typedefs.h>
@@ -23,7 +24,7 @@
 //#include <global.h> //for DEBUGN(...)
 #include <preprocessor_macros/logging_preprocessor_macros.h>
 #ifdef _DEBUG
-  #include <Windows/GetCurrentProcessExeFileNameWithoutDirs.hpp>
+  #include <Windows/Process/GetCurrentProcessExeFileNameWithoutDirs/GetCurrentProcessExeFileNameWithoutDirs.hpp>
 #endif
 
 //This file includes "pdh.h" from Microsoft. Include it AFTER including the

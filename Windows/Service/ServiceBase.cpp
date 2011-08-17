@@ -1,9 +1,18 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
+ * You are allowed to modify and use the source code from
+ * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
+ * making profit with it or its adaption. Else you may contact Trilobyte SE.
+ */
 #include "ServiceBase.hpp"
 
 #include <windows.h> //for SERVICE_TABLE_ENTRY, ... CreateService
 #include <iostream> //std::cout
 #include <sstream> //for class std::stringstream
 #include <Windows/ErrorCode/LocalLanguageMessageFromErrorCode.h>
+//#include <Windows/Process/GetParentProcessID/GetParentProcessID.h>
+//#include <Windows/Process/GetProcessFileName/GetProcessFileName.h>
 #include <Controller/character_string/stdtstr.hpp> //GetStdString_Inline(...)
 
 bool ServiceBase::CanStartService(
@@ -302,7 +311,7 @@ void ServiceBase::GetPossibleSolution(
         "\n-Stop the execution of the service: \""
         << GetStdString_Inline( std::tstring(tchServiceName) )
         << "\"\n"
-        << " -inside the service control manager\n"
+        << " -inside the \"Services\" application/ Microsoft Management Console item\n"
         " -via the task manager\n"
         " -by another program/ etc.\n"
         " and try again."
@@ -319,7 +328,10 @@ void ServiceBase::GetPossibleSolution(
       std::stringstream strstream ;
       strstream <<
         "possible solution:\n"
-        "-close the service control manager in order to let the service be "
+        "-close the \"Services\" (MMC's services.msc) window in order to let the service be "
+            "deleted\n"
+        //This was once the case ("Services" window was closed yet?!):
+        "-exit THIS program in order to let the service be "
             "deleted\n"
         "-if you want to install a service and a service with the same name "
           "is still running->stop the service with the same name first\n"
@@ -550,41 +562,6 @@ BYTE ServiceBase::DeleteService(
   }
     //return TRUE;
   return 0 ;
-}
-
-SERVICE_STATUS_HANDLE //WINAPI
-  ServiceBase::RegSvcCtrlHandlerExAndGetErrMsg(
-  //__in
-    LPCTSTR lpServiceName,
-  //__in
-    LPHANDLER_FUNCTION_EX lpHandlerProc,
-  //__in_opt
-    LPVOID lpContext,
-//    std::string & r_stdstrErrorDescription
-    DWORD & r_dwErrorCode
-  )
-{
-  m_service_status_handle =
-    ::RegisterServiceCtrlHandlerEx ( //"GriffinControlService",
-      lpServiceName ,
-      lpHandlerProc,
-      //http://msdn.microsoft.com/en-us/library/ms685058%28VS.85%29.aspx:
-      //"lpContext [in, optional]
-      //Any user-defined data. This parameter, which is passed to the
-      //handler function, can help identify the service when multiple
-      //services share a process."
-      lpContext
-      );
-  //http://msdn.microsoft.com/en-us/library/ms685058%28VS.85%29.aspx:
-  //"If the function fails, the return value is zero. To get extended error
-  //information, call GetLastError."
-  if ( m_service_status_handle == (SERVICE_STATUS_HANDLE) 0 )
-  {
-    //Get error code for RegisterServiceCtrlHandler(...).
-//    DWORD dwLastError = ::GetLastError();
-    r_dwErrorCode = ::GetLastError();
-  }
-  return m_service_status_handle ;
 }
 
 //SERVICE_STATUS_HANDLE //WINAPI

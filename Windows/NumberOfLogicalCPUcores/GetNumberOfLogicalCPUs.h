@@ -46,4 +46,7 @@
     * PSYSTEM_LOGICAL_PROCESSOR_INFORMATION;
 #endif //#ifndef _MSC_VER
 
-WORD GetNumLogicalCPUs() ;
+namespace Windows
+{
+  WORD GetNumberOfLogicalCPUcores() ;
+};

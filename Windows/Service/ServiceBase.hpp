@@ -65,6 +65,7 @@ public:
     DWORD dwLastError ,
     std::string & r_stdstrErrorDescription
     ) ;
+  static bool IsStartedAsService();
   static DWORD PauseService(
    const TCHAR * tchServiceName
    , std::string & r_stdstrMsg
