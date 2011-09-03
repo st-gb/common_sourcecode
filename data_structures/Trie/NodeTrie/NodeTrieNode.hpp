@@ -1,7 +1,9 @@
 #pragma once
 
 typedef unsigned char BYTE;
-#define NULL 0
+#ifndef NULL
+  #define NULL 0
+#endif //#ifndef NULL
 
 template <typename member_type>
 class NodeTrieNode

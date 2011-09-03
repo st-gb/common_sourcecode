@@ -53,8 +53,10 @@ namespace Windows
           LOGN("After setting event for ending the watch of root directory "
             << GetStdString_Inline( cr_stdtstrRootPath)
              )
+          return I_FileSystemEvents::success;
         }
       }
+      return I_FileSystemEvents::failure;
     }
 //    bool IsBeingWatched(  const std::tstring & strRootPath )
 //    {

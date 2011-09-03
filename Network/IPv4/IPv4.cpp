@@ -9,21 +9,21 @@
 #include <stdlib.h> //atoi(...)
 #include <string.h> //strtok(...), strcmp(...)
 
-  DWORD GetIPv4AddressAsDWORD(char * pchIPv4Address)
+  DWORD GetIPv4AddressAsDWORD(const char * c_p_chIPv4Address)
   {
-    BYTE byIndex=0;
+    BYTE byIndex = 0;
     //Important: init with 0 because the DWORD is built by bitwise-or operand AND
     //dwRet is surely NOT "0" if not initialized(has "random" value then).
-    DWORD dwRet=0;
-    char * achIPByte = strtok(pchIPv4Address,"."); // C4996
+    DWORD dwRet = 0;
+    char * achIPByte = ::strtok( (char *) c_p_chIPv4Address,"."); // C4996
      // Note: strtok is deprecated; consider using strtok_s instead
      while( achIPByte != NULL )
      {
         dwRet |= (BYTE) atoi(achIPByte);
         //For the last number NO shifting should happen.
-        if(byIndex++<3)
+        if(byIndex ++ < 3)
           //Shift bits within dwRet by 8 bits heading to Most Significant Bit.
-          dwRet<<=8;
+          dwRet <<= 8;
         // Get next token:
         achIPByte = strtok( NULL,"."); // C4996
      }
@@ -31,11 +31,12 @@
   }
 
   bool IsPrivateIPv4Address(
-    char * pchIPAddress,
-    char * pchNetworkMask
+    const char * c_p_chIPAddress,
+    const char * c_p_chNetworkMask
     )
   {
-    bool bIsPrivateIPAddress=false;
+    DWORD dwNetworkMask = ::GetIPv4AddressAsDWORD(c_p_chNetworkMask);
+    bool bIsPrivateIPAddress = false;
     //Cites from http://en.wikipedia.org/wiki/Private_network
     // #Private_IPv4_address_spaces:
 //    char * achNetworkIDOfAPrivateNetwork[] = {
@@ -60,26 +61,38 @@
       4293918720UL,//"255.240.0.0"
       4294901760UL//"255.255.0.0"
     };
-    DWORD adwNetworkIDOfAPrivateNetwork[]={
+    DWORD adwNetworkIDOfAPrivateNetwork[] = {
       167772160L,//"10.0.0.0"//Class "A" address range of private IPs.
       2886729728UL,//,"172.16.0.0",
       3232235520UL//"192.168.0.0"//Class "C" address range of private IPs.
     };
+    DWORD dwIPv4LargestCIDRblockSubnetMaskForPrivateNetwork = 0;
+    DWORD dwBitwiseAnded = 0;
     for( BYTE byIndex = 0; byIndex < 3; ++ byIndex )
-      //If netmask is identical.
-      if( strcmp( pchNetworkMask, achIPv4NetworkMaskForPrivateNetwork[byIndex] )
-          == 0
+    {
+      dwIPv4LargestCIDRblockSubnetMaskForPrivateNetwork =
+        ar_dwIPv4LargestCIDRblockSubnetMaskForPrivateNetwork[byIndex];
+      dwBitwiseAnded = dwNetworkMask &
+        dwIPv4LargestCIDRblockSubnetMaskForPrivateNetwork;
+      if( //If netmask is identical.
+          //::strcmp( c_p_chNetworkMask, achIPv4NetworkMaskForPrivateNetwork[
+          //  byIndex] ) == 0
+          //e.g. "255.0.0.0" & "255.255.255.252" (for O2 UMTS class A network)
+          //= "255.0.0.0"
+          dwBitwiseAnded ==
+          dwIPv4LargestCIDRblockSubnetMaskForPrivateNetwork
         )
       {
-        //strcmp(pchIPAddress,achNetworkIDOfAPrivateNetwork[byIndex]);
-        DWORD dwIPv4Address = ::GetIPv4AddressAsDWORD(pchIPAddress);
+        //strcmp(c_p_chIPAddress,achNetworkIDOfAPrivateNetwork[byIndex]);
+        DWORD dwIPv4Address = ::GetIPv4AddressAsDWORD(c_p_chIPAddress);
 //        TRACE("dwIPv4Address&adwIPv4NetworkMaskForPrivateNetwork[byIndex]: %u\n",
 //          dwIPv4Address&adwIPv4NetworkMaskForPrivateNetwork[byIndex]);
 //        TRACE("adwNetworkIDOfAPrivateNetwork[byIndex]&"
 //          "adwIPv4NetworkMaskForPrivateNetwork[byIndex]: %u\n",
 //          adwNetworkIDOfAPrivateNetwork[byIndex]&
 //          adwIPv4NetworkMaskForPrivateNetwork[byIndex]);
-        //DWORD dwIPv4NetMask=::GetIPv4AddressAsDWORD(pchNetworkMask);
+        //DWORD dwIPv4NetMask=::GetIPv4AddressAsDWORD(c_p_chNetworkMask);
+
         if(//If both IP addresses lay/are in the same (private) network.
             ( dwIPv4Address &//dwIPv4NetMask==
 //            adwIPv4NetworkMaskForPrivateNetwork[byIndex] ) ==
@@ -95,5 +108,6 @@
           break;//for-loop
         }
       }
+    }
     return bIsPrivateIPAddress;
   }

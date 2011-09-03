@@ -8,9 +8,9 @@
 #ifndef IPV4_H_
 #define IPV4_H_
 
-  bool IsPrivateIPv4Address(
-    char * pchIPAddress,
-    char * pchNetworkMask
-    ) ;
+bool IsPrivateIPv4Address(
+  const char * pchIPAddress,
+  const char * pchNetworkMask
+  ) ;
 
 #endif /* IPV4_H_ */

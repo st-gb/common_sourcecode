@@ -87,7 +87,7 @@
 #endif
 
   #include <iostream> //for std::cout
-  #ifdef LOGGING_CHARACTER_TYPE_ID && LOGGING_CHARACTER_TYPE_ID == 0
+  #if defined( LOGGING_CHARACTER_TYPE_ID) && LOGGING_CHARACTER_TYPE_ID == 0
     #define WRITE_TO_STD_OUT_AND_FLUSH(to_ostream) \
       {       \
       css::basic_stringstream<LOGGING_CHARACTER_TYPE> stringstream ; \
@@ -110,7 +110,7 @@
     #define OWN_LOGGER_LOG(stdstr) g_logger.Log( stdstr ) ;
     #include <Controller/character_string/getUTF8string.hpp>
     #include <vector> /*class std::vector*/
-    #ifdef LOGGING_CHARACTER_TYPE_ID && LOGGING_CHARACTER_TYPE_ID == 0
+    #if defined(LOGGING_CHARACTER_TYPE_ID) && LOGGING_CHARACTER_TYPE_ID == 0
       #define OWN_LOGGER_LOG_LOGGER_NAME(logger_name, std_basic_string) \
         std::string std_str = getUTF8string(std_basic_string); \
           logger_name.Log( std_str ) ;

@@ -16,6 +16,8 @@
 #define GETUTF8STRING_HPP_
 
 #include <string>
+//SUPPRESS_UNUSED_VARIABLE_WARNING(...)
+#include <preprocessor_macros/suppress_unused_variable.h>
 
 inline //std::string
   //std::vector<unsigned char>
@@ -29,7 +31,8 @@ inline //std::string
   while( ci != cr_std_wstr.end() )
   {
 #ifdef _DEBUG
-      const wchar_t wch = * ci;
+    const wchar_t wch = * ci;
+    SUPPRESS_UNUSED_VARIABLE_WARNING(wch)
 #endif //#ifdef _DEBUG
       //see http://de.wikipedia.org/wiki/UTF-8
     if( *ci < 127 )
@@ -85,7 +88,8 @@ inline std::string getUTF8string(const std::wstring & cr_std_wstr)
     while( ci != cr_std_wstr.end() )
     {
   #ifdef _DEBUG
-        const wchar_t wch = * ci;
+      const wchar_t wch = * ci;
+      SUPPRESS_UNUSED_VARIABLE_WARNING(wch)
   #endif //#ifdef _DEBUG
         //see http://de.wikipedia.org/wiki/UTF-8
       if( *ci < 127 )

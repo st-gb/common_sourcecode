@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
+ * You are allowed to modify and use the source code from
+ * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
+ * making profit with it or its adaption. Else you may contact Trilobyte SE.
+ */
 /*
  * Thread.cpp
  *
@@ -32,7 +39,7 @@ namespace Windows_API
         );   // returns the thread identifier
     if( m_handleThread )
       return I_Thread::no_error ;
-    return 1 ;
+    return I_Thread::error ;
   }
 
   Thread::~Thread()

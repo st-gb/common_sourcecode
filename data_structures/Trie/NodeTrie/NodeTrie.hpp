@@ -15,7 +15,9 @@
 //#include "SimpleLinkedList.hpp"
 
 typedef unsigned short WORD;
-#define NULL 0
+#ifndef NULL
+  #define NULL 0
+#endif
 
 //this is the base class of node trie classes:
 //subclasses usually add a member with additional info if this node is the

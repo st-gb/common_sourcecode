@@ -117,7 +117,7 @@ namespace css
 //        return r_std_str;
         //return _M_insert<std::string>(r_std_str);
         //return
-        for(short w = 0; w < r_std_str.length() ; ++ w)
+        for(std::string::size_type w = 0; w < r_std_str.length() ; ++ w)
         {
           put( (char_type) r_std_str.at(w) );
         }

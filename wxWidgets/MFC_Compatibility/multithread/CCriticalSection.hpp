@@ -11,7 +11,7 @@
 //angeben:
 #include "stdafx.h" //for "BOOL" etc.
 #include <wx/thread.h> //for wxCriticalSection
-#include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
+//#include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 
 typedef int BOOL ;
 
