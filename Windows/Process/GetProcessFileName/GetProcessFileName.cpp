@@ -2,15 +2,16 @@
 #include <preprocessor_macros/logging_preprocessor_macros.h> //DEBUG_COUTN
 #include <windef.h> //BYTE
 
+#if defined(__GNUC__) && __GNUC__ > 3 //GCC 3.4.5 does not have "psapi.a" lib.
 //#ifdef _WIN32_WINNT
 //  #undef _WIN32_WINNT
 //#endif //_WIN32_WINNT
-//#define _WIN32_WINNT 0x0501 //for GetProcessImageFileName(...)
-//#include <Psapi.h> //for GetProcessImageFileName(...)
-
-//MinGW 3.4.5 does not have GetProcessImageFileNameA(...) in psapi.h?!, so
-//declare it here:
-DWORD WINAPI GetProcessImageFileNameA(HANDLE,LPSTR,DWORD);
+  #define _WIN32_WINNT 0x0501 //for GetProcessImageFileName(...)
+  #include <Psapi.h> //for GetProcessImageFileName(...)
+#endif
+////MinGW 3.4.5 does not have GetProcessImageFileNameA(...) in psapi.h?!, so
+////declare it here:
+//DWORD WINAPI GetProcessImageFileNameA(HANDLE,LPSTR,DWORD);
 
 BYTE GetProcessFileName(DWORD dwProcessID,
     std::string & r_std_strProcessFileName)
@@ -32,14 +33,17 @@ BYTE GetProcessFileName(DWORD dwProcessID,
     TCHAR lpFilename [MAX_PATH ];
     char ar_chFilename [MAX_PATH + 1];
 
+
     //Cites from:
     //http://msdn.microsoft.com/en-us/library/ms683217%28v=vs.85%29.aspx:
     //"If the function succeeds, the return value specifies the length of the
     //string copied to the buffer."
-    DWORD dw = ::GetProcessImageFileNameA(
+    DWORD dw = //::GetProcessImageFileNameA(
+      ::GetProcessImageFileName(
       //"The handle must have the PROCESS_QUERY_INFORMATION or PROCESS_QUERY_LIMITED_INFORMATION access right. "
       handleProcess, //__in   HANDLE hProcess,
-      ar_chFilename, //__out  LPTSTR lpImageFileName,
+//      ar_chFilename, //__out  LPTSTR lpImageFileName,
+      lpFilename,
       //"The size of the lpImageFileName buffer, in characters."
       MAX_PATH //__in   DWORD nSize
     );

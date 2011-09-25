@@ -60,9 +60,11 @@ namespace MFC_Compatibility
       std::basic_string<TCHAR>( p_tch, num)
     {
     }
-    //To solve cast to CString from std::string in
-    // "Left(unsigned short wNumChars)"
-    //http://efreedom.com/Question/1-3046463/Non-Scalar-Type-Requested:
+    //Constructor to solve cast to CString from std::string in
+    // "method Left(unsigned short wNumChars)"
+    //idea from:
+    //  http://efreedom.com/Question/1-3046463/Non-Scalar-Type-Requested
+    // (constructor with parameter data type of base class):
 //    CString(std::string stdstr )
     CString(std::basic_string<TCHAR> stdtstr )
     {

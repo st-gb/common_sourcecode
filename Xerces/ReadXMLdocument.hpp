@@ -28,7 +28,7 @@
 
 //Own header files.
 //for convertToStdString(...)
-#include <Controller/character_string/stdstring_format.hpp>
+#include <Controller/character_string/convertFromAndToStdString.hpp>
 #include <Controller/character_string/stdtstr.hpp> //for GetStdString(...)
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 

@@ -10,6 +10,12 @@
 //Pfad unabhängig vom Verzeichnis, in dem er sich befindet
 //angeben:
 #include "stdafx.h" //for "BOOL" etc.
+////To not replace "wxThread's "Yield" by winbase.h's "Yield" macro.
+//#include <wx/msw/winundef.h>
+//from <wx/msw/winundef.h>:
+#ifdef Yield
+    #undef Yield
+#endif
 #include <wx/thread.h> //for wxCriticalSection
 //#include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 

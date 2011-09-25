@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
+ * You are allowed to modify and use the source code from
+ * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
+ * making profit with it or its adaption. Else you may contact Trilobyte SE.
+ */
 /*
  * format_as_string.cpp
  *
@@ -24,12 +31,13 @@ std::string format_output_data(
       std_ostr_streamBytes << "\n";
     if( ar_byData[wIndex] > 32 )
       //stdstrBytes += ar_byData[wIndex] ;
-      std_ostr_streamBytes << ar_byData[wIndex];
+      std_ostr_streamBytes << ar_byData[wIndex] << " ";
     else
 //      stdstrBytes += " " ;
-      std_ostr_streamBytes <<
+      std_ostr_streamBytes //<< "0x" <<
       //see http://gcc.gnu.org/onlinedocs/libstdc++/libstdc++-html-USERS-3.4/classstd_1_1ios__base.html:
-      std::ios_base::hex << (WORD) ar_byData[wIndex] << " ";
+      //std::ios_base::hex
+      << (WORD) ar_byData[wIndex] << " ";
   }
   return //stdstrBytes ;
     std_ostr_streamBytes.str();

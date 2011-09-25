@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
+ * You are allowed to modify and use the source code from
+ * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
+ * making profit with it or its adaption. Else you may contact Trilobyte SE.
+ */
 /*
  * Win32EventBasedCondition.hpp
  *
@@ -58,12 +65,27 @@
 //    {
 //      ::ResetEvent(m_handleEvent) ;
 //    }
-
-    void Wait()
+    void SetEvent()
     {
-      ::WaitForSingleObject(
+      //All threads that wait on the event handle (e.g. via
+      //WaitForSingleObject(m_handleEvent) continue.
+      ::SetEvent(m_handleEvent) ;
+      //When manual reset event then must reset it after SetEvent(...) else
+      //malfunctions as I remember.
+      ::ResetEvent(m_handleEvent) ;
+    }
+
+    void ResetEvent()
+    {
+      ::ResetEvent(m_handleEvent) ;
+    }
+
+    DWORD Wait()
+    {
+      DWORD dw = ::WaitForSingleObject(
         m_handleEvent, // event handle
         INFINITE);    // infinite wait
+      return dw;
     }
   };
 

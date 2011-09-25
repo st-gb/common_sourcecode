@@ -8,6 +8,9 @@
 #ifndef CREATEPROCESS_HPP_
 #define CREATEPROCESS_HPP_
 
+typedef unsigned long DWORD;
+#include <windows.h> //STARTUPINFOW, PROCESS_INFORMATION
+
 void InvokeApp(DWORD dwSessionID) ;
 
 #include <string> //for std::wstring

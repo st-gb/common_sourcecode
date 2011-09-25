@@ -58,6 +58,7 @@ namespace css
             * this;
 //          (__ostream_type)
 //            //see http://ubuntuforums.org/archive/index.php/t-529935.html:
+              //("What's the C++ Equivalent of Java "super" keyword?")
 ////          ( (std::basic_stringstream<char_type> *) this ) << __v;
 ////          this.std::basic_stringstream<char_type>).operator <<(__v);
 ////            this->std::basic_stringstream<char_type>.operator <<(__v);

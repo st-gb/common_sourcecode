@@ -5,13 +5,16 @@
  *      Author: Stefan
  */
 #include "ServiceBase.hpp"
+
+//For the following functions it makes only sense to call them from inside
+//the service application.
+
+#if defined(__GNUC__) && __GNUC__ > 3 //GCC 3.4.5 does not have "psapi.a" lib.
+
 //GetParentProcessID(...)
 #include <Windows/Process/GetParentProcessID/GetParentProcessID.h>
 //GetProcessFileName(...)
 #include <Windows/Process/GetProcessFileName/GetProcessFileName.h>
-
-//For the following functions it makes only sense to call them from inside
-//the service application.
 
 bool ServiceBase::IsStartedAsService()
 {
@@ -30,6 +33,7 @@ bool ServiceBase::IsStartedAsService()
   }
   return false;
 }
+#endif
 
 SERVICE_STATUS_HANDLE //WINAPI
   ServiceBase::RegSvcCtrlHandlerExAndGetErrMsg(

@@ -8,6 +8,7 @@
 #include "GetWindowsVersion.h"
 
 //from http://support.microsoft.com/kb/307394
+// (license= http://msdn.microsoft.com/de-de/cc300389.aspx#P ?)
 //#include "stdafx.h"
 #include <Windows.h>
 #ifdef __CYGWIN__ //does not have a "tchar.h" shipped.

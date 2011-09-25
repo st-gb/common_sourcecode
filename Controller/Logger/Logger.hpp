@@ -26,6 +26,7 @@
 //#else //#ifdef _DEBUG
 //  #include <winbase.h> //for SYSTEMTIME
 //#endif //#ifdef _DEBUG
+  #include "Windows_log_file_prefix.hpp"
 #else // ->Unix / Linux
 //  #include <sys/time.h> // gettimeofday(...)
 //  #include <time.h> // localtime(...)
@@ -37,21 +38,15 @@
 
   class Logger
   {
-#ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
-    //Use member variable: so it does not need to be created on stack for
-    //every call to "Log(...)".
-    SYSTEMTIME m_systemtime ;
-    typedef //OperatingSystem::Windows::I_CriticalSection
-      nativeCriticalSection CriticalSection_type;
-#else
-    //from http://www.gamedev.net/community/forums/topic.asp?topic_id=437062:
-    timeval timevalCurrentTime ;
-    //see http://stackoverflow.com/questions/588307/c-obtaining-milliseconds-time-on-linux-clock-doesnt-seem-to-work-properly
-    // answered Feb 25 '09 at 23:18 by "Jason Punyon"
-    struct tm * p_tm ;
-#endif
   public:
 #ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+  #ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
+      //Use member variable: so it does not need to be created on stack for
+      //every call to "Log(...)".
+      typedef //OperatingSystem::Windows::I_CriticalSection
+        nativeCriticalSection CriticalSection_type;
+  #else
+  #endif
     //Make public because accessed from preprocessor macro.
     //wxCriticalSection m_critical_section_typeLogging ;
     CriticalSection_type m_critical_section_typeLogging ;
@@ -81,115 +76,23 @@
     inline void OutputTimeStampEtc_Inline(
         const std::vector<BYTE> & c_r_std_vec_by)
     {
-      //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
-    #ifdef _WIN32
-      //Gets the same time as the Windows clock.
-      ::GetLocalTime( & m_systemtime );
-    #else // ->Linux
-      //from http://www.gamedev.net/community/forums/topic.asp?topic_id=437062:
-      // / http://www.linuxquestions.org/questions/programming-9/c-c-api-for-retrieving-system-time-in-micro-or-milliseconds-441519/
-      ::gettimeofday( & timevalCurrentTime,0);
-      //see http://www.unix.com/programming/1991-time-microseconds.html:
-      //  submitted by "Perderabo" on 09-04-2001 :
-      p_tm = localtime( & timevalCurrentTime.tv_sec ) ;
-    #endif
-      //m_ofstream << r_stdstr ;
-      * mp_ofstream
-        //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
-        #ifdef _WIN32
-        << m_systemtime.wYear << "."
-        << m_systemtime.wMonth << "."
-        << m_systemtime.wDay << " "
-        << m_systemtime.wHour << "h:"
-        << m_systemtime.wMinute << "min "
-        << m_systemtime.wSecond << "s "
-        << m_systemtime.wMilliseconds << "ms"
-        << " thread ID:" << ::GetCurrentThreadId()
-        << ":"
-        #else
-  //          << timevalCurrentTime.tv_sec << "s"
-        << ( p_tm->tm_year
-          //The years seem to be relative to the year 1900.
-          + 1900 ) << "."
-        << ( p_tm->tm_mon
-          //The 1st month (January) seems to have the index 0.
-            + 1 ) << "."
-        << p_tm->tm_mday << " "
-        << p_tm->tm_hour << "h:"
-        << p_tm->tm_min << "min "
-        << p_tm->tm_sec << "s "
-        << //Milliseconds (10^-3 s) part = microseconds (10^-6 s) / 10^3
-           //e.g. 123456 microseconds / 1000 = 123 milliseconds
-          timevalCurrentTime.tv_usec / 1000 << "ms "
-          //Microseconds (10^-6 s) part = microseconds (10^-6 s) % 10^3
-          //e.g. 123456 microseconds % 1000 = 456 microseconds
-        << timevalCurrentTime.tv_usec % 1000 << "us"
-        << ":"
-  //          << timevalCurrentTime.tv_usec << "us"
-        #endif
-//        << r_stdstr
-        << "\n"
-        ;
-//      mp_ofstream->wr
+      outputLogFilePrefix(* mp_ofstream);
+//      * mp_ofstream << r_stdstr;
+//      << "\n"
+//      ;
     }
+
     inline void OutputTimeStampEtc_Inline(const std::string & r_stdstr)
     {
-      //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
-    #ifdef _WIN32
-      //Gets the same time as the Windows clock.
-      ::GetLocalTime( & m_systemtime );
-    #else // ->Linux
-      //from http://www.gamedev.net/community/forums/topic.asp?topic_id=437062:
-      // / http://www.linuxquestions.org/questions/programming-9/c-c-api-for-retrieving-system-time-in-micro-or-milliseconds-441519/
-      ::gettimeofday( & timevalCurrentTime,0);
-      //see http://www.unix.com/programming/1991-time-microseconds.html
-      //  submitted by "Perderabo" on 09-04-2001 :
-      p_tm = ::localtime( & timevalCurrentTime.tv_sec ) ;
-    #endif
       //m_ofstream << r_stdstr ;
-        //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
-        #ifdef _WIN32
-        * mp_ofstream
-        << m_systemtime.wYear << "."
-        << m_systemtime.wMonth << "."
-        << m_systemtime.wDay << " "
-        << m_systemtime.wHour << "h:"
-        << m_systemtime.wMinute << "min "
-        << m_systemtime.wSecond << "s "
-        << m_systemtime.wMilliseconds << "ms"
-        << " thread ID:" << ::GetCurrentThreadId()
-        << ":"
-        << r_stdstr
-        ;
-        #else
-//  //          << timevalCurrentTime.tv_sec << "s"
-//        << ( p_tm->tm_year
-//          //The years seem to be relative to the year 1900.
-//          + 1900 ) << "."
-//        << ( p_tm->tm_mon
-//          //The 1st month (January) seems to have the index 0.
-//            + 1 ) << "."
-//        << p_tm->tm_mday << " "
-//        << p_tm->tm_hour << "h:"
-//        << p_tm->tm_min << "min "
-//        << p_tm->tm_sec << "s "
-//        << //Milliseconds (10^-3 s) part = microseconds (10^-6 s) / 10^3
-//           //e.g. 123456 microseconds / 1000 = 123 milliseconds
-//          timevalCurrentTime.tv_usec / 1000 << "ms "
-//          //Microseconds (10^-6 s) part = microseconds (10^-6 s) % 10^3
-//          //e.g. 123456 microseconds % 1000 = 456 microseconds
-//        << timevalCurrentTime.tv_usec % 1000 << "us"
-//        << ":"
-//  //          << timevalCurrentTime.tv_usec << "us"
         outputLogFilePrefix(* mp_ofstream);
         * mp_ofstream << r_stdstr;
-        #endif
-//
 ////        << "\n"
 //        ;
 //      //for writing UTF-8 data (else problems writing a char value < 0 ?!)
 //       mp_ofstream->write(r_stdstr.c_str(), r_stdstr.length() );
     }
+
     void Log(//ostream & ostr
         std::string & r_stdstr
         )

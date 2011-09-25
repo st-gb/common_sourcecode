@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
+ * You are allowed to modify and use the source code from
+ * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
+ * making profit with it or its adaption. Else you may contact Trilobyte SE.
+ */
 /*
  * CreateTextIcon.cpp
  *
@@ -28,9 +35,13 @@ void CreateTextIcon( wxIcon & icon, const wxString & r_wxstr )
     //for anything."
     wxmemorydc.SelectObject(wxbitmap);
 
-    //http://www.informit.com/articles/article.aspx?p=405047:
-    // Shifts the device origin so we don't have to worry
-    // about the current scroll position ourselves
+    //"Cross-Platform GUI Programming with wxWidgets"
+    // (Copyright © 2006 Pearson Education, Inc.)
+    // ISBN 0-13-147381-6  "First printing, July 2005"
+    //"CHAPTER 5 Drawing and Printing" ->
+    //"UNDERSTANDING DEVICE CONTEXTS" -> "Drawing on Windows with wxPaintDC" :
+    // "Shifts the device origin so we don’t have to worry
+    // about the current scroll position ourselves"
   //    PrepareDC(wxmemorydc);
 
     //http://docs.wxwidgets.org/stable/wx_wxmemorydc.html#wxmemorydc:
@@ -85,9 +96,13 @@ void CreateTextIcon( wxIcon & icon, const wxString & r_wxstr,
     //for anything."
     wxmemorydc.SelectObject(wxbitmap);
 
-    //http://www.informit.com/articles/article.aspx?p=405047:
-    // Shifts the device origin so we don't have to worry
-    // about the current scroll position ourselves
+    //"Cross-Platform GUI Programming with wxWidgets"
+    // (Copyright © 2006 Pearson Education, Inc.)
+    // ISBN 0-13-147381-6  "First printing, July 2005"
+    //"CHAPTER 5 Drawing and Printing" ->
+    //"UNDERSTANDING DEVICE CONTEXTS" -> "Drawing on Windows with wxPaintDC" :
+    // "Shifts the device origin so we don’t have to worry
+    // about the current scroll position ourselves"
   //    PrepareDC(wxmemorydc);
 
     //http://docs.wxwidgets.org/stable/wx_wxmemorydc.html#wxmemorydc:
@@ -130,9 +145,13 @@ void CreateWhiteTextIcon( wxIcon & icon, const wxString & r_wxstr )
     //for anything."
     wxmemorydc.SelectObject(wxbitmap);
 
-    //http://www.informit.com/articles/article.aspx?p=405047:
-    // Shifts the device origin so we don't have to worry
-    // about the current scroll position ourselves
+    //"Cross-Platform GUI Programming with wxWidgets"
+    // (Copyright © 2006 Pearson Education, Inc.)
+    // ISBN 0-13-147381-6  "First printing, July 2005"
+    //"CHAPTER 5 Drawing and Printing" ->
+    //"UNDERSTANDING DEVICE CONTEXTS" -> "Drawing on Windows with wxPaintDC" :
+    // "Shifts the device origin so we don’t have to worry
+    // about the current scroll position ourselves"
   //    PrepareDC(wxmemorydc);
 
     //http://docs.wxwidgets.org/stable/wx_wxmemorydc.html#wxmemorydc:

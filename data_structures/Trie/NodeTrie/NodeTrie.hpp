@@ -85,10 +85,10 @@ template<typename member_type>
     }
     ~NodeTrie()
     {
-      LOG("destructor of data structure")
+      LOGN("destructor of data structure")
       FreeMemory();
       //m_nodetrienodeRoot.Delete();
-      LOG("end of destructor of data structure")
+      LOGN("end of destructor of data structure")
     }
 
     //  type<T> * m_ar_t ;
@@ -593,7 +593,7 @@ template<typename member_type>
                               //delete [] ar_p_byCurrent ;
                               delete p_nodetrienodeCurrent;
 #ifdef _DEBUG
-                              --m_dwNumberOfNodes;
+                              -- m_dwNumberOfNodes;
 #endif //#ifdef _DEBUG
                               //         0x10
                               // [...]   |a|  <-delete and set to NULL because all children are NULL
@@ -647,8 +647,10 @@ template<typename member_type>
           while (ar_p_nodetrienode1LevelAbove);
           m_nodetrienodeRoot.Delete();
         }
-      LOGN("end of FreeMemory")
+#ifdef _DEBUG
+      LOGN("end of FreeMemory: # of nodes:" << m_dwNumberOfNodes)
       assert( m_dwNumberOfNodes == 0);
+#endif
     }
 
     //  void

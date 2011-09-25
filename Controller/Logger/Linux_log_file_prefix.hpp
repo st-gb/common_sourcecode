@@ -16,13 +16,15 @@
 
 inline void outputLogFilePrefix(std::ostream & r_ostream)
 {
-  //from http://www.gamedev.net/community/forums/topic.asp?topic_id=437062:
+  //from http://www.gamedev.net/community/forums/topic.asp?topic_id=437062
+  //("best way to GetTickCount in Linux") :
   static timeval timevalCurrentTime ;
   //see http://stackoverflow.com/questions/588307/c-obtaining-milliseconds-time-on-linux-clock-doesnt-seem-to-work-properly
   // answered Feb 25 '09 at 23:18 by "Jason Punyon"
   static struct tm * p_tm ;
 
-  //from http://www.gamedev.net/community/forums/topic.asp?topic_id=437062:
+  //from http://www.gamedev.net/community/forums/topic.asp?topic_id=437062
+  //("best way to GetTickCount in Linux") :
   // / http://www.linuxquestions.org/questions/programming-9/c-c-api-for-retrieving-system-time-in-micro-or-milliseconds-441519/
   ::gettimeofday( & timevalCurrentTime,0);
   //see http://www.unix.com/programming/1991-time-microseconds.html

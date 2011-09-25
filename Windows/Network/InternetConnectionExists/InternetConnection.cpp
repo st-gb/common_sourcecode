@@ -77,17 +77,37 @@ void OutputDebugInfo(IP_ADAPTER_INFO * p_ip_adapter_infoCurrent)
     DEBUG_COUTN("\tHave Wins: No");
 }
 
+//Gateway subnet mask was "255.255.255.255" although IP adapter subnet mask was
+//""255.255.255.240"-- so do not use this function?!
+bool AtLeast1GatewayInSameSubnet(IP_ADDR_STRING & GatewayList,
+    DWORD dwIPadapterNetworkMask)
+{
+  PIP_ADDR_STRING p_ip_addr_string = & GatewayList;
+  DWORD dwNetworkMask = 0;
+  do
+  {
+    dwNetworkMask = ::GetIPv4AddressAs32bitNumber(GatewayList.IpMask.String);
+    if( dwIPadapterNetworkMask == dwNetworkMask)
+      return true;
+    p_ip_addr_string = p_ip_addr_string->Next;
+  }
+  while(p_ip_addr_string );
+  return false;
+}
+
 bool InternetConnectionExists(
   const char * ar_p_chAdaptersToSkip [], unsigned uiNumAdaptersToSkip,
   //const
-    NodeTrie<BYTE> & c_r_nodetrieIPadapterName2connectionState,
-  bool & bConnectionStateForAtLeats1AdapterChanged
+//    NodeTrie<BYTE> & c_r_nodetrieIPadapterName2connectionState,
+  NodeTrie<BYTE> & r_nodetrieIPdescriptionName2connectionState,
+  bool & bConnectionStateForAtLeats1AdapterChanged,
+  std::set<std::string> & r_std_set_std_stringAdapterDescription
   )
 {
   bool bInternetConnectionExists = false;
   bConnectionStateForAtLeats1AdapterChanged = false;
-  BYTE byConnectionState = NotConnectedToInternet;
-  PIP_ADAPTER_INFO p_ip_adapter_info;
+//  BYTE byConnectionState = NotConnectedToInternet;
+  PIP_ADAPTER_INFO p_ip_adapter_info = NULL;
   PIP_ADAPTER_INFO p_ip_adapter_infoCurrent = NULL;
   IP_ADAPTER_INFO ip_adapter_info ;
   DWORD dwRetVal = 0;
@@ -131,11 +151,15 @@ bool InternetConnectionExists(
       TRACE("\tAdapter Addr: \t%ld\n", p_ip_adapter_infoCurrent->Address);
       if( bNoAdaptersToSkipFound )// &&
       {
+        const char * const p_chAdapterDescription = p_ip_adapter_infoCurrent->
+          //AdapterName
+          Description;
+        const char * const p_chAdapterIPv4address = p_ip_adapter_infoCurrent->
+          IpAddressList.IpAddress.String;
         if(
           //IP address<>0: the adapter has an assigned IP address->may be
           //memcmp(pAdapter->Address,byNulls,4)
-          strcmp( p_ip_adapter_infoCurrent->IpAddressList.IpAddress.String,
-            "0.0.0.0") !=
+          strcmp( p_chAdapterIPv4address, "0.0.0.0") !=
             //0 = buf1 identical to buf2
             0
           )
@@ -148,12 +172,16 @@ bool InternetConnectionExists(
               )
             )
           {
+            DWORD dwIPadapterNetworkMask = ::GetIPv4AddressAs32bitNumber(
+              p_ip_adapter_infoCurrent->IpAddressList.IpMask.String);
             if(
               //...it MUST have a gateway address in order to reach the
               //INTERNET WAN out of the private IP address range.
               //"strcmp(...) != 0" = If the gateway string is NOT empty.
               strcmp( p_ip_adapter_infoCurrent->GatewayList.IpAddress.String,
                 "") != 0
+//              AtLeast1GatewayInSameSubnet(
+//                p_ip_adapter_infoCurrent->GatewayList, dwIPadapterNetworkMask)
               )
             {
 //              bInternetConnectionExists = true;
@@ -172,22 +200,25 @@ bool InternetConnectionExists(
         }//if(strcmp(pAdapter->IpAddressList.IpAddress.String,"0.0.0.0")!=0)
 
         NodeTrieNode<BYTE> * p_nodetrienode =
-          c_r_nodetrieIPadapterName2connectionState.contains_inline(
+//          c_r_nodetrieIPadapterName2connectionState.contains_inline(
+          r_nodetrieIPdescriptionName2connectionState.contains_inline(
           //The unique name, e.g.
           //"{ED53B8B9-E386-4928-9DCC-BA5B73DE451C}"
-          (unsigned char *) p_ip_adapter_infoCurrent->AdapterName,
-          (unsigned int) strlen(p_ip_adapter_infoCurrent->AdapterName),
+          (unsigned char *) p_chAdapterDescription,
+          (unsigned int) strlen(p_chAdapterDescription),
           true
           );
         if( ! p_nodetrienode)
         {
-          p_nodetrienode = c_r_nodetrieIPadapterName2connectionState.
+          p_nodetrienode = //c_r_nodetrieIPadapterName2connectionState.
+            r_nodetrieIPdescriptionName2connectionState.
             insert_inline(
             //The unique name, e.g.
             //"{ED53B8B9-E386-4928-9DCC-BA5B73DE451C}"
-            (unsigned char *) p_ip_adapter_infoCurrent->AdapterName,
-            (unsigned int) strlen(p_ip_adapter_infoCurrent->AdapterName),
-            true
+            (unsigned char *) p_chAdapterDescription,
+            (unsigned int) strlen(p_chAdapterDescription),
+//            true
+            ConnectedToInternet
             );
           bConnectionStateForAtLeats1AdapterChanged = true;
         }
@@ -196,17 +227,22 @@ bool InternetConnectionExists(
           if( //bInternetConnectionExists
               bConnectedToTheInternetViaThisAdapter)
           {
-            if( p_nodetrienode->m_member == true)
+            if( p_nodetrienode->m_member == //true
+                ConnectedToInternet )
 //              byConnectionState = alreadyConnectedViaThisAdapter;
               ;
             else //if( byConnectionState != alreadyConnectedViaThisAdapter)
               //byConnectionState = ConnectedToInternet;
               bConnectionStateForAtLeats1AdapterChanged = true;
             bInternetConnectionExists = true;
+            r_std_set_std_stringAdapterDescription.insert(
+              p_ip_adapter_infoCurrent->//AdapterName
+              Description);
           }
           else
           {
-            if(p_nodetrienode->m_member == false)
+            if(p_nodetrienode->m_member == //false
+                NotConnectedToInternet )
 //              byConnectionState = alreadyDisconnectedViaThisAdapter;
               ;
             else

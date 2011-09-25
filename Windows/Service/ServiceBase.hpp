@@ -15,9 +15,14 @@ public:
   ConnectToSCMerror(DWORD dwErrorCode) { m_dwErrorCode = dwErrorCode ; }
 };
 
+//To avoid replacing "StartService" to "StartServiceA" / "StartServiceW" in
+//"winsvc.h"
+#ifdef StartService
+  #undef StartService
+#endif
+
 class ServiceBase
 {
-
 protected:
   SERVICE_STATUS_HANDLE m_service_status_handle ;
 public:
@@ -65,7 +70,9 @@ public:
     DWORD dwLastError ,
     std::string & r_stdstrErrorDescription
     ) ;
+#if defined(__GNUC__) && __GNUC__ > 3 //GCC 3.4.5 does not have "psapi.a" lib.
   static bool IsStartedAsService();
+#endif
   static DWORD PauseService(
    const TCHAR * tchServiceName
    , std::string & r_stdstrMsg
@@ -108,14 +115,14 @@ public:
 //    __in  LPVOID lpEventData,
 //    __in  LPVOID lpContext
 //    ) { return 0 ; } ;
-  static DWORD StartService(
+  static DWORD Start(
     LPCTSTR lpServiceName ) ;
-  static DWORD StartService(
+  static DWORD Start(
     SC_HANDLE schSCManager
     , LPCTSTR lpServiceName ) ;
-  static DWORD StopService(
+  static DWORD Stop(
     LPCTSTR lpServiceName ) ;
-  static DWORD StopService(
+  static DWORD Stop(
     SC_HANDLE schSCManager
     , LPCTSTR lpServiceName ) ;
 };

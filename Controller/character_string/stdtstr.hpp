@@ -121,6 +121,24 @@ namespace std
   }
 #endif //#if defined _UNICODE || defined UNICODE
 
+ inline void DeleteTCHARarray(int dwArgCount, TCHAR ** p_ptstrArgument)
+ {
+   if (p_ptstrArgument)
+   {
+     WORD wNumberOfStrings = dwArgCount;
+//     LOGN("Freeing memory for array of copied or converted program arguments")
+     for ( //e.g. for 2 elements: max. index is 1
+         -- wNumberOfStrings; wNumberOfStrings < //(WORD) -1
+         65535; -- wNumberOfStrings)
+       {
+//         LOGN("Freeing memory for " << GetStdString_Inline(
+//             p_ptstrArgument[wNumberOfStrings]) )
+         delete[] p_ptstrArgument[wNumberOfStrings];
+       }
+     delete[] p_ptstrArgument;
+   }
+ }
+
  //std::wstring GetStdWstring( const std::tstring & cr_stdtstr ) ;
  std::wstring GetStdWstring( const //LPWSTR
    wchar_t * cp_lpwstr ) ;

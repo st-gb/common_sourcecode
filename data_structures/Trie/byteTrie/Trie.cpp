@@ -12,8 +12,10 @@
  *      Author: Stefan
  */
 #include <preprocessor_macros/logging_preprocessor_macros.h>
-#include <vector>
-#include <sstream> //std::ostringstream
+//LOGGING_CHARACTER_TYPE
+#include <preprocessor_macros/logging_preprocessor_macros_definitions.h>
+#include <vector> //class std::vector
+#include <sstream> //class std::ostringstream
 #include <windef.h> //BYTE etc.
 
 #include "Trie.hpp"
