@@ -19,8 +19,8 @@
 
   class Win32EventBasedCondition
   {
-    HANDLE m_handleEvent ;
   public :
+    HANDLE m_handleEvent ;
 //    Win32EventBasedCondition() ;
 //    ~Win32EventBasedCondition() ;
 //
