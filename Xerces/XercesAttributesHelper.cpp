@@ -107,47 +107,49 @@ XercesAttributesHelper::~XercesAttributesHelper()
   return false ;
 }
 
-bool XercesAttributesHelper::getValue(
-   const XERCES_CPP_NAMESPACE::Attributes & cr_xerces_attributes ,
- //   T & r_templateType,
-   std::string & r_stdstrAttributeValue ,
-    const XMLCh * const cpc_xmlchAttributeName
-   )
- {
-   if( cpc_xmlchAttributeName
-     )
-   {
-     const XMLCh * cp_xmlchAttributeValue = cr_xerces_attributes.getValue(
-       // const XMLCh *const qName
-       cpc_xmlchAttributeName
-       ) ;
-     //If the attribute exists.
-     if(cp_xmlchAttributeValue)
-     {
-       char * pchAttributeValue = XERCES_CPP_NAMESPACE::XMLString::transcode(
-         cp_xmlchAttributeValue) ;
-       if( pchAttributeValue )
-       {
-//            std::string strAttributeValue = std::string(pchAttributeValue);
-         r_stdstrAttributeValue = std::string(pchAttributeValue);
-         return true ;
-//
-//            std::istringstream iss(strAttributeValue);
-//            return !(iss //>> f
-//              >> r_templateType
-//              ).fail();
-//
-//            //Release memory of dyn. alloc. buffer (else memory leaks).
-//            XERCES_CPP_NAMESPACE::XMLString::release(&pchAttributeValue);
-       }
-//        else
-//          byReturn = XERCES_ERROR_CONVERTING_ATTRIBUTE_VALUE_TO_C_STRING ;
-     }
-//      else
-//        byReturn = XERCES_ATTRIBUTE_VALUE_DOES_NOT_EXIST ;
-   }
-   return false ;
- }
+//bool XercesAttributesHelper::getValue(
+//   const XERCES_CPP_NAMESPACE::Attributes & cr_xerces_attributes ,
+// //   T & r_templateType,
+//   std::string & r_stdstrAttributeValue ,
+////   Under Linux XMLCh may be defined as "uint16_t".
+////    const XMLCh * const cpc_xmlchAttributeName
+//    const wchar_t * const cpc_wchAttributeName
+//   )
+// {
+//   if( cpc_wchAttributeName
+//     )
+//   {
+//     const XMLCh * cp_xmlchAttributeValue = cr_xerces_attributes.getValue(
+//       // const XMLCh *const qName
+//       cpc_wchAttributeName
+//       ) ;
+//     //If the attribute exists.
+//     if(cp_xmlchAttributeValue)
+//     {
+//       char * pchAttributeValue = XERCES_CPP_NAMESPACE::XMLString::transcode(
+//         cp_xmlchAttributeValue) ;
+//       if( pchAttributeValue )
+//       {
+////            std::string strAttributeValue = std::string(pchAttributeValue);
+//         r_stdstrAttributeValue = std::string(pchAttributeValue);
+//         return true ;
+////
+////            std::istringstream iss(strAttributeValue);
+////            return !(iss //>> f
+////              >> r_templateType
+////              ).fail();
+////
+////            //Release memory of dyn. alloc. buffer (else memory leaks).
+////            XERCES_CPP_NAMESPACE::XMLString::release(&pchAttributeValue);
+//       }
+////        else
+////          byReturn = XERCES_ERROR_CONVERTING_ATTRIBUTE_VALUE_TO_C_STRING ;
+//     }
+////      else
+////        byReturn = XERCES_ATTRIBUTE_VALUE_DOES_NOT_EXIST ;
+//   }
+//   return false ;
+// }
 
 BYTE XercesAttributesHelper::GetAttributeValue(
   const XERCES_CPP_NAMESPACE::Attributes & cr_xercesc_attributes,

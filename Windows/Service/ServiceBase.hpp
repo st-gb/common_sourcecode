@@ -6,7 +6,12 @@
 
 #include <string> //for std::string
 #include <windows.h> //BOOL
+#include <winsvc.h> //LPHANDLER_FUNCTION_EX
+//For THREAD_FUNCTION_CALLING_CONVENTION.
+#include <Controller/multithread/thread_function_calling_convention.h>
 //#include <specstrings.h> // "__in" etc.
+
+typedef unsigned long DWORD;
 
 class ConnectToSCMerror
 {
@@ -26,6 +31,8 @@ class ServiceBase
 protected:
   SERVICE_STATUS_HANDLE m_service_status_handle ;
 public:
+  //static
+     SERVICE_STATUS m_servicestatus;
   enum errorCodes
   {
     NoError = 0 ,
@@ -84,6 +91,11 @@ public:
     //->faster
     , std::string & r_stdstrPossibleSolution
     ) ;
+  //Needs to be "virtual" in order to use a possible sublass's overridden
+  //implementation.
+  virtual SERVICE_STATUS_HANDLE RegSvcCtrlHandlerAndHandleError(
+    LPCTSTR lpServiceName,
+    LPHANDLER_FUNCTION_EX lpHandlerProc);
   //from http://msdn.microsoft.com/en-us/library/ms685058%28VS.85%29.aspx:
   SERVICE_STATUS_HANDLE //WINAPI
     RegSvcCtrlHandlerExAndGetErrMsg(
@@ -96,6 +108,13 @@ public:
 //      std::string & r_stdstrErrorDescription
       DWORD & r_dwErrorCode
     );
+  void SetInitialServiceStatusAttributeValues(
+    DWORD dwServiceType,
+    DWORD dwControlsAccepted
+    );
+  //Needs to be "virtual" in order to use a possible sublass's overridden
+  //implementation.
+  virtual void SetServiceStatus();
 //  SERVICE_STATUS_HANDLE //WINAPI
 //    RegSvcCtrlHandlerExAndGetErrMsg(
 //    //__in
@@ -120,6 +139,8 @@ public:
   static DWORD Start(
     SC_HANDLE schSCManager
     , LPCTSTR lpServiceName ) ;
+  static DWORD THREAD_FUNCTION_CALLING_CONVENTION
+    StartServiceCtrlDispatcher_static(void * p_v);
   static DWORD Stop(
     LPCTSTR lpServiceName ) ;
   static DWORD Stop(

@@ -29,6 +29,7 @@ namespace Windows_API
   public:
     HANDLE m_handleThread ;
     void Delete() {} ;
+    inline void PossiblyCloseThreadHandle();
     BYTE start( pfnThreadFunc, void * p_v ) ;
     Thread()
       : m_handleThread( NULL )

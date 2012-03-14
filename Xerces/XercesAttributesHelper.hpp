@@ -101,7 +101,8 @@ public:
     const char * pc_chAttributeName,
     bool & rbValue
     ) ;
-  static inline BYTE GetAttributeValue
+  static //inline
+    BYTE GetAttributeValue
     (
     const XERCES_CPP_NAMESPACE::Attributes & xercesc_attributes,
     const std::string & cr_stdstrAttributeName,
@@ -181,11 +182,13 @@ public:
     const char * const lpctstrAttrName
 //     const   XMLCh * const    cpc_xmlchLocalName
     ) ;
-  static bool getValue(
-     const XERCES_CPP_NAMESPACE::Attributes & cr_xerces_attributes ,
-     std::string & r_stdstrAttributeValue ,
-      const   XMLCh * const    cpc_xmlchAttributeName
-    ) ;
+//  static bool getValue(
+//     const XERCES_CPP_NAMESPACE::Attributes & cr_xerces_attributes ,
+//     std::string & r_stdstrAttributeValue ,
+//     //   Under Linux XMLCh may be defined as "uint16_t".
+////     const   XMLCh * const    cpc_xmlchAttributeName
+//     const wchar_t * const cpc_xmlchAttributeName
+//    ) ;
   BYTE ToDWORD(
     std::string & strAttributeValue ,
     void * pv_AttributeValue

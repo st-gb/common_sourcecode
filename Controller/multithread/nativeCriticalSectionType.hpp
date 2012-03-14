@@ -14,9 +14,14 @@
 #endif
 
 #ifdef __linux__
-	#include <wxWidgets/multithread/wxCriticalSectionBasedI_CriticalSection.hpp>
-	typedef wxCriticalSectionBasedI_CriticalSection nativeCriticalSection;
-	typedef wxCriticalSectionBasedI_CriticalSection CriticalSection_type;
+//  #include <wxWidgets/multithread/wxCriticalSectionBasedI_CriticalSection.hpp>
+//  typedef wxCriticalSectionBasedI_CriticalSection nativeCriticalSection;
+//  typedef wxCriticalSectionBasedI_CriticalSection CriticalSection_type;
+
+  #include <Linux/multithread/pthread_Based_I_CriticalSection.hpp>
+  typedef pthread_Based_I_CriticalSection nativeCriticalSection;
+  typedef pthread_Based_I_CriticalSection CriticalSection_type;
+
 #endif
 
 #endif /* NATIVECRITICALSECTIONTYPE_HPP_ */

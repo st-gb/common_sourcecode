@@ -9,11 +9,13 @@
 
 #include <windows.h> //for SERVICE_TABLE_ENTRY, ... CreateService
 #include <iostream> //std::cout
+#include <winsvc.h> //SERVICE_TABLE_ENTRY
 #include <sstream> //for class std::stringstream
 #include <Windows/ErrorCode/LocalLanguageMessageFromErrorCode.h>
 //#include <Windows/Process/GetParentProcessID/GetParentProcessID.h>
 //#include <Windows/Process/GetProcessFileName/GetProcessFileName.h>
 #include <Controller/character_string/stdtstr.hpp> //GetStdString_Inline(...)
+#include <preprocessor_macros/logging_preprocessor_macros.h> //DEBUGN
 
 //#include <winsvc.h> //"StartServiceA" or "StartServiceW
 //from "<winsvc.h>"
@@ -598,6 +600,77 @@ BYTE ServiceBase::DeleteService(
 //  return m_service_status_handle ;
 //}
 
+void ServiceBase::SetInitialServiceStatusAttributeValues(
+  DWORD dwServiceType, DWORD dwControlsAccepted
+  )
+{
+  //  s_p_cpucontrolservice->
+  m_servicestatus.dwServiceType = dwServiceType;
+  //  s_p_cpucontrolservice->
+  m_servicestatus.dwCurrentState = //SERVICE_START_PENDING;
+      //ms-help://MS.VSCC.v80/MS.MSDN.v80/MS.WIN32COM.v10.en/dllproc/base/
+      // servicemain.htm
+      // / http://msdn.microsoft.com/en-us/library/ms685138%28VS.85%29.aspx:
+      //"The Service Control Manager (SCM) waits until the service reports a
+      // status of SERVICE_RUNNING. It is recommended that the service reports
+      // this status as quickly as possible, as other components in the system
+      // that require interaction with SCM will be blocked during this time."
+      //"Furthermore, you should not call any system functions during service
+      // initialization. The service code should call system functions only
+      // after it reports a status of SERVICE_RUNNING."
+      SERVICE_RUNNING;
+  //  s_p_cpucontrolservice->
+  m_servicestatus.dwControlsAccepted = dwControlsAccepted;
+  //  s_p_cpucontrolservice->
+  m_servicestatus.dwWin32ExitCode = 0;
+  //  s_p_cpucontrolservice->
+  m_servicestatus.dwServiceSpecificExitCode = 0;
+  //  s_p_cpucontrolservice->
+  //Check-point value the service increments periodically to report its
+  //progress during a lengthy start, stop, pause, or continue operation.
+  //For example, the service should increment this value as it completes
+  //each step of its initialization when it is starting up. The user
+  //interface program that invoked the operation on the service uses this
+  //value to track the progress of the service during a lengthy operation.
+  //This value is not valid and should be zero when the service does not
+  //have a start, stop, pause, or continue operation pending.
+  m_servicestatus.dwCheckPoint = 0;
+  //  s_p_cpucontrolservice->
+  //Estimated time required for a pending start, stop, pause, or
+  //continue operation, in milliseconds. Before the specified amount
+  //of time has elapsed, the service should make its next call to the
+  //SetServiceStatus function with either an incremented dwCheckPoint
+  //value or a change in dwCurrentState. If the amount of time
+  //specified by dwWaitHint passes, and dwCheckPoint has not been
+  //incremented or dwCurrentState has not changed, the service
+  //control manager or service control program can assume that an error
+  //has occurred and the service should be stopped.
+  m_servicestatus.dwWaitHint = 0;
+
+  //ms-help://MS.VSCC.v80/MS.MSDN.v80/MS.WIN32COM.v10.en/dllproc/base/servicemain.htm:
+  //"The Service Control Manager (SCM) waits until the service reports a
+  //status of SERVICE_RUNNING. It is recommended that the service
+  //reports this status as quickly as possible, as other components in the
+  //system that require interaction with SCM will be blocked during this time."
+  //  s_p_cpucontrolservice->
+  SetServiceStatus();
+}
+
+void ServiceBase::SetServiceStatus()
+{
+  if( ! ::SetServiceStatus(
+      //s_p_cpucontrolservice->
+      //This handle is the return value of "RegisterServiceCtrlHandlerEx()"
+      m_service_status_handle,
+      & //s_p_cpucontrolservice->
+      m_servicestatus)
+    )
+  {
+    DWORD dwStatus = ::GetLastError();
+    std::cerr <<  "SetServiceStatus error " << dwStatus << std::endl;
+  }
+}
+
 //@return 0=success
 DWORD ServiceBase::Start(
   LPCTSTR lpServiceName )
@@ -633,6 +706,52 @@ DWORD ServiceBase::Start(
   else
     return ServiceBase::Start(schSCManager,lpServiceName) ;
   return 1 ;
+}
+
+DWORD THREAD_FUNCTION_CALLING_CONVENTION ServiceBase::
+  StartServiceCtrlDispatcher_static(void * p_v)
+{
+//  const TCHAR * c_p_tchServiceName = (const TCHAR *) p_v;
+  SERVICE_TABLE_ENTRY * ar_service_table_entry =
+    (SERVICE_TABLE_ENTRY * ) p_v;
+  //LOGN( FULL_FUNC_NAME << "--begin")
+  //SERVICE_TABLE_ENTRYA ("char") or SERVICE_TABLE_ENTRYW ( wchar_t )
+
+//    LOGN("Before starting service ctrl dispatcher--current thread id:" <<
+//        ::GetCurrentThreadId()
+//        << "\nNote: it may take 2 minutes or even more until the service control "
+//        "dispatcher has finished to start")
+
+  DEBUG( FULL_FUNC_NAME
+    << "--before calling ::StartServiceCtrlDispatcher("
+    << ar_service_table_entry << ")\n");
+  //"The StartServiceCtrlDispatcher function connects the main thread of a
+  //service process to the service control manager, which causes the thread
+  //to be the service control dispatcher thread for the calling process."
+  //In DIESEM Thread wird dann "ServiceCtrlHandlerEx" ausgefuehrt.
+  //When the service control manager starts a service process, it waits for
+  // the process to call the StartServiceCtrlDispatcher function.
+  //The main thread of a service process should make this call as soon as
+  //possible after it starts up.
+  //Starts the "ServiceMain" function in a new thread.
+  if ( ! ::StartServiceCtrlDispatcher(ar_service_table_entry) )
+    {
+      DWORD dwLastWindowsError = ::GetLastError();
+      std::string std_str;
+      DEBUGN("StartServiceCtrlDispatcher failed:" <<
+        ::LocalLanguageMessageAndErrorCodeA( dwLastWindowsError ) )
+      ServiceBase::GetErrorDescriptionFromStartServiceCtrlDispatcherErrCode(
+        dwLastWindowsError,
+        std_str);
+//        LOGN(stdstr)
+//      g_std_ofstream <<
+//      g_std_basicstring_log_char_typeLog
+      //LOGN( FULL_FUNC_NAME << "--return 1\n" )
+      return 1;
+    }
+  DEBUGN( FULL_FUNC_NAME << "--return 0")
+  //g_std_ofstream << FULL_FUNC_NAME << "--return 0\n";
+  return 0;
 }
 
 //@return 0=success

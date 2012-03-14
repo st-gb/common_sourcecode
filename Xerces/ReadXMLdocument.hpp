@@ -25,6 +25,7 @@
 #include <xercesc/sax2/XMLReaderFactory.hpp>
 
 #include <string> //for class std::wstring
+#include <Xerces/XercesString.hpp> //GET_WCHAR_STRING_FROM_XERCES_STRING(...)
 
 //Own header files.
 //for convertToStdString(...)
@@ -97,9 +98,11 @@ inline unsigned char ReadXMLdocument(
       //Use wide string because maybe chinese file names.
       r_stdwstrErrorMessage =
         std::wstring( L"XML exception in document \"" )
-        + std::wstring( cr_inputsource.getSystemId() ) +
+//        + std::wstring( cr_inputsource.getSystemId() ) +
+        + GET_WCHAR_STRING_FROM_XERCES_STRING( cr_inputsource.getSystemId() ) +
         L"\" :" + //message
-        cr_xmlexception.getMessage() ;
+//        cr_xmlexception.getMessage() ;
+        GET_WCHAR_STRING_FROM_XERCES_STRING(cr_xmlexception.getMessage() );
 //          return FAILURE;
     }
     catch ( const XERCES_CPP_NAMESPACE::SAXParseException & cr_saxparseexception
@@ -111,17 +114,21 @@ inline unsigned char ReadXMLdocument(
       XMLFileLoc xmlfilelocLineNumber = cr_saxparseexception.
           getLineNumber() ;
       r_stdwstrErrorMessage = L"XML exception in document \""
-        + std::wstring( cr_inputsource.getSystemId() ) +
+//        + std::wstring( cr_inputsource.getSystemId() ) +
+        + GET_WCHAR_STRING_FROM_XERCES_STRING( cr_inputsource.getSystemId() ) +
         L"\"\n"
 //          + "\", line " + convertToStdString( cr_saxparseexception.getLineNumber() )
 //          + ", column " + convertToStdString( cr_saxparseexception.getColumnNumber() )
-        + L"in line " + GetStdWstring( convertToStdString(
+        //+
+        L"in line " + GetStdWstring( convertToStdString(
           xmlfilelocLineNumber ) )
         + L", column " + GetStdWstring( convertToStdString(
           xmlfilelocColumnNumber ) )
 //          + "\", line " + convertToStdString( cr_saxexception.getLineNumber() )
 //          + ", column " + convertToStdString( cr_saxexception.getColumnNumber() )
-        + L":\n\"" + cr_saxparseexception.getMessage() ;
+        //+ L":\n\"" + cr_saxparseexception.getMessage() ;
+        + L":\n\"" + GET_WCHAR_STRING_FROM_XERCES_STRING(
+          cr_saxparseexception.getMessage() ) ;
       if( ! xmlfilelocColumnNumber && ! xmlfilelocLineNumber )
       {
         r_stdwstrErrorMessage += L"\n\nThis probably means that this document/ file does"
@@ -149,7 +156,8 @@ inline unsigned char ReadXMLdocument(
 
       //Use wide string because maybe chinese file names.
       r_stdwstrErrorMessage = L"XML exception in document \""
-        + std::wstring( cr_inputsource.getSystemId() ) +
+//        + std::wstring( cr_inputsource.getSystemId() ) +
+        + GET_WCHAR_STRING_FROM_XERCES_STRING( cr_inputsource.getSystemId() ) +
         L"\" :"
 //          + "\", line " + convertToStdString( r_saxparseexception.getLineNumber() )
 //          + ", column " + convertToStdString( r_saxparseexception.getColumnNumber() )
@@ -160,7 +168,8 @@ inline unsigned char ReadXMLdocument(
 //          + "\", line " + convertToStdString( r_saxexception.getLineNumber() )
 //          + ", column " + convertToStdString( r_saxexception.getColumnNumber() )
 //          + L": " + r_saxparseexception.getMessage()
-        + cr_saxexception.getMessage()
+//        + cr_saxexception.getMessage()
+        + GET_WCHAR_STRING_FROM_XERCES_STRING( cr_saxexception.getMessage() )
         + L"\nIn order to solve this problem you may look into the XML "
         "specifications for element names etc" ;
 //      LOGWN_WSPRINTF(L"%ls", stdwstrMessage.c_str() )

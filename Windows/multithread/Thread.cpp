@@ -26,8 +26,16 @@ namespace Windows_API
 
   }
 
+  inline void Thread::PossiblyCloseThreadHandle()
+  {
+    if( m_handleThread )
+      ::CloseHandle(m_handleThread ) ;
+  }
+
   BYTE Thread::start(pfnThreadFunc pfn_threadfunc, void * p_v )
   {
+    //Because "start" may be called for the same object multiple times.
+    PossiblyCloseThreadHandle();
     m_handleThread =
       ::CreateThread(
         NULL,                   // default security attributes
@@ -44,8 +52,7 @@ namespace Windows_API
 
   Thread::~Thread()
   {
-    if( m_handleThread )
-      ::CloseHandle(m_handleThread ) ;
+    PossiblyCloseThreadHandle();
   }
   void * Thread::WaitForTermination()
   {
