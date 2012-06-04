@@ -19,7 +19,6 @@
 #endif
 #include "ByteTrie.hpp"
 
-
 #define DEBUGN(...) ;/**/
 #define DEBUG(...) ;/**/
 #define LOG(...) ;/**/

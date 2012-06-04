@@ -65,6 +65,7 @@ XercesAttributesHelper::~XercesAttributesHelper()
 //   const   XMLCh * const    cpc_xmlchLocalName
   )
 {
+  bool bRetVal = false;
   XMLCh * p_xmlchAttributeName = XERCES_CPP_NAMESPACE::XMLString::transcode(
     lpctstrAttrName) ;
   if( p_xmlchAttributeName
@@ -86,7 +87,7 @@ XercesAttributesHelper::~XercesAttributesHelper()
       {
 //            std::string strAttributeValue = std::string(pchAttributeValue);
         r_stdstrAttributeValue = std::string(pchAttributeValue);
-        return true ;
+        bRetVal = true ;
 //
 //            std::istringstream iss(strAttributeValue);
 //            return !(iss //>> f
@@ -102,9 +103,9 @@ XercesAttributesHelper::~XercesAttributesHelper()
 //      else
 //        byReturn = XERCES_ATTRIBUTE_VALUE_DOES_NOT_EXIST ;
     //Release memory of dyn. alloc. buffer (else memory leaks).
-    XERCES_CPP_NAMESPACE::XMLString::release(&p_xmlchAttributeName);
+    XERCES_CPP_NAMESPACE::XMLString::release(& p_xmlchAttributeName);
   }
-  return false ;
+  return bRetVal ;
 }
 
 //bool XercesAttributesHelper::getValue(
@@ -203,7 +204,7 @@ BYTE XercesAttributesHelper::GetAttributeValue(
 
 BYTE XercesAttributesHelper::GetAttributeValue(
   const XERCES_CPP_NAMESPACE::Attributes & attrs,
-  char * lpctstrAttrName,
+  const char * lpctstrAttrName,
   BYTE & rbyValue
   )
 {

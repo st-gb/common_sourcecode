@@ -24,23 +24,98 @@
 
 //inline void GetCurrentReferenceClock(float fDivisor) ;
 
-//TODO put variable definitions into a source file (that is not #included)
-// to avoid multiple definitions.
-//Declare and use global variables to be faster (using local variables creates
-//them on stack each time).
-//float g_fReferenceClockInHertz ;
-////float g_fReferenceClockInMHz ;
-//unsigned long long int g_ullPreviousTimeStampCounter ;
-//unsigned long long int g_ullCurrentTimeStampCounter ;
-//unsigned long long int g_ullTimeStampCounterDiff = _UI64_MAX ;
-//DWORD g_dwPreviousTickCountInMilliseconds ;
-//DWORD g_dwTickCountInMilliseconds ;
-//DWORD g_dwTickCountDiffInMilliseconds = //ULONG_MAX ;
-//    0 ;
-//extern DWORD g_dwPreviousTickCountInMilliseconds ;
-//extern DWORD g_dwTickCountInMilliseconds ;
-//extern DWORD g_dwTickCountDiffInMilliseconds;
-//extern float g_fReferenceClockInMHz ;
+inline DWORD GetTimeCountInMilliseconds()
+{
+  return
+    //Cites from:
+    //http://msdn.microsoft.com/en-us/library/ms724408%28VS.85%29.aspx:
+    //"The return value is the number of milliseconds that have elapsed since
+    // the system was started."
+    ::GetTickCount() ;
+}
+
+inline DWORD GetTickCountDiffInMilliseconds(
+  DWORD s_dwTickCountInMilliseconds,
+  DWORD s_dwPreviousTickCountInMilliseconds
+  )
+{
+  return
+    //Use this macro in order to take a value wrap into account:
+    //http://msdn.microsoft.com/en-us/library/ms724408%28VS.85%29.aspx:
+    // "[...]the time will wrap around to zero if the system is run
+    //  continuously for 49.7 days"
+    ULONG_VALUE_DIFF( s_dwTickCountInMilliseconds,
+      s_dwPreviousTickCountInMilliseconds) ;
+}
+
+inline uint64_t GetTickCountDiffInNanoSeconds(
+  uint64_t s_TimeCountInNanoSeconds,
+  uint64_t s_PreviousTimeCountInNanoSeconds
+  )
+{
+  return
+    ULONGLONG_VALUE_DIFF( s_TimeCountInNanoSeconds,
+      s_PreviousTimeCountInNanoSeconds) ;
+}
+
+inline void CalculateReferenceClockInMHzFromDiffs(
+  unsigned long long int s_ullTimeStampCounterDiff,
+  float fDivisor,
+  float & r_fReferenceClockInMHz,
+//  DWORD s_dwTickCountDiffInMilliseconds
+  uint64_t s_TimeCountDiffInNanoSeconds
+  )
+{
+//    s_fReferenceClockInHertz = 1000.0 / (float) s_dwTickCountDiffInMilliseconds *
+//(double) s_ullTimeStampCounterDiff /
+//        fDivisor ;
+
+//    s_fReferenceClockInHertz = 1000.0 *
+//      (float) s_ullTimeStampCounterDiff /
+//      fDivisor / (float) s_dwTickCountDiffInMilliseconds ;
+////    g_fReferenceClockInMHz = s_fReferenceClockInHertz / 1000000.0 ;
+//    r_fReferenceClockInMHz = s_fReferenceClockInHertz / 1000000.0 ;
+
+//  static float fTimeStampsPerMillisecond;
+//  fTimeStampsPerMillisecond = (float) s_ullTimeStampCounterDiff /
+//    (float) s_dwTickCountDiffInMilliseconds;
+
+  static float fTimeStampsPerNanoSecond;
+  fTimeStampsPerNanoSecond = (double) s_ullTimeStampCounterDiff /
+    (double) s_TimeCountDiffInNanoSeconds;
+
+  //TSC_diff/ms -> f[MHz] :   f=1/s   TSC_diff/ms = TSC_diff/0.0001s ->
+  // TSC_diff * 1000 / 0.0001 * 1000.0 s = TSC_diff * 1000/s = TSC_diff * 1000 Hz
+  // -> MHz: "f / 1000 000"
+  r_fReferenceClockInMHz = //(float) s_ullTimeStampCounterDiff / fDivisor /
+  //      //Get ratio of time span in which the TSC diff was measured and
+  //      ( (float) s_dwTickCountDiffInMilliseconds / 1000.0f )
+  //      / 1000000.0;
+//    fTimeStampsPerMillisecond / fDivisor
+//    //Divide TSCdiff/ms by 1000 to get f in MegaHertz
+//    / 1000.0f;
+    fTimeStampsPerNanoSecond / fDivisor;
+
+  //    return s_fReferenceClockInHertz / 1000000.0 ;
+  //    fReferenceClockInMHz = s_fReferenceClockInHertz / 1000000.0 ;
+}
+
+inline void GreaterMaxTimeDiff()
+{
+  //A bad idea follows because it blocks the execution.
+//    //Wait some milliseconds to get a time difference.
+//    ::Sleep(//500
+//      dwMinimumTimeDiffInMilliseconds ) ;
+//    s_dwTickCountInMilliseconds = ::GetTickCount();
+//    s_dwTickCountDiffInMilliseconds =
+////      //Use this macro in order to take a value wrap into account.
+////      ULONG_VALUE_DIFF( s_dwTickCountInMilliseconds,
+////      s_dwPreviousTickCountInMilliseconds) ;#
+//        dwMinimumTimeDiffInMilliseconds ;
+
+//    //overflows the same way as for GetTickCount() ;
+//    s_dwTickCountInMilliseconds += dwMinimumTimeDiffInMilliseconds ;
+}
 
 //inline: do not compile as function, but expand code for every call (->faster)
 //_Define_ the function in this _header_ file. It cannot be inline if declared
@@ -53,114 +128,126 @@ inline
     , float & r_fReferenceClockInMHz
     , DWORD dwMinimumTimeDiffInMilliseconds
     , DWORD dwMaximumTimeDiffInMilliseconds
+//    , DWORD dwThreadAffinityMask
   )
 {
-  static float g_fReferenceClockInHertz ;
+//  static float s_fReferenceClockInHertz ;
   //float g_fReferenceClockInMHz ;
-  static unsigned long long int g_ullPreviousTimeStampCounter ;
-  static unsigned long long int g_ullCurrentTimeStampCounter ;
-  static unsigned long long int g_ullTimeStampCounterDiff = _UI64_MAX ;
+  static unsigned long long int s_ullPreviousTimeStampCounter ;
+  static unsigned long long int s_ullCurrentTimeStampCounter ;
+  static unsigned long long int s_ullTimeStampCounterDiff = _UI64_MAX ;
 
-  static DWORD g_dwPreviousTickCountInMilliseconds ;
-  static DWORD g_dwTickCountInMilliseconds ;
-  static DWORD g_dwTickCountDiffInMilliseconds;
-  static float g_fReferenceClockInMHz ;
+  static DWORD s_dwPreviousTickCountInMilliseconds ;
+  static DWORD s_dwTickCountInMilliseconds ;
+  static DWORD s_dwTickCountDiffInMilliseconds;
+
+  static uint64_t s_PreviousTimeCountInNanoSeconds;
+  static uint64_t s_TimeCountInNanoSeconds;
+  static uint64_t s_TimeCountDiffInNanoSeconds;
+
+//  static float g_fReferenceClockInMHz ;
 //  SHOW_VIA_GUI( _T("GetCurrentReferenceClock begin") )
-  //Use global var., so it does not need to be created on stack for every time.
-  g_dwTickCountInMilliseconds =
-    //Cites from:
-    //http://msdn.microsoft.com/en-us/library/ms724408%28VS.85%29.aspx:
-    //"The return value is the number of milliseconds that have elapsed since
-    // the system was started."
-    ::GetTickCount() ;
-  g_dwTickCountDiffInMilliseconds =
-    //Use this macro in order to take a value wrap into account:
-    //http://msdn.microsoft.com/en-us/library/ms724408%28VS.85%29.aspx:
-    // "[...]the time will wrap around to zero if the system is run
-    //  continuously for 49.7 days"
-    ULONG_VALUE_DIFF( g_dwTickCountInMilliseconds,
-      g_dwPreviousTickCountInMilliseconds) ;
-  DEBUGN("tick count diff in ms: " << g_dwTickCountDiffInMilliseconds )
-  if( //g_ullTimeStampCounterDiff == _UI64_MAX // ^= "= 0"
+
+  //TODO need to execute getting time diff and TSC diff in the _same_ time slice.
+  //Else between these two calculations a delay of some millisec. may occur that
+  //falsifies the calculation.
+
+  s_dwTickCountInMilliseconds = GetTimeCountInMilliseconds();
+
+  GetTimeCountInNanoSeconds(s_TimeCountInNanoSeconds);
+
+  DEBUGN( FULL_FUNC_NAME << "--TimeCountInNanoSeconds:"
+    << s_TimeCountInNanoSeconds )
+
+//  s_dwTickCountDiffInMilliseconds = GetTickCountDiffInMilliseconds(
+//    s_dwTickCountInMilliseconds,
+//    s_dwPreviousTickCountInMilliseconds);
+  s_TimeCountDiffInNanoSeconds = GetTickCountDiffInNanoSeconds(
+    s_TimeCountInNanoSeconds,
+    s_PreviousTimeCountInNanoSeconds);
+
+  DEBUGN( FULL_FUNC_NAME << "--tick count diff in ms: "
+    << s_dwTickCountDiffInMilliseconds )
+  if(
       //If at the beginning / for the first time.
-//      g_dwTickCountInMilliseconds == ULONG_MAX
-//      g_dwTickCountDiffInMilliseconds //== 0
+//      s_dwTickCountInMilliseconds == ULONG_MAX
+//      s_dwTickCountDiffInMilliseconds //== 0
 //      < dwMinimumTimeDiffInMilliseconds
-//      ||
-      g_dwTickCountDiffInMilliseconds > dwMaximumTimeDiffInMilliseconds
+
+//      s_dwTickCountDiffInMilliseconds > dwMaximumTimeDiffInMilliseconds
+      s_TimeCountDiffInNanoSeconds > dwMaximumTimeDiffInMilliseconds * 1000
     )
   {
-    g_dwPreviousTickCountInMilliseconds = g_dwTickCountInMilliseconds ;
+//    s_dwPreviousTickCountInMilliseconds = s_dwTickCountInMilliseconds ;
+    s_PreviousTimeCountInNanoSeconds = s_TimeCountInNanoSeconds;
+
     //Because the time difference is  too large:take a TSC measurement (again).
-    g_ullPreviousTimeStampCounter = //ReadTimeStampCounter() ;
+    s_ullPreviousTimeStampCounter = //ReadTimeStampCounter() ;
       ReadTSCinOrder(
         //pass thread affinity mask
-        1) ;
-    //A bad idea follows because it blocks the execution.
-//    //Wait some milliseconds to get a time difference.
-//    ::Sleep(//500
-//      dwMinimumTimeDiffInMilliseconds ) ;
-//    g_dwTickCountInMilliseconds = ::GetTickCount();
-//    g_dwTickCountDiffInMilliseconds =
-////      //Use this macro in order to take a value wrap into account.
-////      ULONG_VALUE_DIFF( g_dwTickCountInMilliseconds,
-////      g_dwPreviousTickCountInMilliseconds) ;#
-//        dwMinimumTimeDiffInMilliseconds ;
+        1 //        dwThreadAffinityMask
+        ) ;
 
-//    //overflows the same way as for GetTickCount() ;
-//    g_dwTickCountInMilliseconds += dwMinimumTimeDiffInMilliseconds ;
+//    GreaterMaxTimeDiff();
 
     //Set to 0 for the following comparison ">="
-    g_dwTickCountDiffInMilliseconds = 0 ;
+//    s_dwTickCountDiffInMilliseconds = 0 ;
+    s_TimeCountDiffInNanoSeconds = 0;
   }
 //  //Use global var., so it does not need to be created on stack for every time.
-//  g_dwTickCountInMilliseconds = ::GetTickCount() ;
-//  g_dwTickCountDiffInMilliseconds =
+//  s_dwTickCountInMilliseconds = ::GetTickCount() ;
+//  s_dwTickCountDiffInMilliseconds =
 //    //Use this macro in order to take a value wrap into account.
-//    ULONG_VALUE_DIFF( g_dwTickCountInMilliseconds,
-//    g_dwPreviousTickCountInMilliseconds) ;
+//    ULONG_VALUE_DIFF( s_dwTickCountInMilliseconds,
+//    s_dwPreviousTickCountInMilliseconds) ;
 
 //  SHOW_VIA_GUI( _T("GetCurrentReferenceClock before tick count comp") )
   //If getcurrentpstate for core 0 and directly afterwards for core 1,
-  //g_dwTickCountDiffInMilliseconds may be too small->too inexact,
-  //if g_dwTickCountDiffInMilliseconds=0: division by zero.
-  if( g_dwTickCountDiffInMilliseconds >= //1000
-    dwMinimumTimeDiffInMilliseconds )
+  //s_dwTickCountDiffInMilliseconds may be too small->too inexact,
+  //if s_dwTickCountDiffInMilliseconds=0: division by zero.
+
+  if( //s_dwTickCountDiffInMilliseconds >= dwMinimumTimeDiffInMilliseconds
+      s_TimeCountDiffInNanoSeconds >= dwMinimumTimeDiffInMilliseconds * 1000
+    )
   {
-//    SHOW_VIA_GUI( _T("GetCurrentReferenceClock g_dwTickCountDiffInMilliseconds"
+//    SHOW_VIA_GUI( _T("GetCurrentReferenceClock s_dwTickCountDiffInMilliseconds"
 //      " >=dwMinimumTimeDiffInMilliseconds") )
-    DEBUGN("GetCurrentReferenceClock(...) tick count diff ("
-      << g_dwTickCountDiffInMilliseconds << ") > min time span("
+    DEBUGN( FULL_FUNC_NAME << "GetCurrentReferenceClock(...)"
+      "--tick count diff ("
+      << s_dwTickCountDiffInMilliseconds << ") > min time span("
       << dwMinimumTimeDiffInMilliseconds << ")" )
-    g_dwPreviousTickCountInMilliseconds = g_dwTickCountInMilliseconds ;
+
+//    s_dwPreviousTickCountInMilliseconds = s_dwTickCountInMilliseconds ;
+    s_PreviousTimeCountInNanoSeconds = s_TimeCountInNanoSeconds;
+
 //      std::stringstream stdstrstream ;
-  //  stdstrstream << g_dwTickCountDiffInMilliseconds ;
+  //  stdstrstream << s_dwTickCountDiffInMilliseconds ;
   //  MessageBox(NULL, stdstrstream.str().c_str() , "info" , MB_OK) ;
 
 //    SHOW_VIA_GUI( _T("GetCurrentReferenceClock before ReadTSCinOrder") )
 
-    g_ullCurrentTimeStampCounter = //ReadTimeStampCounter() ;
+    s_ullCurrentTimeStampCounter = //ReadTimeStampCounter() ;
       ReadTSCinOrder(//pass thread affinity mask
         1) ;
 //    SHOW_VIA_GUI( _T("GetCurrentReferenceClock after ReadTSCinOrder") )
 
-    g_ullTimeStampCounterDiff = ULONGLONG_VALUE_DIFF(
-      g_ullCurrentTimeStampCounter , g_ullPreviousTimeStampCounter ) ;
-    DEBUGN("TSC diff: " << g_ullTimeStampCounterDiff )
-    g_ullPreviousTimeStampCounter = g_ullCurrentTimeStampCounter ;
-  //  stdstrstream << g_ullTimeStampCounterDiff ;
+    s_ullTimeStampCounterDiff = ULONGLONG_VALUE_DIFF(
+      s_ullCurrentTimeStampCounter , s_ullPreviousTimeStampCounter ) ;
+
+    DEBUGN( FULL_FUNC_NAME << "TSC diff: " << s_ullTimeStampCounterDiff )
+
+    s_ullPreviousTimeStampCounter = s_ullCurrentTimeStampCounter ;
+
+  //  stdstrstream << s_ullTimeStampCounterDiff ;
   //  MessageBox(NULL, stdstrstream.str().c_str() , "info" , MB_OK) ;
 
-//    g_fReferenceClockInHertz = 1000.0 / (float) g_dwTickCountDiffInMilliseconds *
-    //(double) g_ullTimeStampCounterDiff /
-//        fDivisor ;
-    g_fReferenceClockInHertz = 1000.0 *
-      (double) g_ullTimeStampCounterDiff /
-      fDivisor / (float) g_dwTickCountDiffInMilliseconds ;
-//    g_fReferenceClockInMHz = g_fReferenceClockInHertz / 1000000.0 ;
-    r_fReferenceClockInMHz =  g_fReferenceClockInHertz / 1000000.0 ;
-//    return g_fReferenceClockInHertz / 1000000.0 ;
-//    fReferenceClockInMHz = g_fReferenceClockInHertz / 1000000.0 ;
+    CalculateReferenceClockInMHzFromDiffs(
+      s_ullTimeStampCounterDiff,
+      fDivisor,
+      r_fReferenceClockInMHz,
+      s_TimeCountDiffInNanoSeconds
+      );
+
   //  stdstrstream << fReferenceClockInMHz ;
   //  MessageBox(NULL, stdstrstream.str().c_str() , "info" , MB_OK) ;
   }

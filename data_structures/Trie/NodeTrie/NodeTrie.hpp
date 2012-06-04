@@ -7,9 +7,21 @@
 #ifndef NODETRIE_HPP
 #define NODETRIE_HPP
 
+#ifdef COMPILE_NODETRIE_WITH_LOGGING
 #include <preprocessor_macros/logging_preprocessor_macros.h> //DEBUGN(...)
-#include <assert.h>
+#else
+  #ifdef DEBUGN
+    #undef DEBUGN
+  #endif //#ifdef DEBUGN
+  #define DEBUGN(str) /* -> empty */
+  #ifdef LOGN
+    #undef LOGN
+  #endif //#ifdef LOGN
+  #define LOGN(str) /* -> empty */
+#endif
 
+#include <assert.h>
+#include <sstream> //class std::stringstream
 #include "NodeTrieNode.hpp"
 
 //#include "SimpleLinkedList.hpp"
@@ -968,5 +980,14 @@ template<typename member_type>
           return p;
         }
       };
+
+#ifndef COMPILE_NODETRIE_WITH_LOGGING
+  #ifdef DEBUGN
+    #undef DEBUGN
+  #endif //#ifdef DEBUGN
+  #ifdef LOGN
+    #undef LOGN
+  #endif //#ifdef LOGN
+#endif
 
 #endif //#ifndef NODETRIE_HPP

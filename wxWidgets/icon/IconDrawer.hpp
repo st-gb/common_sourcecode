@@ -76,48 +76,16 @@ private:
   wxMask m_wxmask;
 
 public:
-  void ReleaseRessources()
-  {
-    LOGN("wxIconDrawer::ReleaseRessources begin--m_p_wxbitmapMask:"
-      << m_p_wxbitmapMask)
-    if( m_p_wxbitmapMask )
-    {
-      LOGN("wxIconDrawer::ReleaseRessources freeing resources for the mask "
-        "bitmap")
-//      m_p_wxbitmapMask->FreeResource();
-      delete m_p_wxbitmapMask;
-      //http://docs.wxwidgets.org/2.8/wx_wxbitmap.html#wxbitmapdtor:
-      //"Do not delete a bitmap that is selected into a memory device context."
-//      delete m_p_wxbitmapToDrawOn;
 
-      //Is allocated when m_p_wxbitmapMask is <> NULL.
-      delete [] m_ar_chBits;
-      //Prevent another deletion of the memory at this address
-      m_p_wxbitmapMask = NULL;
-
-//      m_wxmemorydc.UnRef();
-//      m_wxbitmap.FreeResource();
-//      m_wxmask.FreeResource();
-//      m_wxbitmapMask.FreeResource();
-
-      //else wxBitmapRefData::Free():
-      // " wxT("deleting bitmap still selected into wxMemoryDC") );"
-//      m_wxmemorydc.UnRef();
-    }
-    LOGN("wxIconDrawer::ReleaseRessources end")
-  }
-  ~wxIconDrawer()
-  {
-    LOGN("~wxIconDrawer (address:" << this << ") begin")
-    ReleaseRessources();
-    LOGN("~wxIconDrawer end")
-  }
-  wxIconDrawer(WORD wWidth = 16, WORD wHeight = 16, int nColorDepth = //1
+  wxIconDrawer(
+    WORD wWidth = 16,
+    WORD wHeight = 16,
+    int nColorDepth = //1
     //wxBITMAP_SCREEN_DEPTH
     //http://docs.wxwidgets.org/trunk/interface_2wx_2bitmap_8h.html#92f17e2abdf285ce14f0ef47997fdb06 :
     //"n wxBitmap and wxBitmapHandler context this value means: "use the screen depth".
-      -1
-      )
+    -1
+    )
     :
     m_bOk(false),
     m_wxbitmap(
@@ -152,7 +120,7 @@ public:
       {
         while( wNumberOfBits --)
           m_ar_chBits[wNumberOfBits] = //255;
-           //0 means: can be drawn onto.
+           //"0" means: can be drawn onto.
            0;
         m_p_wxbitmapMask = new wxBitmap(m_ar_chBits,wWidth,wHeight);
         LOGN("wxIconDrawer()--m_p_wxbitmapMask:" << m_p_wxbitmapMask)
@@ -185,63 +153,41 @@ public:
       }
     }
   }
+
+  ~wxIconDrawer()
+  {
+    LOGN("~wxIconDrawer (address:" << this << ") begin")
+    ReleaseRessources();
+    LOGN("~wxIconDrawer end")
+  }
+
   bool Create(
-    int   width,
-    int   height,
-    int   depth = //wxBITMAP_SCREEN_DEPTH
+    int width,
+    int height,
+    int depth = //wxBITMAP_SCREEN_DEPTH
       -1
     )
   {
     return m_wxbitmap.Create(width,height,depth);
   }
-  void DrawText(
+
+  //inline
+    void DrawColouredBarsIcon(
+    wxIcon & r_wxicon,
+//    const wxColour ar_wxcolour [],
+    const float heightsInPercent[],
+    BYTE numberOfBars
+    );
+  //inline
+    void DrawText(
     wxIcon & r_wxicon,
     const wxString & cr_wxstrText,
     const wxColour * p_wxcolourText,
     const wxColour * p_wxcolourBackground = wxWHITE
-//    const wxBrush & brush
-    )
-  {
-//    wxMemoryDC m_wxmemorydc ;
-    //http://docs.wxwidgets.org/2.6/wx_wxmemorydc.html:
-    //"A bitmap must be selected into the new memory DC before it may be used
-    //for anything."
-//    m_wxmemorydc.SelectObject(m_wxbitmap);
-
-    //http://docs.wxwidgets.org/stable/wx_wxmemorydc.html#wxmemorydc:
-    //"Use the IsOk member to test whether the constructor was
-    //successful in creating a usable device context."
-    if( m_p_wxbitmapToDrawOn && m_wxmemorydc.IsOk() )
-    {
-//    FillWhiteIfNonMonochromeBitmap_Inline(m_wxmemorydc);
-      m_wxmemorydc.Clear();
-//      Fill_Inline(m_wxmemorydc, //wxWHITE
-//        //wxBLACK
-//        p_wxcolourBackground
-//        );
-//      wxmemorydc.SetTextBackground( * wxBLACK ) ;
-      m_wxmemorydc.SetTextForeground( //* wxWHITE
-        * p_wxcolourText) ;
-//      wxmemorydc.SetTextBackground( * wxWHITE ) ;
-
-//    m_wxmemorydc.SetTextForeground( //* wxBLACK
-//      * wxRED ) ;
-
-//    //wxWHITE_BRUSH is black for monochrome bitmaps?
-//    m_wxmemorydc.SetBrush( //* wxRED_BRUSH
-////      * wxBLACK_BRUSH
-////      * wxWHITE_BRUSH
-//      //* p_wxcolour
-//      brush
-//      ) ;
-    m_wxmemorydc.DrawText( //wxT("38")
-      cr_wxstrText
-//        , 5,5) ;
-      , 0,0) ;
-    r_wxicon.CopyFromBitmap(//m_wxbitmap
-      * m_p_wxbitmapToDrawOn) ;
-    }
-  }
+  //    const wxBrush & brush
+    );
+  //inline
+    void ReleaseRessources();
 };
 
 namespace wxWidgets

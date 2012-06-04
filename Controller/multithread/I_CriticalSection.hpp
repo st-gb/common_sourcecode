@@ -8,12 +8,12 @@
 #ifndef I_CRITICALSECTION_HPP_
 #define I_CRITICALSECTION_HPP_
 
-    class I_CriticalSection
-    {
-    public:
-      I_CriticalSection() {};
-      void Enter() {}
-      void Leave() {}
-    };
+class I_CriticalSection
+{
+public:
+  I_CriticalSection() {};
+  void Enter() {}
+  void Leave() {}
+};
 
 #endif /* I_CRITICALSECTION_HPP_ */

@@ -30,20 +30,20 @@
 #endif
 
   //Keep away the dependency on Logger class for dyn libs.
-  #if defined(COMPILE_FOR_CPUCONTROLLER_DYNLIB) //&& !defined(_DEBUG)
+  #if ! defined(COMPILE_LOGGER_MULTITHREAD_SAFE) //&& !defined(_DEBUG)
   //  #define LOG(...) /* ->empty/ no instructions*/
   //  #else
     #ifdef _DEBUG //only debug DLLs should log
       #define COMPILE_WITH_LOG
       #define COMPILE_WITH_DEBUG
     #endif
-  #else //#if defined(COMPILE_FOR_CPUCONTROLLER_DYNLIB) && !defined(_DEBUG)
+  #else //#if !defined(COMPILE_LOGGER_MULTITHREAD_SAFE) && !defined(_DEBUG)
     //Even release version of the service / GUI should output to the log file.
 //    #define COMPILE_WITH_LOG
     #if defined(_DEBUG)
       #define COMPILE_WITH_DEBUG
     #endif
-  #endif//#if defined(COMPILE_FOR_CPUCONTROLLER_DYNLIB) && !defined(_DEBUG)
+  #endif//#if !defined(COMPILE_LOGGER_MULTITHREAD_SAFE) && !defined(_DEBUG)
 
   #if defined(_DEBUG) //&& defined(USE_STD_WCOUT)
     #include <iostream> //for std::cout
@@ -117,18 +117,16 @@
     #else
       #define OWN_LOGGER_LOG_LOGGER_NAME(logger_name, std_basic_string) \
         logger_name.Log( std_basic_string ) ;
+      #define OWN_LOGGER_LOG_LOGGER_NAME_TYPE(logger_name, std_basic_string, \
+        messageType) \
+        logger_name.Log( std_basic_string, messageType) ;
     #endif
       /*std::vector<unsigned char> std_vec_by;
       getUTF8string(std_basic_string, std_vec_by);
       logger_name.Log(
         std_vec_by
         ) ;*/
-#ifdef COMPILE_FOR_CPUCONTROLLER_DYNLIB
-    #define OWN_LOGGER_LOG_ENTER_CRIT_SEC
-    #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC
-    #define OWN_LOGGER_LOG_ENTER_CRIT_SEC_LOGGER_NAME(logger_name)
-    #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger_name)
-#else
+#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
     #define OWN_LOGGER_LOG_ENTER_CRIT_SEC g_logger.m_critical_section_typeLogging.\
       Enter() ;
     #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC g_logger.m_critical_section_typeLogging.\
@@ -137,7 +135,12 @@
       m_critical_section_typeLogging.Enter() ;
 #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger_name) logger_name.\
       m_critical_section_typeLogging.Leave();
-#endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+#else //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+  #define OWN_LOGGER_LOG_ENTER_CRIT_SEC
+  #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC
+  #define OWN_LOGGER_LOG_ENTER_CRIT_SEC_LOGGER_NAME(logger_name) /* ->empty */
+  #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger_name) /* ->empty */
+#endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
   #endif
     #include <string>
     //LOGGING_CHARACTER_TYPE
@@ -161,14 +164,12 @@
 #else
   #define LOG4CPLUS_INFO(logger, logEvent) /* ->empty*/
 #endif //#ifdef USE_LOG4CPLUS
-
+    #define MAKE_STRING_FROM_STRING_STREAM(string, to_ostream) { \
+      css::basic_stringstream<LOGGING_CHARACTER_TYPE> stringstream ; \
+      stringstream << to_ostream; \
+      string = stringstream.str(); }
     //#include "log_logger_name_thread_safe.h"
-    //LOGxx macros: should log no matter whether release or debug.
-    //Because under _Linux_ unloading a dynamic library with a global g_logger
-    //caused the global g_logger (->same variable name) of the executable the
-    //dyn lib was attached to call the
-    //logger's destructor, provide a macro with different logger variable names.
-    #define LOG_LOGGER_NAME(logger,to_ostream) { \
+    #define WRITE_INTO_STRING_STREAM(loggerName, to_ostream) { \
       /*std::basic_stringstream<LOGGING_CHARACTER_TYPE> stringstream ;*/ \
       css::basic_stringstream<LOGGING_CHARACTER_TYPE> stringstream ; \
       stringstream << to_ostream; \
@@ -179,30 +180,58 @@
       /*Use critical section for thread sync. else mixed/ corrupted output
        *  like here: "SendCommandAndGetResponse end\0pe"
        */ \
-      OWN_LOGGER_LOG_ENTER_CRIT_SEC_LOGGER_NAME(logger) \
+      OWN_LOGGER_LOG_ENTER_CRIT_SEC_LOGGER_NAME(loggerName) \
       g_std_basicstring_log_char_typeLog = stringstream.str() ; \
       /*g_logger->Log(to_ostream) ; */ \
       /*g_logger.Log( stdstr ) ;*/ \
       POSSIBLY_LOG_TO_STDOUT(g_std_basicstring_log_char_typeLog) \
-      OWN_LOGGER_LOG_LOGGER_NAME( logger ,/*stdstr*/ g_std_basicstring_log_char_typeLog ) \
+      }
+
+    //LOGxx macros: should log no matter whether release or debug.
+    //Because under _Linux_ unloading a dynamic library with a global g_logger
+    //caused the global g_logger (->same variable name) of the executable the
+    //dyn lib was attached to call the
+    //logger's destructor, provide a macro with different logger variable names.
+    #define LOG_LOGGER_NAME(logger, to_ostream) { \
+      WRITE_INTO_STRING_STREAM(logger, to_ostream) \
+      \
+      OWN_LOGGER_LOG_LOGGER_NAME( logger ,/*stdstr*/ \
+        g_std_basicstring_log_char_typeLog ) \
       OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger) \
       LOG4CPLUS_INFO(log4cplus_logger, /*stdstr*/ g_std_basicstring_log_char_typeLog ); \
       /*g_logger.Log("test ") ; */ }
 //    #endif
+
+    //LOGxx macros: should log no matter whether release or debug.
+    //Because under _Linux_ unloading a dynamic library with a global g_logger
+    //caused the global g_logger (->same variable name) of the executable the
+    //dyn lib was attached to call the
+    //logger's destructor, provide a macro with different logger variable names.
+    #define LOG_LOGGER_NAME_TYPE(logger, to_ostream, messageType) { \
+      WRITE_INTO_STRING_STREAM(logger, to_ostream) \
+      \
+      OWN_LOGGER_LOG_LOGGER_NAME_TYPE( logger , \
+        g_std_basicstring_log_char_typeLog, messageType) \
+      OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger) \
+      LOG4CPLUS_INFO(log4cplus_logger, g_std_basicstring_log_char_typeLog ); \
+      /*g_logger.Log("test ") ; */ }
+
     #include "log_logger_name_thread_unsafe.h"
 
     #define LOG(to_ostream) LOG_LOGGER_NAME(g_logger,to_ostream)
+    #define LOG_TYPE(to_ostream, messageType) \
+      LOG_LOGGER_NAME_TYPE(g_logger, to_ostream, messageType)
     //#ifdef COMPILE_WITH_LOG
-    //Allows easy transition from "printf"
-    #define LOG_TYPE(to_ostream, type) { std::stringstream strstream ; \
-      strstream << to_ostream; \
-      /*/for g++ compiler:
-      //Because I want to call Log( std::string & ) I have to create an object at
-      //first*/ \
-      std::string stdstr = strstream.str() ;\
-      /*g_logger->Log(to_ostream) ; */ \
-      g_logger.Log( stdstr , type) ; \
-      }
+//    //Allows easy transition from "printf"
+/*    #define LOG_TYPE(to_ostream, type) { std::stringstream strstream ; \
+//      strstream << to_ostream; \ */
+//      /*/for g++ compiler:
+//      //Because I want to call Log( std::string & ) I have to create an object at
+//      //first*/ /*
+//      std::string stdstr = strstream.str() ;\ */
+//      /*g_logger->Log(to_ostream) ; */ /*
+//      g_logger.Log( stdstr , type) ;
+//      } */
     #define LOG_SPRINTF(...) { char arch_buffer[1000] ; \
       sprintf( arch_buffer, __VA_ARGS__ ) ; \
       std::string stdstr(arch_buffer) ; \
@@ -210,12 +239,13 @@
       g_logger.Log( stdstr ) ; \
       }
     //#define LOGN(to_ostream) LOG (to_ostream << "\n" )
-    //TODO newline is appended in Logger::Log(...)
     #define LOGN(to_ostream) LOG (to_ostream << "\n")
+    #define LOGN_TYPE(to_ostream, messageType) \
+      LOG_TYPE (to_ostream << "\n", messageType)
     #define LOG_FUNC_NAME_LN(to_ostream) LOG( __F << to_ostream )
     #define LOGN_LOGGER_NAME(logger_name,to_ostream) \
       LOG_LOGGER_NAME(logger_name,to_ostream )
-    #define LOGN_TYPE(to_ostream, type) LOG_TYPE (to_ostream << "\n" , type)
+//    #define LOGN_TYPE(to_ostream, type) LOG_TYPE (to_ostream << "\n" , type)
 
     #ifdef __linux__ //Linux' swprintf(...) also needs the buffer size
       #define SWPRINTF(...) swprintf( arwch_buffer, 999, __VA_ARGS__ ) ;

@@ -17,6 +17,10 @@ DWORD GetLastErrorMessageString(
   DWORD dwErrorCodeConformToGetLastError ,
   std::string & strErrorMessage
   );
+DWORD GetLastErrorMessageString(
+  DWORD dwErrorCodeConformToGetLastError ,
+  std::wstring & r_std_wstrErrorMessage
+  );
 std::string GetLastErrorMessageString(
   DWORD dwErrorCodeConformToGetLastError
   //std::string & strErrorMessage

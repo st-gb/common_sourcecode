@@ -11,6 +11,11 @@
 #include <Controller/multithread/thread_function_calling_convention.h>
 //#include <specstrings.h> // "__in" etc.
 
+////for ::GetErrorMessageFromErrorCodeA(DWORD)
+//#include <Controller/GetErrorMessageFromLastErrorCode.hpp>
+//For ::GetLastErrorMessageString(DWORD ,std::wstring)
+#include <Windows/ErrorCode/ErrorCodeFromGetLastErrorToString.h>
+
 typedef unsigned long DWORD;
 
 class ConnectToSCMerror
@@ -18,6 +23,12 @@ class ConnectToSCMerror
 public:
   DWORD m_dwErrorCode ;
   ConnectToSCMerror(DWORD dwErrorCode) { m_dwErrorCode = dwErrorCode ; }
+  void GetErrorMessage(std::wstring & std_wstrErrorMessage) const
+  {
+    ::GetLastErrorMessageString(m_dwErrorCode, std_wstrErrorMessage);
+    if( std_wstrErrorMessage == L"" )
+      std_wstrErrorMessage = L"no error message available";
+  }
 };
 
 //To avoid replacing "StartService" to "StartServiceA" / "StartServiceW" in
@@ -31,6 +42,9 @@ class ServiceBase
 protected:
   SERVICE_STATUS_HANDLE m_service_status_handle ;
 public:
+  //Declare avoid g++ warning "Class 'ServiceBase' has virtual method
+  //'SetServiceStatus' but non-virtual destructor".
+  virtual ~ServiceBase() {};
   //static
      SERVICE_STATUS m_servicestatus;
   enum errorCodes

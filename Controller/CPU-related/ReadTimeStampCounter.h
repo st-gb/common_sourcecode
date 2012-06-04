@@ -86,6 +86,19 @@ inline void ReadTSCinOrder(
   }
 }
 
+//From http://en.wikipedia.org/wiki/Time_Stamp_Counter#C.2B.2B
+__inline__ uint64_t ReadTSCinOrderFromEnglishWikipedia(void)
+{
+    uint32_t lo, hi;
+    __asm__ __volatile__ (
+    "        xorl %%eax,%%eax \n"
+    "        cpuid"      // serialize
+    ::: "%rax", "%rbx", "%rcx", "%rdx");
+    /* We cannot use "=A", since this would use %rax on x86_64 and return only the lower 32bits of the TSC */
+    __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
+    return (uint64_t)hi << 32 | lo;
+}
+
 inline ULONGLONG ReadTSCinOrder( DWORD dwThreadAffinityMask )
 {
   ULONGLONG ull = 0 ;
@@ -108,12 +121,15 @@ inline ULONGLONG ReadTSCinOrder( DWORD dwThreadAffinityMask )
     //from http://ibiblio.org/gferg/ldp/GCC-Inline-Assembly-HOWTO.html#s3
     //  see table "Intel Code             |      AT&T Code"
 
-//    //call CPUID function 1:
-    asm ( "mov $1, %eax") ; //write "1" into register "eax" for "CPUID fct. "1"
-//    //http://www.ccsl.carleton.ca/~jamuir/rdtscpm1.pdf,
-//    //  chapter 3.1. Out-of-Order-Execution
-    asm ( "cpuid" ) ; //this forces all previous operations to complete.
-    ull = ReadTimeStampCounter() ;
+////    //call CPUID function 1:
+//    asm ( "mov $1, %eax") ; //write "1" into register "eax" for "CPUID fct. "1"
+////    //http://www.ccsl.carleton.ca/~jamuir/rdtscpm1.pdf,
+////    //  chapter 3.1. Out-of-Order-Execution
+//    asm ( "cpuid" ) ; //this forces all previous operations to complete.
+//    ull = ReadTimeStampCounter() ;
+
+    ull = ReadTSCinOrderFromEnglishWikipedia();
+
     //Restore the previous thread affinity mask.
     ::SetThreadAffinityMask( dwPreviousAffMask ) ;
   }

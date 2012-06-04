@@ -16,8 +16,17 @@ public:
     {
     case ERROR_INVALID_PARAMETER :
     case ERROR_BAD_EXE_FORMAT :
-      strSol += "-this may be due to this is an unsupported binary file format (32 bit<->64 bit).\n"
-        "So only attach 64 bit DLLs under 64 Bit Windows, 32 bit DLLs under 32 Bit Windows\n" ;
+      strSol += "-this may be due to this is an unsupported binary file format "
+        "(32 bit<->64 bit).\n"
+        "So only attach 64 bit DLLs under 64 Bit Windows, 32 bit DLLs under "
+        "32 Bit Windows\n" ;
+      break ;
+    case ERROR_MOD_NOT_FOUND:
+      strSol += "-the dynamic library possibly depends on other modules/ "
+        "dynamic libraries.\n"
+        "Examine the modules needed by this dynamic library by using "
+        "appropriate system utilities/ applications such as Microsoft's "
+        "\"dependancy walker\" or \"FileAlyzer\"\n" ;
       break ;
     }
 #endif //#ifdef _WIN32

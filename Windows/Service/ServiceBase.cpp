@@ -183,7 +183,9 @@ void ServiceBase::GetErrorDescriptionFromRegSvcCtrlHandlerExErrCode(
       break;
     default:
       r_stdstrErrorDescription =
-          LocalLanguageMessageFromErrorCodeA( dwLastError ) ;
+        LocalLanguageMessageFromErrorCodeA( dwLastError ) ;
+      //Avoid g++ warning "No break at the end of this case".
+      break;
   }
 }
 
@@ -205,7 +207,9 @@ void ServiceBase::GetErrorDescriptionFromOpenServiceErrCode(
       break;
     default:
       r_stdstrErrorDescription =
-          LocalLanguageMessageFromErrorCodeA( dwLastError ) ;
+        LocalLanguageMessageFromErrorCodeA( dwLastError ) ;
+      //Avoid g++ warning "No break at the end of this case".
+      break;
   }
 }
 
@@ -491,10 +495,6 @@ DWORD ServiceBase::CreateService(
     //(typically the main function)."
     //Use C comment, else compiler warning: multi-line comment because of "\" at
     // line end.
-    /* "..\\GriffinControlService\\Release\\
-    //"C:\\Dokumente und Einstellungen\\Stefan\\Eigene Dateien\\"
-    //"Visual Studio 2005\\Projects\\GriffinControlService\\Release\\"
-    //"GriffinControlService.exe", */
     tchPathcToServiceExe,
     NULL,                      // no load ordering group 
     NULL,                      // no tag identifier 
@@ -561,8 +561,10 @@ BYTE ServiceBase::DeleteService(
     }
 
     if ( ::DeleteService(schService) )
+    { //Use a block because: to avoid g++ warning "Suspicious semicolon".
 //       std::cout << "Deleting service succeeded.\n" ;
       ;
+    }
     else
     {
       dwErrorCodeFor1stError = ::GetLastError() ;

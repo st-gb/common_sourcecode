@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
+ * You are allowed to modify and use the source code from
+ * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
+ * making profit with it or its adaption. Else you may contact Trilobyte SE.
+ */
 /*
  * ReadFileContent.cpp
  *
@@ -45,4 +52,23 @@ BYTE ReadFileContent( std::string & r_stdstrFilePath )
     LOGN("failed to open file \"" << r_stdstrFilePath << "\"" )
   }
   return by ;
+}
+
+#include <map> //class std::map
+void ReadPropertiesFile(const std::string & r_stdstrFilePath,
+  std::map<std::string, std::string> & r_std_map)
+{
+  std::ifstream stdifstream ;
+  stdifstream.open( r_stdstrFilePath.c_str()
+    , //std::ifstream::in
+    // std::ios_base::in
+    std::_S_in
+    );
+  if( stdifstream.is_open() )
+  {
+    std::string strLine;
+    std::getline ( stdifstream, strLine );
+
+    stdifstream.close();
+  }
 }

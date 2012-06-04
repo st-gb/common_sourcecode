@@ -110,7 +110,7 @@ public:
     ) ;
   static BYTE GetAttributeValue(
     const XERCES_CPP_NAMESPACE::Attributes & attrs,
-    char * lpctstrAttrName,
+    const char * lpctstrAttrName,
     BYTE & rbyValue
     ) ;
   BYTE GetAttributeValue(
@@ -254,7 +254,7 @@ template <typename T>
         iss.imbue( std::locale("C") );
 
         //Release memory of dyn. alloc. buffer (else memory leaks).
-        XERCES_CPP_NAMESPACE::XMLString::release(&pchAttributeValue);
+        XERCES_CPP_NAMESPACE::XMLString::release( & pchAttributeValue);
 //        return ! ( iss //>> f
 //          >> r_templateType
 //          ).fail();

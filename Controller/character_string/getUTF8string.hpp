@@ -79,61 +79,67 @@ inline //std::string
 //  return std_str;
 }
 
+inline void getUTF8string_inline(const std::wstring & cr_std_wstr,
+  std::string & std_str)
+{
+  //see http://www.cplusplus.com/reference/string/string/begin/
+  std::wstring::const_iterator ci = cr_std_wstr.begin();
+  BYTE by;
+  while( ci != cr_std_wstr.end() )
+  {
+#ifdef _DEBUG
+    const wchar_t wch = * ci;
+    SUPPRESS_UNUSED_VARIABLE_WARNING(wch)
+#endif //#ifdef _DEBUG
+      //see http://de.wikipedia.org/wiki/UTF-8
+    if( *ci < 127 )
+      std_str += *ci;
+    //"0000 0080 – 0000 07FF   110xxxxx 10xxxxxx"
+    else if( *ci < 0x07FF ) //7FF: 111 1111 1111bin
+//      std_str +=
+//        (char) ( 192 //bin: 110 00000
+//            + ( *ci >> 6 )) + (char) (128 + ( *ci & 63 //bin: 111111
+//            )
+//          );
+    { //e.g. see http://de.wikipedia.org/wiki/UTF-8#Kodierung,
+        //table "Beispiele für UTF-8 Kodierungen":
+        //German 'ä' = dec. 228 = 00000000 11100100 bin hex 0xE4 =
+        //Unicode: U+00E4 -> to UTF-8: 11000011 10100100 bin = 0xC3 0xA4 hex
+        by =  ( 192 //bin: 110 00000
+            + ( * ci >> 6 )
+            );
+        std_str += (char) by;
+        by = (char) ( 128 + ( *ci & 63 //bin: 111111
+            )
+          );
+        std_str += by;
+    }
+    //0000 0800 – 0000 FFFF   1110xxxx 10xxxxxx 10xxxxxx
+    else if( *ci < 0xFFFF )
+    {
+//      std_str +=
+//      (char)  +
+       by = 224 //bin: 1110 0000
+          + ( * ci >> 12 );
+        std_str += by;
+       by = 128 + ( ( *ci >> 6 ) & 63 ) //bin: 111111
+         ;
+       std_str += by;
+//        (char) (
+//        + (char)
+       by = 128 + ( * ci & 63 //bin: 111111
+        );
+       std_str += by;
+    }
+    ++ ci;
+  }
+}
+
 inline std::string getUTF8string(const std::wstring & cr_std_wstr)
 {
-    std::string std_str;
-    //see http://www.cplusplus.com/reference/string/string/begin/
-    std::wstring::const_iterator ci = cr_std_wstr.begin();
-    BYTE by;
-    while( ci != cr_std_wstr.end() )
-    {
-  #ifdef _DEBUG
-      const wchar_t wch = * ci;
-      SUPPRESS_UNUSED_VARIABLE_WARNING(wch)
-  #endif //#ifdef _DEBUG
-        //see http://de.wikipedia.org/wiki/UTF-8
-      if( *ci < 127 )
-        std_str += *ci;
-      //"0000 0080 – 0000 07FF   110xxxxx 10xxxxxx"
-      else if( *ci < 0x07FF ) //7FF: 111 1111 1111bin
-  //      std_str +=
-  //        (char) ( 192 //bin: 110 00000
-  //            + ( *ci >> 6 )) + (char) (128 + ( *ci & 63 //bin: 111111
-  //            )
-  //          );
-      { //e.g. see http://de.wikipedia.org/wiki/UTF-8#Kodierung,
-          //table "Beispiele für UTF-8 Kodierungen":
-          //German 'ä' = dec. 228 = 00000000 11100100 bin hex 0xE4 =
-          //Unicode: U+00E4 -> to UTF-8: 11000011 10100100 bin = 0xC3 0xA4 hex
-          by =  ( 192 //bin: 110 00000
-              + ( * ci >> 6 )
-              );
-          std_str += (char) by;
-          by = (char) ( 128 + ( *ci & 63 //bin: 111111
-              )
-            );
-          std_str += by;
-      }
-      //0000 0800 – 0000 FFFF   1110xxxx 10xxxxxx 10xxxxxx
-      else if( *ci < 0xFFFF )
-      {
-  //      std_str +=
-  //      (char)  +
-         by = 224 //bin: 1110 0000
-            + ( * ci >> 12 );
-          std_str += by;
-         by = 128 + ( ( *ci >> 6 ) & 63 ) //bin: 111111
-           ;
-         std_str += by;
-  //        (char) (
-  //        + (char)
-         by = 128 + ( * ci & 63 //bin: 111111
-          );
-         std_str += by;
-      }
-      ++ ci;
-    }
-    return std_str;
+  std::string std_str;
+  getUTF8string_inline(cr_std_wstr, std_str);
+  return std_str;
 }
 
 #endif /* GETUTF8STRING_HPP_ */

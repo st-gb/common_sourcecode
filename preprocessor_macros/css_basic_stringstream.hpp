@@ -18,47 +18,52 @@
 #define CSS_BASIC_STRINGSTREAM_HPP_
 
 #include <sstream> //class std::basic_stringstream
+#include "logging_preprocessor_macros_definitions.h" //
+
 namespace css
 {
+//public:
+  typedef LOGGING_CHARACTER_TYPE loggingCharacterType;
   //std::wstringstream has no operator << (std::string)
   template <typename _CharT> //, typename _Traits, typename _Alloc>
   class basic_stringstream
     : public std::basic_stringstream <_CharT>//, _Traits, _Alloc>
   {
   public:
-      //from class std::basic_stringstream (MinGW gcc 4.5.2 "sstream" file )
-      typedef _CharT          char_type;
+    //from class std::basic_stringstream (MinGW gcc 4.5.2 "sstream" file )
+    typedef _CharT          char_type;
+
 //      typedef _Traits           traits_type;
-      //std::basic_ostream
+    //std::basic_ostream
 //      typedef std::basic_ostream<_CharT, _Traits>    __ostream_type;
 //      typedef std::basic_ostream<_CharT>    __ostream_type;
 
-      //Return type for operator << for operands of single byte character type.
-      //Must be a type of _this_ class, else following concatenations
-      // via "<<" and single byte character are not possible when >>_CharT<<
-      //is "wchar_t".
-      typedef css::basic_stringstream<_CharT>    __ostream_type;
+    /** Return type for operator << for operands of single byte character type.
+    * Must be a type of _this_ class, else following concatenations
+    * via "<<" and single byte character are not possible when >>_CharT<<
+    * is "wchar_t". */
+    typedef css::basic_stringstream<_CharT>    __ostream_type;
 //      __ostream_type
 
-      //Overwrite class std::basic_ostream's << operator because it returns a
-      // std::basic_ostream object. but a css::basic_stringstream object is
-      // needed.
-      template<typename _ValueT>
-        __ostream_type &
-        operator <<(_ValueT __v)
-      {
-        std::basic_stringstream<char_type> std_bss;
-        std_bss << __v;
-        std_bss.flush();
+    /** Overwrite class std::basic_ostream's << operator because it returns a
+    * std::basic_ostream object. but a css::basic_stringstream object is
+    * needed. */
+    template<typename _ValueT>
+      __ostream_type &
+      operator <<(_ValueT __v)
+    {
+      std::basic_stringstream<char_type> std_bss;
+      std_bss << __v;
+      std_bss.flush();
 //        *this << //__v;
 //            std_bss.str();
-          this->write(std_bss.str().c_str(), std_bss.str().length() );
+      this->write(std_bss.str().c_str(), std_bss.str().length() );
 //        this->write(std_bss.)
-        return
-            * this;
+      return
+        * this;
 //          (__ostream_type)
 //            //see http://ubuntuforums.org/archive/index.php/t-529935.html:
-              //("What's the C++ Equivalent of Java "super" keyword?")
+            //("What's the C++ Equivalent of Java "super" keyword?")
 ////          ( (std::basic_stringstream<char_type> *) this ) << __v;
 ////          this.std::basic_stringstream<char_type>).operator <<(__v);
 ////            this->std::basic_stringstream<char_type>.operator <<(__v);
@@ -68,7 +73,7 @@ namespace css
 //            << __v;
 //        static_cast<std::basic_stringstream<wchar_t> >(*this) << __v;
 //          ( std::basic_stringstream<char_type>) (*this) ) << __v;
-      }
+    }
 
 //      __ostream_type & operator<< (
 //          void * p_v)
@@ -76,24 +81,29 @@ namespace css
 //        return *this << p_v;
 //      }
 //      std::basic_ostream<char_type,traits_type>
-      //Must return an object of _this_ type, else following concatenations
-      // via "<<" and are not possible
-      __ostream_type & operator<< (
-          const char * p_ch)
-      {
-//        #error "css::basic_stringstream"
-        #pragma message("css::basic_stringstream << const char * ")
-//        return r_std_str;
-        //return _M_insert<std::string>(r_std_str);
-        //return
 
-        for(short w = 0; p_ch[w] != '\0'; ++ w)
-        {
-          put( (char_type) p_ch[w] );
-        }
-        //see ostream.tcc
-        return *this;
+    /** Must return an object of _this_ type, else following concatenations
+    * via "<<" and are not possible. */
+    __ostream_type
+    & operator << (
+        const char * p_ch)
+    {
+//        #error "css::basic_stringstream"
+      #if __GNUC__ > 3
+        #pragma message("css::basic_stringstream << const char * ")
+      #endif //#if __GNUC__ > 3
+//        return r_std_str;
+      //return _M_insert<std::string>(r_std_str);
+      //return
+
+      for(short w = 0; p_ch[w] != '\0'; ++ w)
+      {
+        put( (char_type) p_ch[w] );
       }
+      /** @see ostream.tcc */
+      return *this;
+    }
+
 //      __ostream_type & operator<< (
 //          const wchar_t * p_wchar_t)
 //      {
@@ -111,21 +121,29 @@ namespace css
 //        //see ostream.tcc
 //        return *this << p_wchar_t;
 //      }
-      __ostream_type & operator<< (
-          const std::string & r_std_str)
-      {
-        #pragma message("css::basic_stringstream << const std::string & ")
+
+    /**
+     * This function is necessary for wchar_t / wide strings to provide
+     * output for ANSI char strings.
+     */
+    __ostream_type & operator << (
+        const std::string & r_std_str)
+    {
+#if __GNUC__ > 3
+      #pragma message("css::basic_stringstream << const std::string & ")
+#endif
 //        return r_std_str;
-        //return _M_insert<std::string>(r_std_str);
-        //return
-        for(std::string::size_type w = 0; w < r_std_str.length() ; ++ w)
-        {
-          put( (char_type) r_std_str.at(w) );
-        }
-        //see ostream.tcc
-        return *this;
+      //return _M_insert<std::string>(r_std_str);
+      //return
+      for(std::string::size_type characterIndex = 0; characterIndex <
+        r_std_str.length() ; ++ characterIndex)
+      {
+        put( (char_type) r_std_str.at(characterIndex) );
       }
+      /**@see ostream.tcc */
+      return *this;
+    }
   };
-};
+}; //namespace css
 
 #endif /* CSS_BASIC_STRINGSTREAM_HPP_ */

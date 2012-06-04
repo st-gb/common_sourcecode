@@ -21,20 +21,25 @@
 //#include <Controller/character_string/stdtstr.hpp> //GetStdString(...)
 #include <fstream> //for class std::ofstream
 
-#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 void Logger::AddExcludeFromLogging(const std::string & cr_stdstr )
 {
   m_trie.insert( (unsigned char*) cr_stdstr.c_str(), cr_stdstr.length() ) ;
 }
-#endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+#endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 
 Logger::Logger(
 //  const std::set<std::string> & cr_stdsetstdstrExcludeFromLogging
   )
   //C++ style initialisation.
-  : mp_ofstream(NULL)
+  :
+    m_p_log_formatter(NULL),
+    m_p_std_ofstream(NULL)
 //  , m_p_stdsetstdstrExcludeFromLogging( gp_cpucontrolbase)
-  {}
+{
+  CreateFormatter("",
+    "%year%.%month%.%day%&nbsp;%hour%:%minute%:%second%s%millisecond%ms");
+}
 
 Logger::Logger( std::string & stdstrFilePath )
 {
@@ -44,21 +49,51 @@ Logger::Logger( std::string & stdstrFilePath )
 
 Logger::~Logger()
 {
+  if( m_p_log_formatter )
+  {
+    m_p_log_formatter->WriteTrailer();
+    delete m_p_log_formatter;
+    m_p_log_formatter = NULL;
+  }
 //  LOGN("~Logger")
-#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+#ifndef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 //  m_trie.FreeMemory() ;
-#endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
-  delete mp_ofstream ;
+#endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
+  delete m_p_std_ofstream ;
   //Set to NULL so the calling Log() evaluates the pointer address if it is
   // NULL.
-  mp_ofstream = NULL ;
+  m_p_std_ofstream = NULL ;
 //  LOGN("end of ~Logger")
+}
+
+I_LogFormatter * Logger::CreateFormatter(//BYTE type = 1
+  const std::string & std_strType //= std::string("html")
+  , const std::string & std_strLogTimeFormatString
+  )
+{
+  if( m_p_log_formatter)
+    delete m_p_log_formatter;
+  if( //type == 1
+      std_strType == "html"
+    )
+    m_p_log_formatter = new HTMLformatLogFileWriter(//m_p_std_ofstream
+      this);
+  else
+    m_p_log_formatter = new I_LogFormatter(//m_p_std_ofstream
+      this);
+
+  if( m_p_log_formatter)
+  {
+    m_p_log_formatter->WriteHeader();
+    m_p_log_formatter->SetTimeFormat(std_strLogTimeFormatString);
+  }
+  return m_p_log_formatter;
 }
 
 bool Logger::IsOpen()
 {
-  return mp_ofstream //!= NULL
-    && mp_ofstream->is_open() ;
+  return m_p_std_ofstream //!= NULL
+    && m_p_std_ofstream->is_open() ;
 }
 
 //void Logger::Log(//ostream & ostr
@@ -93,7 +128,7 @@ void Logger::Log(//ostream & ostr
 {
   //  if(r_stdstr.end().)
 //Synchronization is not used in CPU controller logging.
-#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
   //Protect access to the trie: if 2 or more threads access the
   // trie then an invalid array index for a trie level might be used?!
   //If the output is _not_ synchronized and 2 or more threads are
@@ -101,14 +136,14 @@ void Logger::Log(//ostream & ostr
   // "22010.8.10 2010.99h:824.min 1051 19491msad24hread ID:tC8296ntCP51os
   //  ter getting DOM implementationt("
 //      m_critical_section_typeLogging.Enter() ;
-#endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+#endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
 
   if(
     //Fastest evaluable condition at the beginning.
-    mp_ofstream &&
+    m_p_std_ofstream &&
     //If NOT in the container.
   //Filtering is not used in CPU controller logging.
-  #ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+  #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
   //      m_stdsetstdstrExcludeFromLogging.find(r_stdstr) ==
   //      m_stdsetstdstrExcludeFromLogging.end()
     ! m_trie.exists_inline(
@@ -121,14 +156,14 @@ void Logger::Log(//ostream & ostr
   //  )
   //if( //m_ofstream.good()
   &&
-#endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
-    mp_ofstream->good()
+  #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
+    m_p_std_ofstream->good()
     )
   {
     OutputTimeStampEtc_Inline(c_r_std_vec_by);
 
     //m_ofstream.flush() ;
-    mp_ofstream->flush() ;
+    m_p_std_ofstream->flush() ;
 //        #ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
 //        m_critical_section_typeLogging.Leave() ;
 //        #endif
@@ -147,30 +182,30 @@ void Logger::Log(//ostream & ostr
     //buffer.add( ofstream.str() ) ;
 //      #ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
   }
-//#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+//#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
 //      else
 //        m_critical_section_typeLogging.Leave() ;
 //#endif
-#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
 //      m_critical_section_typeLogging.Leave() ;
 #endif
 
-//      #endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+//      #endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
 }
 
-void Logger::Log(//ostream & ostr
-    std::string & r_stdstr
-    , WORD wType
-    )
-{
-//  if( mp_model )
-//  {
-//    if( mp_model->
-//        )
-//  }
-  if( m_stdsetLogClass.find(wType) != m_stdsetLogClass.end() )
-    Log(r_stdstr) ;
-}
+//void Logger::Log(//ostream & ostr
+//    std::string & r_stdstr
+//    , WORD wType
+//    )
+//{
+////  if( mp_model )
+////  {
+////    if( mp_model->
+////        )
+////  }
+//  if( m_stdsetLogClass.find(wType) != m_stdsetLogClass.end() )
+//    Log(r_stdstr) ;
+//}
 
 #ifdef COMPILE_WITH_WSTRING
 void Logger::LogW(//ostream & ostr
@@ -215,24 +250,24 @@ void Logger::LogW(//ostream & ostr
 #endif //#ifdef COMPILE_WITH_WSTRING
 
 void Logger::Log(//ostream & ostr
-    char * p_ch
-    )
+  const char * p_ch
+  )
 {
-    if( //m_ofstream.good() 
-       mp_ofstream && mp_ofstream->good() )
-    {
-        //m_ofstream << p_ch ;
-        *mp_ofstream //<< " char * " 
-            << p_ch ;
-        //m_ofstream.flush() ;
-        mp_ofstream->flush() ;
-    }
+  if( //m_ofstream.good()
+    m_p_std_ofstream && m_p_std_ofstream->good() )
+  {
+    //m_ofstream << p_ch ;
+    * m_p_std_ofstream //<< " char * "
+        << p_ch ;
+    //m_ofstream.flush() ;
+    m_p_std_ofstream->flush() ;
+  }
 }
 
 bool Logger::OpenFile2( std::string & r_stdstrFilePath
   )
 {
-    //char arch [10] = "File\r\n" ;
+  m_std_strLogFilePath = r_stdstrFilePath;
     //When the ofstream was not dynamically created (=on the heap)
     //the was no content within the file even when there was at least
     //1 output via the "<<" operator and this program was terminated
@@ -240,24 +275,27 @@ bool Logger::OpenFile2( std::string & r_stdstrFilePath
     //Maybe this was due to a wrong thread/ process affinity for the
     //ofstream object.
     //So I create the ofstream object dynamically.
-    if( ! mp_ofstream )
-        mp_ofstream = new std::ofstream ;
+    if( ! m_p_std_ofstream )
+      m_p_std_ofstream = new std::ofstream ;
     //m_ofstream.open(
-    mp_ofstream->open(
+    m_p_std_ofstream->open(
       r_stdstrFilePath.c_str()
       //GetCharPointer(r_stdtstrFilePath.c_str() )
-        //"C:\\Temp\\GriffinSvc_log.txt"
         //, std::ios_base::out | std::ios_base::trunc
         );
 #ifdef _DEBUG
 //    bool bOfstreamIsGood = mp_ofstream->good() ;
 #endif
-    return mp_ofstream->good() ;
-    //std::ofstream ofstreamTest;
-    //ofstreamTest.open( "C:\\Temp\\GriffinSvc_text.txt" );
-    //ofstreamTest << "hhh bla" ;
-    //ofstreamTest << r_stdstrFilePath << " is " <<
-    //    ( m_ofstream.is_open() ? "" : " NOT " ) << "open\n" ;
+    bool bFileIsOpen = m_p_std_ofstream->//good() ;
+      //TODO "is_open" returned true
+      //if no entry in file system rights was defined for user this program ran
+      //under in NTFS file system running on Windows. But no file was created.
+      //
+      is_open();
+    if( bFileIsOpen )
+      CreateFormatter("",
+        "%year%.%month%.%day%&nbsp;%hour%:%minute%:%second%s%millisecond%ms");
+    return bFileIsOpen;
     //m_ofstream << "File Opened" ;
     //*mp_ofstream << "File Opened" ;
     //m_ofstream.close() ;
@@ -265,7 +303,7 @@ bool Logger::OpenFile2( std::string & r_stdstrFilePath
     //m_ofstream.flush() ;
 }
 
-#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+#ifdef COMPILE_LOGGER_WITH_TSTRING_SUPPORT
 //void 
 bool Logger::OpenFile( //std::string & r_stdstrFilePath
   std::tstring & r_stdtstrFilePath)
@@ -274,7 +312,40 @@ bool Logger::OpenFile( //std::string & r_stdstrFilePath
     GetStdString(r_stdtstrFilePath) ) ;
   return OpenFile2( stdstr ) ;
 }
-#endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+#endif //#ifdef COMPILE_LOGGER_WITH_TSTRING_SUPPORT
+
+int Logger::RenameFile(const std::string & cr_std_strFilePath)
+{
+#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+  //Sync with other code accessing the ofstream.
+  m_critical_section_typeLogging.Enter();
+#endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+  if( m_p_std_ofstream )
+  {
+    m_p_std_ofstream->close();
+    //from http://www.cplusplus.com/reference/clibrary/cstdio/rename/
+    // http://msdn.microsoft.com/en-us/library/zw5t957f%28v=vs.71%29.aspx
+    int result = rename
+        //_trename
+      ( //oldname
+      m_std_strLogFilePath.c_str(), cr_std_strFilePath.c_str() //newname
+      );
+    if( result == 0)
+    {
+      m_std_strLogFilePath = cr_std_strFilePath;
+      m_p_std_ofstream->open( m_std_strLogFilePath.c_str(),
+        //ate = AT End
+        //see http://www.cplusplus.com/reference/iostream/ofstream/open/:
+        //(at end) Set the stream's position indicator to the end of the stream on opening.
+        std::ios_base::ate );
+    }
+    return result;
+  }
+#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+  m_critical_section_typeLogging.Leave();
+#endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+  return -1;
+}
 
 void Logger::TruncateFileToZeroAndRewrite()
 {

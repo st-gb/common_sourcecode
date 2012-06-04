@@ -62,6 +62,14 @@ std::string convertToStdString(
     //std_str ;
 }
 
+template <typename typenameConvertToString>
+std::wstring convertToStdWstring(
+    typenameConvertToString typename_convert_to_string
+  )
+{
+  return GetStdWstring( convertToStdString(typename_convert_to_string) );
+}
+
 ////convert std::string to e.g. a float value
 //template <typename T>
 ////T
