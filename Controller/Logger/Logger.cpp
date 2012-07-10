@@ -24,7 +24,9 @@
 #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 void Logger::AddExcludeFromLogging(const std::string & cr_stdstr )
 {
-  m_trie.insert( (unsigned char*) cr_stdstr.c_str(), cr_stdstr.length() ) ;
+  m_trie.//insert
+    insert_inline( (unsigned char*) cr_stdstr.c_str(), cr_stdstr.length()
+      , string_end) ;
 }
 #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 
@@ -33,18 +35,26 @@ Logger::Logger(
   )
   //C++ style initialisation.
   :
+#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
+    m_trie(255),
+#endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
     m_p_log_formatter(NULL),
     m_p_std_ofstream(NULL)
 //  , m_p_stdsetstdstrExcludeFromLogging( gp_cpucontrolbase)
 {
   CreateFormatter("",
-    "%year%.%month%.%day%&nbsp;%hour%:%minute%:%second%s%millisecond%ms");
+//    "%year%.%month%.%day%&nbsp;%hour%:%minute%:%second%s%millisecond%ms"
+    "%year%.%month%.%day% %hour%:%minute%:%second%s%millisecond%ms"
+    );
 }
 
 Logger::Logger( std::string & stdstrFilePath )
+#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
+  : m_trie(255)
+#endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 {
     //m_ofstream.open(stdstrFilePath.c_str() );
-  m_stdsetLogClass.insert(Logger::sync) ;
+//  m_stdsetLogClass.insert(Logger::sync) ;
 }
 
 Logger::~Logger()
@@ -59,7 +69,8 @@ Logger::~Logger()
 #ifndef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 //  m_trie.FreeMemory() ;
 #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-  delete m_p_std_ofstream ;
+  if( m_p_std_ofstream)
+    delete m_p_std_ofstream ;
   //Set to NULL so the calling Log() evaluates the pointer address if it is
   // NULL.
   m_p_std_ofstream = NULL ;
@@ -92,8 +103,10 @@ I_LogFormatter * Logger::CreateFormatter(//BYTE type = 1
 
 bool Logger::IsOpen()
 {
-  return m_p_std_ofstream //!= NULL
+  bool isOpen =
+  m_p_std_ofstream //!= NULL
     && m_p_std_ofstream->is_open() ;
+  return isOpen;
 }
 
 //void Logger::Log(//ostream & ostr
@@ -122,77 +135,6 @@ bool Logger::IsOpen()
 //
 //}
 
-void Logger::Log(//ostream & ostr
-    const std::vector<BYTE> & c_r_std_vec_by
-    )
-{
-  //  if(r_stdstr.end().)
-//Synchronization is not used in CPU controller logging.
-#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-  //Protect access to the trie: if 2 or more threads access the
-  // trie then an invalid array index for a trie level might be used?!
-  //If the output is _not_ synchronized and 2 or more threads are
-  // logging concurrently: the output may be mixed like:
-  // "22010.8.10 2010.99h:824.min 1051 19491msad24hread ID:tC8296ntCP51os
-  //  ter getting DOM implementationt("
-//      m_critical_section_typeLogging.Enter() ;
-#endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-
-  if(
-    //Fastest evaluable condition at the beginning.
-    m_p_std_ofstream &&
-    //If NOT in the container.
-  //Filtering is not used in CPU controller logging.
-  #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-  //      m_stdsetstdstrExcludeFromLogging.find(r_stdstr) ==
-  //      m_stdsetstdstrExcludeFromLogging.end()
-    ! m_trie.exists_inline(
-//      (unsigned char*) r_stdstr.c_str() ,
-      c_r_std_vec_by
-//      (WORD) r_stdstr.length( )
-      ,
-      false // allow prefix match: e.g. "hello" is prefix of "hello1"
-      )
-  //  )
-  //if( //m_ofstream.good()
-  &&
-  #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-    m_p_std_ofstream->good()
-    )
-  {
-    OutputTimeStampEtc_Inline(c_r_std_vec_by);
-
-    //m_ofstream.flush() ;
-    m_p_std_ofstream->flush() ;
-//        #ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
-//        m_critical_section_typeLogging.Leave() ;
-//        #endif
-    //TODO write into RAM for having 2 possibilties:
-    //-truncate the log file to zero for every startup
-    //-append to log file at every startup
-
-    //->Write into RAM until the config file that determines which of these
-    //2 possibilities to use is completely read.
-    //If the config says: always append: simply delete the RAM buffer.
-    //If the config says: always truncate:
-    // 1. truncate the log file to zero
-    // 2. write the RAM buffer contents ( that are the same as in
-    //   log file written from startup till then)
-    // 3. delete the RAM buffer.
-    //buffer.add( ofstream.str() ) ;
-//      #ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
-  }
-//#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-//      else
-//        m_critical_section_typeLogging.Leave() ;
-//#endif
-#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-//      m_critical_section_typeLogging.Leave() ;
-#endif
-
-//      #endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-}
-
 //void Logger::Log(//ostream & ostr
 //    std::string & r_stdstr
 //    , WORD wType
@@ -209,41 +151,19 @@ void Logger::Log(//ostream & ostr
 
 #ifdef COMPILE_WITH_WSTRING
 void Logger::LogW(//ostream & ostr
-  std::wstring & r_stdstr
+  const std::wstring & c_r_std_wstr
   )
 {
   if( //m_ofstream.good() 
       mp_ofstream && mp_ofstream->good() 
       )
   {
-//    SYSTEMTIME m_systemtime ;
-    //GetSystemTime( & m_systemtime); // gets current time in UTC / GMT? time zome
-    ::GetLocalTime( & m_systemtime ); //gets the same time as the Windows clock.
-    //m_ofstream << r_stdstr ;
-    *mp_ofstream
-        << m_systemtime.wYear
-        << "." << m_systemtime.wMonth
-        << "." << m_systemtime.wDay
-        << " " << m_systemtime.wHour
-        << "h:" << m_systemtime.wMinute
-        << "min " << m_systemtime.wSecond
-        << "s " << m_systemtime.wMilliseconds
-        << "ms:" << r_stdstr.c_str() ;
+    outputLogFilePrefix(mp_ofstream);
+    * mp_ofstream << c_r_std_wstr;
     //m_ofstream.flush() ;
     mp_ofstream->flush() ;
 
-    //TODO write into RAM for having 2 possibilties:
-    //-truncate the log file to zero for every startup
-    //-append to log file at every startup
-
-    //->Write into RAM until the config file that determines which of these
-    //2 possibilties to use is completely read.
-    //If the config says: always append: simply delete the RAM buffer.
-    //If the config says: always truncate:
-    // 1. truncate the log file to zero
-    // 2. write the RAM buffer contents ( that are the same as in
-    //   log file written from startup till then)
-    // 3. delete the RAM buffer.
+    Ideas();
     //buffer.add( ofstream.str() ) ;
   }
 }
@@ -264,43 +184,24 @@ void Logger::Log(//ostream & ostr
   }
 }
 
-bool Logger::OpenFile2( std::string & r_stdstrFilePath
-  )
+bool Logger::OpenFile2( const std::string & c_r_stdstrFilePath )
 {
-  m_std_strLogFilePath = r_stdstrFilePath;
-    //When the ofstream was not dynamically created (=on the heap)
-    //the was no content within the file even when there was at least
-    //1 output via the "<<" operator and this program was terminated
-    //(=contents should have been written then).
-    //Maybe this was due to a wrong thread/ process affinity for the
-    //ofstream object.
-    //So I create the ofstream object dynamically.
-    if( ! m_p_std_ofstream )
-      m_p_std_ofstream = new std::ofstream ;
-    //m_ofstream.open(
-    m_p_std_ofstream->open(
-      r_stdstrFilePath.c_str()
-      //GetCharPointer(r_stdtstrFilePath.c_str() )
-        //, std::ios_base::out | std::ios_base::trunc
-        );
-#ifdef _DEBUG
-//    bool bOfstreamIsGood = mp_ofstream->good() ;
-#endif
-    bool bFileIsOpen = m_p_std_ofstream->//good() ;
-      //TODO "is_open" returned true
-      //if no entry in file system rights was defined for user this program ran
-      //under in NTFS file system running on Windows. But no file was created.
-      //
-      is_open();
-    if( bFileIsOpen )
-      CreateFormatter("",
-        "%year%.%month%.%day%&nbsp;%hour%:%minute%:%second%s%millisecond%ms");
-    return bFileIsOpen;
-    //m_ofstream << "File Opened" ;
-    //*mp_ofstream << "File Opened" ;
-    //m_ofstream.close() ;
-    //m_ofstream.write(arch,6) ;
-    //m_ofstream.flush() ;
+  m_std_strLogFilePath = c_r_stdstrFilePath;
+  bool bFileIsOpen =
+//#ifdef _WIN32
+//  OpenFlushingFile(c_r_stdstrFilePath);
+//#else
+  OpenStdFstream(c_r_stdstrFilePath);
+//#endif
+  if( bFileIsOpen )
+    CreateFormatter("",
+      "%year%.%month%.%day% %hour%:%minute%:%second%s%millisecond%ms ");
+  return bFileIsOpen;
+  //m_ofstream << "File Opened" ;
+  //*mp_ofstream << "File Opened" ;
+  //m_ofstream.close() ;
+  //m_ofstream.write(arch,6) ;
+  //m_ofstream.flush() ;
 }
 
 #ifdef COMPILE_LOGGER_WITH_TSTRING_SUPPORT
@@ -314,23 +215,49 @@ bool Logger::OpenFile( //std::string & r_stdstrFilePath
 }
 #endif //#ifdef COMPILE_LOGGER_WITH_TSTRING_SUPPORT
 
-int Logger::RenameFile(const std::string & cr_std_strFilePath)
+inline bool Logger::OpenStdFstream(const std::string & c_r_stdstrFilePath)
 {
-#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-  //Sync with other code accessing the ofstream.
-  m_critical_section_typeLogging.Enter();
-#endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+  //When the ofstream was not dynamically created (=on the heap)
+  //the was no content within the file even when there was at least
+  //1 output via the "<<" operator and this program was terminated
+  //(=contents should have been written then).
+  //Maybe this was due to a wrong thread/ process affinity for the
+  //ofstream object.
+  //So I create the ofstream object dynamically.
+  if( ! m_p_std_ofstream )
+    m_p_std_ofstream = new std::ofstream ;
+  //m_ofstream.open(
+  m_p_std_ofstream->open(
+    c_r_stdstrFilePath.c_str()
+    //GetCharPointer(r_stdtstrFilePath.c_str() )
+      //, std::ios_base::out | std::ios_base::trunc
+      );
+#ifdef _DEBUG
+//    bool bOfstreamIsGood = mp_ofstream->good() ;
+#endif
+  bool bFileIsOpen = m_p_std_ofstream->//good() ;
+    //TODO "is_open" returned true
+    //if no entry in file system rights was defined for user this program ran
+    //under in NTFS file system running on Windows. But no file was created.
+    //
+    is_open();
+  return bFileIsOpen;
+}
+
+int Logger::RenameFileThreadUnsafe(const std::string & cr_std_strFilePath)
+{
+  int retVal = -1;
   if( m_p_std_ofstream )
   {
     m_p_std_ofstream->close();
     //from http://www.cplusplus.com/reference/clibrary/cstdio/rename/
     // http://msdn.microsoft.com/en-us/library/zw5t957f%28v=vs.71%29.aspx
-    int result = rename
+    retVal = rename
         //_trename
       ( //oldname
       m_std_strLogFilePath.c_str(), cr_std_strFilePath.c_str() //newname
       );
-    if( result == 0)
+    if( retVal == 0)
     {
       m_std_strLogFilePath = cr_std_strFilePath;
       m_p_std_ofstream->open( m_std_strLogFilePath.c_str(),
@@ -339,12 +266,21 @@ int Logger::RenameFile(const std::string & cr_std_strFilePath)
         //(at end) Set the stream's position indicator to the end of the stream on opening.
         std::ios_base::ate );
     }
-    return result;
   }
+  return retVal;
+}
+
+int Logger::RenameFileThreadSafe(const std::string & cr_std_strFilePath)
+{
+#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+  //Sync with other code accessing the ofstream.
+  m_critical_section_typeLogging.Enter();
+#endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+  int i = RenameFileThreadUnsafe(cr_std_strFilePath);
 #ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
   m_critical_section_typeLogging.Leave();
 #endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-  return -1;
+  return i;
 }
 
 void Logger::TruncateFileToZeroAndRewrite()

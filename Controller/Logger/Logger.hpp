@@ -22,7 +22,8 @@
   #include <Controller/character_string/stdtstr.hpp>
 
 #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-  #include <data_structures/Trie/byteTrie/Trie.hpp> //class Trie
+  //#include <data_structures/Trie/byteTrie/Trie.hpp> //class Trie
+  #include <data_structures/Trie/NodeTrie/NodeTrie.hpp> //class Trie
 #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 
   #include "log_file_prefix.hpp"
@@ -37,6 +38,7 @@
   {
   private:
 //    LogWriter logwriter
+  protected:
 //    HTMLformatLogFileWriter * m_p_log_writer;
     I_LogFormatter * m_p_log_formatter;
   public:
@@ -58,14 +60,22 @@
     {
       sync = 0
     };
-    std::set<WORD> m_stdsetLogClass ;
-    std::set<std::string> m_stdsetstdstrExcludeFromLogging ;
+    enum TrieNodeMemberValue
+    {
+      string_end = 1
+    };
+//    std::set<WORD> m_stdsetLogClass ;
+//    std::set<std::string> m_stdsetstdstrExcludeFromLogging ;
     //std::ofstream m_ofstream ;
+  private:
     std::ofstream * m_p_std_ofstream ;
+//    std::ostream * m_p_std_ofstream ;
 #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-    Trie m_trie ;
+    //Trie m_trie ;
+    NodeTrie<BYTE> m_trie ;
 #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 
+  public:
     void AddExcludeFromLogging(const std::string & cr_stdstr ) ;
     Logger( //const std::set<std::string> & cr_stdsetstdstrExcludeFromLogging
       ) ;
@@ -74,10 +84,17 @@
 
     I_LogFormatter * CreateFormatter(//BYTE type = 1
       const std::string & std_strType //= std::string("html")
+//      const char * std_strType = "html"
       ,const std::string & std_strLogTimeFormatString
       );
     I_LogFormatter * GetFormatter() { return m_p_log_formatter; }
-    bool IsOpen() ;
+
+    //"virtual" because: allow polymorphism: call function of the actual type
+    // (may be a direct or indirect subclass of this class).
+    virtual std::ostream & GetStdOstream() const { return * m_p_std_ofstream; }
+    //"virtual" because: allow polymorphism: call function of the actual type
+    // (may be a direct or indirect subclass of this class).
+    virtual bool IsOpen() ;
     //void Log(//ostream & ostr
     //    std::ostrstream & r_ostrstream
     //    ) ;
@@ -91,7 +108,7 @@
 //      ;
     }
 
-    inline void OutputTimeStampEtc_Inline(
+    inline DWORD OutputTimeStampEtc_Inline(
       const std::string & r_stdstr,
       enum I_LogFormatter::MessageType messageType =
         I_LogFormatter::log_message_typeINFO
@@ -121,7 +138,9 @@
 //        m_p_log_formatter->WriteLogFileEntry(s_logfileentry, messageType);
         m_logfileentry.p_std_strMessage = (std::string *) & r_stdstr;
         m_p_log_formatter->WriteLogFileEntry(m_logfileentry, messageType);
+        return WriteToFile();
       }
+      return 0;
     }
 
     FORCEINLINE void PossiblyEnterCritSec()
@@ -137,18 +156,28 @@
 #endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
     }
 
-    inline bool IsNotFiltered(const std::string & r_stdstr)
+    inline bool IsNotFiltered(const std::string & r_std_strTestIfFiltered)
     {
 #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
+      bool bIsNotFiltered = true;
     //      m_stdsetstdstrExcludeFromLogging.find(r_stdstr) ==
     //      m_stdsetstdstrExcludeFromLogging.end()
-      //If NOT in the container.
-      return ! m_trie.exists_inline(
-        (unsigned char*) r_stdstr.c_str() ,
-        (WORD) r_stdstr.length( ) ,
-        false // allow prefix match: e.g. "hello" is prefix of "hello1"
-        );
+      NodeTrieNode<BYTE> * p_ntn =
+        //If NOT in the container.
+        m_trie.//exists_inline(
+          contains_inline(
+          (unsigned char*) r_std_strTestIfFiltered.c_str() ,
+          (WORD) r_std_strTestIfFiltered.length( ) ,
+          false // allow prefix match: e.g. "hello" is prefix of "hello1"
+          );
+      if( p_ntn
+          //If a >string inside the trie< wholly matches or is a prefix of
+          //the "string to test if filtered".
+          && p_ntn->m_member == string_end
+          )
+        bIsNotFiltered = false;
       //if( //m_ofstream.good()
+      return bIsNotFiltered;
 #else
       return true;
 #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
@@ -156,7 +185,7 @@
 
     inline void Ideas()
     {
-      //TODO write into RAM for having 2 possibilties:
+      //TODO write into RAM for having 2 possibilities:
       //-truncate the log file to zero for every startup
       //-append to log file at every startup
 
@@ -195,7 +224,6 @@
       {
         OutputTimeStampEtc_Inline(r_stdstrMessage, messageType);
         //m_ofstream.flush() ;
-        m_p_std_ofstream->flush() ;
 //        POSSIBLY_LEAVE_CRIT_SEC
 //        Ideas();
       }
@@ -224,15 +252,13 @@
       {
         OutputTimeStampEtc_Inline(r_stdstrMessage, messageType);
         //m_ofstream.flush() ;
-        m_p_std_ofstream->flush() ;
+//        m_p_std_ofstream->flush() ;
 //        POSSIBLY_LEAVE_CRIT_SEC
 //        Ideas();
       }
 //      POSSIBLY_LEAVE_CRIT_SEC
     }
 
-    void Log(//ostream & ostr
-        const std::vector<BYTE> & c_r_std_vec_by);
 //    void Log(//ostream & ostr
 //        std::string & r_stdstr
 //        , WORD wType
@@ -284,13 +310,19 @@
     bool OpenFile( //std::string & r_stdstrFilePath
       std::tstring & r_stdtstrFilePath ) ;
 #endif //COMPILE_LOGGER_WITH_TSTRING_SUPPORT
-    bool OpenFile2( std::string & r_stdstrFilePath ) ;
-
+    bool OpenFile2( const std::string & r_stdstrFilePath ) ;
+    bool OpenStdFstream(const std::string & c_r_stdstrFilePath);
+    int RenameFile(const std::string & cr_std_strFilePath)
+    {
+      return RenameFileThreadSafe(cr_std_strFilePath);
+    }
+    int RenameFileThreadSafe(const std::string & cr_std_strFilePath);
     void TruncateFileToZeroAndRewrite() ;
 
-    int RenameFile(const std::string & r_stdstrFilePath);
-
-    void TruncateFileSizeToZero()
+    //"virtual" because: allow polymorphism
+    virtual int RenameFileThreadUnsafe(const std::string & r_stdstrFilePath);
+    //"virtual" because: allow polymorphism: call subclasses' function
+    virtual void TruncateFileSizeToZero()
     {
 #ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
       //Sync with other code accessing the ofstream.
@@ -305,6 +337,9 @@
       m_critical_section_typeLogging.Leave();
 #endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
     }
+    //"virtual" because: allow polymorphism: call function of the actual type
+    // (may be a direct or indirect subclass of this class).
+    virtual DWORD WriteToFile() { m_p_std_ofstream->flush(); }
   };
 
 #endif //LOGGER_HPP

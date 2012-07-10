@@ -70,6 +70,28 @@ template<typename member_type>
       //m_nodetrienodeRoot.m_arp_nodetrienode1LowerLevel = NULL;
       m_nodetrienodeRoot.m_member = NULL;
     }
+    NodeTrie(unsigned short wNumberOfNodes)
+      : //C++ style member variable initializations.
+      //#ifdef _DEBUG
+      m_dwNumberOfNodes(0),
+      //#endif
+      m_wNumberOfNodesPerHierarchyLevel(wNumberOfNodes),
+      m_nodetrienodeRoot(wNumberOfNodes)
+    {
+      //    m_ar_nodetrienodeRoot = new NodeTrieNode * [
+      //      m_wNumberOfNodesPerHierarchyLevel ] ;
+      m_wNodeSizeInByte = sizeof(NodeTrieNode<member_type> )
+        + sizeof(NodeTrieNode<member_type> *)
+        * m_wNumberOfNodesPerHierarchyLevel + sizeof(void *);
+    }
+    ~NodeTrie()
+    {
+      LOGN("destructor of data structure")
+      FreeMemory();
+      //m_nodetrienodeRoot.Delete();
+      LOGN("end of destructor of data structure")
+    }
+
     void
     Create(unsigned short wNumberOfNodes)
     {
@@ -81,28 +103,6 @@ template<typename member_type>
           + sizeof(NodeTrieNode<member_type> *) * wNumberOfNodes
           + sizeof(void *);
     }
-    NodeTrie(unsigned short wNumberOfNodes)
-    :
-          //#ifdef _DEBUG
-          m_dwNumberOfNodes(0),
-          //#endif
-          m_wNumberOfNodesPerHierarchyLevel(wNumberOfNodes),
-          m_nodetrienodeRoot(wNumberOfNodes)
-    {
-      //    m_ar_nodetrienodeRoot = new NodeTrieNode * [
-      //      m_wNumberOfNodesPerHierarchyLevel ] ;
-      m_wNodeSizeInByte = sizeof(NodeTrieNode<member_type> )
-          + sizeof(NodeTrieNode<member_type> *)
-              * m_wNumberOfNodesPerHierarchyLevel + sizeof(void *);
-    }
-    ~NodeTrie()
-    {
-      LOGN("destructor of data structure")
-      FreeMemory();
-      //m_nodetrienodeRoot.Delete();
-      LOGN("end of destructor of data structure")
-    }
-
     //  type<T> * m_ar_t ;
     //  m_ar_t = new T[arr_size] ;
     //  bool contains(std::string str )
@@ -111,15 +111,18 @@ template<typename member_type>
     //      if( m_ar[ str[i] })
     //  }
 
-    //@return pointer to the node that represents the last byte/ character.
+    /**@return pointer to the node that represents the last byte/ character.
+     *
+     */
     inline//NodeTrieNode **
     NodeTrieNode<member_type> *
     contains_inline( //void
-        unsigned char * p_vBegin, //unsigned short wBytesize,
-        size_type wBytesize,
-        //If e.g. "# of bytes" and "# of bytes: 3": if bFullMatch == true, it
-        // returns "false, else it returns "true".
-        bool bFullMatch)
+      unsigned char * p_vBegin, //unsigned short wBytesize,
+      size_type wBytesize,
+      //If e.g. "# of bytes" and "# of bytes: 3":
+      // -if bFullMatch == true, it returns "false, else it returns "true".
+      bool bFullMatch
+      )
     {
 #ifdef COMPILE_WITH_LOG
       std::stringstream strstream;
@@ -133,46 +136,48 @@ template<typename member_type>
 #endif
       bExists = false;
       if (m_nodetrienodeRoot.m_arp_nodetrienode1LowerLevel)
+      {
+        //unsigned char ** ar_p_byCurrent = m_ar_p_byRoot ;
+        //m_ar_nodetrienodeCurrent = m_ar_nodetrienodeRoot ;
+        m_p_nodetrienodeCurrent = &m_nodetrienodeRoot;
+        //  LOGN("Trie::exists")
+        for (m_wIndex = 0; m_wIndex < wBytesize; ++m_wIndex)
         {
-          //unsigned char ** ar_p_byCurrent = m_ar_p_byRoot ;
-          //m_ar_nodetrienodeCurrent = m_ar_nodetrienodeRoot ;
-          m_p_nodetrienodeCurrent = &m_nodetrienodeRoot;
-          //  LOGN("Trie::exists")
-          for (m_wIndex = 0; m_wIndex < wBytesize; ++m_wIndex)
-            {
-              byValue = p_vBegin[m_wIndex];
-              LOGN("NodeTrie::contains_inline"
-                  << " index:" << m_wIndex
-                  << " byValue:" << (WORD) byValue
-              )
-              //If pointer address is not NULL.
-              if ( //m_ar_nodetrienodeCurrent[ byValue ]
-              m_p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[byValue])
-                //      ar_p_byCurrent = & ar_p_byCurrent[ byValue ] ;
-                //next level: current node pointer address.
-                //      * ar_p_byCurrent = ar_p_byCurrent[ byValue ] ;
-                //        m_ar_nodetrienodeCurrent = (NodeTrieNode **)
-                m_p_nodetrienodeCurrent =
-                //Here the address of the next level is stored.
-                    //m_ar_nodetrienodeCurrent[ byValue ] ;
-                    m_p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[byValue];
-              else
-                {
-                  break;
-                }
-            }
-          if (bFullMatch //If p_vBegin matches exactly the trie data.
+          byValue = p_vBegin[m_wIndex];
+          LOGN("NodeTrie::contains_inline"
+              << " index:" << m_wIndex
+              << " byValue:" << (WORD) byValue
           )
-            {
-              //All nodes were found -> match.
-              if (m_wIndex == wBytesize)
-                {
-                  //        bExists = true ;
-                  return //m_ar_nodetrienodeCurrent ;
-                  m_p_nodetrienodeCurrent;
-                }
-            }
+          //If pointer address is not NULL.
+          if ( //m_ar_nodetrienodeCurrent[ byValue ]
+            m_p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[byValue] )
+            //      ar_p_byCurrent = & ar_p_byCurrent[ byValue ] ;
+            //next level: current node pointer address.
+            //      * ar_p_byCurrent = ar_p_byCurrent[ byValue ] ;
+            //        m_ar_nodetrienodeCurrent = (NodeTrieNode **)
+            m_p_nodetrienodeCurrent =
+            //Here the address of the next level is stored.
+                //m_ar_nodetrienodeCurrent[ byValue ] ;
+                m_p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[byValue];
+          else
+          {
+            break;
+          }
         }
+        if (bFullMatch //If p_vBegin matches exactly the trie data.
+          )
+        {
+          //All nodes were found -> match.
+          if (m_wIndex == wBytesize)
+          {
+            //        bExists = true ;
+            return //m_ar_nodetrienodeCurrent ;
+              m_p_nodetrienodeCurrent;
+          }
+        }
+        else
+          return m_p_nodetrienodeCurrent;
+      }
       //    else //allow prefix match: e.g. p_vBegin's data: "hello1", data in trie:
       //      // "hello" -> full prefix match
       //    {
@@ -188,7 +193,8 @@ template<typename member_type>
       //         bExists = true ;
       //    }
       return //bExists ;
-      NULL;
+        NULL;
+      //m_p_nodetrienodeCurrent;
     }
     //  inline bool NoOtherArrayElementsExist_Inline()
     //  {
@@ -967,6 +973,7 @@ template<typename member_type>
           else
             return NULL;
         }
+
         NodeTrieNode<member_type> *
         insert_inline(
             //void
@@ -979,7 +986,7 @@ template<typename member_type>
             p->m_member = member_value;
           return p;
         }
-      };
+      };//class NodeTrie
 
 #ifndef COMPILE_NODETRIE_WITH_LOGGING
   #ifdef DEBUGN

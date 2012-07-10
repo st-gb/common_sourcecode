@@ -45,7 +45,8 @@ private:
 protected:
   const Logger * m_p_logger;
   char * m_p_chTimeString;
-  std::ofstream * m_p_std_ofstream;
+//  std::ofstream * m_p_std_ofstream;
+  std::basic_ostream<char> * m_p_std_ofstream;
   std::string m_TimeFormatString;
   const LogFileEntry * m_p_logfileentry;
   NodeTrie<const uint16_t *> m_nodetrieTimePlaceHolderToLogFileEntryMember;
@@ -78,6 +79,8 @@ public:
   BYTE Replace(uint16_t IndexOf1stChar, uint16_t IndexOfLastChar,
 //    std::string & std_strTime
     char * & ar_ch);
+  void SetStdOstream(std::ostream * p_std_ostream)
+    { m_p_std_ofstream = p_std_ostream; }
   void SetTimeFormat(const std::string & TimeFormatString);
   virtual void WriteHeader() {}
   virtual void WriteTrailer() {}
@@ -101,6 +104,7 @@ public:
 //      << logfileentry.nanosecond << " "
 //      << std_strTime
       << m_p_chTimeString
+      << " "
       << * logfileentry.p_std_strMessage
 //      << "\n"
       ;

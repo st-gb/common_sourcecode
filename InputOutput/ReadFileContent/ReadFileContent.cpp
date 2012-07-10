@@ -29,7 +29,8 @@ BYTE ReadFileContent( std::string & r_stdstrFilePath )
   if( stdifstream.is_open() )
   {
     char * buffer ;
-    LOGN("successfully opened file \"" << r_stdstrFilePath << "\"" )
+    LOGN_TYPE("successfully opened file \"" << r_stdstrFilePath << "\"",
+      I_LogFormatter::log_message_typeSUCCESS)
     //http://www.cplusplus.com/reference/iostream/istream/seekg/:
     stdifstream.seekg(0, std::ios::end);
     int length = stdifstream.tellg();
@@ -49,7 +50,8 @@ BYTE ReadFileContent( std::string & r_stdstrFilePath )
   }
   else
   {
-    LOGN("failed to open file \"" << r_stdstrFilePath << "\"" )
+    LOGN_TYPE("failed to open file \"" << r_stdstrFilePath << "\"",
+      I_LogFormatter::log_message_typeERROR)
   }
   return by ;
 }

@@ -105,7 +105,7 @@ I_LogFormatter::I_LogFormatter(//std::ofstream * p_std_ofstream
     m_nodetrieTimePlaceHolderToLogFileEntryMember(256)
 {
   m_p_std_ofstream = //p_std_ofstream;
-    p_logger->m_p_std_ofstream;
+    & p_logger->GetStdOstream();
   m_p_logfileentry = & p_logger->m_logfileentry;
   m_TimeFormatString =
     "%year%-%month%-%day%&nbsp;%hour%:%minute%:%second%s%millisecond%ms";
@@ -431,19 +431,19 @@ void I_LogFormatter::GetTimeAsString(const LogFileEntry & logfileentry//,
 //  std_strTime = m_TimeFormatString;
   //Use static variables because they are global and aren't created on the
   //stack for each call to this function.
-  static const char * c_p_chCurrentCharOfTimeFormatString;
+//  static const char * c_p_chCurrentCharOfTimeFormatString;
   static const char * c_p_chIndexOf1stCharOfTimeFormatString = //std_strTime.c_str();
     m_TimeFormatString.c_str();
 //  static bool bPercentSignFound;
-  static uint16_t currentCharIndex;
-  static uint16_t IndexOfLeftPercentSign;
+//  static uint16_t currentCharIndex;
+//  static uint16_t IndexOfLeftPercentSign;
   static uint16_t IndexOfCharRightOfRightPercentSign;
   static uint16_t numCharsToCopy;
   static BYTE stringSize;
-  static BYTE percentPairIndex;
+//  static BYTE percentPairIndex;
   static std::vector<uint16_tPointerAndBYTE>::const_iterator
     c_iterTimeElementFromLogFileEntry;
-  static bool bInsertedReplacement;
+//  static bool bInsertedReplacement;
 
   c_iterTimeElementFromLogFileEntry = m_vecPointerToTimeElementFromLogFileEntry.begin();
   //Init here and not in declaration because else the init. is only done once

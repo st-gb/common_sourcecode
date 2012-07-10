@@ -159,10 +159,10 @@
 //    {
 //      class Logger ;
 //    }
-    #include <log4cplus/logger.h> //class Logger
+    #include <log4cplus/logger.h> //log4cplus::class Logger
     extern log4cplus::Logger log4cplus_logger ;
 #else
-  #define LOG4CPLUS_INFO(logger, logEvent) /* ->empty*/
+  //#define LOG4CPLUS_INFO(logger, logEvent) /* ->empty*/
 #endif //#ifdef USE_LOG4CPLUS
     #define MAKE_STRING_FROM_STRING_STREAM(string, to_ostream) { \
       css::basic_stringstream<LOGGING_CHARACTER_TYPE> stringstream ; \
@@ -198,7 +198,7 @@
       OWN_LOGGER_LOG_LOGGER_NAME( logger ,/*stdstr*/ \
         g_std_basicstring_log_char_typeLog ) \
       OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger) \
-      LOG4CPLUS_INFO(log4cplus_logger, /*stdstr*/ g_std_basicstring_log_char_typeLog ); \
+      /*LOG4CPLUS_INFO(log4cplus_logger, g_std_basicstring_log_char_typeLog );*/ \
       /*g_logger.Log("test ") ; */ }
 //    #endif
 
@@ -213,7 +213,7 @@
       OWN_LOGGER_LOG_LOGGER_NAME_TYPE( logger , \
         g_std_basicstring_log_char_typeLog, messageType) \
       OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger) \
-      LOG4CPLUS_INFO(log4cplus_logger, g_std_basicstring_log_char_typeLog ); \
+      /*LOG4CPLUS_INFO(log4cplus_logger, g_std_basicstring_log_char_typeLog ); */\
       /*g_logger.Log("test ") ; */ }
 
     #include "log_logger_name_thread_unsafe.h"
@@ -244,7 +244,7 @@
       LOG_TYPE (to_ostream << "\n", messageType)
     #define LOG_FUNC_NAME_LN(to_ostream) LOG( __F << to_ostream )
     #define LOGN_LOGGER_NAME(logger_name,to_ostream) \
-      LOG_LOGGER_NAME(logger_name,to_ostream )
+      LOG_LOGGER_NAME(logger_name,to_ostream << "\n")
 //    #define LOGN_TYPE(to_ostream, type) LOG_TYPE (to_ostream << "\n" , type)
 
     #ifdef __linux__ //Linux' swprintf(...) also needs the buffer size
