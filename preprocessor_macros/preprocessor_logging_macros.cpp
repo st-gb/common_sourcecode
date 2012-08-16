@@ -1,10 +1,10 @@
 /* Do not remove this header/ copyright information.
  *
- * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
- * You are allowed to modify and use the source code from
- * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
- * making profit with it or its adaption. Else you may contact Trilobyte SE.
- */
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
+ * ("Trilobyte SE") 2010-at least 2012.
+ * You are allowed to modify and use the source code from Trilobyte SE for free
+ * if you are not making profit directly or indirectly with it or its adaption.
+ * Else you may contact Trilobyte SE. */
 /*
  * preprocessor_logging_macros.c
  *
@@ -13,7 +13,6 @@
  */
 
 #include <string> //for std::string
-#include <Controller/Logger/Logger.hpp> //class Logger
 
 //LOGGING_CHARACTER_TYPE
 #include <preprocessor_macros/logging_preprocessor_macros_definitions.h>
@@ -22,4 +21,13 @@
 // each time -> should be faster.
 //std::string g_stdstrLog ;
 std::basic_string<LOGGING_CHARACTER_TYPE> g_std_basicstring_log_char_typeLog;
-Logger g_logger ;
+
+#include <preprocessor_macros/global_logger_object.hpp>
+//DEFINE_GLOBAL_LOGGER_OBJECT
+#include <Controller/Logger/Logger.hpp> //class Logger
+#ifdef _WIN32
+  #include <Windows/Logger/Logger.hpp> //class Windows_API::Logger
+#endif
+//#define DEFINE_GLOBAL_LOGGER_OBJECT_ Logger g_logger ;
+//::Logger g_logger;
+GLOBAL_LOGGER_FULLY_QUALIFIED_CLASS_NAME g_logger;

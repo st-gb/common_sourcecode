@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
+ * ("Trilobyte SE") 2010-at least 2012.
+ * You are allowed to modify and use the source code from Trilobyte SE for free
+ * if you are not making profit directly or indirectly with it or its adaption.
+ * Else you may contact Trilobyte SE. */
 /*
  * Windows_log_file_prefix.hpp
  *
@@ -99,15 +106,14 @@ inline void GetLogFilePrefixFromSystemTime(LogFileEntry & logfileentry)
   logfileentry.threadID = ::GetCurrentThreadId();
 }
 
-inline void GetLogFilePrefixFromFileTime(LogFileEntry & logfileentry)
+inline void GetLogFileEntry(const FILETIME & filetime,
+  LogFileEntry & logfileentry)
 {
-  static FILETIME s_filetime ;
   static SYSTEMTIME s_systemtime ;
-
-  //from en wikipedia: "System_time"
-  ::GetSystemTimeAsFileTime( & s_filetime );
-
-  ::FileTimeToSystemTime( & s_filetime, & s_systemtime);
+  //http://msdn.microsoft.com/en-us/library/windows/desktop/ms724277%28v=vs.85%29.aspx:
+  //Convert from UTC time to local time.
+  ::FileTimeToLocalFileTime(& filetime, (FILETIME *) & filetime);
+  ::FileTimeToSystemTime( & filetime, & s_systemtime);
 
   logfileentry.year = s_systemtime.wYear;
   logfileentry.month = s_systemtime.wMonth;
@@ -116,16 +122,43 @@ inline void GetLogFilePrefixFromFileTime(LogFileEntry & logfileentry)
   logfileentry.minute = s_systemtime.wMinute;
   logfileentry.second = s_systemtime.wSecond;
   logfileentry.millisecond = s_systemtime.wMilliseconds;
-  //http://msdn.microsoft.com/en-us/library/windows/desktop/ms724284%28v=vs.85%29.aspx:
-  //"Contains a 64-bit value representing the number of 100-nanosecond
-  //intervals since January 1, 1601 (UTC)."
-  logfileentry.nanosecond = s_filetime.dwLowDateTime % 10 * 100;
+//  //http://msdn.microsoft.com/en-us/library/windows/desktop/ms724284%28v=vs.85%29.aspx:
+//  //"Contains a 64-bit value representing the number of 100-nanosecond
+//  //intervals since January 1, 1601 (UTC)."
+//  logfileentry.nanosecond = (filetime.dwLowDateTime %
+//    //10 * 100;
+//    //Get microseconds (10000 * 100 ns = 1000 us)
+//    10000 // / 100
+//    )
+//    //-> nanoseconds because values are 100 ns intervalls
+//    * 100;
+
+  logfileentry.microsecond = (uint16_t) (filetime.dwLowDateTime
+    & 0xFFFF
+    //Get in [100 ns ... 999900 ns]
+    //% 10000
+    )
+    //[1 us ... 999 us]
+//    / 10//000
+//    % 1000
+    ;
+}
+
+inline void GetLogFilePrefixFromFileTime(LogFileEntry & logfileentry)
+{
+  static FILETIME s_filetime ;
+
+  //from en wikipedia: "System_time"
+  //"The information is in Coordinated Universal Time (UTC) format."
+  ::GetSystemTimeAsFileTime( & s_filetime );
+
+  GetLogFileEntry(s_filetime, logfileentry);
   logfileentry.threadID = ::GetCurrentThreadId();
 }
 
 inline void GetLogFilePrefix(LogFileEntry & logfileentry)
 {
-#ifdef USE_SYSTEM_TIME_FOR_LOGGING
+#ifdef USE_SYSTEM_TIME_FOR_LOGGING_
   GetLogFilePrefixFromSystemTime(logfileentry);
 #else
   GetLogFilePrefixFromFileTime(logfileentry);

@@ -1,10 +1,10 @@
 /* Do not remove this header/ copyright information.
  *
- * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
- * You are allowed to modify and use the source code from
- * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
- * making profit with it or its adaption. Else you may contact Trilobyte SE.
- */
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
+ * ("Trilobyte SE") 2010-at least 2012.
+ * You are allowed to modify and use the source code from Trilobyte SE for free
+ * if you are not making profit directly or indirectly with it or its adaption.
+ * Else you may contact Trilobyte SE. */
 //#if defined( _MSC_VER) 
 //#include "StdAfx.h"
 //#endif //#ifdef _MSC_VER
@@ -39,13 +39,11 @@ Logger::Logger(
     m_trie(255),
 #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
     m_p_log_formatter(NULL),
-    m_p_std_ofstream(NULL)
+    m_p_std_ofstream(NULL),
+    m_p_std_ostream(NULL)
 //  , m_p_stdsetstdstrExcludeFromLogging( gp_cpucontrolbase)
 {
-  CreateFormatter("",
-//    "%year%.%month%.%day%&nbsp;%hour%:%minute%:%second%s%millisecond%ms"
-    "%year%.%month%.%day% %hour%:%minute%:%second%s%millisecond%ms"
-    );
+  CreateTextFormatter();
 }
 
 Logger::Logger( std::string & stdstrFilePath )
@@ -62,6 +60,10 @@ Logger::~Logger()
   if( m_p_log_formatter )
   {
     m_p_log_formatter->WriteTrailer();
+    //Write (flush) trailer to output.
+    //TODO causes "::Logger::WriteToFile" to be and not the actual type's
+    // "WriteToFile" to be called.
+//    WriteToFile();
     delete m_p_log_formatter;
     m_p_log_formatter = NULL;
   }
@@ -78,16 +80,19 @@ Logger::~Logger()
 }
 
 I_LogFormatter * Logger::CreateFormatter(//BYTE type = 1
-  const std::string & std_strType //= std::string("html")
+  //const std::string & std_strType //= std::string("html")
+  const char * c_p_chType //= "html"
   , const std::string & std_strLogTimeFormatString
+  //const char * c_p_chLogTimeFormatString
   )
 {
   if( m_p_log_formatter)
     delete m_p_log_formatter;
   if( //type == 1
-      std_strType == "html"
+      //std_strType == "html"
+      strcmp("html", c_p_chType) == 0
     )
-    m_p_log_formatter = new HTMLformatLogFileWriter(//m_p_std_ofstream
+    m_p_log_formatter = new HTMLlogFormatter(//m_p_std_ofstream
       this);
   else
     m_p_log_formatter = new I_LogFormatter(//m_p_std_ofstream
@@ -95,6 +100,7 @@ I_LogFormatter * Logger::CreateFormatter(//BYTE type = 1
 
   if( m_p_log_formatter)
   {
+//    m_p_log_formatter->SetStdOstream( & GetStdOstream() );
     m_p_log_formatter->WriteHeader();
     m_p_log_formatter->SetTimeFormat(std_strLogTimeFormatString);
   }
@@ -191,11 +197,13 @@ bool Logger::OpenFile2( const std::string & c_r_stdstrFilePath )
 //#ifdef _WIN32
 //  OpenFlushingFile(c_r_stdstrFilePath);
 //#else
-  OpenStdFstream(c_r_stdstrFilePath);
+  SetStdOstream(c_r_stdstrFilePath);
+//  GetStdOstream();
 //#endif
   if( bFileIsOpen )
-    CreateFormatter("",
-      "%year%.%month%.%day% %hour%:%minute%:%second%s%millisecond%ms ");
+//    CreateFormatter("",
+//      "%year%.%month%.%day% %hour%:%minute%:%second%s%millisecond%ms ");
+    CreateTextFormatter();
   return bFileIsOpen;
   //m_ofstream << "File Opened" ;
   //*mp_ofstream << "File Opened" ;
@@ -215,7 +223,7 @@ bool Logger::OpenFile( //std::string & r_stdstrFilePath
 }
 #endif //#ifdef COMPILE_LOGGER_WITH_TSTRING_SUPPORT
 
-inline bool Logger::OpenStdFstream(const std::string & c_r_stdstrFilePath)
+inline bool Logger::SetStdOstream(const std::string & c_r_stdstrFilePath)
 {
   //When the ofstream was not dynamically created (=on the heap)
   //the was no content within the file even when there was at least
@@ -241,6 +249,8 @@ inline bool Logger::OpenStdFstream(const std::string & c_r_stdstrFilePath)
     //under in NTFS file system running on Windows. But no file was created.
     //
     is_open();
+  if( bFileIsOpen)
+    m_p_std_ostream = m_p_std_ofstream;
   return bFileIsOpen;
 }
 

@@ -1,10 +1,10 @@
 /* Do not remove this header/ copyright information.
  *
- * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
- * You are allowed to modify and use the source code from
- * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
- * making profit with it or its adaption. Else you may contact Trilobyte SE.
- */
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
+ * ("Trilobyte SE") 2010-at least 2012.
+ * You are allowed to modify and use the source code from Trilobyte SE for free
+ * if you are not making profit directly or indirectly with it or its adaption.
+ * Else you may contact Trilobyte SE. */
 /*
  * logging_preprocessor_macros.h
  *
@@ -29,21 +29,23 @@
   #define USE_STD_WCOUT
 #endif
 
-  //Keep away the dependency on Logger class for dyn libs.
-  #if ! defined(COMPILE_LOGGER_MULTITHREAD_SAFE) //&& !defined(_DEBUG)
+    #if defined(USE_OWN_LOGGER)
+      #define COMPILE_WITH_LOG
+    #endif
+//  //Keep away the dependency on Logger class for dyn libs.
+//  #if ! defined(COMPILE_LOGGER_MULTITHREAD_SAFE) //&& !defined(_DEBUG)
   //  #define LOG(...) /* ->empty/ no instructions*/
   //  #else
-    #ifdef _DEBUG //only debug DLLs should log
-      #define COMPILE_WITH_LOG
+    #if defined( _DEBUG) //only debug DLLs should log
       #define COMPILE_WITH_DEBUG
     #endif
-  #else //#if !defined(COMPILE_LOGGER_MULTITHREAD_SAFE) && !defined(_DEBUG)
-    //Even release version of the service / GUI should output to the log file.
-//    #define COMPILE_WITH_LOG
-    #if defined(_DEBUG)
-      #define COMPILE_WITH_DEBUG
-    #endif
-  #endif//#if !defined(COMPILE_LOGGER_MULTITHREAD_SAFE) && !defined(_DEBUG)
+//  #else //#if !defined(COMPILE_LOGGER_MULTITHREAD_SAFE) && !defined(_DEBUG)
+//    //Even release version of the service / GUI should output to the log file.
+////    #define COMPILE_WITH_LOG
+//    #if defined(_DEBUG)
+//      #define COMPILE_WITH_DEBUG
+//    #endif
+//  #endif//#if !defined(COMPILE_LOGGER_MULTITHREAD_SAFE) && !defined(_DEBUG)
 
   #if defined(_DEBUG) //&& defined(USE_STD_WCOUT)
     #include <iostream> //for std::cout
@@ -105,8 +107,17 @@
 #ifdef COMPILE_WITH_LOG
 //  #define USE_OWN_LOGGER
   #ifdef USE_OWN_LOGGER
+#ifdef _WIN32
+    #include <Windows/Logger/Logger.hpp> //for class Windows_API::Logger
+//    //Should have the same type as in the difintion.
+//    extern Windows_API::Logger g_logger ;
+#endif
+//#else
     #include <Controller/Logger/Logger.hpp> //for class Logger
-    extern Logger g_logger ;
+//    //Should have the same type as in the difintion.
+//    extern Logger g_logger ;
+//#endif
+    extern GLOBAL_LOGGER_FULLY_QUALIFIED_CLASS_NAME g_logger;
     #define OWN_LOGGER_LOG(stdstr) g_logger.Log( stdstr ) ;
     #include <Controller/character_string/getUTF8string.hpp>
     #include <vector> /*class std::vector*/

@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
+ * ("Trilobyte SE") 2010-at least 2012.
+ * You are allowed to modify and use the source code from Trilobyte SE for free
+ * if you are not making profit directly or indirectly with it or its adaption.
+ * Else you may contact Trilobyte SE. */
 /*
  * wxBitmapToggleButton.cpp
  *
@@ -5,7 +12,8 @@
  *      Author: Stefan
  */
 
-#include "wxWidgets/UserInterface/wxBitmapToggleButton.hpp"
+//#include "wxWidgets/UserInterface/wxBitmapToggleButton.hpp"
+#include "wxBitmapToggleButton.hpp"
 #include <wx/window.h> //class wxWindow
 #include <wx/checkbox.h> //class wxCheckBoxNameStr
 #include <wx/statbmp.h> //class wxStaticBitmap

@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
+ * ("Trilobyte SE") 2010-at least 2012.
+ * You are allowed to modify and use the source code from Trilobyte SE for free
+ * if you are not making profit directly or indirectly with it or its adaption.
+ * Else you may contact Trilobyte SE. */
 /*
  * ILogFileWriter.hpp
  *
@@ -38,15 +45,18 @@ public:
   }
 };
 
-/** Base class for log stream formatting. May e.g. format as HTML.*/
+/** Base class for log stream formatter. Child classes may e.g. format as HTML.
+ * Name should not contain a log destination like a file (because formatting
+ * ought to be independent of the log destination), so name it like
+ * "log formatter". */
 class I_LogFormatter
 {
 private:
 protected:
   const Logger * m_p_logger;
   char * m_p_chTimeString;
-//  std::ofstream * m_p_std_ofstream;
-  std::basic_ostream<char> * m_p_std_ofstream;
+//  std::ofstream * m_p_std_ostream;
+  std::basic_ostream<char> * m_p_std_ostream;
   std::string m_TimeFormatString;
   const LogFileEntry * m_p_logfileentry;
   NodeTrie<const uint16_t *> m_nodetrieTimePlaceHolderToLogFileEntryMember;
@@ -67,7 +77,7 @@ public:
   ~I_LogFormatter();
 
   void CreateTimePlaceHolderToLogFileEntryMemberMapping();
-  uint16_t GetNeededArraySizeForTimeString(std::string timeFormatString);
+  uint16_t GetNeededArraySizeForTimeString(const std::string & timeFormatString);
   //inline
   void GetTimeAsString(const LogFileEntry & logfileentry//,
 //    std::string & std_strTime
@@ -80,7 +90,7 @@ public:
 //    std::string & std_strTime
     char * & ar_ch);
   void SetStdOstream(std::ostream * p_std_ostream)
-    { m_p_std_ofstream = p_std_ostream; }
+    { m_p_std_ostream = p_std_ostream; }
   void SetTimeFormat(const std::string & TimeFormatString);
   virtual void WriteHeader() {}
   virtual void WriteTrailer() {}
@@ -93,7 +103,7 @@ public:
 //    static std::string std_strTime;
     GetTimeAsString(logfileentry//, std_strTime
       );
-    * m_p_std_ofstream
+    * m_p_std_ostream
 //      << logfileentry.year << "-"
 //      << (WORD) logfileentry.month << "-"
 //      << (WORD) logfileentry.day << " "
@@ -104,7 +114,7 @@ public:
 //      << logfileentry.nanosecond << " "
 //      << std_strTime
       << m_p_chTimeString
-      << " "
+      << " thread ID:" << logfileentry.threadID << " "
       << * logfileentry.p_std_strMessage
 //      << "\n"
       ;
@@ -113,11 +123,11 @@ public:
   virtual void WriteMessage(const std::string & r_std_strMessage,
     enum MessageType messageType = log_message_typeINFO)
   {
-    * m_p_std_ofstream << r_std_strMessage << "\n";
+    * m_p_std_ostream << r_std_strMessage << "\n";
   }
   virtual void WriteTimeStamp(const std::stringstream & std_str_stream)
   {
-    * m_p_std_ofstream << std_str_stream.str() << ":";
+    * m_p_std_ostream << std_str_stream.str() << ":";
   }
 };
 

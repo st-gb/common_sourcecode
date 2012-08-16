@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
+ * ("Trilobyte SE") 2010-at least 2012.
+ * You are allowed to modify and use the source code from Trilobyte SE for free
+ * if you are not making profit directly or indirectly with it or its adaption.
+ * Else you may contact Trilobyte SE. */
 /*
  * I_Condition.hpp
  *
@@ -11,16 +18,21 @@
 class I_Condition
 {
   public:
-  //http://en.wikipedia.org/wiki/Monitor_%28synchronization%29
-  // #Waiting_and_signaling:
-  //"Thus there are two main operations on condition variables:
-//  * wait c is called by a thread that needs to wait until the assertion Pc is
-//    true before proceeding. While the thread is waiting, it does not occupy
-//    the monitor.
-//  * signal c (sometimes written as notify c) is called by a thread to
-//    indicate that the assertion Pc is true.
-  void Broadcast() {}
-  void Wait() {}
+//    //define, else "undefined reference to `vtable for I_Condition'"
+//    virtual ~I_Condition() {};
+//    enum WaitTimeOut_state { signaled = 0, timed_out, wait_failed, wait_abandoned, other_error};
+    enum state { success = 0, signaled, timed_out, wait_failed, wait_abandoned, other_error};
+    //http://en.wikipedia.org/wiki/Monitor_%28synchronization%29
+    // #Waiting_and_signaling:
+    //"Thus there are two main operations on condition variables:
+  //  * wait c is called by a thread that needs to wait until the assertion Pc is
+  //    true before proceeding. While the thread is waiting, it does not occupy
+  //    the monitor.
+  //  * signal c (sometimes written as notify c) is called by a thread to
+  //    indicate that the assertion Pc is true.
+    virtual I_Condition::state Broadcast() = 0;// {}
+    virtual I_Condition::state Wait() = 0; //{}
+    virtual I_Condition::state WaitTimeOut(DWORD dwMilliSecondsToWait) = 0;//{};
 } ;
 
 #endif /* I_CONDITION_HPP_ */

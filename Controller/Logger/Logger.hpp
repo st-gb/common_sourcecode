@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
+ * ("Trilobyte SE") 2010-at least 2012.
+ * You are allowed to modify and use the source code from Trilobyte SE for free
+ * if you are not making profit directly or indirectly with it or its adaption.
+ * Else you may contact Trilobyte SE. */
 #ifndef LOGGER_HPP
   #define LOGGER_HPP
 
@@ -27,7 +34,7 @@
 #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 
   #include "log_file_prefix.hpp"
-  #include "HTMLformatLogFileWriter.hpp"
+  #include "HTMLlogFormatter.hpp"
   #include "ILogFormatter.hpp"
   #include "LogFileEntry.hpp" //class LogFileEntry
 
@@ -69,23 +76,47 @@
     //std::ofstream m_ofstream ;
   private:
     std::ofstream * m_p_std_ofstream ;
-//    std::ostream * m_p_std_ofstream ;
+  protected:
+    std::ostream * m_p_std_ostream ;
 #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
     //Trie m_trie ;
     NodeTrie<BYTE> m_trie ;
+  public:
+    NodeTrie<BYTE> GetTrie() { return m_trie; }
 #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 
   public:
     void AddExcludeFromLogging(const std::string & cr_stdstr ) ;
     Logger( //const std::set<std::string> & cr_stdsetstdstrExcludeFromLogging
       ) ;
-    ~Logger() ;
+    /** by "virtual": avoid warning: `class Logger' has virtual functions but
+     * non-virtual destructor.  */
+    virtual ~Logger() ;
     Logger( std::string & stdstrFilePath ) ;
 
+    I_LogFormatter * CreateTextFormatter()
+    {
+#ifdef _WIN32
+      /** Windows can resolve times to milliseconds with GetLocalTime(...),
+       * 100 ms with GetSystemTimeAsFileTime(...), so sesolution until "ms" is
+       * ensured */
+      std::string std_str =
+        "%year%.%month%.%day%&nbsp;%hour%:%minute%:%second%s%millisecond%ms";
+#endif
+#ifdef __linux__
+      /** Linux can resolve times to microiseconds with ::gettimeofday(...)*/
+      std::string std_str =
+        "%year%.%month%.%day% %hour%:%minute%:%second%s%millisecond%ms%microsecond%us"
+#endif
+      return CreateFormatter("", std_str
+        );
+    }
     I_LogFormatter * CreateFormatter(//BYTE type = 1
-      const std::string & std_strType //= std::string("html")
-//      const char * std_strType = "html"
-      ,const std::string & std_strLogTimeFormatString
+      //const std::string & std_strType //= std::string("html")
+      const char * c_p_chType = "html"
+      ,const std::string & std_strLogTimeFormatString =
+        "%year%.%month%.%day%&nbsp;%hour%:%minute%:%second%s%millisecond%ms"
+      //const char * c_p_chLogTimeFormatString
       );
     I_LogFormatter * GetFormatter() { return m_p_log_formatter; }
 
@@ -140,10 +171,11 @@
         m_p_log_formatter->WriteLogFileEntry(m_logfileentry, messageType);
         return WriteToFile();
       }
-      return 0;
+      return MAXDWORD - 1;
     }
 
-    FORCEINLINE void PossiblyEnterCritSec()
+    //FORCEINLINE
+    void PossiblyEnterCritSec()
     {
 #ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
   //Protect access to the trie: if 2 or more threads access the
@@ -206,7 +238,7 @@
   #define POSSIBLY_LEAVE_CRIT_SEC
 #endif
 
-    void Log(//ostream & ostr
+    DWORD Log(//ostream & ostr
       const std::string & r_stdstrMessage,
       enum I_LogFormatter::MessageType messageType =
         I_LogFormatter::log_message_typeINFO
@@ -214,15 +246,16 @@
     {
 //      EnterCritSec();
       if( //Fastest evaluable condition at first.
-        m_p_std_ofstream &&
+        //m_p_std_ofstream &&
+        m_p_std_ostream
       #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-        IsNotFiltered(r_stdstrMessage)
-        &&
+        && IsNotFiltered(r_stdstrMessage)
+        // &&
       #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-        m_p_std_ofstream->good()
+        //m_p_std_ofstream->good()
         )
       {
-        OutputTimeStampEtc_Inline(r_stdstrMessage, messageType);
+        return OutputTimeStampEtc_Inline(r_stdstrMessage, messageType);
         //m_ofstream.flush() ;
 //        POSSIBLY_LEAVE_CRIT_SEC
 //        Ideas();
@@ -232,6 +265,7 @@
 //        m_critical_section_typeLogging.Leave() ;
 //#endif
 //      POSSIBLY_LEAVE_CRIT_SEC
+      return MAXDWORD;
     }
     void Log(
       const std::string & r_stdstrCodePosition,
@@ -263,6 +297,12 @@
 //        std::string & r_stdstr
 //        , WORD wType
 //        ) ;
+    void Log(//std::ostream & ostr
+      std::ostringstream & ostr
+      )
+    {
+      Log(ostr.str() );
+    }
     void Log(//ostream & ostr
       const char * p_ch
       ) ;
@@ -270,7 +310,8 @@
 //    {
 //
 //    }
-    FORCEINLINE void Log_inline(
+    //FORCEINLINE
+    void Log_inline(
       const std::string & r_stdstrMessage,
       enum I_LogFormatter::MessageType messageType =
         I_LogFormatter::log_message_typeINFO
@@ -286,7 +327,8 @@
     #endif
 #endif
     }
-    FORCEINLINE void Log_inline(
+    //FORCEINLINE
+    void Log_inline(
       const std::string & r_stdstrCodePosition,
       std::string & r_stdstrMessage,
       enum I_LogFormatter::MessageType messageType =
@@ -310,8 +352,10 @@
     bool OpenFile( //std::string & r_stdstrFilePath
       std::tstring & r_stdtstrFilePath ) ;
 #endif //COMPILE_LOGGER_WITH_TSTRING_SUPPORT
-    bool OpenFile2( const std::string & r_stdstrFilePath ) ;
-    bool OpenStdFstream(const std::string & c_r_stdstrFilePath);
+    //"virtual" in order to "OpenFile" call subclasses overwritten function
+    //if any.
+    virtual bool OpenFile2( const std::string & r_stdstrFilePath ) ;
+    virtual bool SetStdOstream(const std::string & c_r_stdstrFilePath);
     int RenameFile(const std::string & cr_std_strFilePath)
     {
       return RenameFileThreadSafe(cr_std_strFilePath);
@@ -337,9 +381,10 @@
       m_critical_section_typeLogging.Leave();
 #endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
     }
-    //"virtual" because: allow polymorphism: call function of the actual type
-    // (may be a direct or indirect subclass of this class).
-    virtual DWORD WriteToFile() { m_p_std_ofstream->flush(); }
+    /** "virtual" because: allow polymorphism: call function of the actual type
+    * (may be a direct or indirect subclass of this class).
+    * @return 0: success  */
+    virtual DWORD WriteToFile() { m_p_std_ofstream->flush(); return 0;}
   };
 
 #endif //LOGGER_HPP

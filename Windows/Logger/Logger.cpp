@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
+ * ("Trilobyte SE") 2010-at least 2012.
+ * You are allowed to modify and use the source code from Trilobyte SE for free
+ * if you are not making profit directly or indirectly with it or its adaption.
+ * Else you may contact Trilobyte SE. */
 /*
  * Logger.cpp
  *
@@ -11,25 +18,49 @@ namespace Windows_API
 {
 
   Logger::Logger()
-    : m_hFile(INVALID_HANDLE_VALUE)
+    : m_hFile(INVALID_HANDLE_VALUE),
+      m_buffer(NULL),
+      m_dwBufferSize(0)
   {
 //    CreateFormatter();
-    if( m_p_log_formatter )
-      m_p_log_formatter->SetStdOstream( & GetStdOstream() );
+//    if( m_p_log_formatter )
+//      m_p_log_formatter->SetStdOstream( & GetStdOstream() );
   }
 
+  /** Calls base class' "::Logger::~Logger()" and then the other code*/
   Logger::~Logger()
   {
     ::CloseHandle(m_hFile);
+    if( m_buffer)
+      ::VirtualFree(
+        m_buffer,       // Base address of block
+        0,             // Bytes of committed pages
+        MEM_RELEASE);  // Decommit the pages
   }
 //  OpenFile2
 
-  bool Logger::OpenFile2( const std::string & c_r_stdstrFilePath )
+//  bool Logger::OpenFile2( const std::string & c_r_stdstrFilePath )
+//  {
+//    return OpenFlushingFile(c_r_stdstrFilePath);
+//  }
+  bool Logger::SetStdOstream(const std::string & c_r_stdstrFilePath)
   {
-    return OpenFlushingFile(c_r_stdstrFilePath);
+    bool fileIsOpen = OpenFlushingFile(c_r_stdstrFilePath);
+    m_p_std_ostream = & GetStdOstream();
+    if( m_p_log_formatter )
+      //When m_p_std_ofstream is <> NULL then it is logged to output.
+      m_p_log_formatter->SetStdOstream( m_p_std_ostream );
+    return fileIsOpen;
   }
 
 #ifdef _WIN32
+  //"If FILE_FLAG_WRITE_THROUGH and FILE_FLAG_NO_BUFFERING are both
+  //specified, so that system caching is not in effect, then the data is
+  //immediately flushed to disk without going through the Windows system
+  //cache. The operating system also requests a write-through of the hard
+  //disk's local hardware cache to persistent media."
+#define WRITE_THROUGH_AND_NO_BUFFERING FILE_FLAG_WRITE_THROUGH | FILE_FLAG_NO_BUFFERING
+
   //http://msdn.microsoft.com/en-us/library/windows/desktop/aa364439%28v=vs.85%29.aspx:
   //"To open a file for unbuffered I/O, call the CreateFile function with the
   //FILE_FLAG_NO_BUFFERING and FILE_FLAG_WRITE_THROUGH flags. This prevents the
@@ -39,6 +70,15 @@ namespace Windows_API
   {
 //    if( ! m_p_std_ofstream )
 //      m_p_std_ofstream = new std::ostringstream ;
+    DWORD dwFlagsAndAttributes =
+      /** Tested: open with "FILE_ATTRIBUTE_NORMAL" and call FlushFileBuffers()
+      // after WriteFile() causes the content to be written immediately, but takes
+       * 100 ms . */
+//      FILE_ATTRIBUTE_NORMAL //|
+//      WRITE_THROUGH_AND_NO_BUFFERING
+      FILE_FLAG_WRITE_THROUGH //content is more up-to-date than without
+//      FILE_FLAG_NO_BUFFERING
+      ;
     m_hFile = ::CreateFileA(
       c_r_stdstrFilePath.c_str(), //__in      LPCTSTR lpFileName,
       //__in      DWORD dwDesiredAccess,
@@ -55,17 +95,23 @@ namespace Windows_API
   //      created, the function succeeds, and the last-error code is set to zero.
       CREATE_ALWAYS, //__in      DWORD dwCreationDisposition,
       //__in      DWORD dwFlagsAndAttributes,
-      FILE_ATTRIBUTE_NORMAL //|
-      //"If FILE_FLAG_WRITE_THROUGH and FILE_FLAG_NO_BUFFERING are both
-      //specified, so that system caching is not in effect, then the data is
-      //immediately flushed to disk without going through the Windows system
-      //cache. The operating system also requests a write-through of the hard
-      //disk's local hardware cache to persistent media."
-
-      //FILE_FLAG_WRITE_THROUGH |
-//      FILE_FLAG_NO_BUFFERING
+      dwFlagsAndAttributes
       ,NULL //__in_opt  HANDLE hTemplateFile
       );
+    if( dwFlagsAndAttributes & //WRITE_THROUGH_AND_NO_BUFFERING
+        FILE_FLAG_NO_BUFFERING )
+    {
+      SYSTEM_INFO sSysInfo;         // Useful information about the system
+      ::GetSystemInfo(&sSysInfo);     // Initialize the structure.
+      m_dwBufferSize = sSysInfo.dwPageSize;
+      //see http://msdn.microsoft.com/en-us/library/windows/desktop/cc644950%28v=vs.85%29.asp
+      //use "VirtualAlloc"
+      m_buffer = ::VirtualAlloc( NULL, //0 //dwSize
+        m_dwBufferSize
+        , MEM_COMMIT, PAGE_READWRITE);
+      if( m_hFile == INVALID_HANDLE_VALUE || m_buffer == NULL )
+        return false;
+    }
 #ifdef _DEBUG
     DWORD dwLastError = ::GetLastError();
     if( dwLastError == ERROR_ALREADY_EXISTS )
@@ -81,26 +127,58 @@ namespace Windows_API
 //  {
 //
 //  }
+  int Logger::RenameFileThreadUnsafe(const std::string & r_std_strNewFilePath)
+  {
+    int retVal = 1;
+    if( //http://msdn.microsoft.com/en-us/library/windows/desktop/ms724211%28v=vs.85%29.aspx:
+        //"If the function succeeds, the return value is nonzero."
+        ::CloseHandle(m_hFile) )
+    {
+      if( //http://msdn.microsoft.com/en-us/library/windows/desktop/aa365239%28v=vs.85%29.aspx:
+          //"If the function succeeds, the return value is nonzero."
+        ::MoveFileA(m_std_strLogFilePath.c_str(), r_std_strNewFilePath.c_str() )
+        )
+      {
+        if( OpenFlushingFile(r_std_strNewFilePath) )
+          retVal = 0;
+      }
+      else
+      {
+        retVal = ::GetLastError();
+      }
+    }
+    else
+      retVal = ::GetLastError();
+    return retVal;
+  }
+
   DWORD Logger::WriteToFile()
   {
     if( m_hFile != INVALID_HANDLE_VALUE )
     {
       DWORD dwNumberOfBytesWritten;
+//      if( )
       const std::string & r_std_str = m_std_stringstream.str();
-      DWORD dwSize = r_std_str.length();
+      DWORD dwSizeOfCharStringToWriteInByte = r_std_str.length();
       const char * p_ch = r_std_str.c_str();
+//      memcpy(m_buffer, p_ch, dwSizeOfCharStringToWriteInByte);
       //error code may have been set to "ERROR_ALREADY_EXISTS" from CreateFile(...)
       ::SetLastError(ERROR_SUCCESS);
+      /** if opened with FILE_FLAG_NO_BUFFERING:
+       * http://msdn.microsoft.com/en-us/library/windows/desktop/cc644950%28v=vs.85%29.aspx
+       *
+       */
       BOOL b =
   //#ifdef _WIN32
       ::WriteFile(
         m_hFile, //__in         HANDLE hFile,
         p_ch, //__in         LPCVOID lpBuffer,
-        dwSize, //__in         DWORD nNumberOfBytesToWrite,
+        //m_buffer,
+        dwSizeOfCharStringToWriteInByte, //__in         DWORD nNumberOfBytesToWrite,
         & dwNumberOfBytesWritten, //__out_opt    LPDWORD lpNumberOfBytesWritten,
         NULL //__inout_opt  LPOVERLAPPED lpOverlapped
         );
-      FlushFileBuffers(m_hFile);
+//      FlushFileBuffers(m_hFile);
       if( b )
         m_std_stringstream.str(""); //clear: set the internal string to empty string.
       else
@@ -108,7 +186,7 @@ namespace Windows_API
       }
       DWORD dw = ::GetLastError();
       //"FILE_FLAG_WRITE_THROUGH | FILE_FLAG_NO_BUFFERING" in CreateFile(...)
-      // leads to error code "87" after WriteFile(...)
+      // leads to error code "87" (ERROR_INVALID_PARAMETER) after WriteFile(...)
       return dw;
     }
     return 1;

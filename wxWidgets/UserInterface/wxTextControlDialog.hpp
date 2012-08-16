@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
+ * ("Trilobyte SE") 2010-at least 2012.
+ * You are allowed to modify and use the source code from Trilobyte SE for free
+ * if you are not making profit directly or indirectly with it or its adaption.
+ * Else you may contact Trilobyte SE. */
 /*
  * wxTextControlDialog.hpp
  *
@@ -15,9 +22,16 @@
 class wxTextControlDialog
   : public wxDialog
 {
+  enum flags
+  {
+    OK_BUTTON = 1
+  };
 public:
-    wxTextControlDialog(const wxString & c_r_wxstrMessage,
-        const wxString & c_r_wxstrTitle)
+    wxTextControlDialog(
+      const wxString & c_r_wxstrMessage,
+      const wxString & c_r_wxstrTitle,
+      unsigned flags = OK_BUTTON
+      )
       : wxDialog(
           NULL,
           wxID_ANY,
@@ -43,14 +57,17 @@ public:
         1,//proportion
         wxEXPAND);
 
-//      if( flags == OK_BUTTON)
-//      {
-//        wxButtonOK = new wxButton
-//        p_sizer->Add(
-//          wxButtonOK,
-//          1,//proportion
-//          wxEXPAND);
-//      }
+      if( flags & OK_BUTTON)
+      {
+        wxButton * p_wxButtonOK = new wxButton(this, wxID_OK);
+        p_sizer->Add(
+          p_wxButtonOK,
+          //"in the main orientation of the wxBoxSizer - where 0 stands for not changeable"
+          0,//proportion;
+          //flag
+          wxEXPAND //"The item will be expanded to fill the space assigned to the item"
+          );
+      }
       SetSizer(p_sizer);
       //  wxd.AddChild( p_wxtextctrl);
       Layout(); //stretch to the whole client window.

@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
+ * ("Trilobyte SE") 2010-at least 2012.
+ * You are allowed to modify and use the source code from Trilobyte SE for free
+ * if you are not making profit directly or indirectly with it or its adaption.
+ * Else you may contact Trilobyte SE. */
 /*
  * wxConditionBasedI_Condition.hpp
  *
@@ -10,8 +17,10 @@
 
 #include <wx/thread.h> //for class wxCondition
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
+#include <Controller/multithread/I_Condition.hpp> //base class I_Condition
 
 class wxConditionBasedI_Condition
+  : public I_Condition
 {
 public:
   wxMutex m_wxmutex ;
@@ -38,7 +47,27 @@ public:
   {
     LOGN("~wxConditionBasedI_Condition()")
   }
-  wxCondError Broadcast()
+  static I_Condition::state wxCondError2I_Condition_state(wxCondError wxconderror)
+  {
+    I_Condition::state i_condition_state = I_Condition::other_error;
+    switch(wxconderror)
+    {
+      case wxCOND_NO_ERROR:
+        //"Returns wxCOND_NO_ERROR if the condition was signalled"
+        i_condition_state = I_Condition::signaled;
+        break;
+      case wxCOND_TIMEOUT:
+        //"wxCOND_TIMEOUT if the timeout elapsed"
+        i_condition_state = I_Condition::timed_out;
+        break;
+      case wxCOND_INVALID:
+      case wxCOND_MISC_ERROR:
+        i_condition_state = I_Condition::other_error;
+        break;
+    }
+    return i_condition_state;
+  }
+  I_Condition::state Broadcast()
   {
 #ifdef COMPILE_WITH_LOG
     wxCondError wxconderrorBroadcast = m_wxcondition.Broadcast() ;
@@ -46,14 +75,14 @@ public:
         wxconderrorBroadcast )
       LOGN("wxConditionBasedI_Condition::Broadcast(): error code:"
         << wxconderrorBroadcast )
-    return wxconderrorBroadcast ;
+    return wxCondError2I_Condition_state(wxconderrorBroadcast) ;
 #else
     return m_wxcondition.Broadcast() ;
 #endif
   }
   wxCondError LockedBroadcast()
   {
-    //Lockimg the mutex before calling Broadcast ensures that the other thread
+    //Locking the mutex before calling Broadcast ensures that the other thread
     //is _really_ waiting on the condition (because it unlocks the mutex then)
     //when calling Broadcast() ;
 
@@ -102,22 +131,33 @@ public:
     return m_wxcondition.Signal() ;
 #endif
   }
-  wxCondError Wait()
+
+  I_Condition::state Wait()
   {
 #ifdef COMPILE_WITH_LOG
-    wxCondError wxconderrorWait = m_wxcondition.Wait() ;
+    wxCondError wxconderrorWait = m_wxcondition.
+      //http://docs.wxwidgets.org/2.8/wx_wxcondition.html:
+      //"Returns wxCOND_NO_ERROR on success, another value if an error occurred."
+      Wait() ;
     if( // <> wxCOND_NO_ERROR
         wxconderrorWait )
       LOGN("wxConditionBasedI_Condition::Wait(): error code:"
         << wxconderrorWait )
     else
       LOGN("wxConditionBasedI_Condition::Wait(): success")
-    return wxconderrorWait ;
+    return wxCondError2I_Condition_state(wxconderrorWait);
 #else
     //Waits until m_wxcondition.Signal() or m_wxcondition.Broadcast() is called
     // (by another thread).
     return m_wxcondition.Wait() ;
 #endif
+  }
+  /** Overrides I_condition.WaitTimeout(...)  */
+  I_Condition::state WaitTimeOut(DWORD dwMilliSecondsToWait)
+  {
+    wxCondError wxconderrorWait = m_wxcondition.WaitTimeout(
+      dwMilliSecondsToWait);
+    return wxCondError2I_Condition_state(wxconderrorWait);
   }
 };
 

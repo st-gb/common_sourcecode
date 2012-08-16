@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
+ * ("Trilobyte SE") 2010-at least 2012.
+ * You are allowed to modify and use the source code from Trilobyte SE for free
+ * if you are not making profit directly or indirectly with it or its adaption.
+ * Else you may contact Trilobyte SE. */
 /*
  * HTMLformatLogFileWriter.cpp
  *
@@ -5,33 +12,33 @@
  *      Author: Stefan
  */
 
-#include "Controller/Logger/HTMLformatLogFileWriter.hpp"
+#include "Controller/Logger/HTMLlogFormatter.hpp"
 
 //  HTMLformatLogFileWriter::HTMLformatLogFileWriter()
 //  {
 //    // TODO Auto-generated constructor stub
 //  }
 
-HTMLformatLogFileWriter::~HTMLformatLogFileWriter()
+HTMLlogFormatter::~HTMLlogFormatter()
 {
   // TODO Auto-generated destructor stub
 }
 
-inline void HTMLformatLogFileWriter::OutputCSSclass(enum MessageType messageType)
+inline void HTMLlogFormatter::OutputCSSclass(enum MessageType messageType)
 {
   switch(messageType)
   {
     case log_message_typeINFO:
-      * m_p_std_ofstream << "class=\"info\"";
+      * m_p_std_ostream << "class=\"info\"";
       break;
     case log_message_typeERROR:
-      * m_p_std_ofstream << "class=\"error\"";
+      * m_p_std_ostream << "class=\"error\"";
       break;
     case log_message_typeWARNING:
-      * m_p_std_ofstream << "class=\"warning\"";
+      * m_p_std_ostream << "class=\"warning\"";
       break;
     case log_message_typeSUCCESS:
-      * m_p_std_ofstream << "class=\"success\"";
+      * m_p_std_ostream << "class=\"success\"";
       break;
     //avoid g++ "warning: enumeration value 'beyondLastLogMessageType'
     //not handled in switch.
@@ -40,9 +47,9 @@ inline void HTMLformatLogFileWriter::OutputCSSclass(enum MessageType messageType
   }
 }
 
-void HTMLformatLogFileWriter::WriteHeader()
+void HTMLlogFormatter::WriteHeader()
 {
-  * m_p_std_ofstream
+  * m_p_std_ostream
     << "<html>\n"
       " <link rel=\"stylesheet\" type=\"text/css\" href=\""
       "format.css"
@@ -59,7 +66,27 @@ void HTMLformatLogFileWriter::WriteHeader()
     "   </tr>\n";
 }
 
-void HTMLformatLogFileWriter::WriteLogFileEntry(
+void HTMLlogFormatter::WriteTrailer()
+{
+//    if( m_p_std_ostream )
+  * m_p_std_ostream << "</table></body></html>";
+//  m_p_logger->WriteToFile();
+}
+
+/** exchange '\n' with "<br>" */
+inline std::string & MakeHTMLFormat(std::string * p_std_strMessage)
+{
+//  std::string::iterator iter = p_std_strMessage->begin();
+//  char * p_ch = p_std_strMessage->c_str();
+//  std::string std = p_std_strMessage->replace(0, );
+//  while( * p_ch )
+//  {
+//
+//  }
+  return *p_std_strMessage;
+}
+
+void HTMLlogFormatter::WriteLogFileEntry(
   const LogFileEntry & logfileentry,
   enum MessageType messageType /*= log_message_typeINFO*/
   )
@@ -67,7 +94,9 @@ void HTMLformatLogFileWriter::WriteLogFileEntry(
 //  static std::string std_strTime;
   GetTimeAsString(logfileentry//, std_strTime
     );
-  * m_p_std_ofstream
+//  static std::string std_strHTMLformattedMessage;
+//  std_strHTMLformattedMessage = MakeHTMLFormat(logfileentry.p_std_strMessage);
+  * m_p_std_ostream
     << "   <tr><td>"
 //    << logfileentry.year << "-"
 //    << (uint16_t) logfileentry.month << "-"
@@ -82,27 +111,27 @@ void HTMLformatLogFileWriter::WriteLogFileEntry(
     << "</td><td>" << logfileentry.threadID << "</td>\n    "
         "<td ";
   OutputCSSclass(messageType);
-  * m_p_std_ofstream << ">"
+  * m_p_std_ostream << ">"
     << * logfileentry.p_std_strMessage << "</td>"
     << "   </tr>\n";
 }
 
-void HTMLformatLogFileWriter::WriteMessage(
+void HTMLlogFormatter::WriteMessage(
   const std::string & r_std_strMessage,
   enum MessageType messageType //= log_message_typeINFO
   )
 {
   if( messageType < beyondLastLogMessageType )
   {
-    * m_p_std_ofstream
+    * m_p_std_ostream
       << "<td ";
     OutputCSSclass(messageType);
-    * m_p_std_ofstream << ">" << r_std_strMessage
+    * m_p_std_ostream << ">" << r_std_strMessage
       << "</td></tr>\n";
   }
   else
   {
-    * m_p_std_ofstream << "<td>" << r_std_strMessage << "</td></tr>\n";
+    * m_p_std_ostream << "<td>" << r_std_strMessage << "</td></tr>\n";
   }
 }
 

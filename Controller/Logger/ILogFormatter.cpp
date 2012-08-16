@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
+ * ("Trilobyte SE") 2010-at least 2012.
+ * You are allowed to modify and use the source code from Trilobyte SE for free
+ * if you are not making profit directly or indirectly with it or its adaption.
+ * Else you may contact Trilobyte SE. */
 /*
  * ILogFileWriter.cpp
  *
@@ -18,7 +25,8 @@
 //32xxx = 5 characters
 #define NUMBER_OF_CHARS_FOR_MAX_2_BYTE_VALUE_IN_DEC 5
 
-uint16_t I_LogFormatter::GetNeededArraySizeForTimeString(std::string timeFormatString)
+uint16_t I_LogFormatter::GetNeededArraySizeForTimeString(
+  const std::string & timeFormatString)
 {
   NodeTrieNode<const uint16_t *> * p_ntn;
   uint16_t currentCharIndex = 0;
@@ -104,7 +112,7 @@ I_LogFormatter::I_LogFormatter(//std::ofstream * p_std_ofstream
     m_p_chTimeString(NULL),
     m_nodetrieTimePlaceHolderToLogFileEntryMember(256)
 {
-  m_p_std_ofstream = //p_std_ofstream;
+  m_p_std_ostream = //p_std_ofstream;
     & p_logger->GetStdOstream();
   m_p_logfileentry = & p_logger->m_logfileentry;
   m_TimeFormatString =
@@ -148,6 +156,14 @@ void I_LogFormatter::CreateTimePlaceHolderToLogFileEntryMemberMapping()
   m_nodetrieTimePlaceHolderToLogFileEntryMember.insert_inline(
     (BYTE *) str.c_str(), str.size(), //(const void *)
     & m_p_logfileentry->millisecond);
+  str = "microsecond";
+  m_nodetrieTimePlaceHolderToLogFileEntryMember.insert_inline(
+    (BYTE *) str.c_str(), str.size(), //(const void *)
+    & m_p_logfileentry->microsecond);
+  str = "nanosecond";
+  m_nodetrieTimePlaceHolderToLogFileEntryMember.insert_inline(
+    (BYTE *) str.c_str(), str.size(), //(const void *)
+    & m_p_logfileentry->nanosecond);
 }
 
 //void I_LogFormatter::CreateTimeStringArray()
@@ -432,8 +448,11 @@ void I_LogFormatter::GetTimeAsString(const LogFileEntry & logfileentry//,
   //Use static variables because they are global and aren't created on the
   //stack for each call to this function.
 //  static const char * c_p_chCurrentCharOfTimeFormatString;
-  static const char * c_p_chIndexOf1stCharOfTimeFormatString = //std_strTime.c_str();
-    m_TimeFormatString.c_str();
+  static const char * c_p_chIndexOf1stCharOfTimeFormatString;// = //std_strTime.c_str();
+    //m_TimeFormatString.c_str();
+  //Must be assigned for each call to this function because the time format
+  //string may change.
+  c_p_chIndexOf1stCharOfTimeFormatString = m_TimeFormatString.c_str();
 //  static bool bPercentSignFound;
 //  static uint16_t currentCharIndex;
 //  static uint16_t IndexOfLeftPercentSign;
@@ -450,7 +469,8 @@ void I_LogFormatter::GetTimeAsString(const LogFileEntry & logfileentry//,
   //for static variables.
   IndexOfCharRightOfRightPercentSign = 0;
 
-  while(c_iterTimeElementFromLogFileEntry != m_vecPointerToTimeElementFromLogFileEntry.end())
+  while(c_iterTimeElementFromLogFileEntry !=
+      m_vecPointerToTimeElementFromLogFileEntry.end())
   {
     //Insert left from place holder until either
     // -right "%" of previous place holder: "place_holder%..%place_holder%"

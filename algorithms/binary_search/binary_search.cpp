@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
+ * ("Trilobyte SE") 2010-at least 2012.
+ * You are allowed to modify and use the source code from Trilobyte SE for free
+ * if you are not making profit directly or indirectly with it or its adaption.
+ * Else you may contact Trilobyte SE. */
 /*
  * binary_search.cpp
  *
@@ -11,7 +18,11 @@ typedef unsigned short WORD ;
   #define MAXWORD 65535
 #endif //#ifndef MAXWORD
 
+/**
+ * ar_fFloatArray needs to be an array that is sorted in ascending order.
+ */
 inline WORD GetArrayIndexForClosestLessOrEqual(
+  //TODO use template type
   float ar_fFloatArray [] ,
   WORD wArraySize ,
   float fReferredValue //,
@@ -76,6 +87,9 @@ inline WORD GetArrayIndexForClosestLessOrEqual(
   return r_wArrayIndex ;
 }
 
+/**
+ * ar_fFloatArray needs to be an array that is sorted in ascending order.
+ */
 inline WORD GetArrayIndexForClosestGreaterOrEqual(
   float ar_fFloatArray [] ,
   WORD wArraySize ,
@@ -141,6 +155,9 @@ inline WORD GetArrayIndexForClosestGreaterOrEqual(
   return r_wArrayIndex ;
 }
 
+/**
+ * ar_fFloatArray needs to be an array that is sorted in ascending order.
+ */
 inline WORD GetArrayIndexForClosestValue(
   float ar_fFloatArray [] ,
   WORD wArraySize ,
@@ -154,21 +171,45 @@ inline WORD GetArrayIndexForClosestValue(
     wArraySize ,
     fReferredValue //,
     ) ;
-  WORD wArrayIndexForClosestGreaterOrEqual =
-    GetArrayIndexForClosestGreaterOrEqual(
-    ar_fFloatArray ,
-    wArraySize ,
-    fReferredValue //,
-    ) ;
+  WORD wArrayIndexForClosestGreaterOrEqual// =
+//    GetArrayIndexForClosestGreaterOrEqual(
+//    ar_fFloatArray ,
+//    wArraySize ,
+//    fReferredValue //,
+//    ) ;
+    = MAXWORD;
+  //If no value from sorted array ar_fFloatArray is <= fReferredValue...
+  if( wArrayIndexForClosestLessOrEqual == MAXWORD )
+    //...so the 1st array element must be > fReferredValue
+    wArrayIndexForClosestGreaterOrEqual = 0;
+  else
+  {
+    if(ar_fFloatArray[wArrayIndexForClosestLessOrEqual] >= fReferredValue )
+    {
+      wArrayIndexForClosestGreaterOrEqual = wArrayIndexForClosestLessOrEqual;
+    }
+    else
+      if( wArrayIndexForClosestLessOrEqual < wArraySize - 1 )
+      {
+        wArrayIndexForClosestGreaterOrEqual = wArrayIndexForClosestLessOrEqual + 1;
+    //    if( ar_fFloatArray[wArrayIndexForClosestGreaterOrEqual] >=
+    //        fReferredValue )
+    //      if( ar_fFloatArray[wArrayIndexForClosestLessOrEqual] >=
+      }
+      else
+        wArrayIndexForClosestGreaterOrEqual = MAXWORD;
+  }
+  //If any value from sorted array ar_fFloatArray is <= fReferredValue...
   if( wArrayIndexForClosestLessOrEqual == MAXWORD )
   {
+    //If a value from sorted array ar_fFloatArray is >= fReferredValue...
     if( wArrayIndexForClosestGreaterOrEqual != MAXWORD )
     {
       return wArrayIndexForClosestGreaterOrEqual ;
     }
   }
-  else
-  {
+  else//Array ele at index wArrayIndexForClosestLessOrEqual <= fReferredValue
+  { //If no value from sorted array ar_fFloatArray is >= fReferredValue...
     if( wArrayIndexForClosestGreaterOrEqual == MAXWORD )
     {
       return wArrayIndexForClosestLessOrEqual ;
@@ -189,7 +230,7 @@ inline WORD GetArrayIndexForClosestValue(
   return MAXWORD ;
 }
 
-//TODO replace own binary search by bsearch
+//TODO Possibly replace own binary search with "bsearch"
 //(see http://linux.die.net/man/3/bsearch), because this function is tested.
 inline float GetClosestGreaterOrEqual(
   float ar_fFloatArray [] ,
