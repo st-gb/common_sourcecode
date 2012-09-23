@@ -466,13 +466,9 @@ DWORD ServiceBase::CreateService(
     //http://msdn.microsoft.com/en-us/library/ms682450%28VS.85%29.aspx:
     ::CreateService(
     schSCManager,              // SCManager database 
-    // name of service 
-    //TEXT("GriffinControlService"),
-    tchServiceName,
-    // service name to display 
+    tchServiceName,    // name of service
     //lpszDisplayName,
-    //"GriffinControlService",
-    tchServiceName ,
+    tchServiceName ,    // service name to display
     SERVICE_ALL_ACCESS,        // desired access 
     //Service that runs in its own process.
     SERVICE_WIN32_OWN_PROCESS, // service type 

@@ -8,16 +8,18 @@
 #define NODETRIE_HPP
 
 #ifdef COMPILE_NODETRIE_WITH_LOGGING
-#include <preprocessor_macros/logging_preprocessor_macros.h> //DEBUGN(...)
+  #include <preprocessor_macros/logging_preprocessor_macros.h> //DEBUGN(...)
+  #define DEBUGN_NODETRIE(str) DEBUGN(str)
+  #define LOGN_NODETRIE(str) LOGN(str)
 #else
-  #ifdef DEBUGN
-    #undef DEBUGN
-  #endif //#ifdef DEBUGN
-  #define DEBUGN(str) /* -> empty */
-  #ifdef LOGN
-    #undef LOGN
-  #endif //#ifdef LOGN
-  #define LOGN(str) /* -> empty */
+//  #ifdef DEBUGN
+//    #undef DEBUGN
+//  #endif //#ifdef DEBUGN
+  #define DEBUGN_NODETRIE(str) /* -> empty */
+//  #ifdef LOGN
+//    #undef LOGN
+//  #endif //#ifdef LOGN
+  #define LOGN_NODETRIE(str) /* -> empty */
 #endif
 
 #include <assert.h>
@@ -86,10 +88,10 @@ template<typename member_type>
     }
     ~NodeTrie()
     {
-      LOGN("destructor of data structure")
+      LOGN_NODETRIE("destructor of data structure")
       FreeMemory();
       //m_nodetrienodeRoot.Delete();
-      LOGN("end of destructor of data structure")
+      LOGN_NODETRIE("end of destructor of data structure")
     }
 
     void
@@ -130,9 +132,9 @@ template<typename member_type>
         {
           strstream << p_vBegin[wIndex] << " ";
         }
-      LOGN("NodeTrie::contains_inline(\"" << strstream.str() << "\")" )
+      LOGN_NODETRIE("NodeTrie::contains_inline(\"" << strstream.str() << "\")" )
 #else
-      LOGN("NodeTrie::contains_inline(...," << wBytesize << ")")
+      LOGN_NODETRIE("NodeTrie::contains_inline(...," << wBytesize << ")")
 #endif
       bExists = false;
       if (m_nodetrienodeRoot.m_arp_nodetrienode1LowerLevel)
@@ -140,11 +142,11 @@ template<typename member_type>
         //unsigned char ** ar_p_byCurrent = m_ar_p_byRoot ;
         //m_ar_nodetrienodeCurrent = m_ar_nodetrienodeRoot ;
         m_p_nodetrienodeCurrent = &m_nodetrienodeRoot;
-        //  LOGN("Trie::exists")
+        //  LOGN_NODETRIE("Trie::exists")
         for (m_wIndex = 0; m_wIndex < wBytesize; ++m_wIndex)
         {
           byValue = p_vBegin[m_wIndex];
-          LOGN("NodeTrie::contains_inline"
+          LOGN_NODETRIE("NodeTrie::contains_inline"
               << " index:" << m_wIndex
               << " byValue:" << (WORD) byValue
           )
@@ -232,7 +234,7 @@ template<typename member_type>
           for (m_wIndex = 0; m_wIndex < wBytesize; ++m_wIndex)
           {
             byValue = p_vBegin[m_wIndex];
-            //    LOGN("Trie::exists ar_p_byCurrent:" << ar_p_byCurrent
+            //    LOGN_NODETRIE("Trie::exists ar_p_byCurrent:" << ar_p_byCurrent
             //      << " ar_p_byCurrent[ byValue ]:" << (DWORD) ar_p_byCurrent[ byValue ])
 
             p_nodetrienode1LevelLower
@@ -258,7 +260,7 @@ template<typename member_type>
                 //->for "b": store address of the 2nd array element ("0x104")
                 (NodeTrieNode<member_type> *) ( & m_p_nodetrienodeCurrent->
                   m_arp_nodetrienode1LowerLevel[byValue] );
-//                      DEBUGN("address of of trie node 1 level higher:" <<
+//                      DEBUGN_NODETRIE("address of of trie node 1 level higher:" <<
 //                        p_nodetrienode1LevelHigher
 //                        )
               m_p_nodetrienodeCurrent = p_nodetrienode1LevelLower;
@@ -277,7 +279,7 @@ template<typename member_type>
                 NodeTrieNode<member_type> ** pp_nodetrienode =
                   (NodeTrieNode<member_type> **) p_nodetrienode1LevelHigher;
                 * pp_nodetrienode = NULL;
-                DEBUGN("set content for bytes at address " <<
+                DEBUGN_NODETRIE("set content for bytes at address " <<
                     p_nodetrienode1LevelHigher << " to zero:" <<
                     //                  (NodeTrieNode *) ( * p_nodetrienode1LevelHigher )
                     //                  (void *) * p_nodetrienode1LevelHigher
@@ -332,9 +334,9 @@ template<typename member_type>
           NodeTrieNode<member_type> ** ar_p_nodetrienodeCurrent;
           NodeTrieNode<member_type> ** ar_p_nodetrienode1LevelAbove = NULL;
           //    WORD wSize ;
-          DEBUGN("data structure: FreeMemory")
+          DEBUGN_NODETRIE("data structure: FreeMemory")
 
-          //    DEBUGN("root node array address: %x", & m_ar_nodetrienodeRoot )
+          //    DEBUGN_NODETRIE("root node array address: %x", & m_ar_nodetrienodeRoot )
 
 #ifdef _DEBUG
           //    std::string stdstrCurrent ;
@@ -349,7 +351,7 @@ template<typename member_type>
               ar_p_nodetrienodeCurrent = //m_ar_nodetrienodeRoot ;
                   m_nodetrienodeRoot.m_arp_nodetrienode1LowerLevel;
 
-              //	  DEBUGN("starting from array at root node array at address %x",
+              //	  DEBUGN_NODETRIE("starting from array at root node array at address %x",
               //		  m_nodetrienodeRoot.m_arp_nodetrienode1LowerLevel)
 
               //This loop deleted 1 element at the leaf.
@@ -363,12 +365,12 @@ template<typename member_type>
                       p_nodetrienodeCurrent = ar_p_nodetrienodeCurrent[wIndex];
 
                       //			if( wIndex == 0) //"If" here because outputting a '\0' ends the output.
-                      //				DEBUGN("NodeTrie:array element at addr %x (content: %x ^= value: %u (' ') ) is assigned",
+                      //				DEBUGN_NODETRIE("NodeTrie:array element at addr %x (content: %x ^= value: %u (' ') ) is assigned",
                       //					ar_p_nodetrienodeCurrent + wIndex,
                       //					ar_p_nodetrienodeCurrent[ wIndex ],
                       //					wIndex)
                       //			else
-                      //				DEBUGN("NodeTrie:array element at addr %x (content: %x value: %u ('%c') ) is assigned",
+                      //				DEBUGN_NODETRIE("NodeTrie:array element at addr %x (content: %x value: %u ('%c') ) is assigned",
                       //					ar_p_nodetrienodeCurrent + wIndex,
                       //					ar_p_nodetrienodeCurrent[ wIndex ],
                       //					wIndex,
@@ -402,7 +404,7 @@ template<typename member_type>
 #ifdef _DEBUG
                       //stdvec_by.push_back( (BYTE) wIndex ) ;
 #endif
-                      //DEBUGN
+                      //DEBUGN_NODETRIE
                       ////DEBUG_COUTN
                       //  ( "entering child node at address %x", ar_p_byCurrent )
 
@@ -423,7 +425,7 @@ template<typename member_type>
                           if (ar_p_nodetrienode1LevelAbove)
                             {
                               //no child node for current node -> delete current node
-                              //				DEBUGN
+                              //				DEBUGN_NODETRIE
                               //				//DEBUG_COUTN
                               //				  //("deleting current array at address %x", ar_p_nodetrienodeCurrent )
                               //				  ("deleting NodeTrieNode at address %x, setting value of parent's array element at address %x (*=%x) to 0",
@@ -464,13 +466,13 @@ template<typename member_type>
                             }
                           else
                             {
-                              //            DEBUGN
+                              //            DEBUGN_NODETRIE
                               //            //DEBUG_COUTN
                               //              ("deleting root array at address" << m_ar_p_byRoot)
                               //            m_ar_p_byRoot = NULL ;
                               //            delete [] m_ar_p_byRoot ;
                               //            -- m_dwNumberOfNodes ;
-                              DEBUGN("We are at the root node.")
+                              DEBUGN_NODETRIE("We are at the root node.")
                               //            m_ar_p_byRoot = NULL ;
                             }
                           //          break ;
@@ -495,7 +497,7 @@ template<typename member_type>
           while (ar_p_nodetrienode1LevelAbove);
           m_nodetrienodeRoot.Delete();
         }
-      LOGN("end of FreeMemory")
+      LOGN_NODETRIE("end of FreeMemory")
       assert( m_dwNumberOfNodes == 0);
     }
 
@@ -510,9 +512,9 @@ template<typename member_type>
           NodeTrieNode<member_type> ** ar_p_nodetrienodeCurrent;
           NodeTrieNode<member_type> ** ar_p_nodetrienode1LevelAbove = NULL;
           //    WORD wSize ;
-          DEBUGN("data structure: FreeMemory")
+          DEBUGN_NODETRIE("data structure: FreeMemory")
 
-          //    DEBUGN("root node array address: %x", & m_ar_nodetrienodeRoot )
+          //    DEBUGN_NODETRIE("root node array address: %x", & m_ar_nodetrienodeRoot )
 
 #ifdef _DEBUG
           //    std::string stdstrCurrent ;
@@ -527,7 +529,7 @@ template<typename member_type>
               ar_p_nodetrienodeCurrent = //m_ar_nodetrienodeRoot ;
                   m_nodetrienodeRoot.m_arp_nodetrienode1LowerLevel;
 
-              //	  DEBUGN("starting from array at root node array at address %x",
+              //	  DEBUGN_NODETRIE("starting from array at root node array at address %x",
               //		  m_nodetrienodeRoot.m_arp_nodetrienode1LowerLevel)
 
               //This loop deleted 1 element at the leaf.
@@ -540,13 +542,13 @@ template<typename member_type>
                       p_nodetrienodeCurrent = ar_p_nodetrienodeCurrent[wIndex];
 
                       //			if( wIndex == 0) //"If" here because outputting a '\0' ends the output.
-                      //				DEBUGN("NodeTrie:array element at addr %x (content: %x ^= value: %u (' ') ) is assigned",
+                      //				DEBUGN_NODETRIE("NodeTrie:array element at addr %x (content: %x ^= value: %u (' ') ) is assigned",
                       //					ar_p_nodetrienodeCurrent + wIndex,
                       //					ar_p_nodetrienodeCurrent[ wIndex ],
                       //					wIndex
                       //					)
                       //			else
-                      //				DEBUGN("NodeTrie:array element at addr %x (content: %x value: %u ('%c') ) is assigned",
+                      //				DEBUGN_NODETRIE("NodeTrie:array element at addr %x (content: %x value: %u ('%c') ) is assigned",
                       //					ar_p_nodetrienodeCurrent + wIndex,
                       //					ar_p_nodetrienodeCurrent[ wIndex ],
                       //					wIndex,
@@ -579,7 +581,7 @@ template<typename member_type>
 #ifdef _DEBUG
                       //stdvec_by.push_back( (BYTE) wIndex ) ;
 #endif
-                      //DEBUGN
+                      //DEBUGN_NODETRIE
                       ////DEBUG_COUTN
                       //  ( "entering child node at address %x", ar_p_byCurrent )
 
@@ -600,7 +602,7 @@ template<typename member_type>
                           if (ar_p_nodetrienode1LevelAbove)
                             {
                               //no child node for current node -> delete current node
-                              //				DEBUGN
+                              //				DEBUGN_NODETRIE
                               //				//DEBUG_COUTN
                               //				  //("deleting current array at address %x", ar_p_nodetrienodeCurrent )
                               //				  ("deleting NodeTrieNode at address %x, setting value of parent's array element at address %x (*=%x) to 0",
@@ -634,13 +636,13 @@ template<typename member_type>
                             }
                           else
                             {
-                              //            DEBUGN
+                              //            DEBUGN_NODETRIE
                               //            //DEBUG_COUTN
                               //              ("deleting root array at address" << m_ar_p_byRoot)
                               //            m_ar_p_byRoot = NULL ;
                               //            delete [] m_ar_p_byRoot ;
                               //            -- m_dwNumberOfNodes ;
-                              DEBUGN("We are at the root node.")
+                              DEBUGN_NODETRIE("We are at the root node.")
                               //            m_ar_p_byRoot = NULL ;
                             }
                           //          break ;
@@ -666,7 +668,7 @@ template<typename member_type>
           m_nodetrienodeRoot.Delete();
         }
 #ifdef _DEBUG
-      LOGN("end of FreeMemory: # of nodes:" << m_dwNumberOfNodes)
+      LOGN_NODETRIE("end of FreeMemory: # of nodes:" << m_dwNumberOfNodes)
       assert( m_dwNumberOfNodes == 0);
 #endif
     }
@@ -698,8 +700,8 @@ template<typename member_type>
     //	NodeTrieNode ** ar_p_nodetrienode = NULL;
     //	unsigned nHierarchyLevel = 0;
     ////    WORD wSize ;
-    //    DEBUGN("data structure: GetNext")
-    //    DEBUGN("root node array address: " << & m_ar_nodetrienodeRoot )
+    //    DEBUGN_NODETRIE("data structure: GetNext")
+    //    DEBUGN_NODETRIE("root node array address: " << & m_ar_nodetrienodeRoot )
     //#ifdef _DEBUG
     //  //    std::string stdstrCurrent ;
     //    //std::vector<unsigned char> stdvec_by ;
@@ -770,7 +772,7 @@ template<typename member_type>
     //#ifdef _DEBUG
     //          //stdvec_by.push_back( (BYTE) wIndex ) ;
     //#endif
-    //          DEBUGN
+    //          DEBUGN_NODETRIE
     //          //DEBUG_COUTN
     //            ( "entering child node at address " << ar_p_byCurrent )
     //
@@ -791,13 +793,13 @@ template<typename member_type>
     //            }
     //            else
     //            {
-    //  //            DEBUGN
+    //  //            DEBUGN_NODETRIE
     //  //            //DEBUG_COUTN
     //  //              ("deleting root array at address" << m_ar_p_byRoot)
     //  //            m_ar_p_byRoot = NULL ;
     //  //            delete [] m_ar_p_byRoot ;
     //  //            -- m_dwNumberOfNodes ;
-    //              DEBUGN("We are at the root node.")
+    //              DEBUGN_NODETRIE("We are at the root node.")
     //  //            m_ar_p_byRoot = NULL ;
     //            }
     //  //          break ;
@@ -848,8 +850,8 @@ template<typename member_type>
             {
               //Importent when deleting node _and_ member: only members with value <> 0 are deleted.
               p_nodetrienodeNew->m_member = 0;
-              //LOGN
-              // DEBUGN("# nodes:" << m_dwNumberOfNodes << " overall size="
+              //LOGN_NODETRIE
+              // DEBUGN_NODETRIE("# nodes:" << m_dwNumberOfNodes << " overall size="
               //<< m_wNodeSizeInByte << "*" << m_dwNumberOfNodes << "="
               //<< m_wNodeSizeInByte * m_dwNumberOfNodes
               //<< "Address of node where to create a next level: " <<
@@ -865,14 +867,14 @@ template<typename member_type>
               //p_nodetrienode ;
                   p_nodetrienodeNew;
 //              if (byValue != 0)
-//                DEBUGN("created new node at address %x, array address:%x for value %u ('%c') and assigned it to parent's array element %x",
+//                DEBUGN_NODETRIE("created new node at address %x, array address:%x for value %u ('%c') and assigned it to parent's array element %x",
 //                  p_nodetrienodeNew,
 //                  p_nodetrienodeNew->m_arp_nodetrienode1LowerLevel,
 //                  (WORD) byValue, byValue,
 //                  & p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[ byValue]
 //                  )
 //              else
-//                DEBUGN("created new node at address %x, array address:%x for value %u and assigned it to parent's array element %x",
+//                DEBUGN_NODETRIE("created new node at address %x, array address:%x for value %u and assigned it to parent's array element %x",
 //                  p_nodetrienodeNew,
 //                  p_nodetrienodeNew->m_arp_nodetrienode1LowerLevel,
 //                  (WORD) byValue,
@@ -900,7 +902,7 @@ template<typename member_type>
                 }
               else
                 {
-                  LOGN("NodeTrie::insert_inline(...)--allocating a node failed--"
+                  LOGN_NODETRIE("NodeTrie::insert_inline(...)--allocating a node failed--"
                       "return NULL")
                   return //false ;
                   NULL;
@@ -921,10 +923,10 @@ template<typename member_type>
               strstream << (WORD) p_vBegin[wIndex] << " ";
             }
           std::string stdstr = strstream.str();
-          LOGN("NodeTrie::insert_inline(\"" << stdstr << "\","
+          LOGN_NODETRIE("NodeTrie::insert_inline(\"" << stdstr << "\","
               << wBytesize << ")" )
 #else
-          LOGN("NodeTrie::insert_inline()" )
+          LOGN_NODETRIE("NodeTrie::insert_inline()" )
 #endif
           //    NodeTrieNode ** ar_nodetrienodeCurrent = m_ar_nodetrienodeRoot ;
           if (m_nodetrienodeRoot.m_arp_nodetrienode1LowerLevel)
@@ -932,7 +934,7 @@ template<typename member_type>
               NodeTrieNode<member_type> * p_nodetrienodeCurrent =
                   &m_nodetrienodeRoot;
 
-              //		DEBUGN("address of root node: %x, address of its array: %x",
+              //		DEBUGN_NODETRIE("address of root node: %x, address of its array: %x",
               //			p_nodetrienodeCurrent,
               //			m_nodetrienodeRoot.m_arp_nodetrienode1LowerLevel)
 
@@ -942,7 +944,7 @@ template<typename member_type>
               for (WORD wIndex = 0; wIndex < wBytesize; ++wIndex)
                 {
                   byValue = p_vBegin[wIndex];
-                  LOGN("address of level: " << p_nodetrienodeCurrent
+                  LOGN_NODETRIE("address of level: " << p_nodetrienodeCurrent
                       << "node address: " << (DWORD) p_nodetrienodeCurrent->
                       m_arp_nodetrienode1LowerLevel[ byValue ]
                       << " index:" << wIndex
@@ -965,7 +967,7 @@ template<typename member_type>
                     }
                   //p_nodetrienodeCurrent = p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[ byValue ];
                 } //"for" loop
-              LOGN("NodeTrie::insert_inline(...)--return " << p_nodetrienodeCurrent )
+              LOGN_NODETRIE("NodeTrie::insert_inline(...)--return " << p_nodetrienodeCurrent )
               return //true ;
               //ar_nodetrienodeCurrent ;
               p_nodetrienodeCurrent;
@@ -988,13 +990,13 @@ template<typename member_type>
         }
       };//class NodeTrie
 
-#ifndef COMPILE_NODETRIE_WITH_LOGGING
-  #ifdef DEBUGN
-    #undef DEBUGN
-  #endif //#ifdef DEBUGN
-  #ifdef LOGN
-    #undef LOGN
-  #endif //#ifdef LOGN
-#endif
+//#ifndef COMPILE_NODETRIE_WITH_LOGGING
+//  #ifdef DEBUGN
+//    #undef DEBUGN
+//  #endif //#ifdef DEBUGN
+//  #ifdef LOGN
+//    #undef LOGN
+//  #endif //#ifdef LOGN
+//#endif
 
 #endif //#ifndef NODETRIE_HPP

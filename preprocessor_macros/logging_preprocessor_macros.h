@@ -15,7 +15,9 @@
 #ifndef LOGGING_PREPROCESSOR_MACROS_H_
 #define LOGGING_PREPROCESSOR_MACROS_H_
 
-#include "css_basic_stringstream.hpp" //class css::basic_stringstream
+#ifndef _DEBUG
+  #include "no_op_debug_output_macros.h"
+#endif
 
 //see http://gcc.gnu.org/onlinedocs/gcc/Function-Names.html
 #define FULL_FUNC_NAME \
@@ -79,16 +81,16 @@
   #if LOGGING_CHARACTER_TYPE_ID == 0
     #define POSSIBLY_LOG_TO_STDOUT(coutArgs) \
       { std::wcout << coutArgs ; std::wcout.flush(); }
-  #else
+  #else //#if LOGGING_CHARACTER_TYPE_ID == 0
     #define POSSIBLY_LOG_TO_STDOUT(coutArgs) \
       { std::cout << coutArgs ; std::cout.flush(); }
   #endif //#if LOGGING_CHARACTER_TYPE_ID == 0
-#else
+#else //#ifdef LOG_LOGGER_OUTPUT_TO_STDOUT_BEFORE
   #define POSSIBLY_LOG_TO_STDOUT(coutArgs) ; /* ->empty; block can be used
     after"if"/"else" */
-#endif
+#endif //#ifdef LOG_LOGGER_OUTPUT_TO_STDOUT_BEFORE
 
-  #include <iostream> //for std::cout
+  //#include <iostream> //for std::cout
   #if defined( LOGGING_CHARACTER_TYPE_ID) && LOGGING_CHARACTER_TYPE_ID == 0
     #define WRITE_TO_STD_OUT_AND_FLUSH(to_ostream) \
       {       \
@@ -105,13 +107,15 @@
   #endif //#if LOGGING_CHARACTER_TYPE_ID == 0
 
 #ifdef COMPILE_WITH_LOG
+  #include "css_basic_stringstream.hpp" //class css::basic_stringstream
+
 //  #define USE_OWN_LOGGER
   #ifdef USE_OWN_LOGGER
-#ifdef _WIN32
-    #include <Windows/Logger/Logger.hpp> //for class Windows_API::Logger
+    #ifdef _WIN32
+      #include <Windows/Logger/Logger.hpp> //for class Windows_API::Logger
 //    //Should have the same type as in the difintion.
 //    extern Windows_API::Logger g_logger ;
-#endif
+    #endif //#ifdef _WIN32
 //#else
     #include <Controller/Logger/Logger.hpp> //for class Logger
 //    //Should have the same type as in the difintion.
@@ -125,34 +129,34 @@
       #define OWN_LOGGER_LOG_LOGGER_NAME(logger_name, std_basic_string) \
         std::string std_str = getUTF8string(std_basic_string); \
           logger_name.Log( std_str ) ;
-    #else
+    #else //#if defined(LOGGING_CHARACTER_TYPE_ID) && LOGGING_CHARACTER_TYPE_ID == 0
       #define OWN_LOGGER_LOG_LOGGER_NAME(logger_name, std_basic_string) \
         logger_name.Log( std_basic_string ) ;
       #define OWN_LOGGER_LOG_LOGGER_NAME_TYPE(logger_name, std_basic_string, \
         messageType) \
         logger_name.Log( std_basic_string, messageType) ;
-    #endif
+    #endif //#if defined(LOGGING_CHARACTER_TYPE_ID) && LOGGING_CHARACTER_TYPE_ID == 0
       /*std::vector<unsigned char> std_vec_by;
       getUTF8string(std_basic_string, std_vec_by);
       logger_name.Log(
         std_vec_by
         ) ;*/
-#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-    #define OWN_LOGGER_LOG_ENTER_CRIT_SEC g_logger.m_critical_section_typeLogging.\
-      Enter() ;
-    #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC g_logger.m_critical_section_typeLogging.\
-      Leave();
-#define OWN_LOGGER_LOG_ENTER_CRIT_SEC_LOGGER_NAME(logger_name) logger_name.\
-      m_critical_section_typeLogging.Enter() ;
-#define OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger_name) logger_name.\
-      m_critical_section_typeLogging.Leave();
-#else //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-  #define OWN_LOGGER_LOG_ENTER_CRIT_SEC
-  #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC
-  #define OWN_LOGGER_LOG_ENTER_CRIT_SEC_LOGGER_NAME(logger_name) /* ->empty */
-  #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger_name) /* ->empty */
-#endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-  #endif
+    #ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+      #define OWN_LOGGER_LOG_ENTER_CRIT_SEC g_logger.m_critical_section_typeLogging.\
+        Enter() ;
+      #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC g_logger.m_critical_section_typeLogging.\
+        Leave();
+      #define OWN_LOGGER_LOG_ENTER_CRIT_SEC_LOGGER_NAME(logger_name) logger_name.\
+          m_critical_section_typeLogging.Enter() ;
+      #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger_name) logger_name.\
+          m_critical_section_typeLogging.Leave();
+    #else //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+      #define OWN_LOGGER_LOG_ENTER_CRIT_SEC
+      #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC
+      #define OWN_LOGGER_LOG_ENTER_CRIT_SEC_LOGGER_NAME(logger_name) /* ->empty */
+      #define OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger_name) /* ->empty */
+    #endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+  #endif //#ifdef USE_OWN_LOGGER
     #include <string>
     //LOGGING_CHARACTER_TYPE
     #include <preprocessor_macros/logging_preprocessor_macros_definitions.h>
@@ -325,7 +329,7 @@
       LOGN_LOGGER_NAME(logger_name,to_ostream)
     #define DEBUGWN(to_ostream) LOGWN(to_ostream)
     #define DEBUGWN_WSPRINTF(...) LOGWN_WSPRINTF(__VA_ARGS__)
-  #else
+  #else //#ifdef _DEBUG
     #define DEBUGWN_WSPRINTF(...) { } /* block can be used for "if"/"else"*/
   #endif //#ifdef _DEBUG
   #define CPP_WRITE_TO_LOG_FILE_AND_STDOUT_NEWLINE(coutArgs) { \
@@ -337,17 +341,6 @@
   //  fprintf(fileDebug,__VA_ARGS__); fflush(fileDebug); \
   //  printf(__VA_ARGS__); fflush(stdout); } */
   //#ifndef _MSC_VER //else compile errors with gcc
-#else //#ifndef COMPILE_WITH_DEBUG
-  //The following macros compile to do no logging
-  //Following macros: because of ";": block can be used after "if"/"else":
-  // else DEBUG...(...)" -> "else ;"
-  #define DEBUG(to_ostream) ;/*empty->do not log;can be used after "if"/"else"*/
-  #define DEBUG_SPRINTF(...) ;/*do not log; can be used after "if"/"else"*/
-  #define DEBUGN_LOGGER_NAME(logger_name,to_ostream) \
-    ;/*do not log;can be used after "if"/"else"*/
-  #define DEBUGN(to_ostream) ;/*do not log;can be used after "if"/"else"*/
-  #define DEBUGWN(to_ostream) ;/*do not log;can be used after "if"/"else"*/
-  #define DEBUGWN_WSPRINTF(...) ;/*do not log; can be used after "if"/"else"*/
 #endif//#ifdef COMPILE_WITH_DEBUG
 
 #ifdef VERBOSE_LOGGING

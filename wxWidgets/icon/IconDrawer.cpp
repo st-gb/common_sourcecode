@@ -13,6 +13,9 @@
  */
 
 #include <wxWidgets/icon/IconDrawer.hpp>
+#ifdef _WIN32 //pre-defined macro under Windows, also 64t
+  #include <wx/msw/winundef.h> //to not replace DrawText with DrawTextW
+#endif
 
 namespace wxWidgets
 {

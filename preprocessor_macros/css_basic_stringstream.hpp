@@ -90,7 +90,7 @@ namespace css
     {
 //        #error "css::basic_stringstream"
       #if __GNUC__ > 3
-        #pragma message("css::basic_stringstream << const char * ")
+//        #pragma message("css::basic_stringstream << const char * ")
       #endif //#if __GNUC__ > 3
 //        return r_std_str;
       //return _M_insert<std::string>(r_std_str);
@@ -130,7 +130,7 @@ namespace css
         const std::string & r_std_str)
     {
 #if __GNUC__ > 3
-      #pragma message("css::basic_stringstream << const std::string & ")
+//      #pragma message("css::basic_stringstream << const std::string & ")
 #endif
 //        return r_std_str;
       //return _M_insert<std::string>(r_std_str);
