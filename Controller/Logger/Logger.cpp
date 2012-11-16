@@ -10,6 +10,10 @@
 //#endif //#ifdef _MSC_VER
 
 #include "Logger.hpp"  //important for wxWidgets 2.9: include windows.h AFTER
+#include "HTMLlogFormatter.hpp" //class HTMLlogFormatter::HTMLlogFormatter(...)
+#include "LogLevel.hpp" //LogLevel::MessageType
+#include <Controller/GetLastErrorCode.hpp>
+
 //If MS compiler etc.
 #if defined(_MSC_VER) || defined(__MINGW32__) || defined(__CYGWIN__)
   //#include <Windows.h> //for SYSTEMTIME
@@ -35,15 +39,24 @@ Logger::Logger(
   )
   //C++ style initialisation.
   :
+//    m_nodetrieLogLevelStringToNumber(255),
 #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
     m_trie(255),
 #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
+    m_logLevel(LogLevel::log_message_typeWARNING),
     m_p_log_formatter(NULL),
     m_p_std_ofstream(NULL),
     m_p_std_ostream(NULL)
 //  , m_p_stdsetstdstrExcludeFromLogging( gp_cpucontrolbase)
 {
   CreateTextFormatter();
+  std::string str = "info";
+//  LogLevel::s_nodetrieLogLevelStringToNumber.Create(255);
+  LogLevel::s_nodetrieLogLevelStringToNumber.insert_inline( (BYTE *) str.c_str(),
+    str.length(), LogLevel::log_message_typeINFO);
+  str = "warning";
+  LogLevel::s_nodetrieLogLevelStringToNumber.insert_inline( (BYTE *) str.c_str(),
+    str.length(), LogLevel::log_message_typeWARNING);
 }
 
 Logger::Logger( std::string & stdstrFilePath )
@@ -190,7 +203,8 @@ void Logger::Log(//ostream & ostr
   }
 }
 
-bool Logger::OpenFile2( const std::string & c_r_stdstrFilePath )
+/** ANSI version of OpenFile */
+bool Logger::OpenFileA( const std::string & c_r_stdstrFilePath )
 {
   m_std_strLogFilePath = c_r_stdstrFilePath;
   bool bFileIsOpen =
@@ -218,8 +232,8 @@ bool Logger::OpenFile( //std::string & r_stdstrFilePath
   std::tstring & r_stdtstrFilePath)
 {
   std::string stdstr( //GetCharPointer(r_stdtstrFilePath.c_str() ) ) ;
-    GetStdString(r_stdtstrFilePath) ) ;
-  return OpenFile2( stdstr ) ;
+    GetStdString_Inline(r_stdtstrFilePath) ) ;
+  return OpenFileA( stdstr ) ;
 }
 #endif //#ifdef COMPILE_LOGGER_WITH_TSTRING_SUPPORT
 
@@ -234,6 +248,7 @@ inline bool Logger::SetStdOstream(const std::string & c_r_stdstrFilePath)
   //So I create the ofstream object dynamically.
   if( ! m_p_std_ofstream )
     m_p_std_ofstream = new std::ofstream ;
+    //std::basic_ofstream<WCHAR>;
   //m_ofstream.open(
   m_p_std_ofstream->open(
     c_r_stdstrFilePath.c_str()
@@ -260,22 +275,33 @@ int Logger::RenameFileThreadUnsafe(const std::string & cr_std_strFilePath)
   if( m_p_std_ofstream )
   {
     m_p_std_ofstream->close();
-    //from http://www.cplusplus.com/reference/clibrary/cstdio/rename/
-    // http://msdn.microsoft.com/en-us/library/zw5t957f%28v=vs.71%29.aspx
-    retVal = rename
-        //_trename
-      ( //oldname
-      m_std_strLogFilePath.c_str(), cr_std_strFilePath.c_str() //newname
-      );
-    if( retVal == 0)
+    //Must delete before renaming to this name.
+    retVal = remove ( cr_std_strFilePath.c_str() );
+    //http://www.cplusplus.com/reference/clibrary/cstdio/remove/:
+    //"If the file is successfully deleted, a zero value is returned."
+//    if( ! retVal )
     {
-      m_std_strLogFilePath = cr_std_strFilePath;
-      m_p_std_ofstream->open( m_std_strLogFilePath.c_str(),
-        //ate = AT End
-        //see http://www.cplusplus.com/reference/iostream/ofstream/open/:
-        //(at end) Set the stream's position indicator to the end of the stream on opening.
-        std::ios_base::ate );
+      //from http://www.cplusplus.com/reference/clibrary/cstdio/rename/
+      // http://msdn.microsoft.com/en-us/library/zw5t957f%28v=vs.71%29.aspx
+      retVal = rename
+          //_trename
+        ( //oldname
+        m_std_strLogFilePath.c_str(), cr_std_strFilePath.c_str() //newname
+        );
+      retVal = OperatingSystem::GetLastErrorCode();
+      //"If the file is successfully renamed, a zero value is returned."
+      if( retVal == 0)
+      {
+        m_std_strLogFilePath = cr_std_strFilePath;
+        m_p_std_ofstream->open( m_std_strLogFilePath.c_str(),
+          //ate = AT End
+          //see http://www.cplusplus.com/reference/iostream/ofstream/open/:
+          //(at end) Set the stream's position indicator to the end of the stream on opening.
+          std::ios_base::ate );
+      }
     }
+//    else
+//      retVal = ::LocalLanguageMessageAndErrorCodeA();
   }
   return retVal;
 }

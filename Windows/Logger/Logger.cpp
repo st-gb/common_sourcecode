@@ -134,12 +134,15 @@ namespace Windows_API
         //"If the function succeeds, the return value is nonzero."
         ::CloseHandle(m_hFile) )
     {
+      //Delete a possible file with that name, else can not be renamed to it.
+      ::DeleteFileA(r_std_strNewFilePath.c_str() );
       if( //http://msdn.microsoft.com/en-us/library/windows/desktop/aa365239%28v=vs.85%29.aspx:
           //"If the function succeeds, the return value is nonzero."
         ::MoveFileA(m_std_strLogFilePath.c_str(), r_std_strNewFilePath.c_str() )
         )
       {
-        if( OpenFlushingFile(r_std_strNewFilePath) )
+        if( //OpenFlushingFile(r_std_strNewFilePath)
+            OpenFileA(r_std_strNewFilePath) )
           retVal = 0;
       }
       else

@@ -77,6 +77,7 @@ BYTE PDH_CPUcoreUsageGetter::GetPDHerrorCodeString(
     return 1 ;
 }
 
+/** @return 0=success */
 BYTE PDH_CPUcoreUsageGetter::InitPDH_DLLaccess()
 {
   DEBUGN("PDH_CPUcoreUsageGetter::InitPDH_DLLaccess()" )
@@ -89,6 +90,7 @@ BYTE PDH_CPUcoreUsageGetter::InitPDH_DLLaccess()
     DEBUGN("pdh.dll loaded")
     AssignDLLfunctionPointers() ;
     //StartPerfCounting() ;
+    return 0;
   }
   else
   {
@@ -96,7 +98,7 @@ BYTE PDH_CPUcoreUsageGetter::InitPDH_DLLaccess()
 //    throw std::exception() ;
     //When thrown a  std::exception()  the last log instructions were missing
     //inside the log file.
-    return 0 ;
+    return 1 ;
   }
   return 1 ;
 }
@@ -466,7 +468,7 @@ float PDH_CPUcoreUsageGetter::
       {
         DEBUGN("PdhGetFormattedCounterValue succeeded")
         DEBUGN("PDH_CPUcoreUsageGetter::GetPercentalUsageForCore for core usage:"
-          << std::ios::hex << FmtValue.doubleValue )
+          << std::ios::hex << m_pdh_fmt_countervalue.doubleValue )
 //        fRet = FmtValue.doubleValue ;
         m_fReturnValue = m_pdh_fmt_countervalue.doubleValue ;
         //The caller expects value in range [0...1]
@@ -492,7 +494,7 @@ float PDH_CPUcoreUsageGetter::
 //        DEBUGWN( L"PdhCollectQueryData failed: " << (DWORD) pdh_status
 //          << wstr )
         DEBUGWN_WSPRINTF( L"PdhCollectQueryData failed:%u %ls"
-          , (DWORD) pdh_status
+          , (DWORD) m_pdh_status
           , wstr.c_str()
           )
       }

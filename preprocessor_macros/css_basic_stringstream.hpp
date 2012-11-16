@@ -19,6 +19,7 @@
 
 #include <sstream> //class std::basic_stringstream
 #include "logging_preprocessor_macros_definitions.h" //
+#include <Controller/character_string/getUTF8string.hpp> //getUTF8string(...)
 
 namespace css
 {
@@ -102,6 +103,32 @@ namespace css
       }
       /** @see ostream.tcc */
       return *this;
+    }
+    /** Must return an object of _this_ type, else following concatenations
+    * via "<<" and are not possible. */
+    __ostream_type
+    & operator << (
+//        const wchar_t * p_ch
+        const std::wstring & wstr
+        )
+    {
+//        #error "css::basic_stringstream"
+      #if __GNUC__ > 3
+//        #pragma message("css::basic_stringstream << const char * ")
+      #endif //#if __GNUC__ > 3
+//        return r_std_str;
+      //return _M_insert<std::string>(r_std_str);
+      //return
+      std::string std_str;
+      getUTF8string_inline(wstr, std_str);
+//      for(short w = 0; p_ch[w] != '\0'; ++ w)
+//      {
+//        put( (char_type) p_ch[w] );
+//      }
+      /** @see ostream.tcc */
+      return //*this;
+        //-> use operator with std::string
+        *this << std_str;
     }
 
 //      __ostream_type & operator<< (

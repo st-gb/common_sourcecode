@@ -27,12 +27,17 @@
 
 //  #define LOGGING_CHARACTER_TYPE_ID 0//1
 
+//TODO replace by "typedef CSS::log_char_type" ?
 #if defined(LOGGING_CHARACTER_TYPE_ID) && LOGGING_CHARACTER_TYPE_ID == 0 /*1*/
   #define LOG_CHAR_TYPE(x) L##x
   #define LOGGING_CHARACTER_TYPE wchar_t
 #else
   #define LOG_CHAR_TYPE(x) x
   #define LOGGING_CHARACTER_TYPE char
+  namespace CSS
+  {
+    typedef char log_char_type;
+  }
 #endif
 //  GetLogStringType();
 

@@ -44,6 +44,11 @@ public:
     no_error = 0
     , error
   };
+  enum priority
+  {
+    default_priority,
+    maximum_priority
+  };
 //  //else "undefined reference to `vtable for I_Thread'"
 //  I_Thread() {} ;
   /** For releasing ressources */
@@ -51,7 +56,7 @@ public:
   virtual bool IsRunning() = 0;//{ return false;};
 //  virtual I_Thread( BYTE byThreadType ) = 0 ;
   virtual //static
-    BYTE start(pfnThreadFunc, void * p_v ) = 0 ;
+    BYTE start(pfnThreadFunc, void * p_v, BYTE priority = default_priority) = 0 ;
   /** Blocking/ synchronous wait until the thread is terminated */
   virtual void * WaitForTermination() { return 0 ; }
 //  virtual ~I_Thread() {} ;

@@ -12,6 +12,7 @@
 #include <preprocessor_macros/logging_preprocessor_macros.h> //DEBUGN(...)
 #include <winnt.h> //for ULONGLONG
 #include <windef.h> //for DWORD
+#include <inttypes.h> //uint64_t under Linux
 
 //TODO use affinity mask for reading the TSC
 //http://en.wikipedia.org/wiki/Time_Stamp_Counter:

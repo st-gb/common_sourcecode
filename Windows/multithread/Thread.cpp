@@ -14,6 +14,7 @@
 
 #include <Windows/multithread/Thread.hpp>
 #include <windows.h> //::CreateThread(...)
+#include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 
 namespace Windows_API
 {
@@ -32,7 +33,7 @@ namespace Windows_API
       ::CloseHandle(m_handleThread ) ;
   }
 
-  BYTE Thread::start(pfnThreadFunc pfn_threadfunc, void * p_v )
+  BYTE Thread::start(pfnThreadFunc pfn_threadfunc, void * p_v, BYTE prio )
   {
     //Because "start" may be called for the same object multiple times.
     PossiblyCloseThreadHandle();
@@ -46,7 +47,18 @@ namespace Windows_API
         & m_dwThreadId
         );   // returns the thread identifier
     if( m_handleThread )
+    {
+      if( prio != I_Thread::default_priority)
+      {
+        int nWinAPIpriority = GetWinAPIpriority(prio);
+        LOGN( "setting Thread priority " << nWinAPIpriority)
+        ::SetThreadPriority(
+          m_handleThread, //_In_  HANDLE hThread,
+          nWinAPIpriority //_In_  int nPriority
+        );
+      }
       return I_Thread::no_error ;
+    }
     return I_Thread::error ;
   }
 

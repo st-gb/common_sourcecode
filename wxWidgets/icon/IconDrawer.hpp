@@ -67,15 +67,15 @@ public:
 private:
   char * m_ar_chBits;
   wxBitmap m_wxbitmap;
-  //Must be created on the heap because it must be destroyed prior to the
-  //memoryDC?! Else the exe crashed at/ after wxIconDrawer's destructor.
-  wxBitmap * m_p_wxbitmapToDrawOn;
 //  wxBitmap m_wxbitmapMask;
   wxBitmap * m_p_wxbitmapMask;
   wxMemoryDC m_wxmemorydc ;
   wxMask m_wxmask;
 
 public:
+  //Must be created on the heap because it must be destroyed prior to the
+  //memoryDC?! Else the exe crashed at/ after wxIconDrawer's destructor.
+  wxBitmap * m_p_wxbitmapToDrawOn;
 
   wxIconDrawer(
     WORD wWidth = 16,
@@ -186,6 +186,8 @@ public:
     const wxColour * p_wxcolourBackground = wxWHITE
   //    const wxBrush & brush
     );
+   wxDC & GetDC() //const
+     { return m_wxmemorydc; }
   //inline
     void ReleaseRessources();
 };

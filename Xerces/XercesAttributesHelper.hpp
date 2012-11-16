@@ -159,6 +159,12 @@ public:
     const char * lpctstrAttrName,
     float & rfValue
     ) ;
+  static BYTE GetAttributeValue
+    (
+    const XERCES_CPP_NAMESPACE::Attributes & cr_xercesc_attributes,
+    const XMLCh * p_xmlchAttributeName,
+    std::string & r_strValue
+    );
   static BYTE GetAttributeValue(
     const XERCES_CPP_NAMESPACE::Attributes & attrs,
     const char * lpcstrAttrName,

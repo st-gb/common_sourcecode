@@ -14,6 +14,8 @@
 #include <fstream> //for std::ifstream
 //#include <global.h> //LOGN()
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
+//GetErrorMessageFromLastErrorCodeA(...)
+#include <Controller/GetErrorMessageFromLastErrorCode.hpp>
 //#include <windef.h> //BYTE
 typedef unsigned char BYTE ;
 
@@ -30,7 +32,7 @@ BYTE ReadFileContent( std::string & r_stdstrFilePath )
   {
     char * buffer ;
     LOGN_TYPE("successfully opened file \"" << r_stdstrFilePath << "\"",
-      I_LogFormatter::log_message_typeSUCCESS)
+      LogLevel::log_message_typeSUCCESS)
     //http://www.cplusplus.com/reference/iostream/istream/seekg/:
     stdifstream.seekg(0, std::ios::end);
     int length = stdifstream.tellg();
@@ -50,8 +52,11 @@ BYTE ReadFileContent( std::string & r_stdstrFilePath )
   }
   else
   {
-    LOGN_TYPE("failed to open file \"" << r_stdstrFilePath << "\"",
-      I_LogFormatter::log_message_typeERROR)
+    LOGN_TYPE("failed to open file \"" << r_stdstrFilePath << "\": error code:"
+      << //stdifstream.rdstate()
+      ::GetErrorMessageFromLastErrorCodeA(),
+      LogLevel::log_message_typeERROR)
+
   }
   return by ;
 }

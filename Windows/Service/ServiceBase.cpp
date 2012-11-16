@@ -245,11 +245,13 @@ DWORD ServiceBase::PauseService(
   , std::string & r_stdstrMsg
   )
 {
+  LOGN(FULL_FUNC_NAME << " begin")
   SC_HANDLE schService ;
   SC_HANDLE schSCManager;
   SERVICE_STATUS ssStatus; 
   //DWORD dwStartTickCount, dwWaitTime;
 
+  //TODO close handle afterwards?
   schSCManager = OpenSCManager( 
     NULL,                    // local machine 
     NULL,                    // ServicesActive database 
@@ -283,13 +285,14 @@ DWORD ServiceBase::PauseService(
       schSCManager,        // SCManager database 
       //TEXT("Sample_Srv"),  // name of service 
       cp_tchServiceName ,
-      SERVICE_PAUSE_CONTINUE
-      );          // specify access
+      SERVICE_PAUSE_CONTINUE          // specify access
+      );
     if ( schService == NULL)
     {
         //printf("OpenService failed (%d)\n", GetLastError());
       DWORD dw = ::GetLastError() ;
       GetErrorDescriptionFromOpenServiceErrCode( dw , r_stdstrMsg ) ;
+      LOGN(FULL_FUNC_NAME << " OpenService failed: " << r_stdstrMsg)
       return FALSE;
     }
  
@@ -300,8 +303,10 @@ DWORD ServiceBase::PauseService(
             &ssStatus) )  // address of status info 
     {
         //printf("ControlService failed (%d)\n", GetLastError()); 
-        return FALSE;
+      LOGN(FULL_FUNC_NAME << " return FALSE")
+      return FALSE;
     }
+  LOGN(FULL_FUNC_NAME << " end")
   return TRUE ;
 }
 

@@ -37,6 +37,17 @@ namespace Windows_API
     ~Thread();
 
     void Delete() {} ;
+    int GetWinAPIpriority(BYTE prio)
+    {
+      switch(prio)
+      {
+      case I_Thread::default_priority:
+        return THREAD_PRIORITY_NORMAL;
+      case I_Thread::maximum_priority:
+        return THREAD_PRIORITY_TIME_CRITICAL;
+      }
+      return THREAD_PRIORITY_NORMAL;
+    }
     bool IsRunning()
     {
       //http://msdn.microsoft.com/en-us/library/windows/desktop/ms686724%28v=vs.85%29.aspx:
@@ -50,7 +61,8 @@ namespace Windows_API
         == WAIT_TIMEOUT;
     }
     inline void PossiblyCloseThreadHandle();
-    BYTE start( pfnThreadFunc, void * p_v ) ;
+    BYTE start( pfnThreadFunc, void * p_v, BYTE priority =
+      I_Thread::default_priority) ;
     void * WaitForTermination() ;
   };
 }

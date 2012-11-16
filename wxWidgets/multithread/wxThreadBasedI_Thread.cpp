@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
+ * ("Trilobyte SE") 2010-at least 2012.
+ * You are allowed to modify and use the source code from Trilobyte SE for free
+ * if you are not making profit directly or indirectly with it or its adaption.
+ * Else you may contact Trilobyte SE. */
 /*
  * wxThreadBasedI_Thread.cpp
  *
@@ -81,7 +88,8 @@ void wxThreadBasedI_Thread::Delete()
 
 //@return I_Thread::no_error on success, else I_Thread::error
   //static
-  BYTE wxThreadBasedI_Thread::start( pfnThreadFunc pfn_threadfunc, void * p_v )
+  BYTE wxThreadBasedI_Thread::start( pfnThreadFunc pfn_threadfunc, void * p_v,
+    BYTE priority)
   {
     LOGN("wxThreadBasedI_Thread::start(" << (void *) pfn_threadfunc
         << "," << p_v << ") begin")
@@ -112,6 +120,9 @@ void wxThreadBasedI_Thread::Delete()
         //"Starts the thread execution. Should be called after Create."
   //      wxthread.Run() ;
 //        return //wxthreadfuncstarterthread.Run() ;
+        //http://docs.wxwidgets.org/stable/wx_wxthread.html#wxthreadsetpriority:
+        //"It can only be set after calling Create() but before calling Run()."
+        p_wxthreadfuncstarterthread->SetPriority(priority);
         wxThreadError wxthreaderr = p_wxthreadfuncstarterthread->Run() ;
         LOGN("result of starter thread.run:" << (WORD) wxthreaderr )
         switch(wxthreaderr)
@@ -141,7 +152,7 @@ void wxThreadBasedI_Thread::Delete()
   void * wxThreadBasedI_Thread::WaitForTermination()
   {
     DEBUGN("wxThreadBasedI_Thread::Wait()")
-    if( mp_wxthreadfuncstarterthread)
+    if( mp_wxthreadfuncstarterthread && m_byThreadType == I_Thread::joinable )
     {
       wxThread::ExitCode wxthread_exit_code =
         //http://docs.wxwidgets.org/stable/wx_wxthread.html#wxthreadwait:

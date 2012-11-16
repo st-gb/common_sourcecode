@@ -107,7 +107,7 @@ namespace Xerces
 
 #else //under Linux the size of wchar_t and XMLCh differs/ may differ
   #define GET_WCHAR_STRING_FROM_XERCES_STRING(xml_ch_pointer_string) \
-    Xerces::ConvertXercesStringToStdWstring(xml_ch_pointer_string) ;
+    Xerces::ConvertXercesStringToStdWstring(xml_ch_pointer_string)
 
   #define XERCES_STRING_FROM_WCHAR_T_STRING(wchar_t_pointer_string) \
     Xerces::XercesString(wchar_t_pointer_string).unicodeForm()

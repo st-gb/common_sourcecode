@@ -626,6 +626,36 @@ BYTE XercesAttributesHelper::GetAttributeValue
 BYTE XercesAttributesHelper::GetAttributeValue
   (
   const XERCES_CPP_NAMESPACE::Attributes & cr_xercesc_attributes,
+  const XMLCh * p_xmlchAttributeName,
+  std::string & r_strValue
+  )
+{
+  BYTE byReturn = getting_attribute_value_failed;
+  const XMLCh * cp_xmlchAttributeValue = cr_xercesc_attributes.getValue(
+    // const XMLCh *const qName
+    p_xmlchAttributeName
+    //"number"
+    ) ;
+  //If the attribute exists.
+  if(cp_xmlchAttributeValue)
+  {
+    char * pchAttributeValue = XERCES_CPP_NAMESPACE::XMLString::transcode(
+      cp_xmlchAttributeValue) ;
+    if( pchAttributeValue )
+    {
+      r_strValue = std::string(pchAttributeValue);
+      byReturn = //SUCCESS;
+        getting_attribute_value_succeeded;
+      //Release memory of dyn. alloc. buffer (else memory leaks).
+      XERCES_CPP_NAMESPACE::XMLString::release( & pchAttributeValue);
+    }
+  }
+  return byReturn;
+}
+
+BYTE XercesAttributesHelper::GetAttributeValue
+  (
+  const XERCES_CPP_NAMESPACE::Attributes & cr_xercesc_attributes,
   const char * lpcstrAttrName,
   std::string & r_strValue
   )
@@ -636,25 +666,12 @@ BYTE XercesAttributesHelper::GetAttributeValue
     lpcstrAttrName) ;
   if( p_xmlchAttributeName )
   {
-    const XMLCh * cp_xmlchAttributeValue = cr_xercesc_attributes.getValue(
-      // const XMLCh *const qName
-      p_xmlchAttributeName
-      //"number"
-      ) ;
-    //If the attribute exists.
-    if(cp_xmlchAttributeValue)
-    {
-      char * pchAttributeValue = XERCES_CPP_NAMESPACE::XMLString::transcode(
-        cp_xmlchAttributeValue) ;
-      if( pchAttributeValue )
-      {
-        r_strValue = std::string(pchAttributeValue);
-        byReturn = //SUCCESS;
-          getting_attribute_value_succeeded;
-        //Release memory of dyn. alloc. buffer (else memory leaks).
-        XERCES_CPP_NAMESPACE::XMLString::release( & pchAttributeValue);
-      }
-    }
+    byReturn = GetAttributeValue
+      (
+      cr_xercesc_attributes,
+      p_xmlchAttributeName,
+      r_strValue
+      );
     //Release memory of dyn. alloc. buffer (else memory leaks).
     XERCES_CPP_NAMESPACE::XMLString::release( & p_xmlchAttributeName);
   }

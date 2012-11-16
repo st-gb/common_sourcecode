@@ -4,6 +4,7 @@ typedef unsigned char BYTE;
 #ifndef NULL
   #define NULL 0
 #endif //#ifndef NULL
+#include <string.h> // memset(...)
 
 template <typename member_type>
 class NodeTrieNode

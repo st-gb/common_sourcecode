@@ -34,12 +34,20 @@
 #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 
   #include "log_file_prefix.hpp"
-  #include "HTMLlogFormatter.hpp"
-  #include "ILogFormatter.hpp"
+//  #include "HTMLlogFormatter.hpp"
+  #include "ILogFormatter.hpp" //class ILogFormatter::WriteLogFileEntry(...)
+  #include "LogLevel.hpp" //namespace LogLevel::MessageType
+  using namespace LogLevel;
+
   #include "LogFileEntry.hpp" //class LogFileEntry
 
   #include <windef.h> //for WORD
+  //from http://stackoverflow.com/questions/3243454/what-is-the-linux-equivalent-to-maxdword
+  #include <limits.h> //UINT_MAX
+
+  //Forward decl. (faster than to #include a file)
   //class std::ofstream ;
+//  class I_LogFormatter;
 
   class Logger
   {
@@ -49,6 +57,7 @@
 //    HTMLformatLogFileWriter * m_p_log_writer;
     I_LogFormatter * m_p_log_formatter;
   public:
+    enum LogLevel::MessageType m_logLevel;
     LogFileEntry m_logfileentry;
 #ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
   #ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
@@ -76,6 +85,7 @@
     //std::ofstream m_ofstream ;
   private:
     std::ofstream * m_p_std_ofstream ;
+//    std::basic_ofstream<WCHAR> * m_p_std_ofstream ;
   protected:
     std::ostream * m_p_std_ostream ;
 #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
@@ -86,7 +96,9 @@
 #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 
   public:
+#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
     void AddExcludeFromLogging(const std::string & cr_stdstr ) ;
+#endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
     Logger( //const std::set<std::string> & cr_stdsetstdstrExcludeFromLogging
       ) ;
     /** by "virtual": avoid warning: `class Logger' has virtual functions but
@@ -106,7 +118,8 @@
 #ifdef __linux__
       /** Linux can resolve times to microiseconds with ::gettimeofday(...)*/
       std::string std_str =
-        "%year%.%month%.%day% %hour%:%minute%:%second%s%millisecond%ms%microsecond%us"
+        "%year%.%month%.%day% %hour%:%minute%:%second%s%millisecond%ms"
+        "%microsecond%us";
 #endif
       return CreateFormatter("", std_str
         );
@@ -119,6 +132,7 @@
       //const char * c_p_chLogTimeFormatString
       );
     I_LogFormatter * GetFormatter() { return m_p_log_formatter; }
+    enum MessageType GetLogLevel() { return m_logLevel; }
 
     //"virtual" because: allow polymorphism: call function of the actual type
     // (may be a direct or indirect subclass of this class).
@@ -141,8 +155,8 @@
 
     inline DWORD OutputTimeStampEtc_Inline(
       const std::string & r_stdstr,
-      enum I_LogFormatter::MessageType messageType =
-        I_LogFormatter::log_message_typeINFO
+      enum LogLevel::MessageType messageType =
+          LogLevel::log_message_typeINFO
       )
     {
       if( m_p_log_formatter)
@@ -167,11 +181,21 @@
 
 //        s_logfileentry.p_std_strMessage = (std::string *) & r_stdstr;
 //        m_p_log_formatter->WriteLogFileEntry(s_logfileentry, messageType);
-        m_logfileentry.p_std_strMessage = (std::string *) & r_stdstr;
-        m_p_log_formatter->WriteLogFileEntry(m_logfileentry, messageType);
-        return WriteToFile();
+//        if( //Fastest evaluable condition at first.
+//            m_p_std_ofstream )
+//        {
+          m_logfileentry.p_std_strMessage = (std::string *) & r_stdstr;
+          m_p_log_formatter->WriteLogFileEntry(m_logfileentry, messageType);
+          return WriteToFile();
+//        }
+//        else
+//        {
+//          m_logfileentry.p_std_strMessage = new std::string(r_stdstr);
+////          m_std_vecLogMessage.push_back(m_logfileentry);
+//          return 0;
+//        }
       }
-      return MAXDWORD - 1;
+      return UINT_MAX - 1;
     }
 
     //FORCEINLINE
@@ -240,56 +264,69 @@
 
     DWORD Log(//ostream & ostr
       const std::string & r_stdstrMessage,
-      enum I_LogFormatter::MessageType messageType =
-        I_LogFormatter::log_message_typeINFO
+      enum LogLevel::MessageType messageType =
+          LogLevel::log_message_typeINFO
       )
     {
 //      EnterCritSec();
       if( //Fastest evaluable condition at first.
         //m_p_std_ofstream &&
-        m_p_std_ostream
-      #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-        && IsNotFiltered(r_stdstrMessage)
-        // &&
-      #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-        //m_p_std_ofstream->good()
+          m_p_std_ostream
         )
       {
-        return OutputTimeStampEtc_Inline(r_stdstrMessage, messageType);
-        //m_ofstream.flush() ;
-//        POSSIBLY_LEAVE_CRIT_SEC
-//        Ideas();
+        if(
+        #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
+          //&&
+          IsNotFiltered(r_stdstrMessage)
+           &&
+        #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
+//          m_p_std_ofstream->good()
+          m_p_std_ostream->good()
+          )
+        {
+          return OutputTimeStampEtc_Inline(r_stdstrMessage, messageType);
+          //m_ofstream.flush() ;
+  //        POSSIBLY_LEAVE_CRIT_SEC
+  //        Ideas();
+        }
       }
+//      else
+//        m_std_vecLogMessage.push_back( LogFileEntry() )
 //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
 //      else
 //        m_critical_section_typeLogging.Leave() ;
 //#endif
 //      POSSIBLY_LEAVE_CRIT_SEC
-      return MAXDWORD;
+      return UINT_MAX;
     }
     void Log(
       const std::string & r_stdstrCodePosition,
       const std::string & r_stdstrMessage,
-      enum I_LogFormatter::MessageType messageType =
-        I_LogFormatter::log_message_typeINFO
+      enum LogLevel::MessageType messageType =
+          LogLevel::log_message_typeINFO
       )
     {
 //      EnterCritSec();
       if( //Fastest evaluable condition at first.
-        m_p_std_ofstream &&
-      #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-        IsNotFiltered(r_stdstrMessage)
-        &&
-      #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-        m_p_std_ofstream->good()
-        )
-      {
-        OutputTimeStampEtc_Inline(r_stdstrMessage, messageType);
-        //m_ofstream.flush() ;
-//        m_p_std_ofstream->flush() ;
-//        POSSIBLY_LEAVE_CRIT_SEC
-//        Ideas();
-      }
+          m_p_std_ofstream )
+//      {
+        if(
+          #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
+            IsNotFiltered(r_stdstrMessage)
+            &&
+          #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
+            m_p_std_ofstream->good()
+          )
+        {
+          OutputTimeStampEtc_Inline(r_stdstrMessage, messageType);
+          //m_ofstream.flush() ;
+  //        m_p_std_ofstream->flush() ;
+  //        POSSIBLY_LEAVE_CRIT_SEC
+  //        Ideas();
+        }
+//      }
+//      else
+//        m_std_vecLog
 //      POSSIBLY_LEAVE_CRIT_SEC
     }
 
@@ -313,8 +350,8 @@
     //FORCEINLINE
     void Log_inline(
       const std::string & r_stdstrMessage,
-      enum I_LogFormatter::MessageType messageType =
-        I_LogFormatter::log_message_typeINFO
+      enum LogLevel::MessageType messageType =
+          LogLevel::log_message_typeINFO
       )
     {
 #ifdef COMPILE_WITH_LOG
@@ -331,8 +368,8 @@
     void Log_inline(
       const std::string & r_stdstrCodePosition,
       std::string & r_stdstrMessage,
-      enum I_LogFormatter::MessageType messageType =
-        I_LogFormatter::log_message_typeINFO
+      enum LogLevel::MessageType messageType =
+          LogLevel::log_message_typeINFO
       )
     {
 #ifdef COMPILE_WITH_LOG
@@ -354,8 +391,12 @@
 #endif //COMPILE_LOGGER_WITH_TSTRING_SUPPORT
     //"virtual" in order to "OpenFile" call subclasses overwritten function
     //if any.
-    virtual bool OpenFile2( const std::string & r_stdstrFilePath ) ;
+    virtual bool OpenFileA( const std::string & r_stdstrFilePath ) ;
     virtual bool SetStdOstream(const std::string & c_r_stdstrFilePath);
+    void SetLogLevel(const std::string & c_r_std_strLogLevel)
+    {
+      m_logLevel = LogLevel::GetAsNumber(c_r_std_strLogLevel);
+    }
     int RenameFile(const std::string & cr_std_strFilePath)
     {
       return RenameFileThreadSafe(cr_std_strFilePath);

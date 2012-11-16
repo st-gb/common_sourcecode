@@ -32,7 +32,9 @@
 #endif
 
     #if defined(USE_OWN_LOGGER)
-      #define COMPILE_WITH_LOG
+      #ifndef COMPILE_WITH_LOG
+        #define COMPILE_WITH_LOG
+      #endif //COMPILE_WITH_LOG
     #endif
 //  //Keep away the dependency on Logger class for dyn libs.
 //  #if ! defined(COMPILE_LOGGER_MULTITHREAD_SAFE) //&& !defined(_DEBUG)
@@ -118,6 +120,7 @@
     #endif //#ifdef _WIN32
 //#else
     #include <Controller/Logger/Logger.hpp> //for class Logger
+    #include <Controller/Logger/LogLevel.hpp> //for enum LogLevel::MessageType
 //    //Should have the same type as in the difintion.
 //    extern Logger g_logger ;
 //#endif
@@ -207,29 +210,32 @@
     //caused the global g_logger (->same variable name) of the executable the
     //dyn lib was attached to call the
     //logger's destructor, provide a macro with different logger variable names.
-    #define LOG_LOGGER_NAME(logger, to_ostream) { \
-      WRITE_INTO_STRING_STREAM(logger, to_ostream) \
-      \
-      OWN_LOGGER_LOG_LOGGER_NAME( logger ,/*stdstr*/ \
-        g_std_basicstring_log_char_typeLog ) \
-      OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger) \
-      /*LOG4CPLUS_INFO(log4cplus_logger, g_std_basicstring_log_char_typeLog );*/ \
+    #define LOG_LOGGER_NAME_TYPE(logger, to_ostream, messageType) { \
+      /* E.g. do not log "info" messages if level is "warning". */ \
+      if( messageType >= logger.GetLogLevel() ) { \
+        WRITE_INTO_STRING_STREAM(logger, to_ostream) \
+        \
+        OWN_LOGGER_LOG_LOGGER_NAME_TYPE( logger , \
+          g_std_basicstring_log_char_typeLog, messageType) \
+        OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger) \
+      } \
+      /*LOG4CPLUS_INFO(log4cplus_logger, g_std_basicstring_log_char_typeLog ); */\
       /*g_logger.Log("test ") ; */ }
-//    #endif
 
     //LOGxx macros: should log no matter whether release or debug.
     //Because under _Linux_ unloading a dynamic library with a global g_logger
     //caused the global g_logger (->same variable name) of the executable the
     //dyn lib was attached to call the
     //logger's destructor, provide a macro with different logger variable names.
-    #define LOG_LOGGER_NAME_TYPE(logger, to_ostream, messageType) { \
-      WRITE_INTO_STRING_STREAM(logger, to_ostream) \
-      \
-      OWN_LOGGER_LOG_LOGGER_NAME_TYPE( logger , \
-        g_std_basicstring_log_char_typeLog, messageType) \
+    #define LOG_LOGGER_NAME(logger, to_ostream) { \
+      /* WRITE_INTO_STRING_STREAM(logger, to_ostream) \
+      OWN_LOGGER_LOG_LOGGER_NAME( logger , \
+        g_std_basicstring_log_char_typeLog ) \
       OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger) \
-      /*LOG4CPLUS_INFO(log4cplus_logger, g_std_basicstring_log_char_typeLog ); */\
+      LOG4CPLUS_INFO(log4cplus_logger, g_std_basicstring_log_char_typeLog );*/ \
+      LOG_LOGGER_NAME_TYPE(logger, to_ostream, LogLevel::log_message_typeINFO) \
       /*g_logger.Log("test ") ; */ }
+//    #endif
 
     #include "log_logger_name_thread_unsafe.h"
 

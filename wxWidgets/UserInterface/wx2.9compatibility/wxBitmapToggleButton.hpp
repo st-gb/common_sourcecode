@@ -22,8 +22,9 @@
 #include <wx/sizer.h> //class wxFlexGridSizer
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN()
 #include <wx/version.h> //wxMAJOR_VERSION
-#include <wx/msw/winundef.h> //avoid "GetClassInfo" -> "GetClassInfoA"
-
+#ifdef _WIN32
+  #include <wx/msw/winundef.h> //avoid "GetClassInfo" -> "GetClassInfoA"
+#endif //#ifdef _WIN32
 //see wxWidgets-2.8.10/include/wx/msw/tglbtn.h
 // extern WXDLLIMPEXP_DATA_CORE(const wxChar) wxCheckBoxNameStr[];
 //see wxWidgets-2.9.1/include/wx/msw/tglbtn.h :

@@ -14,6 +14,7 @@
 #define GETTICKCOUNT_HPP_
 
 #ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
+  //TODO: all code into #include <Windows/time/GetTimeCount.hpp>
   #include <windows.h> // GetTickCount()
   #include <stdint.h> // uint64_t
   #include <preprocessor_macros/logging_preprocessor_macros.h>

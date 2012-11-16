@@ -8,7 +8,7 @@
 #ifndef DLL_MAIN_FRONT_SIGNATURE_H_
 #define DLL_MAIN_FRONT_SIGNATURE_H_
 
-#include "export_function_symbols.h"
+#include "export_function_symbols.h" //EXPORT
 
 #ifndef APIENTRY
   #define APIENTRY

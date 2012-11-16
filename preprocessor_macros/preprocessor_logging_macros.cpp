@@ -28,7 +28,8 @@ std::basic_string<LOGGING_CHARACTER_TYPE> g_std_basicstring_log_char_typeLog;
 #ifdef _WIN32
   #include <Windows/Logger/Logger.hpp> //class Windows_API::Logger
 #endif
-#ifdef USE_OWN_LOGGER
+//#ifdef USE_OWN_LOGGER
+#ifdef GLOBAL_LOGGER_FULLY_QUALIFIED_CLASS_NAME
   //#define DEFINE_GLOBAL_LOGGER_OBJECT_ Logger g_logger ;
   //::Logger g_logger;
   GLOBAL_LOGGER_FULLY_QUALIFIED_CLASS_NAME g_logger;

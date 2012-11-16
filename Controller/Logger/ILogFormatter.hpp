@@ -22,6 +22,9 @@
 #include "LogFileEntry.hpp" //class LogFileEntry
 #include <data_structures/Trie/NodeTrie/NodeTrie.hpp> //class NodeTrie
 
+#include "LogLevel.hpp" //namespace LogLevel::MessageType
+using namespace LogLevel;
+
 //typedef uint16_t WORD;
 //typedef
 class Logger;
@@ -62,14 +65,6 @@ protected:
   NodeTrie<const uint16_t *> m_nodetrieTimePlaceHolderToLogFileEntryMember;
   std::vector<uint16_tPointerAndBYTE> m_vecPointerToTimeElementFromLogFileEntry;
 public:
-
-  enum MessageType{
-    log_message_typeINFO,
-    log_message_typeWARNING,
-    log_message_typeERROR,
-    log_message_typeSUCCESS,
-    beyondLastLogMessageType
-  };
 
   I_LogFormatter(//std::ofstream * p_std_ofstream
     const Logger * p_logger);

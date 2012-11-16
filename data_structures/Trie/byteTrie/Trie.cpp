@@ -175,7 +175,8 @@ bool Trie::insert( //void
   {
     byValue = p_vBegin[wIndex] ;
     DEBUGN("address of level: " << ar_p_byCurrent
-      << "node address: " << (DWORD) ar_p_byCurrent[ byValue ] )
+      << "node address: " << //(DWORD)
+      ar_p_byCurrent[ byValue ] )
     if( ar_p_byCurrent[ byValue ] )
       ar_p_byCurrent = (unsigned char **) ar_p_byCurrent[ byValue ] ;
     else

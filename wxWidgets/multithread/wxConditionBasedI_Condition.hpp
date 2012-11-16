@@ -43,7 +43,9 @@ public:
   {
 
   }
-  ~wxConditionBasedI_Condition()
+  //By "virtual" : avoid g++ warning: "`class wxConditionBasedI_Condition' has
+  // virtual functions but non-virtual destructor"
+  virtual ~wxConditionBasedI_Condition()
   {
     LOGN("~wxConditionBasedI_Condition()")
   }

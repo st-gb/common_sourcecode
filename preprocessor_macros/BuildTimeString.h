@@ -58,5 +58,6 @@
     //#define COMPILER_VERSION EXPAND_AND_STRINGIFY_2( "M", GCC_VERSION )
   #else //#ifdef __MINGW32__
     #define COMPILER_VERSION _T("")__GNUC__ __GNUC_MINOR__ __GNUC_PATCHLEVEL__ T("")
+  #define COMPILER_VERSION_NUMBER EXPAND_AND_STRINGIFY(GCC_VERSION)
   #endif //#ifdef __MINGW32__
 #endif //#ifdef __GNUC__

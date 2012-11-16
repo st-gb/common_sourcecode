@@ -11,6 +11,7 @@
  *  Created on: Jun 17, 2010
  *      Author: Stefan
  */
+#pragma once //include guard
 #include <preprocessor_macros/logging_preprocessor_macros.h>
 
 typedef unsigned short WORD ;

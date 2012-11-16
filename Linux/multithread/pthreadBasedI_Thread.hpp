@@ -27,6 +27,11 @@ namespace Linux
     BYTE start(pfnThreadFunc, void * p_v ) ;
     //inline
       void * WaitForTermination() ;
+    //TODO implement IsRunning
+//    bool IsRunning()
+//    {
+//
+//    }
   };
 
 }

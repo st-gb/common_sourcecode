@@ -65,7 +65,8 @@ void wxIconDrawer::DrawColouredBarsIcon(
     wxRect rectColouredBar(0, 0, colouredBarWidth, iconHeight );
 //    wxBrush brush;
     wxBrush wxbrush = * wxBLACK_BRUSH;
-    wxbrush.SetStyle(wxSOLID);
+//    wxbrush.SetStyle(//wxSOLID
+//      wxTRANSPARENT);
     for( BYTE barIndex = 0; barIndex < numberOfBars; ++ barIndex )
     {
       colouredBarHeight =
@@ -79,18 +80,30 @@ void wxIconDrawer::DrawColouredBarsIcon(
 
 //      brush.SetColour( ar_wxcolour[barIndex] );
 //    //wxWHITE_BRUSH is black for monochrome bitmaps?
-      m_wxmemorydc.SetBrush( //* wxRED_BRUSH
-//        brush
-        wxbrush
-        );
+//      m_wxmemorydc.SetBrush( //* wxRED_BRUSH
+////        brush
+//        wxbrush
+//        );
       //Alternate brush colours.
       if( wxbrush //== wxBLACK_BRUSH
           .GetColour() == * wxBLACK )
+      {
 //        c_p_wxbrush = wxGREY_BRUSH;
-        wxbrush.SetColour( * wxLIGHT_GREY);
+//        wxbrush.SetColour( * wxLIGHT_GREY);
+        m_wxmemorydc.SetPen( * wxBLACK_PEN);
+        m_wxmemorydc.SetBrush( * wxBLACK_BRUSH);
+      }
       else
+      {
         //c_p_wxbrush = wxBLACK_BRUSH;
-        wxbrush.SetColour( * wxBLACK);
+//        wxbrush.SetColour( * wxBLACK);
+        m_wxmemorydc.SetBrush( * wxGREY_BRUSH);
+        m_wxmemorydc.SetPen( //* wxLIGHT_GREY_PEN
+          * wxGREY_PEN);
+      }
+      //http://docs.wxwidgets.org/2.8/wx_wxdc.html#wxdcdrawrectangle:
+      //"The current pen is used for the outline and the current brush for
+      //filling the shape."
       m_wxmemorydc.DrawRectangle( //wxT("38")
         rectColouredBar);
     }
