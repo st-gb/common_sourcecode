@@ -43,20 +43,16 @@ Logger::Logger(
 #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
     m_trie(255),
 #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-    m_logLevel(LogLevel::log_message_typeWARNING),
+    m_logLevel(LogLevel:://warning),
+      info),
     m_p_log_formatter(NULL),
     m_p_std_ofstream(NULL),
     m_p_std_ostream(NULL)
 //  , m_p_stdsetstdstrExcludeFromLogging( gp_cpucontrolbase)
 {
-  CreateTextFormatter();
-  std::string str = "info";
-//  LogLevel::s_nodetrieLogLevelStringToNumber.Create(255);
-  LogLevel::s_nodetrieLogLevelStringToNumber.insert_inline( (BYTE *) str.c_str(),
-    str.length(), LogLevel::log_message_typeINFO);
-  str = "warning";
-  LogLevel::s_nodetrieLogLevelStringToNumber.insert_inline( (BYTE *) str.c_str(),
-    str.length(), LogLevel::log_message_typeWARNING);
+//  CreateTextFormatter();
+  if( LogLevel::s_nodetrieLogLevelStringToNumber.size() == 0)
+    LogLevel::CreateLogLevelStringToNumberMapping();
 }
 
 Logger::Logger( std::string & stdstrFilePath )
@@ -89,6 +85,7 @@ Logger::~Logger()
   //Set to NULL so the calling Log() evaluates the pointer address if it is
   // NULL.
   m_p_std_ofstream = NULL ;
+  m_p_std_ostream = NULL;
 //  LOGN("end of ~Logger")
 }
 
@@ -204,8 +201,9 @@ void Logger::Log(//ostream & ostr
 }
 
 /** ANSI version of OpenFile */
-bool Logger::OpenFileA( const std::string & c_r_stdstrFilePath )
+bool Logger::OpenFileA( const std::string & c_r_stdstrFilePath, bool bRolling)
 {
+//  m_bRolling = bRolling;
   m_std_strLogFilePath = c_r_stdstrFilePath;
   bool bFileIsOpen =
 //#ifdef _WIN32
@@ -215,9 +213,10 @@ bool Logger::OpenFileA( const std::string & c_r_stdstrFilePath )
 //  GetStdOstream();
 //#endif
   if( bFileIsOpen )
+    if( m_p_log_formatter == NULL )
 //    CreateFormatter("",
 //      "%year%.%month%.%day% %hour%:%minute%:%second%s%millisecond%ms ");
-    CreateTextFormatter();
+      CreateTextFormatter();
   return bFileIsOpen;
   //m_ofstream << "File Opened" ;
   //*mp_ofstream << "File Opened" ;

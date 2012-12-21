@@ -36,6 +36,7 @@
         #define COMPILE_WITH_LOG
       #endif //COMPILE_WITH_LOG
     #endif
+
 //  //Keep away the dependency on Logger class for dyn libs.
 //  #if ! defined(COMPILE_LOGGER_MULTITHREAD_SAFE) //&& !defined(_DEBUG)
   //  #define LOG(...) /* ->empty/ no instructions*/
@@ -67,7 +68,7 @@
     //MinGW is able to use wprintf() but not std::wcout()
     #define DEBUG_WPRINTFN(...) { wprintf(__VA_ARGS__) ; wprintf(L"\n"); \
       fflush(stdout) ; }
-  #else
+  #else //#ifdef _DEBUG
     //Following macros: because of ";": block can be used after "if"/"else"
     #define DEBUG_COUT(coutArgs) ;/*empty;block can be used after "if"/"else"*/
     #define DEBUG_COUTN(coutArgs) ;/*empty; can be used after "if"/"else"*/
@@ -130,14 +131,25 @@
     #include <vector> /*class std::vector*/
     #if defined(LOGGING_CHARACTER_TYPE_ID) && LOGGING_CHARACTER_TYPE_ID == 0
       #define OWN_LOGGER_LOG_LOGGER_NAME(logger_name, std_basic_string) \
-        std::string std_str = getUTF8string(std_basic_string); \
-          logger_name.Log( std_str ) ;
+        std::string std_strUTF8 = getUTF8string(std_basic_string); \
+        logger_name.Log( std_strUTF8 ) ;
+      #define OWN_LOGGER_LOG_LOGGER_NAME_TYPE(logger_name, std_basic_string, \
+        messageType) \
+        std::string std_strUTF8 = getUTF8string(std_basic_string); \
+        logger_name.Log( std_strUTF8, messageType) ;
+      #define OWN_LOGGER_LOG_LOGGER_NAME_FUNCNAME_TYPE(logger_name, \
+        std_basic_string, messageType) \
+        std::string std_strUTF8 = getUTF8string(std_basic_string); \
+        logger_name.Log( std_strUTF8, messageType, __PRETTY_FUNCTION__ ) ;
     #else //#if defined(LOGGING_CHARACTER_TYPE_ID) && LOGGING_CHARACTER_TYPE_ID == 0
       #define OWN_LOGGER_LOG_LOGGER_NAME(logger_name, std_basic_string) \
         logger_name.Log( std_basic_string ) ;
       #define OWN_LOGGER_LOG_LOGGER_NAME_TYPE(logger_name, std_basic_string, \
         messageType) \
         logger_name.Log( std_basic_string, messageType) ;
+      #define OWN_LOGGER_LOG_LOGGER_NAME_FUNCNAME_TYPE(logger_name, \
+        std_basic_string, messageType) \
+        logger_name.Log( std_basic_string, messageType, __PRETTY_FUNCTION__ ) ;
     #endif //#if defined(LOGGING_CHARACTER_TYPE_ID) && LOGGING_CHARACTER_TYPE_ID == 0
       /*std::vector<unsigned char> std_vec_by;
       getUTF8string(std_basic_string, std_vec_by);
@@ -170,7 +182,7 @@
     #include <sstream> //for class std::stringstream
     //#endif
 //#define USE_LOG4CPLUS
-#ifdef USE_LOG4CPLUS
+  #ifdef USE_LOG4CPLUS
     #include <log4cplus/loggingmacros.h> //for LOG4CPLUS_INFO(...)
 //    //forward decl.
 //    namespace log4cplus
@@ -179,9 +191,9 @@
 //    }
     #include <log4cplus/logger.h> //log4cplus::class Logger
     extern log4cplus::Logger log4cplus_logger ;
-#else
+  #else //#ifdef USE_LOG4CPLUS
   //#define LOG4CPLUS_INFO(logger, logEvent) /* ->empty*/
-#endif //#ifdef USE_LOG4CPLUS
+  #endif //#ifdef USE_LOG4CPLUS
     #define MAKE_STRING_FROM_STRING_STREAM(string, to_ostream) { \
       css::basic_stringstream<LOGGING_CHARACTER_TYPE> stringstream ; \
       stringstream << to_ostream; \
@@ -215,12 +227,21 @@
       if( messageType >= logger.GetLogLevel() ) { \
         WRITE_INTO_STRING_STREAM(logger, to_ostream) \
         \
-        OWN_LOGGER_LOG_LOGGER_NAME_TYPE( logger , \
+        OWN_LOGGER_LOG_LOGGER_NAME_FUNCNAME_TYPE( logger , \
           g_std_basicstring_log_char_typeLog, messageType) \
         OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger) \
       } \
       /*LOG4CPLUS_INFO(log4cplus_logger, g_std_basicstring_log_char_typeLog ); */\
       /*g_logger.Log("test ") ; */ }
+    #define LOG_FUNCNAME_LOGGER_NAME_TYPE(logger, to_ostream, messageType) { \
+      /* E.g. do not log "info" messages if level is "warning". */ \
+      if( messageType >= logger.GetLogLevel() ) { \
+        WRITE_INTO_STRING_STREAM(logger, to_ostream) \
+        \
+        OWN_LOGGER_LOG_LOGGER_NAME_TYPE( logger , \
+          g_std_basicstring_log_char_typeLog, messageType) \
+        OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger) \
+      } \
 
     //LOGxx macros: should log no matter whether release or debug.
     //Because under _Linux_ unloading a dynamic library with a global g_logger
@@ -233,13 +254,16 @@
         g_std_basicstring_log_char_typeLog ) \
       OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger) \
       LOG4CPLUS_INFO(log4cplus_logger, g_std_basicstring_log_char_typeLog );*/ \
-      LOG_LOGGER_NAME_TYPE(logger, to_ostream, LogLevel::log_message_typeINFO) \
+      LOG_LOGGER_NAME_TYPE(logger, to_ostream, LogLevel::info) \
       /*g_logger.Log("test ") ; */ }
 //    #endif
+    #define LOG_FUNCNAME_LOGGER_NAME(logger, to_ostream) { \
+      LOG_FUNCNAME_LOGGER_NAME_TYPE(logger, to_ostream, LogLevel::info) }
 
     #include "log_logger_name_thread_unsafe.h"
 
     #define LOG(to_ostream) LOG_LOGGER_NAME(g_logger,to_ostream)
+    #define LOG_FUNCNAME(to_ostream) LOG_FUNCNAME_LOGGER_NAME(g_logger,to_ostream)
     #define LOG_TYPE(to_ostream, messageType) \
       LOG_LOGGER_NAME_TYPE(g_logger, to_ostream, messageType)
     //#ifdef COMPILE_WITH_LOG
@@ -263,6 +287,8 @@
     #define LOGN(to_ostream) LOG (to_ostream << "\n")
     #define LOGN_TYPE(to_ostream, messageType) \
       LOG_TYPE (to_ostream << "\n", messageType)
+    #define LOGN_ERROR(to_ostream) LOGN_TYPE(to_ostream, LogLevel::error)
+    #define LOGN_DEBUG(to_ostream) LOGN_TYPE(to_ostream, LogLevel::debug)
     #define LOG_FUNC_NAME_LN(to_ostream) LOG( __F << to_ostream )
     #define LOGN_LOGGER_NAME(logger_name,to_ostream) \
       LOG_LOGGER_NAME(logger_name,to_ostream << "\n")

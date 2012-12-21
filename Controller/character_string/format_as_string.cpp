@@ -15,6 +15,7 @@
 #include <preprocessor_macros/logging_preprocessor_macros.h> //for DEBUG etc.
 #include <string> //for std::string
 #include <windef.h> //for WORD, BYTE
+#include <sstream> //class std::ostringstream
 #define MAX_BIT_INDEX_FOR_UL 31
 
 std::string format_output_data(

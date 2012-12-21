@@ -29,21 +29,37 @@ using namespace LogLevel;
 //typedef
 class Logger;
 
+struct PointerToLogFileEntryMemberAndNumFormatChars
+{
+  BYTE m_numCharsToFormat;
+  const void * m_p_logfileentrymember;
+};
+
 class uint16_tPointerAndBYTE
 {
 public:
-  const uint16_t * m_p_uint16_t;
+//  const uint16_t * m_p_uint16_t;
+//  BYTE m_numCharsToFormat;
+  PointerToLogFileEntryMemberAndNumFormatChars *
+    m_p_p_logfileentrymember_and_num_formatchars;
   BYTE m_numCharsToSkip;
 //  BYTE m_charIndexOfLeftPercentSign;
   uint16_t m_charIndexOfLeftPercentSign;
   uint16_tPointerAndBYTE(
-    const uint16_t * p_uint16_t,
+//    const uint16_t * p_uint16_t,
+    PointerToLogFileEntryMemberAndNumFormatChars *
+      p_p_logfileentrymember_and_num_formatchars,
     BYTE byte, //# bytes to skip on replacement of place holder on left "%"
-    uint16_t charIndexOfLeftPercentSign
+    uint16_t charIndexOfLeftPercentSign//,
+//    BYTE numCharsToFormat
     )
-    : m_p_uint16_t(p_uint16_t),
+    : //m_p_uint16_t(p_uint16_t),
+      m_p_p_logfileentrymember_and_num_formatchars(
+        p_p_logfileentrymember_and_num_formatchars),
       m_numCharsToSkip (byte),
-      m_charIndexOfLeftPercentSign(charIndexOfLeftPercentSign)
+      m_charIndexOfLeftPercentSign(charIndexOfLeftPercentSign//,
+//      m_numCharsToFormat(numCharsToFormat)
+      )
   {
   }
 };
@@ -62,7 +78,10 @@ protected:
   std::basic_ostream<char> * m_p_std_ostream;
   std::string m_TimeFormatString;
   const LogFileEntry * m_p_logfileentry;
-  NodeTrie<const uint16_t *> m_nodetrieTimePlaceHolderToLogFileEntryMember;
+//  NodeTrie<const uint16_t *> m_nodetrieTimePlaceHolderToLogFileEntryMember;
+  NodeTrie<PointerToLogFileEntryMemberAndNumFormatChars>
+    m_nodetrieTimePlaceHolderToLogFileEntryMember;
+//  std::vector<uint16_tPointerAndBYTE> m_vecPointerToTimeElementFromLogFileEntry;
   std::vector<uint16_tPointerAndBYTE> m_vecPointerToTimeElementFromLogFileEntry;
 public:
 
@@ -77,37 +96,25 @@ public:
   void GetTimeAsString(const LogFileEntry & logfileentry//,
 //    std::string & std_strTime
     );
-  inline void Replace(
-    const std::string & std_strToReplace,
-    const std::string & std_strFromLogFileEntry
-    );
-  BYTE Replace(uint16_t IndexOf1stChar, uint16_t IndexOfLastChar,
-//    std::string & std_strTime
-    char * & ar_ch);
   void SetStdOstream(std::ostream * p_std_ostream)
     { m_p_std_ostream = p_std_ostream; }
   void SetTimeFormat(const std::string & TimeFormatString);
+  /** Must be virtual for polymorphism */
   virtual void WriteHeader() {}
+  /** Must be virtual for polymorphism */
   virtual void WriteTrailer() {}
 
+  /** Must be virtual for polymorphism */
   virtual void WriteLogFileEntry(
     const LogFileEntry & logfileentry,
-    enum MessageType messageType = log_message_typeINFO
+    enum MessageType messageType = LogLevel::info,
+    const char * const prettyFunctionFormattedFunctionName = NULL
     )
   {
 //    static std::string std_strTime;
     GetTimeAsString(logfileentry//, std_strTime
       );
     * m_p_std_ostream
-//      << logfileentry.year << "-"
-//      << (WORD) logfileentry.month << "-"
-//      << (WORD) logfileentry.day << " "
-//      << (WORD) logfileentry.hour << ":"
-//      << (WORD) logfileentry.minute << ":"
-//      << (WORD) logfileentry.second << ":"
-//      << logfileentry.millisecond << ":"
-//      << logfileentry.nanosecond << " "
-//      << std_strTime
       << m_p_chTimeString
       << " thread ID:" << logfileentry.threadID << " "
       << * logfileentry.p_std_strMessage
@@ -116,7 +123,7 @@ public:
   }
 
   virtual void WriteMessage(const std::string & r_std_strMessage,
-    enum MessageType messageType = log_message_typeINFO)
+    enum MessageType messageType = LogLevel::info)
   {
     * m_p_std_ostream << r_std_strMessage << "\n";
   }

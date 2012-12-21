@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
+ * You are allowed to modify and use the source code from
+ * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
+ * making profit with it or its adaption. Else you may contact Trilobyte SE.
+ */
 /*
  * ReadXMLfile.hpp
  *
@@ -25,18 +32,21 @@ inline BYTE ReadXMLfile_Inline(
   )
 {
   BYTE by = 1 ;
-  LOGN("ReadXMLfile_Inline(" << cpc_chXMLfilePath
+  LOGN_DEBUG(//"ReadXMLfile_Inline(" <<
+    cpc_chXMLfilePath
     << "," << pc_defaulthandler << ",...) begin")
   XMLCh * p_xmlchXMLfilePath = XERCES_CPP_NAMESPACE::XMLString::transcode(
     cpc_chXMLfilePath);
-  LOGN("ReadXMLfile_Inline--file path as Xerces string: " <<
+  LOGN_DEBUG(//"ReadXMLfile_Inline--"
+    "file path as Xerces string: " <<
     p_xmlchXMLfilePath )
   if( p_xmlchXMLfilePath )
   {
     XERCES_CPP_NAMESPACE::LocalFileInputSource xerces_localfileinputsource(
       p_xmlchXMLfilePath ) ;
-    LOGN("ReadXMLfile_Inline--LocalFileInputSource obj: "
-      << & xerces_localfileinputsource )
+    LOGN_TYPE(//"ReadXMLfile_Inline--"
+      "LocalFileInputSource obj: "
+      << & xerces_localfileinputsource, LogLevel::debug )
     by = ReadXMLdocument(
       xerces_localfileinputsource ,
       pc_defaulthandler ,
@@ -44,7 +54,8 @@ inline BYTE ReadXMLfile_Inline(
       ) ;
     XERCES_CPP_NAMESPACE::XMLString::release( & p_xmlchXMLfilePath );
   }
-  LOGN("ReadXMLfile_Inline before return")
+  LOGN_DEBUG(//"ReadXMLfile_Inline "
+    "before return")
   return by ;
 }
 

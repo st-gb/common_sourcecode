@@ -52,11 +52,11 @@ public:
   //inline
   void WriteLogFileEntry(
     const LogFileEntry & logfileentry,
-    enum MessageType messageType = log_message_typeINFO
+    enum MessageType messageType = LogLevel::info
     );
 
   void WriteMessage(const std::string & r_std_strMessage,
-    enum MessageType messageType = log_message_typeINFO);
+    enum MessageType messageType = LogLevel::info);
   void WriteTimeStamp(const std::stringstream & std_str_stream)
   {
     * m_p_std_ostream << "<tr><td>" << std_str_stream.str() << "</td>";

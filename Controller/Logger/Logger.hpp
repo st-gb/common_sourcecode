@@ -156,7 +156,8 @@
     inline DWORD OutputTimeStampEtc_Inline(
       const std::string & r_stdstr,
       enum LogLevel::MessageType messageType =
-          LogLevel::log_message_typeINFO
+        LogLevel::info,
+      const char * const prettyFunctionFormattedFunctionName = NULL
       )
     {
       if( m_p_log_formatter)
@@ -185,7 +186,8 @@
 //            m_p_std_ofstream )
 //        {
           m_logfileentry.p_std_strMessage = (std::string *) & r_stdstr;
-          m_p_log_formatter->WriteLogFileEntry(m_logfileentry, messageType);
+          m_p_log_formatter->WriteLogFileEntry(m_logfileentry, messageType,
+            prettyFunctionFormattedFunctionName);
           return WriteToFile();
 //        }
 //        else
@@ -265,7 +267,8 @@
     DWORD Log(//ostream & ostr
       const std::string & r_stdstrMessage,
       enum LogLevel::MessageType messageType =
-          LogLevel::log_message_typeINFO
+        LogLevel::info,
+      const char * const prettyFunctionFormattedFunctionName = NULL
       )
     {
 //      EnterCritSec();
@@ -284,7 +287,15 @@
           m_p_std_ostream->good()
           )
         {
-          return OutputTimeStampEtc_Inline(r_stdstrMessage, messageType);
+          //TODO make rolling log files possible
+//          if( m_bRolling && m_numLogEntries > m_maxNumLogEntries )
+//
+//          if(m_numFiles > 1)
+//          {
+//            TruncateFileSizeToZero();
+//          }
+          return OutputTimeStampEtc_Inline(r_stdstrMessage, messageType,
+            prettyFunctionFormattedFunctionName);
           //m_ofstream.flush() ;
   //        POSSIBLY_LEAVE_CRIT_SEC
   //        Ideas();
@@ -303,7 +314,7 @@
       const std::string & r_stdstrCodePosition,
       const std::string & r_stdstrMessage,
       enum LogLevel::MessageType messageType =
-          LogLevel::log_message_typeINFO
+          LogLevel::info
       )
     {
 //      EnterCritSec();
@@ -351,7 +362,7 @@
     void Log_inline(
       const std::string & r_stdstrMessage,
       enum LogLevel::MessageType messageType =
-          LogLevel::log_message_typeINFO
+          LogLevel::info
       )
     {
 #ifdef COMPILE_WITH_LOG
@@ -369,7 +380,7 @@
       const std::string & r_stdstrCodePosition,
       std::string & r_stdstrMessage,
       enum LogLevel::MessageType messageType =
-          LogLevel::log_message_typeINFO
+          LogLevel::info
       )
     {
 #ifdef COMPILE_WITH_LOG
@@ -391,8 +402,14 @@
 #endif //COMPILE_LOGGER_WITH_TSTRING_SUPPORT
     //"virtual" in order to "OpenFile" call subclasses overwritten function
     //if any.
-    virtual bool OpenFileA( const std::string & r_stdstrFilePath ) ;
+    virtual bool OpenFileA( const std::string & r_stdstrFilePath, bool bRolling = false) ;
     virtual bool SetStdOstream(const std::string & c_r_stdstrFilePath);
+    void SetFormatter(I_LogFormatter * p_logformatter)
+    {
+      if( m_p_log_formatter )
+        delete m_p_log_formatter;
+      m_p_log_formatter = p_logformatter;
+    }
     void SetLogLevel(const std::string & c_r_std_strLogLevel)
     {
       m_logLevel = LogLevel::GetAsNumber(c_r_std_strLogLevel);

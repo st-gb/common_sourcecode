@@ -1,3 +1,10 @@
+/* Do not remove this header/ copyright information.
+ *
+ * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany 2010-2011.
+ * You are allowed to modify and use the source code from
+ * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
+ * making profit with it or its adaption. Else you may contact Trilobyte SE.
+ */
 /*
  * XercesHelper.hpp
  *
@@ -19,20 +26,20 @@ inline bool InitializeXerces()
 {
   try
   {
-    LOGN("BEFORE initializing Xerces") ;
+    LOGN_DEBUG("BEFORE initializing Xerces") ;
     //http://xerces.apache.org/xerces-c/program-3.html:
     //"Independent of the API you want to use, DOM, SAX, or SAX2, your
     //application must initialize the Xerces system before using the API[...]"
     //Initialize() must be called _before_ any Xerces function call, else
     // SIGSEV / program crash.
     XERCES_CPP_NAMESPACE::XMLPlatformUtils::Initialize();
-    LOGN("Xerces successfully initialized") ;
+    LOGN_DEBUG("Xerces successfully initialized") ;
   }
   catch(const XERCES_CPP_NAMESPACE::XMLException & cr_xercesc_xml_exception )
   {
     char * pMsg = XERCES_CPP_NAMESPACE::XMLString::transcode(
       cr_xercesc_xml_exception.getMessage() );
-    LOGN( "Error during Xerces-c Initialization.\n"
+    LOGN_ERROR( "Error during Xerces-c Initialization.\n"
       << "  Exception message:"
       << pMsg )
     XERCES_CPP_NAMESPACE::XMLString::release( & pMsg);

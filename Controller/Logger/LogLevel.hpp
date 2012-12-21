@@ -16,10 +16,18 @@ namespace LogLevel
    * e.g. level "info" outputs all messages of info and beyond info:
    * info, warning, error, ... */
   enum MessageType{
-    log_message_typeSUCCESS,
-    log_message_typeINFO,
-    log_message_typeWARNING,
-    log_message_typeERROR,
+//    log_message_typeSUCCESS,
+//    log_message_typeINFO,
+//    log_message_typeWARNING,
+//    log_message_typeERROR,
+//    beyondLastLogMessageType
+//  };
+//  enum MessageType2{
+    success,
+    debug,
+    info,
+    warning,
+    error,
     beyondLastLogMessageType
   };
   extern //static
@@ -38,8 +46,9 @@ namespace LogLevel
       c_r_std_strLogLevel.length(), true);
     if( p_ntn )
       return (MessageType) p_ntn->m_member;
-    return log_message_typeWARNING;
+    return warning;
   }
+  void CreateLogLevelStringToNumberMapping();
 };
 
 #endif /* LOGLEVEL_HPP_ */

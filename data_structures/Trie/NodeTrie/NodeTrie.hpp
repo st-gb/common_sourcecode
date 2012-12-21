@@ -848,8 +848,10 @@ template<typename member_type>
           //p_nodetrienode
           p_nodetrienodeNew)
             {
-              //Importent when deleting node _and_ member: only members with value <> 0 are deleted.
-              p_nodetrienodeNew->m_member = 0;
+              //Important when deleting node _and_ member: only members with value <> 0 are deleted.
+              //TODO: necessary?
+//              p_nodetrienodeNew->m_member = 0;
+
               //LOGN_NODETRIE
               // DEBUGN_NODETRIE("# nodes:" << m_dwNumberOfNodes << " overall size="
               //<< m_wNodeSizeInByte << "*" << m_dwNumberOfNodes << "="
@@ -988,6 +990,7 @@ template<typename member_type>
             p->m_member = member_value;
           return p;
         }
+        size_type size() { return m_dwNumberOfNodes; }
       };//class NodeTrie
 
 //#ifndef COMPILE_NODETRIE_WITH_LOGGING

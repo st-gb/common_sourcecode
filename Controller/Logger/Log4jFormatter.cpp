@@ -1,0 +1,50 @@
+/*
+ * JavaUtilLoggingFormatter.cpp
+ *
+ *  Created on: 17.12.2012
+ *      Author: Stefan
+ */
+
+#include "Controller/Logger/Log4jFormatter.hpp"
+
+namespace CSS
+{
+  namespace LogFormatter
+  {
+
+    Log4jFormatter::Log4jFormatter(const Logger * p_logger)
+      : I_LogFormatter(p_logger)
+    {
+      //Calling this method is needed(!?) if "m_p_chTimeString" was created before.
+      SetTimeFormat(
+        //        "%day%.%month%.%year% %hour%:%minute%:%second%,%millisecond%";
+        //see http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/helpers/ISO8601DateFormat.html:
+        // "yyyy-MM-dd HH:mm:ss,SSS" for example "1999-11-27 15:49:37,459".
+        "%year%-%month%-%day% %hour%:%minute%:%second%,%millisecond%");
+    }
+
+    Log4jFormatter::~Log4jFormatter()
+    {
+      // TODO Auto-generated destructor stub
+    }
+
+    inline char * Log4jFormatter::GetLogLevelAsString(
+      enum MessageType messageType)
+    {
+      switch(messageType)
+      {
+        case LogLevel::debug:
+          return "DEBUG";
+        case LogLevel::info:
+          return "INFO";
+        case LogLevel::warning:
+          //Must NOT be "WARNING" else it was shown as level "FINE" in Otros
+          //log file viewer
+          return "WARN";
+        case LogLevel::error:
+          return "ERROR";
+      }
+      return "UNKNOWN";
+    }
+  } /* namespace LogFormatter */
+} /* namespace CSS */

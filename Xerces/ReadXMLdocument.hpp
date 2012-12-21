@@ -50,7 +50,7 @@ inline unsigned char ReadXMLdocument(
   std::wstring & r_stdwstrErrorMessage
   )
 {
-  LOGN("ReadXMLdocument begin")
+  LOGN_DEBUG(/*"ReadXMLdocument "*/"begin")
   unsigned char byReturn = 1 ;
     //DEBUG("ReadXMLfileInitAndTermXerces begin--filename:%s\n",xmlFile);
   //Initialize to NULL just to avoid (g++) compiler warning.
@@ -72,7 +72,7 @@ inline unsigned char ReadXMLdocument(
       & defaultHandler );
     try
     {
-      LOGN( "before parsing XML document"
+      LOGN_DEBUG( "before parsing XML document"
 //        << GetStdStringInline(
 //            ConvertXercesStringToStdWstring( cr_inputsource.getPublicId() )
 //          )
@@ -89,7 +89,7 @@ inline unsigned char ReadXMLdocument(
 //          if( model.m_bTruncateLogFileForEveryStartup )
 //              g_logger.TruncateFileToZeroAndRewrite() ;
        byReturn = 0 ;
-       LOGN( "XML document successfully parsed." );
+       LOGN_DEBUG( "XML document successfully parsed." );
     }
     catch ( const XERCES_CPP_NAMESPACE::XMLException & cr_xmlexception )
     {
@@ -202,7 +202,7 @@ inline unsigned char ReadXMLdocument(
   else
     r_stdwstrErrorMessage = std::wstring (
       L"Xerces failed to create an XML reader" );
-  LOGN("ReadXMLdocument end")
+  LOGN_DEBUG("ReadXMLdocument end")
 //    return SUCCESS;
   return byReturn ;
 }
