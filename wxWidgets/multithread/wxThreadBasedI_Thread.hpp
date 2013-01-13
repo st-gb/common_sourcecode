@@ -43,6 +43,10 @@ public:
   //static
     BYTE start( pfnThreadFunc, void * p_v, BYTE priority =
       WXTHREAD_DEFAULT_PRIORITY) ;
+  int GetThreadPriority()
+  {
+    return mp_wxthreadfuncstarterthread->GetPriority();
+  }
   bool IsRunning()
   {
     if( mp_wxthreadfuncstarterthread && m_byThreadType == I_Thread::joinable)

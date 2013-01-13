@@ -288,7 +288,9 @@
     #define LOGN_TYPE(to_ostream, messageType) \
       LOG_TYPE (to_ostream << "\n", messageType)
     #define LOGN_ERROR(to_ostream) LOGN_TYPE(to_ostream, LogLevel::error)
+    #define LOGN_INFO(to_ostream) LOGN_TYPE(to_ostream, LogLevel::info)
     #define LOGN_DEBUG(to_ostream) LOGN_TYPE(to_ostream, LogLevel::debug)
+    #define LOGN_WARNING(to_ostream) LOGN_TYPE(to_ostream, LogLevel::warning )
     #define LOG_FUNC_NAME_LN(to_ostream) LOG( __F << to_ostream )
     #define LOGN_LOGGER_NAME(logger_name,to_ostream) \
       LOG_LOGGER_NAME(logger_name,to_ostream << "\n")

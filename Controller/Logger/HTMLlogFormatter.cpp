@@ -31,6 +31,9 @@ inline void HTMLlogFormatter::OutputCSSclass(enum MessageType messageType)
     case LogLevel::info:
       * m_p_std_ostream << "class=\"info\"";
       break;
+    case LogLevel::debug:
+      * m_p_std_ostream << "class=\"debug\"";
+      break;
     case LogLevel::error:
       * m_p_std_ostream << "class=\"error\"";
       break;
@@ -43,6 +46,7 @@ inline void HTMLlogFormatter::OutputCSSclass(enum MessageType messageType)
     //avoid g++ "warning: enumeration value 'beyondLastLogMessageType'
     //not handled in switch.
     case beyondLastLogMessageType:
+    //case debug:
       break;
   }
 }
@@ -88,7 +92,8 @@ inline std::string & MakeHTMLFormat(std::string * p_std_strMessage)
 
 void HTMLlogFormatter::WriteLogFileEntry(
   const LogFileEntry & logfileentry,
-  enum MessageType messageType /*= LogLevel::info*/
+  enum MessageType messageType /*= LogLevel::info*/,
+  const char * const prettyFunctionFormattedFunctionName /*= NULL*/
   )
 {
 //  static std::string std_strTime;

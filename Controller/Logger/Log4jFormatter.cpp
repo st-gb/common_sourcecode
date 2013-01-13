@@ -34,17 +34,31 @@ namespace CSS
       switch(messageType)
       {
         case LogLevel::debug:
-          return "DEBUG";
+          //By "(char *)": avoid g++ warning "deprecated conversion from
+          //string constant to ‘char*’"
+          return (char *) "DEBUG";
         case LogLevel::info:
-          return "INFO";
+          //By "(char *)": avoid g++ warning "deprecated conversion from
+          //string constant to ‘char*’"
+          return (char *) "INFO";
         case LogLevel::warning:
           //Must NOT be "WARNING" else it was shown as level "FINE" in Otros
           //log file viewer
-          return "WARN";
+          //By "(char *)": avoid g++ warning "deprecated conversion from
+          //string constant to ‘char*’"
+          return (char *) "WARN";
         case LogLevel::error:
-          return "ERROR";
+          //By "(char *)": avoid g++ warning "deprecated conversion from
+          //string constant to ‘char*’"
+          return (char *) "ERROR";
+        //Unused, but if not handled: g++ warning
+        case LogLevel::beyondLastLogMessageType:
+        case LogLevel::success:
+          break;
       }
-      return "UNKNOWN";
+      //By "(char *)": avoid g++ warning "deprecated conversion from
+      //string constant to ‘char*’"
+      return (char *) "UNKNOWN";
     }
   } /* namespace LogFormatter */
 } /* namespace CSS */

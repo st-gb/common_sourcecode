@@ -20,7 +20,8 @@ namespace Windows_API
   Logger::Logger()
     : m_hFile(INVALID_HANDLE_VALUE),
       m_buffer(NULL),
-      m_dwBufferSize(0)
+      m_dwBufferSize(0),
+      m_dwGetLastErrorAfterCreateFileA(MAXDWORD)
   {
 //    CreateFormatter();
 //    if( m_p_log_formatter )
@@ -79,47 +80,69 @@ namespace Windows_API
       FILE_FLAG_WRITE_THROUGH //content is more up-to-date than without
 //      FILE_FLAG_NO_BUFFERING
       ;
-    m_hFile = ::CreateFileA(
-      c_r_stdstrFilePath.c_str(), //__in      LPCTSTR lpFileName,
-      //__in      DWORD dwDesiredAccess,
-        GENERIC_WRITE,
-      //__in      DWORD dwShareMode,
-        FILE_SHARE_READ,
-//        0, // do not share
-      NULL, //__in_opt  LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-  //    Creates a new file, always.
-  //    If the specified file exists and is writable, the function overwrites the
-  //      file, the function succeeds, and last-error code is set to
-  //      ERROR_ALREADY_EXISTS (183).
-  //    If the specified file does not exist and is a valid path, a new file is
-  //      created, the function succeeds, and the last-error code is set to zero.
-      CREATE_ALWAYS, //__in      DWORD dwCreationDisposition,
-      //__in      DWORD dwFlagsAndAttributes,
-      dwFlagsAndAttributes
-      ,NULL //__in_opt  HANDLE hTemplateFile
+    //Must delete the file first because: if the file already exists but is
+    // not writable (due to security rights) CreateFileA() just returns
+    // ERROR_ALREADY_EXISTS with "CREATE_ALWAYS" but not the "access denied"
+    // error code.
+    BOOL b = ::DeleteFileA(
+      c_r_stdstrFilePath.c_str() //_In_  LPCTSTR lpFileName
       );
-    if( dwFlagsAndAttributes & //WRITE_THROUGH_AND_NO_BUFFERING
-        FILE_FLAG_NO_BUFFERING )
-    {
-      SYSTEM_INFO sSysInfo;         // Useful information about the system
-      ::GetSystemInfo(&sSysInfo);     // Initialize the structure.
-      m_dwBufferSize = sSysInfo.dwPageSize;
-      //see http://msdn.microsoft.com/en-us/library/windows/desktop/cc644950%28v=vs.85%29.asp
-      //use "VirtualAlloc"
-      m_buffer = ::VirtualAlloc( NULL, //0 //dwSize
-        m_dwBufferSize
-        , MEM_COMMIT, PAGE_READWRITE);
-      if( m_hFile == INVALID_HANDLE_VALUE || m_buffer == NULL )
-        return false;
-    }
-#ifdef _DEBUG
     DWORD dwLastError = ::GetLastError();
-    if( dwLastError == ERROR_ALREADY_EXISTS )
-      dwLastError = ERROR_ALREADY_EXISTS;
-#endif //#ifdef _DEBUG
-    if( m_hFile == INVALID_HANDLE_VALUE)
+    //http://msdn.microsoft.com/en-us/library/windows/desktop/aa363915%28v=vs.85%29.aspx:
+    //"If an application attempts to delete a file that does not exist, the
+    //DeleteFile function fails with ERROR_FILE_NOT_FOUND
+    if( b || ( !b && ( dwLastError == ERROR_FILE_NOT_FOUND ||
+        dwLastError == ERROR_PATH_NOT_FOUND) )
+      )
+    {
+      m_hFile = ::CreateFileA(
+        c_r_stdstrFilePath.c_str(), //__in      LPCTSTR lpFileName,
+        //__in      DWORD dwDesiredAccess,
+          GENERIC_WRITE,
+        //__in      DWORD dwShareMode,
+          FILE_SHARE_READ,
+  //        0, // do not share
+        NULL, //__in_opt  LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+    //    Creates a new file, always.
+    //    If the specified file exists and is writable, the function overwrites the
+    //      file, the function succeeds, and last-error code is set to
+    //      ERROR_ALREADY_EXISTS (183).
+    //    If the specified file does not exist and is a valid path, a new file is
+    //      created, the function succeeds, and the last-error code is set to zero.
+        CREATE_ALWAYS, //__in      DWORD dwCreationDisposition,
+        //__in      DWORD dwFlagsAndAttributes,
+        dwFlagsAndAttributes
+        ,NULL //__in_opt  HANDLE hTemplateFile
+        );
+      m_dwGetLastErrorAfterCreateFileA = ::GetLastError();
+  //    LOGN_DEBUG("GetLastError after CreateFileA:" << dwLastError)
+      if( dwFlagsAndAttributes & //WRITE_THROUGH_AND_NO_BUFFERING
+          FILE_FLAG_NO_BUFFERING )
+      {
+        SYSTEM_INFO sSysInfo;         // Useful information about the system
+        ::GetSystemInfo(&sSysInfo);     // Initialize the structure.
+        m_dwBufferSize = sSysInfo.dwPageSize;
+        //see http://msdn.microsoft.com/en-us/library/windows/desktop/cc644950%28v=vs.85%29.asp
+        //use "VirtualAlloc"
+        m_buffer = ::VirtualAlloc( NULL, //0 //dwSize
+          m_dwBufferSize
+          , MEM_COMMIT, PAGE_READWRITE);
+        if( m_hFile == INVALID_HANDLE_VALUE || m_buffer == NULL )
+          return false;
+      }
+  #ifdef _DEBUG
+      DWORD dwLastError = ::GetLastError();
+      if( dwLastError == ERROR_ALREADY_EXISTS )
+        dwLastError = ERROR_ALREADY_EXISTS;
+  #endif //#ifdef _DEBUG
+      if( m_hFile == INVALID_HANDLE_VALUE
+//          || m_dwGetLastErrorAfterCreateFileA != ERROR_SUCCESS
+          )
+        return false;
+      return true;
+    }
+    else
       return false;
-    return true;
   }
 #endif
 

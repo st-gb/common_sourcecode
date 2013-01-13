@@ -27,8 +27,14 @@ namespace Windows_API
 
   }
 
+  int Thread::GetThreadPriority()
+  {
+    return ::GetThreadPriority(m_handleThread);
+  }
+
   inline void Thread::PossiblyCloseThreadHandle()
   {
+    LOGN_DEBUG( FULL_FUNC_NAME << " m_handleThread:" << m_handleThread)
     if( m_handleThread )
       ::CloseHandle(m_handleThread ) ;
   }
@@ -48,10 +54,14 @@ namespace Windows_API
         );   // returns the thread identifier
     if( m_handleThread )
     {
+#ifdef _DEBUG
+      int ThreadPriority = ::GetThreadPriority(m_handleThread);
+      LOGN_DEBUG( "current thread priority " << ThreadPriority)
+#endif
       if( prio != I_Thread::default_priority)
       {
         int nWinAPIpriority = GetWinAPIpriority(prio);
-        LOGN( "setting Thread priority " << nWinAPIpriority)
+        LOGN_DEBUG( "setting Thread priority " << nWinAPIpriority)
         ::SetThreadPriority(
           m_handleThread, //_In_  HANDLE hThread,
           nWinAPIpriority //_In_  int nPriority
@@ -64,6 +74,7 @@ namespace Windows_API
 
   Thread::~Thread()
   {
+    LOGN_DEBUG( FULL_FUNC_NAME << " begin" )
     PossiblyCloseThreadHandle();
   }
   void * Thread::WaitForTermination()

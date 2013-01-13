@@ -7,10 +7,13 @@
 
 #include "Controller/Logger/LogLevel.hpp"
 
+#define ASCII_CODE_FOR_LOW_Z_PLUS1 0x7B // 'z' + 1
+
 namespace LogLevel
 {
   //static
-  NodeTrie<BYTE> s_nodetrieLogLevelStringToNumber(255);
+  NodeTrie<BYTE> s_nodetrieLogLevelStringToNumber(ASCII_CODE_FOR_LOW_Z_PLUS1,
+    LogLevel::beyondLastLogMessageType);
   /** Must be executed prior to calling "LogLevel::GetAsNumber()". */
   void CreateLogLevelStringToNumberMapping()
   {

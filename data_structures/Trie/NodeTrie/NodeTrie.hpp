@@ -33,6 +33,11 @@ typedef unsigned short WORD;
   #define NULL 0
 #endif
 
+class RootNodeNotInitalizedException
+{
+
+};
+
 //this is the base class of node trie classes:
 //subclasses usually add a member with additional info if this node is the
 //string end.
@@ -52,6 +57,9 @@ template<typename member_type>
     WORD m_wNodeSizeInByte;
     //#ifdef _DEBUG
     unsigned long m_dwNumberOfNodes;
+    //# of nodes where member is initialized / <> default value.
+    unsigned m_numInfoNodes;
+    member_type m_defaultValue;
     //#endif
     unsigned char byValue;
     unsigned short m_wNumberOfNodesPerHierarchyLevel;
@@ -67,19 +75,24 @@ template<typename member_type>
     NodeTrieNode<member_type> * m_p_nodetrienodeCurrent;
   public:
     NodeTrie() :
-      m_dwNumberOfNodes(0)
+      m_dwNumberOfNodes(0),
+      m_numInfoNodes(0)
     {
+//      NodeTrie(255); //default: 255 elements per level
       //m_nodetrienodeRoot.m_arp_nodetrienode1LowerLevel = NULL;
       m_nodetrienodeRoot.m_member = NULL;
     }
-    NodeTrie(unsigned short wNumberOfNodes)
+    NodeTrie(unsigned wNumberOfNodes, member_type defaultValue)
       : //C++ style member variable initializations.
       //#ifdef _DEBUG
       m_dwNumberOfNodes(0),
+      m_numInfoNodes(0),
+      m_defaultValue(defaultValue),
       //#endif
       m_wNumberOfNodesPerHierarchyLevel(wNumberOfNodes),
-      m_nodetrienodeRoot(wNumberOfNodes)
+      m_nodetrienodeRoot(wNumberOfNodes, defaultValue)
     {
+//      NodeTrieNode::s_defaultValue = defaultValue;
       //    m_ar_nodetrienodeRoot = new NodeTrieNode * [
       //      m_wNumberOfNodesPerHierarchyLevel ] ;
       m_wNodeSizeInByte = sizeof(NodeTrieNode<member_type> )
@@ -112,6 +125,18 @@ template<typename member_type>
     //    for( )
     //      if( m_ar[ str[i] })
     //  }
+
+//    /** Non-inlined version (for breakpoint purposes)
+//     * @return pointer to the node that represents the last byte/ character.
+//     */
+//    NodeTrieNode<member_type> *
+//    contains( //void
+//      unsigned char * p_vBegin, //unsigned short wBytesize,
+//      size_type wBytesize,
+//      //If e.g. "# of bytes" and "# of bytes: 3":
+//      // -if bFullMatch == true, it returns "false, else it returns "true".
+//      bool bFullMatch
+//      );
 
     /**@return pointer to the node that represents the last byte/ character.
      *
@@ -169,8 +194,10 @@ template<typename member_type>
         if (bFullMatch //If p_vBegin matches exactly the trie data.
           )
         {
-          //All nodes were found -> match.
-          if (m_wIndex == wBytesize)
+          //All nodes were found -> match. The string matches the trie.
+          if (m_wIndex == wBytesize &&
+              //The current trie node marks a string end.
+              m_p_nodetrienodeCurrent->m_member != m_defaultValue )
           {
             //        bExists = true ;
             return //m_ar_nodetrienodeCurrent ;
@@ -439,8 +466,11 @@ template<typename member_type>
                               //May NOT be deleted if it points to the root node because the
                               // root node is created on stack .
                               //delete [] ar_p_byCurrent ;
-                              if (p_nodetrienodeCurrent->m_member)
+                              if (p_nodetrienodeCurrent->m_member != m_defaultValue)
+                              {
                                 delete p_nodetrienodeCurrent->m_member;
+                                -- m_numInfoNodes;
+                              }
                               delete p_nodetrienodeCurrent;
 #ifdef _DEBUG
                               --m_dwNumberOfNodes;
@@ -824,50 +854,54 @@ template<typename member_type>
     //    while( ar_p_by1LevelAbove ) ;
     //  }
 
+    /** @param defaultValue if a value is <> this value then it marks a string
+     * end*/
     NodeTrieNode<member_type> *
     CreateNodes(NodeTrieNode<member_type> * p_nodetrienodeCurrent,
-        unsigned char * p_vBegin, unsigned short wBytesize)
+      unsigned char * p_vBegin, unsigned short wBytesize//,
+      //member_type member_value = 0
+      )
     {
       BYTE byValue;
       NodeTrieNode<member_type> * p_nodetrienodeNew = NULL;
       for (WORD wIndex = 0; wIndex < wBytesize; ++wIndex)
-        {
-          byValue = p_vBegin[wIndex];
-          //      //store address of created array at address for current byte value
-          //      // (where the value is/was NULL).
-          //      ar_p_byCurrent [ byValue ] = p_p_ch ;
-          //
-          //        p_p_nodetrienode = new NodeTrieNode *
-          //          [ m_wNumberOfNodesPerHierarchyLevel ] ;
+      {
+        byValue = p_vBegin[wIndex];
+        //      //store address of created array at address for current byte value
+        //      // (where the value is/was NULL).
+        //      ar_p_byCurrent [ byValue ] = p_p_ch ;
+        //
+        //        p_p_nodetrienode = new NodeTrieNode *
+        //          [ m_wNumberOfNodesPerHierarchyLevel ] ;
 
-          //NodeTrieNode<member_type> * p_nodetrienode =//
-          p_nodetrienodeNew = new NodeTrieNode<member_type> (
-              m_wNumberOfNodesPerHierarchyLevel);
-          //Allocation succeeded.
-          if ( //ar_nodetrienodeCurrent
-          //p_nodetrienode
-          p_nodetrienodeNew)
-            {
-              //Important when deleting node _and_ member: only members with value <> 0 are deleted.
-              //TODO: necessary?
+        //NodeTrieNode<member_type> * p_nodetrienode =//
+        p_nodetrienodeNew = new NodeTrieNode<member_type> (
+            m_wNumberOfNodesPerHierarchyLevel, m_defaultValue);
+        //Allocation succeeded.
+        if ( //ar_nodetrienodeCurrent
+            //p_nodetrienode
+            p_nodetrienodeNew)
+        {
+          //Important when deleting node _and_ member: only members with value <> 0 are deleted.
+          //TODO: necessary?
 //              p_nodetrienodeNew->m_member = 0;
 
-              //LOGN_NODETRIE
-              // DEBUGN_NODETRIE("# nodes:" << m_dwNumberOfNodes << " overall size="
-              //<< m_wNodeSizeInByte << "*" << m_dwNumberOfNodes << "="
-              //<< m_wNodeSizeInByte * m_dwNumberOfNodes
-              //<< "Address of node where to create a next level: " <<
-              //& p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel [ byValue ]
-              //<< " address of created "
-              //	//"array:" << //p_nodetrienode
-              //	"node:"
-              //	p_nodetrienodeNew
-              //	)
-              //Store the address of the created array at the node.
-              //        ar_nodetrienodeCurrent[ byValue ] = (NodeTrieNode *) p_p_nodetrienode ;
-              p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[byValue] =
-              //p_nodetrienode ;
-                  p_nodetrienodeNew;
+          //LOGN_NODETRIE
+          // DEBUGN_NODETRIE("# nodes:" << m_dwNumberOfNodes << " overall size="
+          //<< m_wNodeSizeInByte << "*" << m_dwNumberOfNodes << "="
+          //<< m_wNodeSizeInByte * m_dwNumberOfNodes
+          //<< "Address of node where to create a next level: " <<
+          //& p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel [ byValue ]
+          //<< " address of created "
+          //	//"array:" << //p_nodetrienode
+          //	"node:"
+          //	p_nodetrienodeNew
+          //	)
+          //Store the address of the created array at the node.
+          //        ar_nodetrienodeCurrent[ byValue ] = (NodeTrieNode *) p_p_nodetrienode ;
+          p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[byValue] =
+          //p_nodetrienode ;
+              p_nodetrienodeNew;
 //              if (byValue != 0)
 //                DEBUGN_NODETRIE("created new node at address %x, array address:%x for value %u ('%c') and assigned it to parent's array element %x",
 //                  p_nodetrienodeNew,
@@ -883,115 +917,130 @@ template<typename member_type>
 //                  & p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel [ byValue]
 //                  )
 
-                  p_nodetrienodeCurrent = p_nodetrienodeNew;
+              p_nodetrienodeCurrent = p_nodetrienodeNew;
 
-                  //        ar_nodetrienodeCurrent = //(unsigned char **) ar_p_byCurrent[ byValue ] ;
-                  //            p_p_nodetrienode ;
+              //        ar_nodetrienodeCurrent = //(unsigned char **) ar_p_byCurrent[ byValue ] ;
+              //            p_p_nodetrienode ;
 
-                  //        //Value will have "abitrary" value -> set to NULL to mark the end.
-                  //        //cites from: http://www.cplusplus.com/reference/clibrary/cstring/memset/
-                  //        memset( //Pointer to the block of memory to fill.
-                  ////          ar_nodetrienodeCurrent,
-                  //          p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel ,
-                  //          //Value to be set.
-                  //          0 ,
-                  //          //Number of bytes to be set to the value.
-                  //          m_wNumberOfNodesPerHierarchyLevel * sizeof(NodeTrieNode *)
-                  //          ) ;
-                  //  #ifdef _DEBUG
-                  ++m_dwNumberOfNodes;
-                  //  #endif
-                }
-              else
-                {
-                  LOGN_NODETRIE("NodeTrie::insert_inline(...)--allocating a node failed--"
-                      "return NULL")
-                  return //false ;
-                  NULL;
-                }
-            }
-          return p_nodetrienodeCurrent;
+              //        //Value will have "abitrary" value -> set to NULL to mark the end.
+              //        //cites from: http://www.cplusplus.com/reference/clibrary/cstring/memset/
+              //        memset( //Pointer to the block of memory to fill.
+              ////          ar_nodetrienodeCurrent,
+              //          p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel ,
+              //          //Value to be set.
+              //          0 ,
+              //          //Number of bytes to be set to the value.
+              //          m_wNumberOfNodesPerHierarchyLevel * sizeof(NodeTrieNode *)
+              //          ) ;
+              //  #ifdef _DEBUG
+              ++ m_dwNumberOfNodes;
+              //  #endif
         }
-
-        //NodeTrieNode **
-        NodeTrieNode<member_type> *
-        insert_inline( //void
-            unsigned char * p_vBegin, unsigned short wBytesize)
+        else
         {
+          LOGN_NODETRIE("NodeTrie::insert_inline(...)--allocating a node failed--"
+              "return NULL")
+          return //false ;
+          NULL;
+        }
+      }
+      return p_nodetrienodeCurrent;
+    }
+
+    //NodeTrieNode **
+    /** @param defaultValue if a value is <> this value then it marks a string
+     * end*/
+    NodeTrieNode<member_type> *
+    insert_inline( //void
+      unsigned char * p_vBegin, unsigned wBytesize//, member_type member_value
+      )
+    {
 #ifdef COMPILE_WITH_LOG
-          std::ostringstream strstream;
-          for (unsigned short wIndex = 0; wIndex < wBytesize; ++wIndex)
-            {
-              strstream << (WORD) p_vBegin[wIndex] << " ";
-            }
-          std::string stdstr = strstream.str();
-          LOGN_NODETRIE("NodeTrie::insert_inline(\"" << stdstr << "\","
-              << wBytesize << ")" )
+      std::ostringstream strstream;
+      for (unsigned short wIndex = 0; wIndex < wBytesize; ++wIndex)
+      {
+        strstream << (WORD) p_vBegin[wIndex] << " ";
+      }
+      std::string stdstr = strstream.str();
+      LOGN_NODETRIE("NodeTrie::insert_inline(\"" << stdstr << "\","
+          << wBytesize << ")" )
 #else
-          LOGN_NODETRIE("NodeTrie::insert_inline()" )
+      LOGN_NODETRIE("NodeTrie::insert_inline()" )
 #endif
-          //    NodeTrieNode ** ar_nodetrienodeCurrent = m_ar_nodetrienodeRoot ;
-          if (m_nodetrienodeRoot.m_arp_nodetrienode1LowerLevel)
-            {
-              NodeTrieNode<member_type> * p_nodetrienodeCurrent =
-                  &m_nodetrienodeRoot;
+      //    NodeTrieNode ** ar_nodetrienodeCurrent = m_ar_nodetrienodeRoot ;
+      if (m_nodetrienodeRoot.m_arp_nodetrienode1LowerLevel)
+      {
+        NodeTrieNode<member_type> * p_nodetrienodeCurrent =
+            &m_nodetrienodeRoot;
 
-              //		DEBUGN_NODETRIE("address of root node: %x, address of its array: %x",
-              //			p_nodetrienodeCurrent,
-              //			m_nodetrienodeRoot.m_arp_nodetrienode1LowerLevel)
+        //		DEBUGN_NODETRIE("address of root node: %x, address of its array: %x",
+        //			p_nodetrienodeCurrent,
+        //			m_nodetrienodeRoot.m_arp_nodetrienode1LowerLevel)
 
-              //    NodeTrieNode ** p_p_nodetrienode ;
-              BYTE byValue;
-              //NodeTrieNode<member_type> * p_nodetrienodeNew = NULL;
-              for (WORD wIndex = 0; wIndex < wBytesize; ++wIndex)
-                {
-                  byValue = p_vBegin[wIndex];
-                  LOGN_NODETRIE("address of level: " << p_nodetrienodeCurrent
-                      << "node address: " << (DWORD) p_nodetrienodeCurrent->
-                      m_arp_nodetrienode1LowerLevel[ byValue ]
-                      << " index:" << wIndex
-                      << " character:" << p_vBegin[wIndex]
-                  )
-                  if ( //ar_nodetrienodeCurrent[ byValue ]
-                  p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[byValue])
-                    //        ar_nodetrienodeCurrent = (NodeTrieNode **) ar_nodetrienodeCurrent[
-                    //          byValue ] ;
-                    p_nodetrienodeCurrent
-                        = p_nodetrienodeCurrent-> m_arp_nodetrienode1LowerLevel[byValue];
-                  //;
-                  else // value array element is NULL -> end of string
-                    {
-                      //The child node of all following nodes are NULL because they are
-                      //created So execute the creation in another loop to avoid the unneeded test
-                      // "if(p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[ byValue ] )".
-                      return CreateNodes(p_nodetrienodeCurrent, p_vBegin
-                          + wIndex, wBytesize - wIndex);
-                    }
-                  //p_nodetrienodeCurrent = p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[ byValue ];
-                } //"for" loop
-              LOGN_NODETRIE("NodeTrie::insert_inline(...)--return " << p_nodetrienodeCurrent )
-              return //true ;
-              //ar_nodetrienodeCurrent ;
-              p_nodetrienodeCurrent;
-            }
-          else
-            return NULL;
-        }
-
-        NodeTrieNode<member_type> *
-        insert_inline(
-            //void
-            unsigned char * p_vBegin, unsigned short wBytesize,
-            member_type member_value)
+        //    NodeTrieNode ** p_p_nodetrienode ;
+        BYTE byValue;
+        //NodeTrieNode<member_type> * p_nodetrienodeNew = NULL;
+        for (WORD wIndex = 0; wIndex < wBytesize; ++wIndex)
         {
-          NodeTrieNode<member_type> * p = insert_inline( //void
-              p_vBegin, wBytesize);
-          if (p)
-            p->m_member = member_value;
-          return p;
-        }
-        size_type size() { return m_dwNumberOfNodes; }
-      };//class NodeTrie
+          byValue = p_vBegin[wIndex];
+          LOGN_NODETRIE("address of level: " << p_nodetrienodeCurrent
+              << "node address: " << (DWORD) p_nodetrienodeCurrent->
+              m_arp_nodetrienode1LowerLevel[ byValue ]
+              << " index:" << wIndex
+              << " character:" << p_vBegin[wIndex]
+          )
+          if ( //ar_nodetrienodeCurrent[ byValue ]
+          p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[byValue])
+            //        ar_nodetrienodeCurrent = (NodeTrieNode **) ar_nodetrienodeCurrent[
+            //          byValue ] ;
+            p_nodetrienodeCurrent
+                = p_nodetrienodeCurrent-> m_arp_nodetrienode1LowerLevel[byValue];
+          //;
+          else // value array element is NULL -> end of string
+          {
+            //The child node of all following nodes are NULL because they are
+            //created So execute the creation in another loop to avoid the unneeded test
+            // "if(p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[ byValue ] )".
+            return CreateNodes(p_nodetrienodeCurrent, p_vBegin
+              + wIndex, wBytesize - wIndex//, defaultValue
+              );
+          }
+          //p_nodetrienodeCurrent = p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[ byValue ];
+        } //"for" loop
+        LOGN_NODETRIE("NodeTrie::insert_inline(...)--return " << p_nodetrienodeCurrent )
+        return //true ;
+        //ar_nodetrienodeCurrent ;
+        p_nodetrienodeCurrent;
+      }
+      else
+      {
+        //return NULL;
+        //The return value is not always evaluated, so better throw an
+        //exception to inform.
+        throw RootNodeNotInitalizedException();
+      }
+    }
+
+    /** @param defaultValue if a value is <> this value then it marks a string
+     * end*/
+    NodeTrieNode<member_type> *
+    insert_inline(
+        //void
+        unsigned char * p_vBegin, unsigned short wBytesize,
+        member_type member_value,
+        member_type defaultValue = 0)
+    {
+      NodeTrieNode<member_type> * p = insert_inline( //void
+          p_vBegin, wBytesize);
+      if (p)
+      {
+        p->m_member = member_value;
+        ++ m_numInfoNodes;
+      }
+      return p;
+    }
+    size_type size() { return m_dwNumberOfNodes; }
+  };//class NodeTrie
 
 //#ifndef COMPILE_NODETRIE_WITH_LOGGING
 //  #ifdef DEBUGN

@@ -52,7 +52,8 @@ public:
   //inline
   void WriteLogFileEntry(
     const LogFileEntry & logfileentry,
-    enum MessageType messageType = LogLevel::info
+    enum MessageType messageType = LogLevel::info,
+    const char * const prettyFunctionFormattedFunctionName = NULL
     );
 
   void WriteMessage(const std::string & r_std_strMessage,

@@ -53,6 +53,7 @@ public:
 //  I_Thread() {} ;
   /** For releasing ressources */
   virtual void Delete() {} ;
+  virtual int GetThreadPriority() = 0;
   virtual bool IsRunning() = 0;//{ return false;};
 //  virtual I_Thread( BYTE byThreadType ) = 0 ;
   virtual //static

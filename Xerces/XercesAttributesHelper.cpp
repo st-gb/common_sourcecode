@@ -448,7 +448,7 @@ BYTE XercesAttributesHelper::GetAttributeValue(
           byReturn = //SUCCESS;
             getting_attribute_value_succeeded;
           rwValue = nAtoiResult ;
-          LOGN("successfully got \"" << lpctstrAttrName <<
+          LOGN_DEBUG("successfully got \"" << lpctstrAttrName <<
             "\" attribute value: " << rwValue )
         }
         //Release memory of dyn. alloc. buffer (else memory leaks).
@@ -594,7 +594,7 @@ BYTE XercesAttributesHelper::GetAttributeValue(
           byReturn = //SUCCESS;
             getting_attribute_value_succeeded;
           rfValue = fAtofResult ;
-          LOGN("successfully got \"" << lpctstrAttrName <<
+          LOGN_DEBUG("successfully got \"" << lpctstrAttrName <<
             "\" attribute value: " << rfValue )
         }
         //Release memory of dyn. alloc. buffer (else memory leaks).

@@ -43,9 +43,9 @@ Logger::Logger(
 #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
     m_trie(255),
 #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
+    m_p_log_formatter(NULL),
     m_logLevel(LogLevel:://warning),
       info),
-    m_p_log_formatter(NULL),
     m_p_std_ofstream(NULL),
     m_p_std_ostream(NULL)
 //  , m_p_stdsetstdstrExcludeFromLogging( gp_cpucontrolbase)
@@ -110,7 +110,8 @@ I_LogFormatter * Logger::CreateFormatter(//BYTE type = 1
 
   if( m_p_log_formatter)
   {
-//    m_p_log_formatter->SetStdOstream( & GetStdOstream() );
+    //The std::ostream must be set every time the formatter changes.
+    m_p_log_formatter->SetStdOstream( & GetStdOstream() );
     m_p_log_formatter->WriteHeader();
     m_p_log_formatter->SetTimeFormat(std_strLogTimeFormatString);
   }
@@ -235,6 +236,13 @@ bool Logger::OpenFile( //std::string & r_stdstrFilePath
   return OpenFileA( stdstr ) ;
 }
 #endif //#ifdef COMPILE_LOGGER_WITH_TSTRING_SUPPORT
+
+void Logger::SetFormatter(I_LogFormatter * p_logformatter)
+{
+  if( m_p_log_formatter )
+    delete m_p_log_formatter;
+  m_p_log_formatter = p_logformatter;
+}
 
 inline bool Logger::SetStdOstream(const std::string & c_r_stdstrFilePath)
 {

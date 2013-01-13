@@ -30,7 +30,7 @@ I_LogFormatter::I_LogFormatter(//std::ofstream * p_std_ofstream
   :
     m_p_logger(p_logger),
     m_p_chTimeString(NULL),
-    m_nodetrieTimePlaceHolderToLogFileEntryMember(256)
+    m_nodetrieTimePlaceHolderToLogFileEntryMember(256, NULL)
 {
   m_p_std_ostream = //p_std_ofstream;
     & p_logger->GetStdOstream();
@@ -44,6 +44,7 @@ I_LogFormatter::~I_LogFormatter()
 {
   if( m_p_chTimeString )
     delete [] m_p_chTimeString;
+  m_nodetrieTimePlaceHolderToLogFileEntryMember.DeleteWithMember();
 }
 
 /** Data structure filled is used in "GetNeededArraySizeForTimeString()" */
@@ -54,42 +55,43 @@ void I_LogFormatter::CreateTimePlaceHolderToLogFileEntryMemberMapping()
   //http://stackoverflow.com/questions/330793/how-to-initialize-a-struct-in-ansi-c99
   m_nodetrieTimePlaceHolderToLogFileEntryMember.insert_inline(
     (BYTE *) str.c_str(), str.size(), //(const void *)
-    (PointerToLogFileEntryMemberAndNumFormatChars){4,& m_p_logfileentry->year} );
+    //(PointerToLogFileEntryMemberAndNumFormatChars)
+    new PointerToLogFileEntryMemberAndNumFormatChars(4,& m_p_logfileentry->year) );
   str = "month";
   m_nodetrieTimePlaceHolderToLogFileEntryMember.insert_inline(
     (BYTE *) str.c_str(), str.size(), //(const void *)
-    (PointerToLogFileEntryMemberAndNumFormatChars){2,& m_p_logfileentry->month} );
+    new PointerToLogFileEntryMemberAndNumFormatChars(2,& m_p_logfileentry->month) );
   str = "day";
   m_nodetrieTimePlaceHolderToLogFileEntryMember.insert_inline(
     (BYTE *) str.c_str(), str.size(), //(const void *)
-    (PointerToLogFileEntryMemberAndNumFormatChars){2,& m_p_logfileentry->day} );
+    new PointerToLogFileEntryMemberAndNumFormatChars(2,& m_p_logfileentry->day) );
   str = "hour";
   m_nodetrieTimePlaceHolderToLogFileEntryMember.insert_inline(
     (BYTE *) str.c_str(), str.size(), //(const void *)
-    (PointerToLogFileEntryMemberAndNumFormatChars){2,& m_p_logfileentry->hour} );
+    new PointerToLogFileEntryMemberAndNumFormatChars(2,& m_p_logfileentry->hour) );
   str = "minute";
   m_nodetrieTimePlaceHolderToLogFileEntryMember.insert_inline(
     (BYTE *) str.c_str(), str.size(), //(const void *)
-    (PointerToLogFileEntryMemberAndNumFormatChars){2,& m_p_logfileentry->minute} );
+    new PointerToLogFileEntryMemberAndNumFormatChars(2,& m_p_logfileentry->minute) );
   str = "second";
   m_nodetrieTimePlaceHolderToLogFileEntryMember.insert_inline(
     (BYTE *) str.c_str(), str.size(), //(const void *)
-    (PointerToLogFileEntryMemberAndNumFormatChars){2,& m_p_logfileentry->second} );
+    new PointerToLogFileEntryMemberAndNumFormatChars(2,& m_p_logfileentry->second) );
   str = "millisecond";
   m_nodetrieTimePlaceHolderToLogFileEntryMember.insert_inline(
     (BYTE *) str.c_str(), str.size(), //(const void *)
-    (PointerToLogFileEntryMemberAndNumFormatChars){3,
-      & m_p_logfileentry->millisecond} );
+    new PointerToLogFileEntryMemberAndNumFormatChars(3,
+      & m_p_logfileentry->millisecond) );
   str = "microsecond";
   m_nodetrieTimePlaceHolderToLogFileEntryMember.insert_inline(
     (BYTE *) str.c_str(), str.size(), //(const void *)
-    (PointerToLogFileEntryMemberAndNumFormatChars){3,
-      & m_p_logfileentry->microsecond} );
+    new PointerToLogFileEntryMemberAndNumFormatChars(3,
+      & m_p_logfileentry->microsecond) );
   str = "nanosecond";
   m_nodetrieTimePlaceHolderToLogFileEntryMember.insert_inline(
     (BYTE *) str.c_str(), str.size(), //(const void *)
-    (PointerToLogFileEntryMemberAndNumFormatChars){3,
-      & m_p_logfileentry->nanosecond} );
+    new PointerToLogFileEntryMemberAndNumFormatChars(3,
+      & m_p_logfileentry->nanosecond) );
 }
 
 /** Before formatting the numbers to string the maximum size of the resulting
@@ -100,7 +102,7 @@ uint16_t I_LogFormatter::GetNeededArraySizeForTimeString(
   const std::string & timeFormatString)
 {
 //  NodeTrieNode<const uint16_t *> * p_ntn;
-  NodeTrieNode<PointerToLogFileEntryMemberAndNumFormatChars> * p_ntn;
+  NodeTrieNode<PointerToLogFileEntryMemberAndNumFormatChars *> * p_ntn;
   uint16_t currentCharIndex = 0;
   uint16_t IndexOfLeftPercentSign = SHRT_MAX;
   uint16_t ArraySizeForTimeString = 0;
@@ -139,7 +141,7 @@ uint16_t I_LogFormatter::GetNeededArraySizeForTimeString(
             )
         {
           const uint16_tPointerAndBYTE logFilePlaceHolder(
-            & p_ntn->m_member,
+            p_ntn->m_member,
             numCharsInBetween + 2,
 //              percentPairIndex
             IndexOfLeftPercentSign//,
@@ -249,7 +251,7 @@ inline void FormatAsString(
   const PointerToLogFileEntryMemberAndNumFormatChars *
     p_p_logfileentrymember_and_num_formatchars,
   char ar_chFormatString[5],
-  char * p_chCurrentCharInFormattedTimeString
+  char *& p_chCurrentCharInFormattedTimeString
     )
 {
   //    char ar_chNumCharsToFormat[2];
@@ -297,7 +299,7 @@ void I_LogFormatter::GetTimeAsString(const LogFileEntry & logfileentry//,
 //  static uint16_t IndexOfLeftPercentSign;
   static uint16_t IndexOfCharRightOfRightPercentSign;
   static uint16_t numCharsToCopy;
-  static BYTE stringSize;
+//  static BYTE stringSize;
 //  static BYTE percentPairIndex;
   static std::vector<uint16_tPointerAndBYTE>::const_iterator
     c_iterTimeElementFromLogFileEntry;

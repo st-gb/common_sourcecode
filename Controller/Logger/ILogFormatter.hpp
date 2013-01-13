@@ -33,6 +33,12 @@ struct PointerToLogFileEntryMemberAndNumFormatChars
 {
   BYTE m_numCharsToFormat;
   const void * m_p_logfileentrymember;
+  PointerToLogFileEntryMemberAndNumFormatChars(BYTE numCharsToFormat,
+    const void * p_logfileentrymember)
+    : m_numCharsToFormat(numCharsToFormat),
+      m_p_logfileentrymember(p_logfileentrymember)
+  {
+  }
 };
 
 class uint16_tPointerAndBYTE
@@ -79,7 +85,7 @@ protected:
   std::string m_TimeFormatString;
   const LogFileEntry * m_p_logfileentry;
 //  NodeTrie<const uint16_t *> m_nodetrieTimePlaceHolderToLogFileEntryMember;
-  NodeTrie<PointerToLogFileEntryMemberAndNumFormatChars>
+  NodeTrie<PointerToLogFileEntryMemberAndNumFormatChars *>
     m_nodetrieTimePlaceHolderToLogFileEntryMember;
 //  std::vector<uint16_tPointerAndBYTE> m_vecPointerToTimeElementFromLogFileEntry;
   std::vector<uint16_tPointerAndBYTE> m_vecPointerToTimeElementFromLogFileEntry;

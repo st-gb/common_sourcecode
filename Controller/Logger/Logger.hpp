@@ -404,12 +404,7 @@
     //if any.
     virtual bool OpenFileA( const std::string & r_stdstrFilePath, bool bRolling = false) ;
     virtual bool SetStdOstream(const std::string & c_r_stdstrFilePath);
-    void SetFormatter(I_LogFormatter * p_logformatter)
-    {
-      if( m_p_log_formatter )
-        delete m_p_log_formatter;
-      m_p_log_formatter = p_logformatter;
-    }
+    void SetFormatter(I_LogFormatter * p_logformatter);
     void SetLogLevel(const std::string & c_r_std_strLogLevel)
     {
       m_logLevel = LogLevel::GetAsNumber(c_r_std_strLogLevel);

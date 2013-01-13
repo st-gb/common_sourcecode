@@ -32,6 +32,7 @@ namespace Windows_API
     DWORD m_dwBufferSize;
     std::ostringstream m_std_stringstream;
   public:
+    DWORD m_dwGetLastErrorAfterCreateFileA;
     Logger();
     virtual
     ~Logger();

@@ -37,6 +37,7 @@ namespace Windows_API
     ~Thread();
 
     void Delete() {} ;
+    int GetThreadPriority();
     int GetWinAPIpriority(BYTE prio)
     {
       switch(prio)

@@ -1,6 +1,6 @@
 /* Do not remove this header/ copyright information.
  *
- * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
+ * Copyright ï¿½ Trilobyte Software Engineering GmbH, Berlin, Germany
  * ("Trilobyte SE") 2010-at least 2012.
  * You are allowed to modify and use the source code from Trilobyte SE for free
  * if you are not making profit directly or indirectly with it or its adaption.
@@ -30,7 +30,8 @@ public:
     wxTextControlDialog(
       const wxString & c_r_wxstrMessage,
       const wxString & c_r_wxstrTitle,
-      unsigned flags = OK_BUTTON
+      unsigned flags = OK_BUTTON,
+      long dialog_style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER
       )
       : wxDialog(
           NULL,
@@ -38,7 +39,8 @@ public:
           c_r_wxstrTitle, //const wxString& title
           wxDefaultPosition, //const wxPoint& pos = wxDefaultPosition,
           wxDefaultSize, //const wxSize& size = wxDefaultSize,
-          wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER
+//          wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER
+          dialog_style
           )
     {
       wxTextCtrl * p_wxtextctrl = new wxTextCtrl(
