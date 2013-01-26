@@ -97,8 +97,19 @@ public:
   ~I_LogFormatter();
 
   void CreateTimePlaceHolderToLogFileEntryMemberMapping();
+  /*NodeTrie::size_type*/ unsigned
+    DeleteTimePlaceHolderToLogFileEntryMemberNodeTrie()
+  {
+    /*NodeTrie::size_type*/ unsigned numNodes;
+    m_nodetrieTimePlaceHolderToLogFileEntryMember.DeleteWithMember(numNodes);
+    return numNodes;
+  }
   uint16_t GetNeededArraySizeForTimeString(const std::string & timeFormatString);
   //inline
+  unsigned long GetNumberOfTimePlaceHolderToLogFileEntryMemberNodes()
+  {
+    return m_nodetrieTimePlaceHolderToLogFileEntryMember.getNumberOfNodes();
+  }
   void GetTimeAsString(const LogFileEntry & logfileentry//,
 //    std::string & std_strTime
     );

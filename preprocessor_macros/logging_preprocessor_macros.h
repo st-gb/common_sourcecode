@@ -83,7 +83,7 @@
 #ifdef LOG_LOGGER_OUTPUT_TO_STDOUT_BEFORE
   #if LOGGING_CHARACTER_TYPE_ID == 0
     #define POSSIBLY_LOG_TO_STDOUT(coutArgs) \
-      { std::wcout << coutArgs ; std::wcout.flush(); }
+      { /*std::wcout << coutArgs ; std::wcout.flush();*/ }
   #else //#if LOGGING_CHARACTER_TYPE_ID == 0
     #define POSSIBLY_LOG_TO_STDOUT(coutArgs) \
       { std::cout << coutArgs ; std::cout.flush(); }

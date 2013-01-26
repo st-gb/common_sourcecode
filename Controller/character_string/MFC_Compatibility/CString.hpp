@@ -14,7 +14,7 @@
 //#include <winnt.h> //TCHAR
 #include <tchar.h> //TCHAR
 #include <Controller/character_string/stdtstr.hpp> //GetStdString_Inline(...)
-#include <preprocessor_macros/string_typedefs.h> //LPCTSTR
+//#include <preprocessor_macros/string_typedefs.h> //LPCTSTR
 #include <string.h>
 
 namespace MFC_Compatibility
@@ -82,7 +82,7 @@ namespace MFC_Compatibility
 //      const char * const cpc_ch)
       const TCHAR * const cpc_tch)
     {
-      #ifdef UNICODE
+      #if defined(UNICODE) || defined(_UNICODE)
       return
         //http://msdn.microsoft.com/en-us/library/k59z8dwe%28v=vs.80%29.aspx:
         //"Perform a lowercase comparison of strings."

@@ -22,7 +22,11 @@ inline wxString GetwxString_Inline( LPCSTR lpcstr )
   //from http://wiki.wxwidgets.org/Converting_everything_to_and_from_wxString#
   // std::string_to_wxString
    wxString wxstr(lpcstr, wxConvUTF8);
-  return  wxstr ;
+  return wxstr ;
+}
+inline wxString GetwxString_Inline( const std::string & str )
+{
+  return GetwxString_Inline(str.c_str() ) ;
 }
 
 std::string GetStdString(const wxString & wxstr) ;

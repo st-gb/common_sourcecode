@@ -15,7 +15,7 @@
 #ifndef THREAD_HPP_
 #define THREAD_HPP_
 
-#include <Controller/multithread/I_Thread.hpp>
+#include <Controller/multithread/I_Thread.hpp> //pfnThreadFunc
 #include <windows.h> //HANDLE
 
 namespace Windows_API

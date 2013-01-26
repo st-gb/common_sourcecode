@@ -13,6 +13,7 @@
 #include "HTMLlogFormatter.hpp" //class HTMLlogFormatter::HTMLlogFormatter(...)
 #include "LogLevel.hpp" //LogLevel::MessageType
 #include <Controller/GetLastErrorCode.hpp>
+#include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 
 //If MS compiler etc.
 #if defined(_MSC_VER) || defined(__MINGW32__) || defined(__CYGWIN__)
@@ -96,8 +97,22 @@ I_LogFormatter * Logger::CreateFormatter(//BYTE type = 1
   //const char * c_p_chLogTimeFormatString
   )
 {
+#if defined(__linux__) && !defined(_DEBUG)
+  #define _DEBUG
+#endif
+#ifdef _DEBUG
+  /*NodeTrie::size_type*/ unsigned numberOfNodesAfterDelete;
+#endif //#ifdef _DEBUG
   if( m_p_log_formatter)
+  {
+#ifdef _DEBUG
+    /*NodeTrie::size_type*/ unsigned numberOfNodesAfterDelete = m_p_log_formatter->
+      DeleteTimePlaceHolderToLogFileEntryMemberNodeTrie();
+#endif //#ifdef _DEBUG
     delete m_p_log_formatter;
+  }
+//  unsigned numberOfNodesAfterDelete = m_p_log_formatter->
+//    GetNumberOfTimePlaceHolderToLogFileEntryMemberNodes();
   if( //type == 1
       //std_strType == "html"
       strcmp("html", c_p_chType) == 0
@@ -107,13 +122,19 @@ I_LogFormatter * Logger::CreateFormatter(//BYTE type = 1
   else
     m_p_log_formatter = new I_LogFormatter(//m_p_std_ofstream
       this);
-
   if( m_p_log_formatter)
   {
     //The std::ostream must be set every time the formatter changes.
     m_p_log_formatter->SetStdOstream( & GetStdOstream() );
     m_p_log_formatter->WriteHeader();
     m_p_log_formatter->SetTimeFormat(std_strLogTimeFormatString);
+#ifdef _DEBUG
+  LOGN_INFO("m_dwNumberOfNodes for PlaceHolderToLogFileEntryMember trie:"
+    << numberOfNodesAfterDelete )
+#endif //#ifdef _DEBUG
+#ifdef __linux__
+  #undef _DEBUG
+#endif
   }
   return m_p_log_formatter;
 }
