@@ -16,12 +16,13 @@
 #define HTMLFORMATLOGFILEWRITER_HPP_
 
 //#include "Logger.hpp" //base class "Logger"
-#include "ILogFormatter.hpp" //base class
+#include "I_LogFormatter.hpp" //base class
 // inline void outputDateAndTimeInHTMLFormat(std::ostream & r_ostream)
-#include "log_file_prefix.hpp"
+#include "../log_file_prefix.hpp"
 
 //typedef unsigned long WORD;
-class Logger;
+//class Logger;
+class I_LogEntryOutputter;
 
 /** Name should not contain a log destination like a file (because formatting
  * ought to be independent of the log destination), so name it like
@@ -32,9 +33,11 @@ class HTMLlogFormatter
 {
 public:
   HTMLlogFormatter(//std::ofstream * p_std_ofstream
-    const Logger * p_logger)
-    : I_LogFormatter(//p_std_ofstream
-      p_logger)
+    const /*Logger * p_logger*/ //I_LogEntryOutputter * outputhandler
+      FormattedLogEntryProcessor * p_formattedlogentryprocessor
+    )
+    : I_LogFormatter(/*p_std_ofstream  p_logger outputhandler*/
+      p_formattedlogentryprocessor)
   {
   }
   virtual

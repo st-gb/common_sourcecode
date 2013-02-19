@@ -33,7 +33,16 @@ bool ServiceBase::IsStartedAsService()
   }
   return false;
 }
-#endif
+#else //#if defined(__GNUC__) && __GNUC__ > 3
+//#include <conio.h> //::getche()
+//bool ServiceBase::IsStartedAsService()
+//{
+//  int nChar = ::getche();
+//  if( nChar == -1 ) //if started as service (after detaching): no stdin-> error code "-1"
+//    return true;
+//  return false;
+//}
+#endif //#if defined(__GNUC__) && __GNUC__ > 3
 
 SERVICE_STATUS_HANDLE ServiceBase::RegSvcCtrlHandlerAndHandleError(
   LPCTSTR lpServiceName,

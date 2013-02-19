@@ -11,6 +11,9 @@
 #include <Controller/multithread/I_Thread.hpp> //class I_Thread
 //#include <bits/pthreadtypes.h> //pthread_t
 #include <pthread.h> //pthread_t
+//#include <bits/sigthread.h> //pthread_kill(..)
+#include <signal.h> //pthread_kill(..)
+#include <errno.h> //ESRCH
 
 namespace Linux
 {
@@ -24,14 +27,12 @@ namespace Linux
     pthreadBasedI_Thread(I_Thread::thread_type = I_Thread::joinable );
     virtual
     ~pthreadBasedI_Thread();
-    BYTE start(pfnThreadFunc, void * p_v ) ;
+    BYTE start(pfnThreadFunc, void * p_v, BYTE priority = default_priority) ;
     //inline
       void * WaitForTermination() ;
+    int GetThreadPriority();
     //TODO implement IsRunning
-//    bool IsRunning()
-//    {
-//
-//    }
+    bool IsRunning();
   };
 
 }

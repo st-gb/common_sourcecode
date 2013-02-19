@@ -9,11 +9,11 @@
 #define PATH_SEPERATOR_HPP_
 
 #ifdef _WIN32
-  #define PATH_SEPERATOR_CHAR '\\'
+  #define PATH_SEPERATOR_CHAR_ANSI '\\'
 //#endif
 #else
 //#ifndef __linux__
-  #define PATH_SEPERATOR_CHAR '/'
+  #define PATH_SEPERATOR_CHAR_ANSI '/'
 #endif
 
 #endif /* PATH_SEPERATOR_HPP_ */

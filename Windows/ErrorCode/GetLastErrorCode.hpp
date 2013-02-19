@@ -8,6 +8,9 @@
 #ifndef GETLASTERRORCODE_HPP_
 #define GETLASTERRORCODE_HPP_
 
+#include <windows.h> //::GetLastError()
+#include <windef.h> //DWORD
+
 //Make the function inline because it includes just 1 instruction-> we would
 //not save space in the executable if it was a real function with a call stack.
 inline DWORD GetLastErrorCode()

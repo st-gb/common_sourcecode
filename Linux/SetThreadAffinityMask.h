@@ -12,7 +12,7 @@
   #include <preprocessor_macros/logging_preprocessor_macros.h> //DEBUGN(...)
 //  #include <windef.h> //DWORD
 
-  //Use inline->faster, avoid g++ error/ warning
+  /** Use inline->faster, avoid g++ error/ warning */
   inline unsigned long int SetThreadAffinityMask(//DWORD
     unsigned long dwThreadAffinityMask)
   {
@@ -27,8 +27,8 @@
     // sched_setaffinity.2.html:
     //"On success, sched_setaffinity() and sched_getaffinity() return 0.
     //On error, -1 is returned, and errno is set appropriately."
-    static int nReturnValue =
-      sched_setaffinity(
+    static int nReturnValue;
+    nReturnValue = sched_setaffinity(
         //"If pid is zero, then the calling process is used."
         0
         //"The argument cpusetsize is the length (in bytes) of the data
@@ -47,6 +47,7 @@
 //    return 1 ;
     if( ! nReturnValue)
       return dwThreadAffinityMask;
+    return 0;
 //      //Invert return value
 //      ! nReturnValue;
   }

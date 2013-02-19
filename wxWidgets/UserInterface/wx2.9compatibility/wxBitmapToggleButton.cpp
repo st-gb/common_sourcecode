@@ -17,8 +17,10 @@
 #include <wx/window.h> //class wxWindow
 #include <wx/checkbox.h> //class wxCheckBoxNameStr
 #include <wx/statbmp.h> //class wxStaticBitmap
-//for "GetClassInfo" not be expanded to "GetClassInfoA"
-#include <wx/msw/winundef.h>
+#ifdef _WIN32
+  //for "GetClassInfo" not be expanded to "GetClassInfoA"
+  #include <wx/msw/winundef.h>
+#endif //#ifdef _WIN32
 
 namespace wx2_9compatibility
 {

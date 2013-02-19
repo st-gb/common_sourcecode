@@ -39,7 +39,8 @@ namespace Windows_API
       ::CloseHandle(m_handleThread ) ;
   }
 
-  BYTE Thread::start(pfnThreadFunc pfn_threadfunc, void * p_v, BYTE prio )
+  BYTE Thread::start(pfnThreadFunc pfn_threadfunc, void * p_v, /*BYTE*/
+    enum I_Thread::priority prio )
   {
     //Because "start" may be called for the same object multiple times.
     PossiblyCloseThreadHandle();
@@ -56,7 +57,8 @@ namespace Windows_API
     {
 #ifdef _DEBUG
       int ThreadPriority = ::GetThreadPriority(m_handleThread);
-      LOGN_DEBUG( "current thread priority " << ThreadPriority)
+      LOGN_DEBUG( FULL_FUNC_NAME << "current thread priority "
+        << ThreadPriority)
 #endif
       if( prio != I_Thread::default_priority)
       {

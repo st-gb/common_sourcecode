@@ -17,8 +17,11 @@
 
 #include <ostream> //class ostream
 #include <sys/time.h> // gettimeofday(...)
+//#include <sys/types.h> //gettid()
+#include <pthread.h> //pthread_self()
 #include <time.h> // localtime(...)
 #include <Controller/Logger/LogFileEntry.hpp> //class LogFileEntry
+#include <Controller/multithread/I_Thread.hpp> //class I_Thread
 
 //#define LOG_FILE_PREFIX()
 
@@ -56,6 +59,19 @@ inline void GetLogFilePrefix(LogFileEntry & r_logfileentry)
     //Microseconds (10^-6 s) part = microseconds (10^-6 s) % 10^3
     //e.g. 123456 microseconds % 1000 = 456 microseconds
   r_logfileentry.microsecond = timevalCurrentTime.tv_usec % 1000;
+  //From http://linux.die.net/man/2/gettid
+//  r_logfileentry.threadID = gettid();
+  //http://www.kernel.org/doc/man-pages/online/pages/man3/pthread_self.3.html
+  // "link with -pthread"
+  r_logfileentry.threadID = ::pthread_self();
+  I_Thread::threadNameMapType::const_iterator c_iter =
+    I_Thread::s_threadNumber2Name.find(r_logfileentry.threadID);
+  if( c_iter != I_Thread::s_threadNumber2Name.end() )
+  {
+    r_logfileentry.p_std_strThreadName = & c_iter->second;
+  }
+  else
+    r_logfileentry.p_std_strThreadName = NULL;
 }
 
 inline void outputLogFilePrefix(std::ostream & r_ostream)

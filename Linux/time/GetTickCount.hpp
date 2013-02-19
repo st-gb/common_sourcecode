@@ -90,7 +90,7 @@
 
   inline DWORD GetTickCount()
   {
-    DEBUGN("inline DWORD GetTickCount() begin")
+//    DEBUGN("inline DWORD GetTickCount() begin")
     //Static:don't create on stack each time (global variable with local scope)
 //    static DWORD dwReturnValue ;
     static timeval timevalCurrentTime ;
@@ -111,7 +111,7 @@
 //    timeval ts;
 //    gettimeofday(&ts,0);
 //    lGetTickCount = (INT64)(ts.tv_sec * 1000 + (ts.tv_usec / 1000));
-    DEBUGN("inline DWORD GetTickCount() end")
+//    DEBUGN("inline DWORD GetTickCount() end")
     return
       //seconds to milliseconds
       timevalCurrentTime.tv_sec * 1000 +

@@ -14,7 +14,7 @@
 //#include <winnt.h> //TCHAR
 #include <tchar.h> //TCHAR
 #include <Controller/character_string/stdtstr.hpp> //GetStdString_Inline(...)
-//#include <preprocessor_macros/string_typedefs.h> //LPCTSTR
+#include <preprocessor_macros/string_typedefs.h> //LPCTSTR
 #include <string.h>
 
 namespace MFC_Compatibility

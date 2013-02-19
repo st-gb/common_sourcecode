@@ -19,15 +19,17 @@
 #include <sstream> //for class std::basic_stringstream ;
 #include <vector> //class std::vector
 
-#include "LogFileEntry.hpp" //class LogFileEntry
+#include "../LogFileEntry.hpp" //class LogFileEntry
 #include <data_structures/Trie/NodeTrie/NodeTrie.hpp> //class NodeTrie
 
-#include "LogLevel.hpp" //namespace LogLevel::MessageType
+#include "../LogLevel.hpp" //namespace LogLevel::MessageType
 using namespace LogLevel;
 
 //typedef uint16_t WORD;
 //typedef
-class Logger;
+//class Logger;
+//class I_LogEntryOutputter;
+class FormattedLogEntryProcessor;
 
 struct PointerToLogFileEntryMemberAndNumFormatChars
 {
@@ -78,11 +80,15 @@ class I_LogFormatter
 {
 private:
 protected:
-  const Logger * m_p_logger;
+//  const Logger * m_p_logger;
+//  const I_LogEntryOutputter * m_p_outputhandler;
+  const FormattedLogEntryProcessor * m_p_formattedlogentryprocessor;
   char * m_p_chTimeString;
 //  std::ofstream * m_p_std_ostream;
   std::basic_ostream<char> * m_p_std_ostream;
   std::string m_TimeFormatString;
+  static const std::string s_std_strDefaultLinuxLogTimeFormatString;
+  static const std::string s_std_strDefaultWindowsLogTimeFormatString;
   const LogFileEntry * m_p_logfileentry;
 //  NodeTrie<const uint16_t *> m_nodetrieTimePlaceHolderToLogFileEntryMember;
   NodeTrie<PointerToLogFileEntryMemberAndNumFormatChars *>
@@ -92,7 +98,8 @@ protected:
 public:
 
   I_LogFormatter(//std::ofstream * p_std_ofstream
-    const Logger * p_logger);
+    const /*Logger * p_logger I_LogEntryOutputter */
+    FormattedLogEntryProcessor * );
   virtual
   ~I_LogFormatter();
 
@@ -113,15 +120,22 @@ public:
   void GetTimeAsString(const LogFileEntry & logfileentry//,
 //    std::string & std_strTime
     );
+  void Init(std::ostream /*&*/ * p_std_ostream = NULL,
+    const std::string * p_std_strLogTimeFormatString = NULL
+    );
   void SetStdOstream(std::ostream * p_std_ostream)
     { m_p_std_ostream = p_std_ostream; }
   void SetTimeFormat(const std::string & TimeFormatString);
-  /** Must be virtual for polymorphism */
+  /** Must be virtual for polymorphism
+   * @brief write HTML header (opening tags) for instance. */
   virtual void WriteHeader() {}
-  /** Must be virtual for polymorphism */
+  /** Must be virtual for polymorphism
+   * @brief write HTML footer (closing tags) for instance. */
   virtual void WriteTrailer() {}
 
-  /** Must be virtual for polymorphism */
+  /** Must be virtual for polymorphism
+   * @brief for an HTML formatter write "table row" ("<TR>")tags for instance
+   *   for every logentry. */
   virtual void WriteLogFileEntry(
     const LogFileEntry & logfileentry,
     enum MessageType messageType = LogLevel::info,

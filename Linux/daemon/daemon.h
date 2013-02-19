@@ -15,6 +15,8 @@
 
 //static
 void daemonize( const char *lockfile ) ;
+void CloseInheritedOpenFiles();
+void CloseStandardInAndOutputFiles();
 
 //#ifdef	__cplusplus
 //}

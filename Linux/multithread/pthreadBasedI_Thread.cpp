@@ -24,7 +24,36 @@ namespace Linux
     // TODO Auto-generated destructor stub
   }
 
-  BYTE pthreadBasedI_Thread::start( pfnThreadFunc pfn_threadfunc, void * p_v )
+  int pthreadBasedI_Thread::GetThreadPriority()
+  {
+//      pthread_getspecific()
+//          sched_
+    struct sched_param sched_paramVal;
+    int policy;
+//      return default_priority;
+    int n =
+      //http://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread_setschedparam.html:
+      //"If successful, the pthread_getschedparam() and pthread_setschedparam()
+      //functions return zero."
+      pthread_getschedparam (
+      m_pthread_t //pthread_t __target_thread
+      , & policy //int *__restrict __policy,
+      , & sched_paramVal //struct sched_param *__restrict __param
+      );
+    if( n != 0)
+      return I_Thread::error_getting_priority;
+    return sched_paramVal.__sched_priority;
+  }
+
+  bool pthreadBasedI_Thread::IsRunning()
+  {
+    return //true;
+      //From http://stackoverflow.com/questions/2156353/how-do-you-query-a-pthread-to-see-if-it-is-still-running
+      pthread_kill(m_pthread_t, 0) != ESRCH;
+  }
+
+  BYTE pthreadBasedI_Thread::start( pfnThreadFunc pfn_threadfunc, void * p_v,
+      BYTE priority /*= default_priority*/ )
   {
     int nRetVal = 1 ;
     if( m_i_thread_thread_type == I_Thread::joinable )
@@ -68,9 +97,24 @@ namespace Linux
 //          ) ;
 //    }
     if( nRetVal )
-      LOGN("Failed to create thread: " << GetErrorMessageFromLastErrorCodeA() )
+      LOGN_ERROR("Failed to create thread: " << GetErrorMessageFromLastErrorCodeA() )
     else
-      LOGN("Successfully created thread with thread ID " << m_pthread_t )
+    {
+      LOGN_INFO("pthreadBasedI_Thread::start(...)--created thread with ID"
+        << m_pthread_t)
+      if( priority != default_priority )
+      {
+        LOGN_INFO("pthreadBasedI_Thread::start(...)--setting thread prio to "
+          << (unsigned) priority)
+        struct sched_param param_set, param_get;
+        param_set.__sched_priority = priority;
+        int policy;
+        if( pthread_getschedparam(m_pthread_t, &policy, &param_get) == 0)
+          if( pthread_setschedparam(m_pthread_t, policy, &param_set) == 0)
+            return I_Thread::no_error;
+      }
+//      LOGN("Successfully created thread with thread ID " << m_pthread_t )
+    }
     return nRetVal ;
   }
 

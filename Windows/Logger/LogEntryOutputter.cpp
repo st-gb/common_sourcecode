@@ -6,18 +6,18 @@
  * if you are not making profit directly or indirectly with it or its adaption.
  * Else you may contact Trilobyte SE. */
 /*
- * Logger.cpp
+ * LogEntryOutputter.cpp
  *
  *  Created on: 05.07.2012
  *      Author: Stefan
  */
 
-#include "Logger.hpp"
+#include "LogEntryOutputter.hpp"
 
 namespace Windows_API
 {
 
-  Logger::Logger()
+  LogEntryOutputter::LogEntryOutputter()
     : m_hFile(INVALID_HANDLE_VALUE),
       m_buffer(NULL),
       m_dwBufferSize(0),
@@ -28,8 +28,8 @@ namespace Windows_API
 //      m_p_log_formatter->SetStdOstream( & GetStdOstream() );
   }
 
-  /** Calls base class' "::Logger::~Logger()" and then the other code*/
-  Logger::~Logger()
+  /** Calls base class' "::LogEntryOutputter::~LogEntryOutputter()" and then the other code*/
+  LogEntryOutputter::~LogEntryOutputter()
   {
     ::CloseHandle(m_hFile);
     if( m_buffer)
@@ -40,17 +40,20 @@ namespace Windows_API
   }
 //  OpenFile2
 
-//  bool Logger::OpenFile2( const std::string & c_r_stdstrFilePath )
-//  {
-//    return OpenFlushingFile(c_r_stdstrFilePath);
-//  }
-  bool Logger::SetStdOstream(const std::string & c_r_stdstrFilePath)
+  bool LogEntryOutputter::OpenA( const std::string & c_r_stdstrFilePath )
+  {
+    m_std_strLogFilePath = c_r_stdstrFilePath;
+    bool bIsOpen = SetStdOstream(c_r_stdstrFilePath);
+    return bIsOpen;
+  }
+
+  bool LogEntryOutputter::SetStdOstream(const std::string & c_r_stdstrFilePath)
   {
     bool fileIsOpen = OpenFlushingFile(c_r_stdstrFilePath);
-    m_p_std_ostream = & GetStdOstream();
-    if( m_p_log_formatter )
-      //When m_p_std_ofstream is <> NULL then it is logged to output.
-      m_p_log_formatter->SetStdOstream( m_p_std_ostream );
+    m_p_std_ostream = GetStdOstream();
+//    if( m_p_log_formatter )
+//      //When m_p_std_ofstream is <> NULL then it is logged to output.
+//      m_p_log_formatter->SetStdOstream( m_p_std_ostream );
     return fileIsOpen;
   }
 
@@ -67,7 +70,7 @@ namespace Windows_API
   //FILE_FLAG_NO_BUFFERING and FILE_FLAG_WRITE_THROUGH flags. This prevents the
   //file contents from being cached and flushes the metadata to disk with each
   //write.
-  bool Logger::OpenFlushingFile(const std::string & c_r_stdstrFilePath)
+  bool LogEntryOutputter::OpenFlushingFile(const std::string & c_r_stdstrFilePath)
   {
 //    if( ! m_p_std_ofstream )
 //      m_p_std_ofstream = new std::ostringstream ;
@@ -146,11 +149,11 @@ namespace Windows_API
   }
 #endif
 
-//  int Logger::RenameFile(const std::string & cr_std_strFilePath)
+//  int LogEntryOutputter::RenameFile(const std::string & cr_std_strFilePath)
 //  {
 //
 //  }
-  int Logger::RenameFileThreadUnsafe(const std::string & r_std_strNewFilePath)
+  int LogEntryOutputter::RenameFileThreadUnsafe(const std::string & r_std_strNewFilePath)
   {
     int retVal = 1;
     if( //http://msdn.microsoft.com/en-us/library/windows/desktop/ms724211%28v=vs.85%29.aspx:
@@ -165,7 +168,7 @@ namespace Windows_API
         )
       {
         if( //OpenFlushingFile(r_std_strNewFilePath)
-            OpenFileA(r_std_strNewFilePath) )
+            OpenA(r_std_strNewFilePath) )
           retVal = 0;
       }
       else
@@ -178,7 +181,14 @@ namespace Windows_API
     return retVal;
   }
 
-  DWORD Logger::WriteToFile()
+  /** 0=success */
+  unsigned LogEntryOutputter::Close()
+  {
+    BOOL b = ::CloseHandle(m_hFile);
+    return b;
+  }
+
+  unsigned LogEntryOutputter::DoOutput()
   {
     if( m_hFile != INVALID_HANDLE_VALUE )
     {
@@ -223,6 +233,19 @@ namespace Windows_API
 //#endif
     //see http://www.velocityreviews.com/forums/t278533-std-stringstream-reset.html
   }
+
+#ifdef COMPILE_LOGGER_WITH_TSTRING_SUPPORT
+  //void
+  bool LogEntryOutputter::OpenFile( //std::string & r_stdstrFilePath
+    std::tstring & r_stdtstrFilePath)
+  {
+    std::string stdstr( //GetCharPointer(r_stdtstrFilePath.c_str() ) ) ;
+      GetStdString_Inline(r_stdtstrFilePath) ) ;
+    return OpenFileA( stdstr ) ;
+  }
+#endif //#ifdef COMPILE_LOGGER_WITH_TSTRING_SUPPORT
+
+
   void TruncateFileSizeToZero()
   {
     //TODO implement

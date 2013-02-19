@@ -30,7 +30,7 @@ BYTE GetProcessFileName(DWORD dwProcessID,
   //"If the function fails, the return value is NULL."
   if( handleProcess)
   {
-    TCHAR lpFilename [MAX_PATH ];
+    TCHAR ar_tchFilename [MAX_PATH ];
     char ar_chFilename [MAX_PATH + 1];
 
 
@@ -43,7 +43,7 @@ BYTE GetProcessFileName(DWORD dwProcessID,
       //"The handle must have the PROCESS_QUERY_INFORMATION or PROCESS_QUERY_LIMITED_INFORMATION access right. "
       handleProcess, //__in   HANDLE hProcess,
 //      ar_chFilename, //__out  LPTSTR lpImageFileName,
-      lpFilename,
+      ar_tchFilename,
       //"The size of the lpImageFileName buffer, in characters."
       MAX_PATH //__in   DWORD nSize
     );
@@ -58,13 +58,15 @@ BYTE GetProcessFileName(DWORD dwProcessID,
     ::CloseHandle(handleProcess);
     if( dw )
     {
-        std::string std_str(ar_chFilename);
-        std::string::size_type pos = std_str.find_last_of('\\');
-        r_std_strProcessFileName = std_str.substr(pos + 1);
-        std_str = std_str.substr(pos + 1);
-        DEBUG_COUTN("parent process' name:" << ar_chFilename << std_str)
-      LOGN( "file name for PID:" << ar_chFilename)
-      DEBUG_COUTN("file name for PID:" << ar_chFilename)
+      std::tstring std_tstr(ar_tchFilename);
+      std::string std_strProcessFilePath = GetStdString(std_tstr);
+//      std::string std_strProcessFilePath(ar_chFilename);
+      std::string::size_type pos = std_strProcessFilePath.find_last_of('\\');
+      r_std_strProcessFileName = std_strProcessFilePath.substr(pos + 1);
+//      DEBUG_COUTN("parent process' name:" << ar_chFilename << std_str)
+      LOGN( "file name for PID:" << /*ar_chFilename*/ r_std_strProcessFileName)
+      DEBUG_COUTN("file name for PID:" << /*ar_chFilename*/
+        r_std_strProcessFileName)
       return 0;
     }
     else

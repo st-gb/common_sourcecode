@@ -5,15 +5,18 @@
  *      Author: Stefan
  */
 
-#include "Controller/Logger/Log4jFormatter.hpp"
+#include "Log4jFormatter.hpp"
 
 namespace CSS
 {
   namespace LogFormatter
   {
 
-    Log4jFormatter::Log4jFormatter(const Logger * p_logger)
-      : I_LogFormatter(p_logger)
+    Log4jFormatter::Log4jFormatter(const /*Logger * p_logger*/
+//      I_LogEntryOutputter * p_outputhandler
+      FormattedLogEntryProcessor * appender
+      )
+      : I_LogFormatter(/*p_logger p_outputhandler*/ appender)
     {
       //Calling this method is needed(!?) if "m_p_chTimeString" was created before.
       SetTimeFormat(

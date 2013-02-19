@@ -18,6 +18,7 @@
 //there were compile errors when windows.h was included.
 #include <windows.h> //for SYSTEMTIME, GetLocalTime(SYSTEMTIME)
 #include "LogFileEntry.hpp" //class LogFileEntry
+#include <Controller/multithread/I_Thread.hpp> //class I_Thread
 
 #define USE_SYSTEM_TIME_FOR_LOGGING
 
@@ -104,6 +105,14 @@ inline void GetLogFilePrefixFromSystemTime(LogFileEntry & logfileentry)
   logfileentry.second = s_systemtime.wSecond;
   logfileentry.millisecond = s_systemtime.wMilliseconds;
   logfileentry.threadID = ::GetCurrentThreadId();
+  I_Thread::threadNameMapType::const_iterator c_iter =
+    I_Thread::s_threadNumber2Name.find(logfileentry.threadID);
+  if( c_iter != I_Thread::s_threadNumber2Name.end() )
+  {
+    logfileentry.p_std_strThreadName = & (std::string &) c_iter->second;
+  }
+  else
+    logfileentry.p_std_strThreadName = NULL;
 }
 
 inline void GetLogFileEntry(const FILETIME & filetime,
@@ -154,6 +163,14 @@ inline void GetLogFilePrefixFromFileTime(LogFileEntry & logfileentry)
 
   GetLogFileEntry(s_filetime, logfileentry);
   logfileentry.threadID = ::GetCurrentThreadId();
+  I_Thread::threadNameMapType::const_iterator c_iter =
+    I_Thread::s_threadNumber2Name.find(logfileentry.threadID);
+  if( c_iter != I_Thread::s_threadNumber2Name.end() )
+  {
+    logfileentry.p_std_strThreadName = & (std::string &) c_iter->second;
+  }
+  else
+    logfileentry.p_std_strThreadName = NULL;
 }
 
 inline void GetLogFilePrefix(LogFileEntry & logfileentry)

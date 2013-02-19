@@ -13,6 +13,13 @@
  */
 #pragma once //include guard
 #include <preprocessor_macros/logging_preprocessor_macros.h>
+#include <limits.h> //UINT_MAX
+
+/*#define MANUFACTURER_ID_NAMESPACE_BEGIN namespace de { namespace Berlin { \
+// namespace Trilobyte_SE { */
+#define MANUFACTURER_ID_NAMESPACE de::Trilobyte_SE
+#define MANUFACTURER_ID_NAMESPACE_BEGIN namespace de { namespace Trilobyte_SE {
+#define MANUFACTURER_ID_NAMESPACE_END } /* namespace de */ } /*namespace Trilobyte_SE*/
 
 typedef unsigned short WORD ;
 #ifndef MAXWORD
@@ -287,82 +294,167 @@ inline float GetClosestGreaterOrEqual(
   return fGreaterOrEqual ;
 }
 
-inline WORD GetClosestLess(
-  float ar_fFloatArray [] ,
-  WORD wArraySize ,
-  float fReferredValue
-  )
+MANUFACTURER_ID_NAMESPACE_BEGIN
+/*template <typename datatype>*/ namespace BinarySearch
 {
-//  float fLess = 0.0 ;
-  float fCurrent ;
-  WORD wArrayIndex = 0 ;
-  WORD wArrayIndexOfCloestLessValue = MAXWORD ;
-  WORD wLeftBound = 0 ;
-  WORD wRightBound = wArraySize - 1 ;
-  //for( WORD wIndex = 0 ; wIndex < wArraySize ; //++ wIndex )
-  //Do a binary search because the array is sorted.
-//  while(1)
-  do
+  typedef UINT arrayIndexType;
+  const arrayIndexType no_element = UINT_MAX;
+//  inline WORD GetClosestLess(
+//    float ar_fFloatArray [] ,
+//    WORD wArraySize ,
+//    float fReferredValue
+//    )
+//  {
+//  //  float fLess = 0.0 ;
+//    float fCurrent ;
+//    WORD wArrayIndex = 0 ;
+//    WORD wArrayIndexOfCloestLessValue = MAXWORD ;
+//    WORD wLeftBound = 0 ;
+//    WORD wRightBound = wArraySize - 1 ;
+//    //for( WORD wIndex = 0 ; wIndex < wArraySize ; //++ wIndex )
+//    //Do a binary search because the array is sorted.
+//  //  while(1)
+//    do
+//    {
+//      //TODO from http://en.wikipedia.org/wiki/Binary_search_algorithm#Iterative:
+//      //l + ( r - l) / 2 = 2*l/2 + (r-l)/2 = ( 2*l + r - l) / 2 = (l + r) / 2
+//      wArrayIndex = wLeftBound + (wRightBound - wLeftBound) / 2 ;
+//      fCurrent = ar_fFloatArray[ wArrayIndex] ;
+//  //    LOGN("GetClosestLess--"
+//  //      << "array index:" << wArrayIndex
+//  //      << "value at array index:" << fCurrent )
+//      //The array is sorted: lowest index = lowest value.
+//      if( fCurrent < fReferredValue )
+//      {
+//  //      fLess = fCurrent ;
+//        wArrayIndexOfCloestLessValue = wArrayIndex ;
+//
+//  //      if( wLeftBound == wRightBound )
+//  //        break ;
+//        //01234 -> 01234
+//        //l i r      l r   l= left bound,  r= right bound   i=index
+//
+//        //problem: if right-left= 0 or 1,  the left bound does not change:
+//        //e.g. left=7, right =8: index=7+(8-7)/2= 7+1/2=7+0=7,  left^=index->7
+//  //      if( wRightBound - wIndex < 2 )
+//          wLeftBound = wArrayIndex + 1;
+//  //      else
+//  //        wLeftBound = wIndex ;
+//      }
+//      else //current value >= referred value
+//      {
+//  //      if( wLeftBound == wRightBound )
+//  //        break ;
+//  //      if( fCurrent >= fReferredValue)
+//  //      {
+//          //01234 -> 01234
+//          //l i r    l r     l= left bound,  r= right bound   i=index
+//
+//          //3   4 -> 3     4
+//          //l,i r    l,r,i
+//
+//          //1 2 3 -> 1 2   3
+//          //l i r    l r,i
+//
+//          wRightBound = wArrayIndex - 1 ;
+//          //if right bound = 0 it gets 65535
+//          if( wRightBound == MAXWORD )
+//            break ;
+//  //      }
+//  //      else // fCurrentMultiplier == fCalculatedMultiplier
+//  //      {
+//  ////        fLess = fCurrent ;
+//  //        break ;
+//  //      }
+//      }
+//    }
+//    // "<=" because: If left bound = 0, index = 1
+//    //  and value at index 1 >= referred value:
+//    //   right bound ^= index-1 = left bound
+//    while( wLeftBound <= wRightBound ) ;
+//  //  return fLess ;
+//    return wArrayIndexOfCloestLessValue ;
+//  }
+  template <typename datatype> inline UINT GetClosestLess(
+    datatype array [] ,
+    WORD wArraySize ,
+    datatype fReferredValue
+    )
   {
-    //TODO from http://en.wikipedia.org/wiki/Binary_search_algorithm#Iterative:
-    //l + ( r - l) / 2 = 2*l/2 + (r-l)/2 = ( 2*l + r - l) / 2 = (l + r) / 2
-    wArrayIndex = wLeftBound + (wRightBound - wLeftBound) / 2 ;
-    fCurrent = ar_fFloatArray[ wArrayIndex] ;
-//    LOGN("GetClosestLess--"
-//      << "array index:" << wArrayIndex
-//      << "value at array index:" << fCurrent )
-    //The array is sorted: lowest index = lowest value.
-    if( fCurrent < fReferredValue )
+  //  float fLess = 0.0 ;
+    float fCurrent ;
+    arrayIndexType wArrayIndex = 0 ;
+    arrayIndexType wArrayIndexOfClosestLessValue = /*UINT_MAX*/ no_element;
+    arrayIndexType wLeftBound = 0 ;
+    arrayIndexType wRightBound = wArraySize - 1 ;
+    //for( WORD wIndex = 0 ; wIndex < wArraySize ; //++ wIndex )
+    //Do a binary search because the array is sorted.
+  //  while(1)
+    do
     {
-//      fLess = fCurrent ;
-      wArrayIndexOfCloestLessValue = wArrayIndex ;
+      //TODO from http://en.wikipedia.org/wiki/Binary_search_algorithm#Iterative:
+      //l + ( r - l) / 2 = 2*l/2 + (r-l)/2 = ( 2*l + r - l) / 2 = (l + r) / 2
+      wArrayIndex = wLeftBound + (wRightBound - wLeftBound) / 2 ;
+      fCurrent = array[ wArrayIndex] ;
+  //    LOGN("GetClosestLess--"
+  //      << "array index:" << wArrayIndex
+  //      << "value at array index:" << fCurrent )
+      //The array is sorted: lowest index = lowest value.
+      if( fCurrent < fReferredValue )
+      {
+  //      fLess = fCurrent ;
+        wArrayIndexOfClosestLessValue = wArrayIndex ;
 
-//      if( wLeftBound == wRightBound )
-//        break ;
-      //01234 -> 01234
-      //l i r      l r   l= left bound,  r= right bound   i=index
-
-      //problem: if right-left= 0 or 1,  the left bound does not change:
-      //e.g. left=7, right =8: index=7+(8-7)/2= 7+1/2=7+0=7,  left^=index->7
-//      if( wRightBound - wIndex < 2 )
-        wLeftBound = wArrayIndex + 1;
-//      else
-//        wLeftBound = wIndex ;
-    }
-    else //current value >= referred value
-    {
-//      if( wLeftBound == wRightBound )
-//        break ;
-//      if( fCurrent >= fReferredValue)
-//      {
+  //      if( wLeftBound == wRightBound )
+  //        break ;
         //01234 -> 01234
-        //l i r    l r     l= left bound,  r= right bound   i=index
+        //l i r      l r   l= left bound,  r= right bound   i=index
 
-        //3   4 -> 3     4
-        //l,i r    l,r,i
+        //problem: if right-left= 0 or 1,  the left bound does not change:
+        //e.g. left=7, right =8: index=7+(8-7)/2= 7+1/2=7+0=7,  left^=index->7
+  //      if( wRightBound - wIndex < 2 )
+          wLeftBound = wArrayIndex + 1;
+  //      else
+  //        wLeftBound = wIndex ;
+      }
+      else //current value >= referred value
+      {
+  //      if( wLeftBound == wRightBound )
+  //        break ;
+  //      if( fCurrent >= fReferredValue)
+  //      {
+          //01234 -> 01234
+          //l i r    l r     l= left bound,  r= right bound   i=index
 
-        //1 2 3 -> 1 2   3
-        //l i r    l r,i
+          //3   4 -> 3     4
+          //l,i r    l,r,i
 
-        wRightBound = wArrayIndex - 1 ;
-        //if right bound = 0 it gets 65535
-        if( wRightBound == MAXWORD )
-          break ;
-//      }
-//      else // fCurrentMultiplier == fCalculatedMultiplier
-//      {
-////        fLess = fCurrent ;
-//        break ;
-//      }
+          //1 2 3 -> 1 2   3
+          //l i r    l r,i
+
+          if( wArrayIndex == 0UL)
+            break;
+          wRightBound = wArrayIndex - 1 ;
+//          //if right bound = 0 it gets no_element (max value of data type)
+//          if( wRightBound == no_element )
+//            break ;
+  //      }
+  //      else // fCurrentMultiplier == fCalculatedMultiplier
+  //      {
+  ////        fLess = fCurrent ;
+  //        break ;
+  //      }
+      }
     }
+    // "<=" because: If left bound = 0, index = 1
+    //  and value at index 1 >= referred value:
+    //   right bound ^= index-1 = left bound
+    while( wLeftBound <= wRightBound ) ;
+  //  return fLess ;
+    return wArrayIndexOfClosestLessValue ;
   }
-  // "<=" because: If left bound = 0, index = 1
-  //  and value at index 1 >= referred value:
-  //   right bound ^= index-1 = left bound
-  while( wLeftBound <= wRightBound ) ;
-//  return fLess ;
-  return wArrayIndexOfCloestLessValue ;
 }
+MANUFACTURER_ID_NAMESPACE_END
 
 inline float GetClosestLessOrEqual(
   float ar_fFloatArray [] ,

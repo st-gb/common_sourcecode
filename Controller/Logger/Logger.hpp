@@ -28,14 +28,15 @@
   //for std::tstring
   #include <Controller/character_string/stdtstr.hpp>
 
-#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-  //#include <data_structures/Trie/byteTrie/Trie.hpp> //class Trie
-  #include <data_structures/Trie/NodeTrie/NodeTrie.hpp> //class Trie
-#endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
+//#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
+//  //#include <data_structures/Trie/byteTrie/Trie.hpp> //class Trie
+//  #include <data_structures/Trie/NodeTrie/NodeTrie.hpp> //class Trie
+//#endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 
-  #include "log_file_prefix.hpp"
+  #include "log_file_prefix.hpp" // GetLogFilePrefix(LogFileEntry)
+  #include <Controller/multithread/GetCurrentThreadNumber.hpp>
 //  #include "HTMLlogFormatter.hpp"
-  #include "ILogFormatter.hpp" //class ILogFormatter::WriteLogFileEntry(...)
+//  #include "Formatter/I_LogFormatter.hpp" //class ILogFormatter::WriteLogFileEntry(...)
   #include "LogLevel.hpp" //namespace LogLevel::MessageType
   using namespace LogLevel;
 
@@ -49,16 +50,15 @@
   //class std::ofstream ;
 //  class I_LogFormatter;
 
+  #include "Appender/FormattedLogEntryProcessor.hpp"
+
   class Logger
   {
   private:
+//    std::map<unsigned, std::string> m_threadNumber2Name;
 //    LogWriter logwriter
-  protected:
-//    HTMLformatLogFileWriter * m_p_log_writer;
-    I_LogFormatter * m_p_log_formatter;
+    std::vector<FormattedLogEntryProcessor *> m_formattedLogEntryProcessors;
   public:
-    enum LogLevel::MessageType m_logLevel;
-    LogFileEntry m_logfileentry;
 #ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
   #ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
     //Use member variable: so it does not need to be created on stack for
@@ -71,34 +71,21 @@
     //wxCriticalSection m_critical_section_typeLogging ;
     CriticalSection_type m_critical_section_typeLogging ;
 #endif
-    std::string m_std_strLogFilePath;
+    /** Used for all FormattedLogEntryProcessors. */
+    LogFileEntry m_logfileentry;
+    enum LogLevel::MessageType m_logLevel;
     enum log_class
     {
       sync = 0
     };
-    enum TrieNodeMemberValue
-    {
-      string_end = 1
-    };
 //    std::set<WORD> m_stdsetLogClass ;
 //    std::set<std::string> m_stdsetstdstrExcludeFromLogging ;
     //std::ofstream m_ofstream ;
-  private:
-    std::ofstream * m_p_std_ofstream ;
+
 //    std::basic_ofstream<WCHAR> * m_p_std_ofstream ;
   protected:
-    std::ostream * m_p_std_ostream ;
-#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-    //Trie m_trie ;
-    NodeTrie<BYTE> m_trie ;
-  public:
-    NodeTrie<BYTE> GetTrie() { return m_trie; }
-#endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 
   public:
-#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-    void AddExcludeFromLogging(const std::string & cr_stdstr ) ;
-#endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
     Logger( //const std::set<std::string> & cr_stdsetstdstrExcludeFromLogging
       ) ;
     /** by "virtual": avoid warning: `class Logger' has virtual functions but
@@ -106,99 +93,34 @@
     virtual ~Logger() ;
     Logger( std::string & stdstrFilePath ) ;
 
-    I_LogFormatter * CreateTextFormatter()
+#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
+    void AddExcludeFromLogging(const std::string & cr_stdstr ) ;
+#endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
+
+    void AddFormattedLogEntryProcessor(
+      FormattedLogEntryProcessor * p_formattedlogentryprocessor)
     {
-#ifdef _WIN32
-      /** Windows can resolve times to milliseconds with GetLocalTime(...),
-       * 100 ms with GetSystemTimeAsFileTime(...), so sesolution until "ms" is
-       * ensured */
-      std::string std_str =
-        "%year%.%month%.%day%&nbsp;%hour%:%minute%:%second%s%millisecond%ms";
-#endif
-#ifdef __linux__
-      /** Linux can resolve times to microiseconds with ::gettimeofday(...)*/
-      std::string std_str =
-        "%year%.%month%.%day% %hour%:%minute%:%second%s%millisecond%ms"
-        "%microsecond%us";
-#endif
-      return CreateFormatter("", std_str
-        );
+      m_formattedLogEntryProcessors.push_back(p_formattedlogentryprocessor);
     }
-    I_LogFormatter * CreateFormatter(//BYTE type = 1
-      //const std::string & std_strType //= std::string("html")
-      const char * c_p_chType = "html"
-      ,const std::string & std_strLogTimeFormatString =
-        "%year%.%month%.%day%&nbsp;%hour%:%minute%:%second%s%millisecond%ms"
-      //const char * c_p_chLogTimeFormatString
-      );
-    I_LogFormatter * GetFormatter() { return m_p_log_formatter; }
+    const std::vector<FormattedLogEntryProcessor *> &
+      GetFormattedLogEntryProcessors() const
+    {
+      return m_formattedLogEntryProcessors;
+    }
     enum MessageType GetLogLevel() { return m_logLevel; }
 
-    //"virtual" because: allow polymorphism: call function of the actual type
-    // (may be a direct or indirect subclass of this class).
-    virtual std::ostream & GetStdOstream() const { return * m_p_std_ofstream; }
-    //"virtual" because: allow polymorphism: call function of the actual type
-    // (may be a direct or indirect subclass of this class).
-    virtual bool IsOpen() ;
     //void Log(//ostream & ostr
     //    std::ostrstream & r_ostrstream
     //    ) ;
 
-    inline void OutputTimeStampEtc_Inline(
-        const std::vector<BYTE> & c_r_std_vec_by)
-    {
-      outputLogFilePrefix(* m_p_std_ofstream);
-//      * m_p_std_ofstream << r_stdstr;
-//      << "\n"
-//      ;
-    }
-
-    inline DWORD OutputTimeStampEtc_Inline(
-      const std::string & r_stdstr,
-      enum LogLevel::MessageType messageType =
-        LogLevel::info,
-      const char * const prettyFunctionFormattedFunctionName = NULL
-      )
-    {
-      if( m_p_log_formatter)
-      {
-//        std::stringstream std_str_stream;
-        //m_ofstream << r_stdstr ;
-
-//        outputLogFilePrefix(//* m_p_std_ofstream
-//          std_str_stream);
-//        static LogFileEntry s_logfileentry;
-        GetLogFilePrefix(//* m_p_std_ofstream
-//          s_logfileentry
-          m_logfileentry);
-
-//        m_p_log_formatter->WriteTimeStamp(std_str_stream);
-//  ////        << "\n"
-//  //        ;
-//  //      //for writing UTF-8 data (else problems writing a char value < 0 ?!)
-//  //       m_p_std_ofstream->write(r_stdstr.c_str(), r_stdstr.length() );
-//  //      * m_p_std_ofstream << r_stdstr;
-//        m_p_log_formatter->WriteMessage(r_stdstr);
-
-//        s_logfileentry.p_std_strMessage = (std::string *) & r_stdstr;
-//        m_p_log_formatter->WriteLogFileEntry(s_logfileentry, messageType);
-//        if( //Fastest evaluable condition at first.
-//            m_p_std_ofstream )
-//        {
-          m_logfileentry.p_std_strMessage = (std::string *) & r_stdstr;
-          m_p_log_formatter->WriteLogFileEntry(m_logfileentry, messageType,
-            prettyFunctionFormattedFunctionName);
-          return WriteToFile();
-//        }
-//        else
-//        {
-//          m_logfileentry.p_std_strMessage = new std::string(r_stdstr);
-////          m_std_vecLogMessage.push_back(m_logfileentry);
-//          return 0;
-//        }
-      }
-      return UINT_MAX - 1;
-    }
+//    inline void OutputTimeStampEtc_Inline(
+//        const std::vector<BYTE> & c_r_std_vec_by)
+//    {
+//      outputLogFilePrefix(* m_p_std_ofstream);
+////      * m_p_std_ofstream << r_stdstr;
+////      << "\n"
+////      ;
+//    }
 
     //FORCEINLINE
     void PossiblyEnterCritSec()
@@ -212,33 +134,6 @@
   //  ter getting DOM implementationt("
       m_critical_section_typeLogging.Enter() ;
 #endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-    }
-
-    inline bool IsNotFiltered(const std::string & r_std_strTestIfFiltered)
-    {
-#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-      bool bIsNotFiltered = true;
-    //      m_stdsetstdstrExcludeFromLogging.find(r_stdstr) ==
-    //      m_stdsetstdstrExcludeFromLogging.end()
-      NodeTrieNode<BYTE> * p_ntn =
-        //If NOT in the container.
-        m_trie.//exists_inline(
-          contains_inline(
-          (unsigned char*) r_std_strTestIfFiltered.c_str() ,
-          (WORD) r_std_strTestIfFiltered.length( ) ,
-          false // allow prefix match: e.g. "hello" is prefix of "hello1"
-          );
-      if( p_ntn
-          //If a >string inside the trie< wholly matches or is a prefix of
-          //the "string to test if filtered".
-          && p_ntn->m_member == string_end
-          )
-        bIsNotFiltered = false;
-      //if( //m_ofstream.good()
-      return bIsNotFiltered;
-#else
-      return true;
-#endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
     }
 
     inline void Ideas()
@@ -264,131 +159,134 @@
   #define POSSIBLY_LEAVE_CRIT_SEC
 #endif
 
-    DWORD Log(//ostream & ostr
+    /** Do not call this method thread-unsafe -> enter a critical section before
+     * calling it */
+    DWORD Log_inline(//ostream & ostr
       const std::string & r_stdstrMessage,
       enum LogLevel::MessageType messageType =
         LogLevel::info,
       const char * const prettyFunctionFormattedFunctionName = NULL
       )
     {
-//      EnterCritSec();
-      if( //Fastest evaluable condition at first.
-        //m_p_std_ofstream &&
-          m_p_std_ostream
-        )
+      //Must guard the m_logfileentry variable because else it might be
+      //changed while reading (in the logging OutputHandlers when the function
+      //is entered a second time) from it.
+      PossiblyEnterCritSec();
+      //Use local LogFileEntry variable because this function may be called by
+      //multiple threads synchronously (if then using member variable this could
+      //get corrupted data).
+//      LogFileEntry logfileentry;
+      GetLogFilePrefix(m_logfileentry
+        //logfileentry
+        );
+      m_logfileentry //logfileentry
+        .p_std_strMessage = (std::string *) & r_stdstrMessage;
+      static std::vector<FormattedLogEntryProcessor *>::const_iterator
+        c_iterFormattedLogEntryProcessors;
+      c_iterFormattedLogEntryProcessors = m_formattedLogEntryProcessors.begin();
+      FormattedLogEntryProcessor * p_formattedlogentryprocessor;
+      while( c_iterFormattedLogEntryProcessors !=
+          m_formattedLogEntryProcessors.end() )
       {
-        if(
-        #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-          //&&
-          IsNotFiltered(r_stdstrMessage)
-           &&
-        #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-//          m_p_std_ofstream->good()
-          m_p_std_ostream->good()
-          )
-        {
-          //TODO make rolling log files possible
-//          if( m_bRolling && m_numLogEntries > m_maxNumLogEntries )
-//
-//          if(m_numFiles > 1)
-//          {
-//            TruncateFileSizeToZero();
-//          }
-          return OutputTimeStampEtc_Inline(r_stdstrMessage, messageType,
-            prettyFunctionFormattedFunctionName);
-          //m_ofstream.flush() ;
-  //        POSSIBLY_LEAVE_CRIT_SEC
-  //        Ideas();
-        }
+        p_formattedlogentryprocessor = ( * c_iterFormattedLogEntryProcessors);
+        if( messageType >= p_formattedlogentryprocessor->m_logLevel )
+          p_formattedlogentryprocessor->Log(
+            m_logfileentry // logfileentry,
+            , messageType
+            , prettyFunctionFormattedFunctionName);
+        ++ c_iterFormattedLogEntryProcessors;
       }
-//      else
-//        m_std_vecLogMessage.push_back( LogFileEntry() )
-//#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-//      else
-//        m_critical_section_typeLogging.Leave() ;
-//#endif
-//      POSSIBLY_LEAVE_CRIT_SEC
-      return UINT_MAX;
+#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+      m_critical_section_typeLogging.Leave() ;
+#endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+      return 0;
     }
-    void Log(
-      const std::string & r_stdstrCodePosition,
+    DWORD Log(//ostream & ostr
       const std::string & r_stdstrMessage,
       enum LogLevel::MessageType messageType =
-          LogLevel::info
-      )
-    {
-//      EnterCritSec();
-      if( //Fastest evaluable condition at first.
-          m_p_std_ofstream )
-//      {
-        if(
-          #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-            IsNotFiltered(r_stdstrMessage)
-            &&
-          #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-            m_p_std_ofstream->good()
-          )
-        {
-          OutputTimeStampEtc_Inline(r_stdstrMessage, messageType);
-          //m_ofstream.flush() ;
-  //        m_p_std_ofstream->flush() ;
-  //        POSSIBLY_LEAVE_CRIT_SEC
-  //        Ideas();
-        }
-//      }
-//      else
-//        m_std_vecLog
-//      POSSIBLY_LEAVE_CRIT_SEC
-    }
+        LogLevel::info,
+      const char * const prettyFunctionFormattedFunctionName = NULL
+      );
+
+//    void Log(
+//      const std::string & r_stdstrCodePosition,
+//      const std::string & r_stdstrMessage,
+//      enum LogLevel::MessageType messageType =
+//          LogLevel::info
+//      )
+//    {
+////      EnterCritSec();
+//      if( //Fastest evaluable condition at first.
+//          m_p_std_ofstream )
+////      {
+//        if(
+//          #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
+//            IsNotFiltered(r_stdstrMessage)
+//            &&
+//          #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
+//            m_p_std_ofstream->good()
+//          )
+//        {
+//          OutputTimeStampEtc_Inline(r_stdstrMessage, messageType);
+//          //m_ofstream.flush() ;
+//  //        m_p_std_ofstream->flush() ;
+//  //        POSSIBLY_LEAVE_CRIT_SEC
+//  //        Ideas();
+//        }
+////      }
+////      else
+////        m_std_vecLog
+////      POSSIBLY_LEAVE_CRIT_SEC
+//    }
 
 //    void Log(//ostream & ostr
 //        std::string & r_stdstr
 //        , WORD wType
 //        ) ;
-    void Log(//std::ostream & ostr
-      std::ostringstream & ostr
-      )
-    {
-      Log(ostr.str() );
-    }
-    void Log(//ostream & ostr
-      const char * p_ch
-      ) ;
+//    void Log(//std::ostream & ostr
+//      std::ostringstream & ostr
+//      )
+//    {
+//      Log(ostr.str() );
+//    }
+//    void Log(//ostream & ostr
+//      const char * p_ch
+//      ) ;
 //    void Log(std::vector<unsigned char> )
 //    {
 //
 //    }
     //FORCEINLINE
-    void Log_inline(
-      const std::string & r_stdstrMessage,
-      enum LogLevel::MessageType messageType =
-          LogLevel::info
-      )
-    {
-#ifdef COMPILE_WITH_LOG
-      PossiblyEnterCritSec();
-
-      Log(r_stdstrMessage, messageType);
-
-    #ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-      m_critical_section_typeLogging.Leave() ;
-    #endif
-#endif
-    }
-    //FORCEINLINE
-    void Log_inline(
-      const std::string & r_stdstrCodePosition,
-      std::string & r_stdstrMessage,
-      enum LogLevel::MessageType messageType =
-          LogLevel::info
-      )
-    {
-#ifdef COMPILE_WITH_LOG
-      PossiblyEnterCritSec();
-
-//      Log(r_stdstrCodePosition, r_stdstrMessage, messageType);
-#endif
-    }
+//    void Log_inline(
+//      const std::string & r_stdstrMessage,
+//      enum LogLevel::MessageType messageType =
+//          LogLevel::info
+//      )
+//    {
+//#ifdef COMPILE_WITH_LOG
+//      PossiblyEnterCritSec();
+//
+//      Log(r_stdstrMessage, messageType);
+//
+//    #ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+//      m_critical_section_typeLogging.Leave() ;
+//    #endif
+//#endif
+//    }
+//    //FORCEINLINE
+//    void Log_inline(
+//      const std::string & r_stdstrCodePosition,
+//      std::string & r_stdstrMessage,
+//      enum LogLevel::MessageType messageType =
+//          LogLevel::info
+//      )
+//    {
+//#ifdef COMPILE_WITH_LOG
+//      PossiblyEnterCritSec();
+//
+////      Log(r_stdstrCodePosition, r_stdstrMessage, messageType);
+//#endif
+//    }
     #ifdef COMPILE_WITH_WSTRING
     //wide char version for output of Windows power scheme names etc.
     void LogW(//ostream & ostr
@@ -400,44 +298,16 @@
     bool OpenFile( //std::string & r_stdstrFilePath
       std::tstring & r_stdtstrFilePath ) ;
 #endif //COMPILE_LOGGER_WITH_TSTRING_SUPPORT
-    //"virtual" in order to "OpenFile" call subclasses overwritten function
-    //if any.
-    virtual bool OpenFileA( const std::string & r_stdstrFilePath, bool bRolling = false) ;
-    virtual bool SetStdOstream(const std::string & c_r_stdstrFilePath);
-    void SetFormatter(I_LogFormatter * p_logformatter);
+//    void SetCurrentThreadName(const char * const name)
+//    {
+//      unsigned currentThreadNumber = OperatingSystem::GetCurrentThreadNumber();
+//      m_threadNumber2Name.insert( std::make_pair(std::string(name),
+//        currentThreadNumber) );
+//    }
     void SetLogLevel(const std::string & c_r_std_strLogLevel)
     {
       m_logLevel = LogLevel::GetAsNumber(c_r_std_strLogLevel);
     }
-    int RenameFile(const std::string & cr_std_strFilePath)
-    {
-      return RenameFileThreadSafe(cr_std_strFilePath);
-    }
-    int RenameFileThreadSafe(const std::string & cr_std_strFilePath);
-    void TruncateFileToZeroAndRewrite() ;
-
-    //"virtual" because: allow polymorphism
-    virtual int RenameFileThreadUnsafe(const std::string & r_stdstrFilePath);
-    //"virtual" because: allow polymorphism: call subclasses' function
-    virtual void TruncateFileSizeToZero()
-    {
-#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-      //Sync with other code accessing the ofstream.
-      m_critical_section_typeLogging.Enter();
-#endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-      if( m_p_std_ofstream )
-      {
-        m_p_std_ofstream->close();
-        m_p_std_ofstream->open( m_std_strLogFilePath.c_str(), std::ios_base::trunc);
-      }
-#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-      m_critical_section_typeLogging.Leave();
-#endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-    }
-    /** "virtual" because: allow polymorphism: call function of the actual type
-    * (may be a direct or indirect subclass of this class).
-    * @return 0: success  */
-    virtual DWORD WriteToFile() { m_p_std_ofstream->flush(); return 0;}
   };
 
 #endif //LOGGER_HPP

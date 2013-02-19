@@ -93,12 +93,13 @@ template<typename member_type>
           m_wNodeSizeInByte = sizeof (NodeTrieNode<member_type>) + sizeof (NodeTrieNode<member_type>*) * wNumberOfNodes + sizeof (void*);
       }
 
-      inline NodeTrieNode<member_type> *contains_inline(unsigned char *p_vBegin, size_type wBytesize, bool bFullMatch)
+      inline NodeTrieNode<member_type> *contains_inline(
+        unsigned char *p_vBegin, size_type wBytesize, bool bFullMatch)
       {
-          std::stringstream strstream;
-          for(unsigned short wIndex = 0;wIndex < wBytesize;++wIndex){
-              strstream << p_vBegin[wIndex] << " ";
-          }
+//          std::stringstream strstream;
+//          for(unsigned short wIndex = 0;wIndex < wBytesize;++wIndex){
+//              strstream << p_vBegin[wIndex] << " ";
+//          }
           bExists = false;
           if(m_nodetrienodeRoot.m_arp_nodetrienode1LowerLevel){
               m_p_nodetrienodeCurrent = &m_nodetrienodeRoot;
@@ -655,11 +656,11 @@ template<typename member_type>
 
       NodeTrieNode<member_type> *insert_inline(unsigned char *p_vBegin, unsigned  wBytesize)
       {
-          std::ostringstream strstream;
-          for(unsigned short wIndex = 0;wIndex < wBytesize;++wIndex){
-              strstream << (WORD)(p_vBegin[wIndex]) << " ";
-          }
-          std::string stdstr = strstream.str();
+//          std::ostringstream strstream;
+//          for(unsigned short wIndex = 0;wIndex < wBytesize;++wIndex){
+//              strstream << (WORD)(p_vBegin[wIndex]) << " ";
+//          }
+//          std::string stdstr = strstream.str();
           if(m_nodetrienodeRoot.m_arp_nodetrienode1LowerLevel){
               NodeTrieNode<member_type> *p_nodetrienodeCurrent = &m_nodetrienodeRoot;
               BYTE byValue;
@@ -680,7 +681,9 @@ template<typename member_type>
           }
       }
 
-      NodeTrieNode<member_type> *insert_inline(unsigned char *p_vBegin, unsigned short  wBytesize, member_type member_value, member_type defaultValue = 0)
+      NodeTrieNode<member_type> *insert_inline(unsigned char *p_vBegin,
+        unsigned short  wBytesize, member_type member_value,
+        member_type defaultValue = 0)
       {
           NodeTrieNode<member_type> *p = insert_inline(
           p_vBegin, wBytesize);

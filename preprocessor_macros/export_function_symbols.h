@@ -33,4 +33,8 @@
   #define EXPORT extern "C" //__attribute__ ((visibility("default")))
 #endif
 
+#ifndef _WIN32 //Built-in macro for MSVC, MinGW (also for 64 bit Windows)
+  #define APIENTRY __stdcall
+#endif
+
 #endif /* EXPORT_FUNCTION_SYMBOLS_H_ */

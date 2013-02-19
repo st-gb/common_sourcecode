@@ -6,7 +6,7 @@
  * if you are not making profit directly or indirectly with it or its adaption.
  * Else you may contact Trilobyte SE. */
 /*
- * Logger.hpp
+ * LogEntryOutputter.hpp
  *
  *  Created on: 05.07.2012
  *      Author: Stefan
@@ -17,28 +17,30 @@
 
 #include <sstream> //class std::ostringstream
 #include <windows.h> //HANDLE
-#include <Controller/Logger/Logger.hpp> //base class "Logger"
+//#include <Controller/Logger/Logger.hpp> //base class "LogEntryOutputter"
+#include <Controller/Logger/OutputHandler/I_LogEntryOutputter.hpp> //base class "LogEntryOutputter"
 
 #ifdef _WIN32
 namespace Windows_API
 {
-
-  class Logger
-    : public ::Logger
+  class LogEntryOutputter
+    : public ::I_LogEntryOutputter
   {
   private:
     HANDLE m_hFile;
     LPVOID m_buffer;
     DWORD m_dwBufferSize;
+    //Formatted from LogFormatter.
     std::ostringstream m_std_stringstream;
   public:
     DWORD m_dwGetLastErrorAfterCreateFileA;
-    Logger();
+    LogEntryOutputter();
     virtual
-    ~Logger();
+    ~LogEntryOutputter();
 
-    std::ostream & GetStdOstream() const {
-      return (std::ostream &) m_std_stringstream; }
+    unsigned Close();
+    std::ostream * GetStdOstream() const {
+      return (std::ostream *) & m_std_stringstream; }
 
 //    DWORD Log(//ostream & ostr
 //      const std::string & r_stdstrMessage,
@@ -66,12 +68,13 @@ namespace Windows_API
 //      return 0;
 //    }
     bool IsOpen()    {     return m_hFile != INVALID_HANDLE_VALUE; }
+    bool OpenA(const std::string & c_r_stdstrFilePath);
 
     bool SetStdOstream(const std::string & c_r_stdstrFilePath);
 //    bool OpenFile2( const std::string & c_r_stdstrFilePath );
     bool OpenFlushingFile(const std::string & c_r_stdstrFilePath);
     int RenameFileThreadUnsafe(const std::string & r_stdstrFilePath);
-    DWORD WriteToFile();
+    unsigned DoOutput();
   };
 
 } /* namespace Windows_API */

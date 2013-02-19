@@ -8,7 +8,7 @@
 #ifndef JAVAUTILLOGGINGFORMATTER_HPP_
 #define JAVAUTILLOGGINGFORMATTER_HPP_
 
-#include "ILogFormatter.hpp"
+#include "I_LogFormatter.hpp"
 //GetClassName(...), GetFunctionName(...)
 #include <compiler/current_function.hpp>
 
@@ -21,7 +21,9 @@ namespace CSS
       : public I_LogFormatter
     {
     public:
-      Log4jFormatter(const Logger * p_logger);
+      Log4jFormatter(const /*Logger * p_logger*/
+//        I_LogEntryOutputter * p_outputhandler
+        FormattedLogEntryProcessor *);
       virtual
       ~Log4jFormatter();
 

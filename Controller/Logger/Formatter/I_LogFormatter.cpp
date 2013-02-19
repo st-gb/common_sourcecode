@@ -12,31 +12,57 @@
  *      Author: Stefan
  */
 
-#include "Controller/Logger/ILogFormatter.hpp"
+#include "Controller/Logger/Formatter/I_LogFormatter.hpp"
+//#include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 #include <limits.h> //SHRT_MAX
-#include <Controller/Logger/Logger.hpp> //class Logger
+//#include <Controller/Logger/Logger.hpp> //class Logger
+#include <Controller/Logger/OutputHandler/I_LogEntryOutputter.hpp>
+#include <Controller/Logger/Appender/FormattedLogEntryProcessor.hpp>
 
 //I_LogFormatter::I_LogFormatter()
 //{
 //  // TODO Auto-generated constructor stub
 //
 //}
+//e.g. { -> '{'
+#define MAKE_ANSI_CHAR(x) ' ## x ## '
 
 //32xxx = 5 characters
 #define NUMBER_OF_CHARS_FOR_MAX_2_BYTE_VALUE_IN_DEC 5
+#define PLACE_HOLDER_BEGIN_SIGN /*'%'*/ {
+//#define PLACE_HOLDER_BEGIN_CHAR /*'%'*/ MAKE_ANSI_CHAR(PLACE_HOLDER_BEGIN_SIGN)
+#define PLACE_HOLDER_BEGIN_CHAR /*'%'*/ '{'
+#define PLACE_HOLDER_BEGIN_STRING /*'%'*/ "{"
+#define PLACE_HOLDER_END_CHAR /*'%'*/ '}'
+#define PLACE_HOLDER_END_STRING /*'%'*/ "}"
+
+const std::string I_LogFormatter::s_std_strDefaultLinuxLogTimeFormatString =
+  "{year}.{month}.{day} {hour}:{minute}:{second}s{millisecond}ms{microsecond}us";
+const std::string I_LogFormatter::s_std_strDefaultWindowsLogTimeFormatString =
+  "{year}.{month}.{day} {hour}:{minute}:{second}s{millisecond}ms";
 
 I_LogFormatter::I_LogFormatter(//std::ofstream * p_std_ofstream
-  const Logger * p_logger)
+//  const I_LogEntryOutputter * outputhandler
+  const FormattedLogEntryProcessor * p_formattedlogentryprocessor
+  )
   :
-    m_p_logger(p_logger),
+//    m_p_outputhandler(outputhandler),
+    m_p_formattedlogentryprocessor(p_formattedlogentryprocessor),
     m_p_chTimeString(NULL),
     m_nodetrieTimePlaceHolderToLogFileEntryMember(256, NULL)
 {
   m_p_std_ostream = //p_std_ofstream;
-    & p_logger->GetStdOstream();
-  m_p_logfileentry = & p_logger->m_logfileentry;
+    /*m_p_outputhandler*/ p_formattedlogentryprocessor->GetStdOstream();
+  m_p_logfileentry = /* & m_p_outputhandler*/
+    p_formattedlogentryprocessor->GetLogFileEntry();
   m_TimeFormatString =
-    "%year%-%month%-%day%&nbsp;%hour%:%minute%:%second%s%millisecond%ms";
+    PLACE_HOLDER_BEGIN_STRING "year" PLACE_HOLDER_END_STRING
+    "-" PLACE_HOLDER_BEGIN_STRING "month" PLACE_HOLDER_END_STRING "-"
+    PLACE_HOLDER_BEGIN_STRING "day" PLACE_HOLDER_END_STRING "&nbsp;"
+    PLACE_HOLDER_BEGIN_STRING "hour" PLACE_HOLDER_END_STRING ":"
+    PLACE_HOLDER_BEGIN_STRING "minute" PLACE_HOLDER_END_STRING ":"
+    PLACE_HOLDER_BEGIN_STRING "second" PLACE_HOLDER_END_STRING "s"
+    PLACE_HOLDER_BEGIN_STRING "millisecond" PLACE_HOLDER_END_STRING "ms";
   CreateTimePlaceHolderToLogFileEntryMemberMapping();
 }
 
@@ -44,7 +70,10 @@ I_LogFormatter::~I_LogFormatter()
 {
   if( m_p_chTimeString )
     delete [] m_p_chTimeString;
+//  DeleteTimePlaceHolderToLogFileEntryMemberNodeTrie();
   m_nodetrieTimePlaceHolderToLogFileEntryMember.DeleteWithMember();
+//  LOGN_INFO("m_dwNumberOfNodes for PlaceHolderToLogFileEntryMember trie:"
+//    << m_nodetrieTimePlaceHolderToLogFileEntryMember.getNumberOfNodes() )
 }
 
 /** Data structure filled is used in "GetNeededArraySizeForTimeString()" */
@@ -104,9 +133,10 @@ uint16_t I_LogFormatter::GetNeededArraySizeForTimeString(
 //  NodeTrieNode<const uint16_t *> * p_ntn;
   NodeTrieNode<PointerToLogFileEntryMemberAndNumFormatChars *> * p_ntn;
   uint16_t currentCharIndex = 0;
-  uint16_t IndexOfLeftPercentSign = SHRT_MAX;
-  uint16_t ArraySizeForTimeString = 0;
-  int IndexOfRightPercentSign = 0;
+  uint16_t charIndexOfPlaceholderBeginChar = SHRT_MAX;
+  uint16_t arraySizeForTimeString = 0;
+  unsigned numCharsBetweenPlaceholderChars;
+  int charIndexOfPlaceholderEndChar = 0;
   BYTE numCharsInBetween;
   BYTE percentPairIndex = 0;
   const char * const c_p_chTimeFormatStringBegin = timeFormatString.c_str();
@@ -117,67 +147,70 @@ uint16_t I_LogFormatter::GetNeededArraySizeForTimeString(
 
   while( * c_p_chTimeFormatStringCurrentChar )
   {
-    if( * c_p_chTimeFormatStringCurrentChar == '%' )
+    if( * c_p_chTimeFormatStringCurrentChar == PLACE_HOLDER_BEGIN_CHAR )
     {
-      if( IndexOfLeftPercentSign == SHRT_MAX ) // left "%"
-      {
-        IndexOfLeftPercentSign = currentCharIndex;
+//      if( IndexOfLeftPercentSign == SHRT_MAX ) // left "%"
+//      {
+        charIndexOfPlaceholderBeginChar = currentCharIndex;
         // "begin...%placeholder%" and "%placeholder%...%placeholder%"
-        ArraySizeForTimeString += IndexOfLeftPercentSign -
-          IndexOfRightPercentSign;
-      }
-//      bPercentSignFound = true;
-      else //-> right "%" belonging to left "%"
-      {
-        //chars between left "%" and right "%" from %placeholder%"
-        numCharsInBetween = currentCharIndex - IndexOfLeftPercentSign - 1;
-        IndexOfRightPercentSign = currentCharIndex;
-
-        p_ntn = m_nodetrieTimePlaceHolderToLogFileEntryMember.contains_inline(
-          (BYTE *) (c_p_chTimeFormatStringBegin + IndexOfLeftPercentSign + 1),
-          numCharsInBetween,
-          true);
-        if( p_ntn //&& p_ntn->m_member
-            )
-        {
-          const uint16_tPointerAndBYTE logFilePlaceHolder(
-            p_ntn->m_member,
-            numCharsInBetween + 2,
-//              percentPairIndex
-            IndexOfLeftPercentSign//,
-            );
-          m_vecPointerToTimeElementFromLogFileEntry.push_back(
-            logFilePlaceHolder
-            );
-          ArraySizeForTimeString +=
-            NUMBER_OF_CHARS_FOR_MAX_2_BYTE_VALUE_IN_DEC;
-        }
-        else
-          ArraySizeForTimeString += numCharsInBetween;
-        IndexOfLeftPercentSign = SHRT_MAX;
-        ++ percentPairIndex;
-      }
+        numCharsBetweenPlaceholderChars = charIndexOfPlaceholderBeginChar -
+          charIndexOfPlaceholderEndChar - 1;
+        arraySizeForTimeString += numCharsBetweenPlaceholderChars;
     }
+//      bPercentSignFound = true;
+//      else //-> right "%" belonging to left "%"
+    else if( * c_p_chTimeFormatStringCurrentChar == PLACE_HOLDER_END_CHAR )
+    {
+      //chars between left "%" and right "%" from %placeholder%"
+      numCharsInBetween = currentCharIndex - charIndexOfPlaceholderBeginChar - 1;
+      charIndexOfPlaceholderEndChar = currentCharIndex;
+
+      p_ntn = m_nodetrieTimePlaceHolderToLogFileEntryMember.contains_inline(
+        (BYTE *) (c_p_chTimeFormatStringBegin + charIndexOfPlaceholderBeginChar + 1),
+        numCharsInBetween,
+        true);
+      if( p_ntn //&& p_ntn->m_member
+          )
+      {
+        const uint16_tPointerAndBYTE logFilePlaceHolder(
+          p_ntn->m_member,
+          numCharsInBetween + 2,
+//              percentPairIndex
+          charIndexOfPlaceholderBeginChar//,
+          );
+        m_vecPointerToTimeElementFromLogFileEntry.push_back(
+          logFilePlaceHolder
+          );
+        arraySizeForTimeString +=
+          NUMBER_OF_CHARS_FOR_MAX_2_BYTE_VALUE_IN_DEC;
+      }
+      else
+        arraySizeForTimeString += numCharsInBetween;
+      charIndexOfPlaceholderBeginChar = SHRT_MAX;
+      ++ percentPairIndex;
+    }
+//    }
     ++ currentCharIndex;
     ++ c_p_chTimeFormatStringCurrentChar;
   }
 //  if( IndexOfLeftPercentSign != SHRT_MAX )
-  if( IndexOfLeftPercentSign == SHRT_MAX ) //-> right "%" or any "%" in string
+  //-> placeholder end char or any placeholder char in string
+  if( charIndexOfPlaceholderBeginChar == SHRT_MAX )
   {
     //either:
     // - # of chars of "..." in "%placeholder%"...end"
     // - if no "%" in whole string: # of chars of whole string
-    ArraySizeForTimeString += timeFormatString.length() -
+    arraySizeForTimeString += timeFormatString.length() -
       //# chars right of "%"
-      IndexOfRightPercentSign - 1;
+      charIndexOfPlaceholderEndChar - 1;
   }
   else //left "%"
 //    if( IndexOfRightPercentSign > IndexOfLeftPercentSign)
       // # of chars of "..." in "%xxx"...end"
-      ArraySizeForTimeString += timeFormatString.length() -
+    arraySizeForTimeString += timeFormatString.length() -
         //# chars right of "%" plus 1 char for "%"
-        IndexOfLeftPercentSign;
-  return ArraySizeForTimeString;
+      charIndexOfPlaceholderBeginChar;
+  return arraySizeForTimeString;
 }
 
 /** Defined because it should be faster
@@ -223,6 +256,27 @@ inline uint16_t uint16tToCharArray(uint16_t ui16Number, //char ar_ch[6]
 //  ar_ch[index ] = '\0'; //string terminating 0 char.
   return index;
 }
+
+void I_LogFormatter::Init(std::ostream /*&*/ * p_std_ostream /*= NULL*/,
+  const std::string * p_std_strLogTimeFormatString //= NULL
+  )
+{
+  if( p_std_ostream)
+    //The std::ostream must be set every time the formatter changes.
+    SetStdOstream( p_std_ostream );
+  WriteHeader();
+  if( ! p_std_strLogTimeFormatString)
+  {
+#ifdef _WIN32
+    p_std_strLogTimeFormatString = & s_std_strDefaultWindowsLogTimeFormatString;
+#endif
+#ifdef __linux__
+    p_std_strLogTimeFormatString = & s_std_strDefaultLinuxLogTimeFormatString;
+#endif
+  }
+  SetTimeFormat( * p_std_strLogTimeFormatString);
+}
+
 /** Call when initializing or changing the time format.*/
 void I_LogFormatter::SetTimeFormat(const std::string & TimeFormatString)
 {

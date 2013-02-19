@@ -69,11 +69,11 @@ void DropUser()
 void TrapSignals()
 {
   /* Trap signals that we expect to receive */
-  signal(SIGCHLD,child_handler);
-  signal(SIGUSR1,child_handler);
-  signal(SIGALRM,child_handler);
+  signal(SIGCHLD, child_handler);
+  signal(SIGUSR1, child_handler);
+  signal(SIGALRM, child_handler);
   //SIGHUP = Reload config signal.
-  signal(SIGHUP,child_handler);
+  signal(SIGHUP, child_handler);
 }
 
 void ForkOffAndDie()
@@ -167,7 +167,7 @@ void SetRootDirAsCurrentDir()
   }
 }
 
-void CloseInheritedOpenFiles()
+void CloseStandardInAndOutputFiles()
 {
   //"Closing all inherited open files at the time of execution that are left
   //  open by the parent process, including file descriptors 0, 1 and 2
@@ -183,6 +183,11 @@ void CloseInheritedOpenFiles()
   //Assign return value to avoid g++ warning "ignoring return value of
   // ‘freopen’, declared with attribute warn_unused_result" "
   p_file = freopen( "/dev/null", "w", stderr);
+}
+
+void CloseInheritedOpenFiles()
+{
+  CloseStandardInAndOutputFiles();
 }
 
 //http://en.wikipedia.org/wiki/Daemon_%28computer_software%29#Types_of_daemons:

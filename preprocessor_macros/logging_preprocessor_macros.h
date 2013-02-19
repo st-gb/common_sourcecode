@@ -115,7 +115,7 @@
 //  #define USE_OWN_LOGGER
   #ifdef USE_OWN_LOGGER
     #ifdef _WIN32
-      #include <Windows/Logger/Logger.hpp> //for class Windows_API::Logger
+//      #include <Windows/Logger/Logger.hpp> //for class Windows_API::Logger
 //    //Should have the same type as in the difintion.
 //    extern Windows_API::Logger g_logger ;
     #endif //#ifdef _WIN32
@@ -123,9 +123,9 @@
     #include <Controller/Logger/Logger.hpp> //for class Logger
     #include <Controller/Logger/LogLevel.hpp> //for enum LogLevel::MessageType
 //    //Should have the same type as in the difintion.
-//    extern Logger g_logger ;
+    extern Logger g_logger ;
 //#endif
-    extern GLOBAL_LOGGER_FULLY_QUALIFIED_CLASS_NAME g_logger;
+//    extern GLOBAL_LOGGER_FULLY_QUALIFIED_CLASS_NAME g_logger;
     #define OWN_LOGGER_LOG(stdstr) g_logger.Log( stdstr ) ;
     #include <Controller/character_string/getUTF8string.hpp>
     #include <vector> /*class std::vector*/
@@ -284,10 +284,13 @@
       g_logger.Log( stdstr ) ; \
       }
     //#define LOGN(to_ostream) LOG (to_ostream << "\n" )
-    #define LOGN(to_ostream) LOG (to_ostream << "\n")
+    #define LOGN(to_ostream) LOG (to_ostream << "\n" /*std::endl*/)
     #define LOGN_TYPE(to_ostream, messageType) \
-      LOG_TYPE (to_ostream << "\n", messageType)
+      LOG_TYPE (to_ostream << "\n" /*std::endl*/, messageType)
     #define LOGN_ERROR(to_ostream) LOGN_TYPE(to_ostream, LogLevel::error)
+    #define LOGN_ERROR_AND_STD_ERR(to_ostream) \
+      LOGN_TYPE(to_ostream, LogLevel::error) \
+      std::cerr << to_ostream << std::endl;
     #define LOGN_INFO(to_ostream) LOGN_TYPE(to_ostream, LogLevel::info)
     #define LOGN_DEBUG(to_ostream) LOGN_TYPE(to_ostream, LogLevel::debug)
     #define LOGN_WARNING(to_ostream) LOGN_TYPE(to_ostream, LogLevel::warning )

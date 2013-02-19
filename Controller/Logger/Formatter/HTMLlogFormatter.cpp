@@ -12,7 +12,7 @@
  *      Author: Stefan
  */
 
-#include "Controller/Logger/HTMLlogFormatter.hpp"
+#include "HTMLlogFormatter.hpp"
 
 //  HTMLformatLogFileWriter::HTMLformatLogFileWriter()
 //  {
@@ -113,7 +113,12 @@ void HTMLlogFormatter::WriteLogFileEntry(
 //    << logfileentry.nanosecond << "ns"
 //    << std_strTime
     << m_p_chTimeString
-    << "</td><td>" << logfileentry.threadID << "</td>\n    "
+    << "</td><td>";
+  if( logfileentry.p_std_strThreadName )
+    * m_p_std_ostream << * logfileentry.p_std_strThreadName;
+  else
+    * m_p_std_ostream << logfileentry.threadID;
+  * m_p_std_ostream << "</td>\n    "
         "<td ";
   OutputCSSclass(messageType);
   * m_p_std_ostream << ">"

@@ -62,8 +62,22 @@ namespace Windows_API
         == WAIT_TIMEOUT;
     }
     inline void PossiblyCloseThreadHandle();
-    BYTE start( pfnThreadFunc, void * p_v, BYTE priority =
-      I_Thread::default_priority) ;
+    BYTE start(
+      pfnThreadFunc,
+      void * p_v,
+      /*BYTE*/ enum I_Thread::priority prio = I_Thread::default_priority) ;
+  //TODO should be working when function is implemented in base class.
+  BYTE start(
+    pfnThreadFunc pfnthreadfunc,
+    void * p_v,
+    const char * const threadName,
+    /*BYTE*/ enum priority prio = default_priority)
+  {
+//    GetThread m_handleThread
+//    OpenThreadToken(m_handleThread, 0x1000, FALSE, )
+//    SetCurrentThreadName(threadName);
+    return start(pfnthreadfunc, p_v, prio);
+  }
     void * WaitForTermination() ;
   };
 }

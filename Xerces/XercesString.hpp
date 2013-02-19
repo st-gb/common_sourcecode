@@ -22,6 +22,7 @@
 
 #include "Convert_wchar_t_StringToXercesString.hpp"
 #include "ConvertXercesStringToStdWstring.hpp"
+#include <preprocessor_macros/expand_and_stringify.h> //EXPAND_AND_STRINGIFY(...)
 
 namespace Xerces
 {
@@ -42,6 +43,7 @@ namespace Xerces
     XMLCh * m_p_xmlchAllocatedViaXerces;
     XMLCh * m_p_xmlchAllocatedViaNew;
   public :
+    enum { before = -1, strings_are_indentical = 0, after };
     // -----------------------------------------------------------------------
     //  Constructors and Destructor
     // -----------------------------------------------------------------------
@@ -122,13 +124,14 @@ namespace Xerces
     std::string & r_std_strValue
     ) ;
 
-  //The following because: wcscmp(...) did not work correctly when compiled
-  //under Linux (with "XMLCh *", probably because "XMLCh" has 4 bytes under
-  //Linux).
+  #include "compareWithANSIstring.hpp"
+  /** The following because: wcscmp(...) did not work correctly when compiled
+  * under Linux (with "XMLCh *", probably because "XMLCh" or wchar_t has 4 bytes
+  * under Linux). */
   #ifdef __linux__
     #define ANSI_OR_WCHAR(string) string
-    #include "compareWithANSIstring.hpp"
-  #else
+  #else //Under Windows XMLCh is wchar_t
+//    #define ANSI_OR_WCHAR(string) L ## EXPAND_AND_STRINGIFY(string)
     #define ANSI_OR_WCHAR(string) L ## string
     #include "compareWithWideString.hpp"
   #endif

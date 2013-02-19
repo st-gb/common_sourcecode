@@ -27,7 +27,7 @@ public:
 	void Create(unsigned wNumberOfNodesPerHierarchyLevel, member_type defaultValue)
 	{
 		m_arp_nodetrienode1LowerLevel = new NodeTrieNode * [
-		  wNumberOfNodesPerHierarchyLevel] ;
+		  wNumberOfNodesPerHierarchyLevel] ; unsigned pointerSize = sizeof(NodeTrieNode *);
 		//Value will have "abitrary" value -> set to NULL to mark the end.
 		//cites from: http://www.cplusplus.com/reference/clibrary/cstring/memset/
 		memset( //Pointer to the block of memory to fill.
@@ -36,7 +36,7 @@ public:
 			//Value to be set.
 			0 ,
 			//Number of bytes to be set to the value.
-			wNumberOfNodesPerHierarchyLevel * sizeof(NodeTrieNode *)
+			wNumberOfNodesPerHierarchyLevel * pointerSize
 			) ;
 		m_member = defaultValue;
 	}
