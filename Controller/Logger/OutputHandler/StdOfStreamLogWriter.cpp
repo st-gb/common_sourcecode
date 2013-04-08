@@ -5,9 +5,12 @@
  *      Author: Stefan
  */
 
-//#include <Controller/GetLastErrorCode.hpp>//OperatingSystem::GetLastErrorCode()
 #include "StdOfStreamLogWriter.hpp"
-#include <windows.h> //GetLastError()
+#ifdef _WIN32
+  #include <windows.h> //GetLastError()
+#else
+  #include <Controller/GetLastErrorCode.hpp>//OperatingSystem::GetLastErrorCode()
+#endif
 
 StdOfStreamLogWriter::StdOfStreamLogWriter()
 //C++ style initialisation.
@@ -145,8 +148,12 @@ int StdOfStreamLogWriter::RenameFileThreadUnsafe(
         ( //oldname
         m_std_strLogFilePath.c_str(), cr_std_strFilePath.c_str() //newname
         );
-      retVal = //OperatingSystem::GetLastErrorCode();
+      retVal =
+#ifdef _WIN32
         ::GetLastError();
+#else
+        OperatingSystem::GetLastErrorCode();
+#endif
       //"If the file is successfully renamed, a zero value is returned."
       if( retVal == 0)
       {

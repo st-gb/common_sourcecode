@@ -27,7 +27,9 @@ namespace Linux
     pthreadBasedI_Thread(I_Thread::thread_type = I_Thread::joinable );
     virtual
     ~pthreadBasedI_Thread();
-    BYTE start(pfnThreadFunc, void * p_v, BYTE priority = default_priority) ;
+    BYTE start(pfnThreadFunc, void * p_v, /*BYTE*/ I_Thread::priority
+        priority = default_priority) ;
+//    BYTE start(DWORD (*)(void*), void*, I_Thread::priority)
     //inline
       void * WaitForTermination() ;
     int GetThreadPriority();

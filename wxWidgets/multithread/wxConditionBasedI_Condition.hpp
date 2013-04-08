@@ -43,11 +43,12 @@ public:
   {
 
   }
-  //By "virtual" : avoid g++ warning: "`class wxConditionBasedI_Condition' has
-  // virtual functions but non-virtual destructor"
+  /** By "virtual" : avoid g++ warning: "`class wxConditionBasedI_Condition' has
+  * virtual functions but non-virtual destructor" */
   virtual ~wxConditionBasedI_Condition()
   {
-    LOGN("~wxConditionBasedI_Condition()")
+    //WARNING Only output when the logger object is not destroyed before!
+//    LOGN("~wxConditionBasedI_Condition()")
   }
   static I_Condition::state wxCondError2I_Condition_state(wxCondError wxconderror)
   {

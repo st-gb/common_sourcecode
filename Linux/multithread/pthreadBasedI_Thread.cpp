@@ -53,7 +53,7 @@ namespace Linux
   }
 
   BYTE pthreadBasedI_Thread::start( pfnThreadFunc pfn_threadfunc, void * p_v,
-      BYTE priority /*= default_priority*/ )
+    /*BYTE*/ I_Thread::priority priority /*= default_priority*/ )
   {
     int nRetVal = 1 ;
     if( m_i_thread_thread_type == I_Thread::joinable )

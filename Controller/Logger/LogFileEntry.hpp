@@ -36,7 +36,7 @@ public:
   uint16_t microsecond;
   uint16_t nanosecond;
   std::string * p_std_strMessage;
-  std::string * p_std_strThreadName;
+  const std::string * p_std_strThreadName;
 };
 
 #endif /* LOGFILEENTRY_HPP_ */

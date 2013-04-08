@@ -64,11 +64,12 @@ inline void GetLogFilePrefix(LogFileEntry & r_logfileentry)
   //http://www.kernel.org/doc/man-pages/online/pages/man3/pthread_self.3.html
   // "link with -pthread"
   r_logfileentry.threadID = ::pthread_self();
-  I_Thread::threadNameMapType::const_iterator c_iter =
+  I_Thread::threadNameMapType::const_iterator c_iterThreadNumber2ThreadName =
     I_Thread::s_threadNumber2Name.find(r_logfileentry.threadID);
-  if( c_iter != I_Thread::s_threadNumber2Name.end() )
+  if( c_iterThreadNumber2ThreadName != I_Thread::s_threadNumber2Name.end() )
   {
-    r_logfileentry.p_std_strThreadName = & c_iter->second;
+    r_logfileentry.p_std_strThreadName = (std::string * const)
+      & c_iterThreadNumber2ThreadName->second;
   }
   else
     r_logfileentry.p_std_strThreadName = NULL;

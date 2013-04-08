@@ -11,7 +11,9 @@
 #ifdef _DEBUG
   #include <preprocessor_macros/logging_preprocessor_macros.h> //DEBUGN(...)
 #else
-  #define DEBUGN(...) /* ->empty*/
+  #ifndef DEBUGN
+    #define DEBUGN(...) /* ->empty*/
+  #endif
 #endif //#ifdef _DEBUG
 
 #include <time.h> //clock_gettime(...)
