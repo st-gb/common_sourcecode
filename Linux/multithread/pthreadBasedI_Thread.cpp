@@ -26,28 +26,32 @@ namespace Linux
 
   int pthreadBasedI_Thread::GetThreadPriority()
   {
-//      pthread_getspecific()
-//          sched_
-    struct sched_param sched_paramVal;
-    int policy;
-//      return default_priority;
-    int n =
-      //http://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread_setschedparam.html:
-      //"If successful, the pthread_getschedparam() and pthread_setschedparam()
-      //functions return zero."
-      pthread_getschedparam (
-      m_pthread_t //pthread_t __target_thread
-      , & policy //int *__restrict __policy,
-      , & sched_paramVal //struct sched_param *__restrict __param
-      );
-    if( n != 0)
-      return I_Thread::error_getting_priority;
-    return sched_paramVal.__sched_priority;
+    if( m_pthread_t != 0 )
+    {
+  //      pthread_getspecific()
+  //          sched_
+      struct sched_param sched_paramVal;
+      int policy;
+  //      return default_priority;
+      int n =
+        //http://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread_setschedparam.html:
+        //"If successful, the pthread_getschedparam() and pthread_setschedparam()
+        //functions return zero."
+        pthread_getschedparam (
+        m_pthread_t //pthread_t __target_thread
+        , & policy //int *__restrict __policy,
+        , & sched_paramVal //struct sched_param *__restrict __param
+        );
+      if( n != 0)
+        return I_Thread::error_getting_priority;
+      return sched_paramVal.__sched_priority;
+    }
+    return 0;
   }
 
   bool pthreadBasedI_Thread::IsRunning()
   {
-    return //true;
+    return m_pthread_t != 0 &&
       //From http://stackoverflow.com/questions/2156353/how-do-you-query-a-pthread-to-see-if-it-is-still-running
       pthread_kill(m_pthread_t, 0) != ESRCH;
   }
@@ -122,21 +126,25 @@ namespace Linux
   {
     LOGN("pthreadBasedI_Thread::WaitForTermination()--thread ID:"
       << m_pthread_t)
-    //http://www.kernel.org/doc/man-pages/online/pages/man3/pthread_join.3.html:
-    //"The pthread_join() function waits for the thread specified by thread to
-    //terminate."
-    //"On success, pthread_join() returns 0; on error, it returns an error
-    //number."
-    int nReturn = pthread_join(
-      m_pthread_t ,
-      //"If retval is not NULL, then pthread_join() copies the exit status of the
-      //target thread"
-      NULL
-      ) ;
-    if( nReturn )
-      LOGN("pthread_join failed:" << GetErrorMessageFromErrorCodeA( nReturn ) )
-    else
-      LOGN("pthread_join succeeded")
-    return (void *) nReturn ;
+    if( m_pthread_t != 0 )
+    {
+      //http://www.kernel.org/doc/man-pages/online/pages/man3/pthread_join.3.html:
+      //"The pthread_join() function waits for the thread specified by thread to
+      //terminate."
+      //"On success, pthread_join() returns 0; on error, it returns an error
+      //number."
+      int nReturn = pthread_join(
+        m_pthread_t ,
+        //"If retval is not NULL, then pthread_join() copies the exit status of the
+        //target thread"
+        NULL
+        ) ;
+      if( nReturn )
+        LOGN("pthread_join failed:" << GetErrorMessageFromErrorCodeA( nReturn ) )
+      else
+        LOGN("pthread_join succeeded")
+      return (void *) nReturn ;
+    }
+    return (void *) false;
   }
 }

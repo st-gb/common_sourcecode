@@ -14,6 +14,27 @@
 #include <windef.h> //for DWORD
 #include <inttypes.h> //uint64_t under Linux
 
+//From CrystalCPUID:
+//static void rdtsc(DWORD *EAX, DWORD *EDX)
+//{
+//  _asm { cpuid }
+//#ifndef _X86_64
+//	DWORD A, D;
+//	_asm {
+//		rdtsc
+//		mov A, eax
+//		mov D, edx
+//	}
+//	*EAX = A;
+//	*EDX = D;
+//#else
+//	ULONG64 ul64;
+//	ul64 = __rdtsc();
+//	*EDX = (DWORD)(ul64 >> 32);
+//	*EAX = (DWORD)ul64;
+//#endif
+//}
+
 //TODO use affinity mask for reading the TSC
 //http://en.wikipedia.org/wiki/Time_Stamp_Counter:
 //"[...]whether all cores (processors) have identical values in their
@@ -87,7 +108,9 @@ inline void ReadTSCinOrder(
   }
 }
 
-//From http://en.wikipedia.org/wiki/Time_Stamp_Counter#C.2B.2B
+/** From http://en.wikipedia.org/wiki/Time_Stamp_Counter#C.2B.2B
+ *   possibly set the thread affinity mask before because the TSC may differ
+ *   between different CPU cores */
 __inline__ uint64_t ReadTSCinOrderFromEnglishWikipedia(void)
 {
     uint32_t lo, hi;
@@ -98,6 +121,18 @@ __inline__ uint64_t ReadTSCinOrderFromEnglishWikipedia(void)
     /* We cannot use "=A", since this would use %rax on x86_64 and return only the lower 32bits of the TSC */
     __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
     return (uint64_t)hi << 32 | lo;
+}
+
+inline unsigned ReadTimeStampCounter(DWORD dwThreadAffinityMask, uint64_t & rdtscValue)
+{
+  DWORD dwPreviousAffMask = ::SetThreadAffinityMask( //::GetCurrentThread() ,
+      dwThreadAffinityMask) ;
+  if( dwPreviousAffMask )
+  {
+    rdtscValue = ReadTimeStampCounter();
+    return 0;
+  }
+  return 1;
 }
 
 inline ULONGLONG ReadTSCinOrder( DWORD dwThreadAffinityMask )

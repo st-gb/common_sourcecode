@@ -133,10 +133,37 @@ I_LogFormatter * FormattedLogEntryProcessor::CreateFormatter(//BYTE type = 1
   return m_p_log_formatter;
 }
 
+//bool FormattedLogEntryProcessor::GetActualFilePath(std::string & str)
+//{
+//  str = m_filePath;
+//  return true;
+//}
+
+bool FormattedLogEntryProcessor::Open(std::string & actualFilePath)
+{
+  bool bOpen = false;
+  if( GetActualFilePath(actualFilePath) )
+  {
+    bOpen = m_p_outputhandler->OpenA(actualFilePath );
+    if( bOpen )
+    {
+      m_p_std_ostream = m_p_outputhandler->GetStdOstream();
+      if( m_p_log_formatter)
+      {
+        m_p_log_formatter->SetStdOstream(m_p_std_ostream);
+      }
+    }
+  }
+  return bOpen;
+}
+
 void FormattedLogEntryProcessor::SetFormatter(I_LogFormatter * p_logformatter)
 {
   if( m_p_log_formatter )
     delete m_p_log_formatter;
   m_p_log_formatter = p_logformatter;
-  m_p_log_formatter->Init(GetStdOstream() );
+  //m_p_log_formatter->Init(GetStdOstream() );
+  if(m_p_outputhandler && m_p_log_formatter)
+    m_p_log_formatter->Init(m_p_outputhandler->GetStdOstream() );
+
 }

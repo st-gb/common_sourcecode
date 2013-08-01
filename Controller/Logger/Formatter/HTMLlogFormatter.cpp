@@ -65,6 +65,7 @@ void HTMLlogFormatter::WriteHeader()
   // http://www.w3schools.com/html/html_tables.asp:
   <<   "<tr>"
     "    <th>time</th>"
+    "    <th>thread name</th>"
     "    <th>thread ID</th>"
     "    <th>message</th>"
     "   </tr>\n";
@@ -115,9 +116,10 @@ void HTMLlogFormatter::WriteLogFileEntry(
     << m_p_chTimeString
     << "</td><td>";
   if( logfileentry.p_std_strThreadName )
-    * m_p_std_ostream << * logfileentry.p_std_strThreadName;
+    * m_p_std_ostream << * logfileentry.p_std_strThreadName << "</td>\n<td>";
   else
-    * m_p_std_ostream << logfileentry.threadID;
+    * m_p_std_ostream << "</td>\n<td>";
+  * m_p_std_ostream << logfileentry.threadID;
   * m_p_std_ostream << "</td>\n    "
         "<td ";
   OutputCSSclass(messageType);

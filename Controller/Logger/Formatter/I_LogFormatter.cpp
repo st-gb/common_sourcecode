@@ -257,6 +257,7 @@ inline uint16_t uint16tToCharArray(uint16_t ui16Number, //char ar_ch[6]
   return index;
 }
 
+/** Writes header for file format and creates char array for formatting the time string. */
 void I_LogFormatter::Init(std::ostream /*&*/ * p_std_ostream /*= NULL*/,
   const std::string * p_std_strLogTimeFormatString //= NULL
   )
@@ -277,7 +278,8 @@ void I_LogFormatter::Init(std::ostream /*&*/ * p_std_ostream /*= NULL*/,
   SetTimeFormat( * p_std_strLogTimeFormatString);
 }
 
-/** Call when initializing or changing the time format.*/
+/** Create array for formatting the time string into.
+ *  Call when initializing or changing the time format.*/
 void I_LogFormatter::SetTimeFormat(const std::string & TimeFormatString)
 {
   m_TimeFormatString = TimeFormatString;
@@ -311,6 +313,7 @@ inline void FormatAsString(
   //    char ar_chNumCharsToFormat[2];
   //    itoa(p_p_logfileentrymember_and_num_formatchars->m_numCharsToFormat,
   //      ar_chNumCharsToFormat, 10);
+  //TODO SIGSEV here sometimes?! (because of multithreaded logging wout crit sec?)
   sprintf(ar_chFormatString,
     //padding with "0": http://www.cplusplus.com/reference/cstdio/printf/
     // "%%"->"%", "%d"->number      entirely: ->"%0>>number<<d"

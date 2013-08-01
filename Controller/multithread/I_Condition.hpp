@@ -15,6 +15,17 @@
 #ifndef I_CONDITION_HPP_
 #define I_CONDITION_HPP_
 
+/** @ see http://en.wikipedia.org/wiki/Virtual_method_table
+ * using the Virtual_method_table it is slower: http://en.wikipedia.org/wiki/Virtual_method_table#Efficiency
+ * A virtual call requires at least an extra indexed dereference, and sometimes a "fixup" addition, compared to a non-virtual call, which is simply a jump to a compiled-in pointer. Therefore, calling virtual functions is inherently slower than calling non-virtual functions*/
+#define USE_VIRTUAL_METHODS
+
+#ifdef USE_VIRTUAL_METHODS
+  #define VIRTUALITITY virtual
+#else
+  #define VIRTUALITITY
+#endif
+
 class I_Condition
 {
   public:
@@ -30,9 +41,11 @@ class I_Condition
   //    the monitor.
   //  * signal c (sometimes written as notify c) is called by a thread to
   //    indicate that the assertion Pc is true.
-    virtual I_Condition::state Broadcast() = 0;// {}
-    virtual I_Condition::state Wait() = 0; //{}
-    virtual I_Condition::state WaitTimeOut(DWORD dwMilliSecondsToWait) = 0;//{};
+#ifdef USE_VIRTUAL_METHODS
+    VIRTUALITITY I_Condition::state Broadcast() = 0;// {}
+    VIRTUALITITY I_Condition::state Wait() = 0; //{}
+    VIRTUALITITY I_Condition::state WaitTimeOut(DWORD dwMilliSecondsToWait) = 0;//{};
+#endif
 } ;
 
 #endif /* I_CONDITION_HPP_ */

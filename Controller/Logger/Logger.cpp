@@ -12,7 +12,12 @@
 #include "Logger.hpp"  //important for wxWidgets 2.9: include windows.h AFTER
 #include "LogLevel.hpp" //LogLevel::MessageType
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
+//#include "Appender/AppendingFileOutput.hpp"
+#include "Formatter/Log4jFormatter.hpp"
+#include "OutputHandler/StdOfStreamLogWriter.hpp"
+#include "Appender/RollingFileOutput.hpp"
 
+using namespace CSS::LogFormatter;
 //If MS compiler etc.
 #if defined(_MSC_VER) || defined(__MINGW32__) || defined(__CYGWIN__)
   //#include <Windows.h> //for SYSTEMTIME
@@ -130,3 +135,40 @@ DWORD Logger::Log(//ostream & ostr
 //    m_p_std_ofstream->flush() ;
 //  }
 //}
+
+/** @brief opens a default log file:
+ *  -appender: rolling file,
+ *  -formatter: plain TeXT,
+ *  -outputhandler: std::ofstream
+ *  -log level: info*/
+bool Logger::OpenFileA( //std::string & r_stdstrFilePath
+  std::string & r_std_strLogFilePath, unsigned maxNumLogEntries /*=500*/)
+{
+  bool bSuccess = false;
+//  Log4jFormatter formatter = new Log4jFormatter(*this);
+  StdOfStreamLogWriter * outputhandler = new StdOfStreamLogWriter();
+//  AppendingFileOutput * logEntryHandler = new AppendingFileOutput(
+  RollingFileOutput * logEntryHandler = new RollingFileOutput(
+    * this, //Logger & logger 
+    r_std_strLogFilePath,
+    outputhandler , //I_LogEntryOutputter * p_outputhandler,
+    //NULL, //I_LogFormatter * p_log_formatter,
+    "txt",
+    maxNumLogEntries,
+    LogLevel::info //enum LogLevel::MessageType logLevel
+    );
+//  I_LogFormatter * p_logformatter = logfileappender->CreateFormatter("txt");
+//  logEntryHandler->Open();
+  logEntryHandler->Open(r_std_strLogFilePath);
+//  if(p_logformatter) p_logformatter->/*WriteHeader()*/Init();
+  AddFormattedLogEntryProcessor( logEntryHandler);
+
+  //Create array for formatting the time string into.
+//  logEntryHandler->GetFormatter()->SetTimeFormat();
+  logEntryHandler->GetFormatter()->Init();
+  //this->SetFormatter()
+
+//  outputhandler->OpenA(r_std_strFilePath);
+  //logEntryHandler->SetFormatter( new Log4jFormatter(logEntryHandler) );
+  return bSuccess;
+}

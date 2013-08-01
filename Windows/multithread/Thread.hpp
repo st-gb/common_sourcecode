@@ -17,6 +17,7 @@
 
 #include <Controller/multithread/I_Thread.hpp> //pfnThreadFunc
 #include <windows.h> //HANDLE
+#include <fastest_data_type.h> //typedef fastestUnsignedDataType
 
 namespace Windows_API
 {
@@ -37,7 +38,9 @@ namespace Windows_API
     ~Thread();
 
     void Delete() {} ;
+    unsigned GetThreadID() { return m_dwThreadId; }
     int GetThreadPriority();
+    void * GetThreadHandle() { return m_handleThread; }
     int GetWinAPIpriority(BYTE prio)
     {
       switch(prio)
@@ -66,7 +69,7 @@ namespace Windows_API
       pfnThreadFunc,
       void * p_v,
       /*BYTE*/ enum I_Thread::priority prio = I_Thread::default_priority) ;
-  //TODO should be working when function is implemented in base class.
+//  //TODO should be working when function is implemented in base class.
   BYTE start(
     pfnThreadFunc pfnthreadfunc,
     void * p_v,
@@ -76,9 +79,16 @@ namespace Windows_API
 //    GetThread m_handleThread
 //    OpenThreadToken(m_handleThread, 0x1000, FALSE, )
 //    SetCurrentThreadName(threadName);
-    return start(pfnthreadfunc, p_v, prio);
+    BYTE t_start = start(pfnthreadfunc, p_v, prio);
+    if( t_start == I_Thread::no_error)
+    {
+      unsigned threadID = GetThreadID();
+      SetThreadName(threadName, threadID);
+    }
+    return t_start;
   }
-    void * WaitForTermination() ;
+    void * WaitForTermination() const;
+    void * WaitForTermination(fastestUnsignedDataType) const;
   };
 }
 

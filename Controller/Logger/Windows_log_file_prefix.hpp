@@ -163,14 +163,9 @@ inline void GetLogFilePrefixFromFileTime(LogFileEntry & logfileentry)
 
   GetLogFileEntry(s_filetime, logfileentry);
   logfileentry.threadID = ::GetCurrentThreadId();
-  I_Thread::threadNameMapType::const_iterator c_iter =
-    I_Thread::s_threadNumber2Name.find(logfileentry.threadID);
-  if( c_iter != I_Thread::s_threadNumber2Name.end() )
-  {
-    logfileentry.p_std_strThreadName = & (std::string &) c_iter->second;
-  }
-  else
-    logfileentry.p_std_strThreadName = NULL;
+#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+  logfileentry.p_std_strThreadName = I_Thread::GetThreadName(logfileentry.threadID);
+#endif
 }
 
 inline void GetLogFilePrefix(LogFileEntry & logfileentry)

@@ -23,7 +23,7 @@
   //#include <wx/thread.h> //wxCriticalSection
 //  #include <Windows/multithread/I_CriticalSection.hpp>
   #include <Controller/multithread/nativeCriticalSectionType.hpp>
-#endif //#ifndef COMPILE_FOR_CPUCONTROLLER_DYNLIB
+#endif //#ifndef COMPILE_LOGGER_MULTITHREAD_SAFE
 
   //for std::tstring
   #include <Controller/character_string/stdtstr.hpp>
@@ -122,7 +122,7 @@
 ////      ;
 //    }
 
-    //FORCEINLINE
+    /*FORCEINLINE*/ inline
     void PossiblyEnterCritSec()
     {
 #ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
@@ -134,6 +134,15 @@
   //  ter getting DOM implementationt("
       m_critical_section_typeLogging.Enter() ;
 #endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+    }
+                    
+    inline void PossiblyLeaveCritSec()
+    {
+      /** #define COMPILE_LOGGER_MULTITHREAD_SAFE if multiple threads may do a
+       *  logging output simultaneously. */
+#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+      m_critical_section_typeLogging.Leave() ;
+#endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE      
     }
 
     inline void Ideas()
@@ -168,6 +177,7 @@
       const char * const prettyFunctionFormattedFunctionName = NULL
       )
     {
+      //NOTE: because of multithreaded logging:
       //Must guard the m_logfileentry variable because else it might be
       //changed while reading (in the logging OutputHandlers when the function
       //is entered a second time) from it.
@@ -187,7 +197,8 @@
       FormattedLogEntryProcessor * p_formattedlogentryprocessor;
       while( c_iterFormattedLogEntryProcessors !=
           m_formattedLogEntryProcessors.end() )
-      {
+      { //TODO SIGSEV here called from MainFrame::OnClose->mp_wxx86infoandcontrolapp->EndGetCPUcoreDataViaIPCthread() ;:
+        //the pointer is invalid (value: 0x20) (because of multithreaded logging wout crit sec?!)
         p_formattedlogentryprocessor = ( * c_iterFormattedLogEntryProcessors);
         if( messageType >= p_formattedlogentryprocessor->m_logLevel )
           p_formattedlogentryprocessor->Log(
@@ -196,9 +207,7 @@
             , prettyFunctionFormattedFunctionName);
         ++ c_iterFormattedLogEntryProcessors;
       }
-#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-      m_critical_section_typeLogging.Leave() ;
-#endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+      PossiblyLeaveCritSec();
       return 0;
     }
     DWORD Log(//ostream & ostr
@@ -298,15 +307,60 @@
     bool OpenFile( //std::string & r_stdstrFilePath
       std::tstring & r_stdtstrFilePath ) ;
 #endif //COMPILE_LOGGER_WITH_TSTRING_SUPPORT
+    bool OpenFileA(std::string & r_std_strFilePath, unsigned numEntries = 500 );
 //    void SetCurrentThreadName(const char * const name)
 //    {
 //      unsigned currentThreadNumber = OperatingSystem::GetCurrentThreadNumber();
 //      m_threadNumber2Name.insert( std::make_pair(std::string(name),
 //        currentThreadNumber) );
 //    }
+
+    /** @brief Sets formatter for all formatted log entry processors (classes
+     * like "RollingFileOutput"). */
+    void SetFormatter(I_LogFormatter * p_logformatter)
+    {
+      //Prevent concurrent writes while log formatter is exchanged.
+      PossiblyEnterCritSec();
+      std::vector<FormattedLogEntryProcessor *>::const_iterator
+        c_iterFormattedLogEntryProcessors;
+      c_iterFormattedLogEntryProcessors = m_formattedLogEntryProcessors.begin();
+      FormattedLogEntryProcessor * p_formattedlogentryprocessor;
+      //I_LogEntryOutputter * p_outputHandler;
+      while( c_iterFormattedLogEntryProcessors !=
+          m_formattedLogEntryProcessors.end() )
+      {
+        p_formattedlogentryprocessor = ( * c_iterFormattedLogEntryProcessors);
+        p_formattedlogentryprocessor->SetFormatter(p_logformatter);
+        ++ c_iterFormattedLogEntryProcessors;
+      }
+      PossiblyLeaveCritSec();
+    }
     void SetLogLevel(const std::string & c_r_std_strLogLevel)
     {
       m_logLevel = LogLevel::GetAsNumber(c_r_std_strLogLevel);
+    }
+    /** @brief Truncate output size of all formatted log entry processors to 0.
+     * name [...]"OutputSize"[...] and not [...]"FileSize" because not only
+     * files may be an output target. */
+    void TruncateOutputSizeToZero()
+    {
+      //Prevent concurrent writes while log output is truncated.
+      PossiblyEnterCritSec();
+      std::vector<FormattedLogEntryProcessor *>::const_iterator
+        c_iterFormattedLogEntryProcessors;
+      c_iterFormattedLogEntryProcessors = m_formattedLogEntryProcessors.begin();
+      FormattedLogEntryProcessor * p_formattedlogentryprocessor;
+      I_LogEntryOutputter * p_outputHandler;
+      while( c_iterFormattedLogEntryProcessors !=
+          m_formattedLogEntryProcessors.end() )
+      {
+        p_formattedlogentryprocessor = ( * c_iterFormattedLogEntryProcessors);
+        p_outputHandler = p_formattedlogentryprocessor->GetOutputHandler();
+        if( p_outputHandler )
+          p_outputHandler->TruncateOutputSizeToZero();
+        ++ c_iterFormattedLogEntryProcessors;
+      }
+      PossiblyLeaveCritSec();
     }
   };
 

@@ -15,6 +15,8 @@
 
 //#include <Controller/time/GetTimeAsMillisecondsValue.h>
 #include <Controller/time/GetTickCount.hpp> //DWORD ::GetTickCount()
+//#include <Controller/CPU-related/GetCPUclockAndMultiplier.hpp>
+#include <fastest_data_type.h> //fastestUnsignedDataType
 
 #include <preprocessor_macros/value_difference.h> //ULONG_VALUE_DIFF
 #include "ReadTimeStampCounter.h" //ReadTSCinOrder(...)
@@ -124,17 +126,33 @@ inline void GreaterMaxTimeDiff()
 //    s_dwTickCountInMilliseconds += dwMinimumTimeDiffInMilliseconds ;
 }
 
+typedef unsigned (* ReadTSCtype)(uint64_t &);
+
+/** So GetCurrentReferenceClock can use function that ensures in order execution
+ * or version that does not need in-order execution (e.g. for Intel Atom) */
+//inline void template<ReadTSCtype> GetCurrentReferenceClock(ReadTSCtype func)
+//{
+//
+//}
+//
+//void GetCurrentReferenceClock_InOrder()
+//{
+//  GetCurrentReferenceClock(ReadTSCinOrder);
+//}
+
 //inline: do not compile as function, but expand code for every call (->faster)
 //_Define_ the function in this _header_ file. It cannot be inline if declared
 // in a header file and implemented in a source file if used in another file.
+/** @param fDivisor: divide TSC diff by this divisor to get ref. clock 
+*/
 inline
   void
   //float
   GetCurrentReferenceClock(
     float fDivisor
     , float & r_fReferenceClockInMHz
-    , DWORD dwMinimumTimeDiffInMilliseconds
-    , DWORD dwMaximumTimeDiffInMilliseconds
+    , fastestUnsignedDataType dwMinimumTimeDiffInMilliseconds
+    , fastestUnsignedDataType dwMaximumTimeDiffInMilliseconds
 //    , DWORD dwThreadAffinityMask
   )
 {

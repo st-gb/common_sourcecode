@@ -53,6 +53,7 @@ template<typename member_type>
       char ch;
       WORD m_wNodeSizeInByte;
       unsigned long m_dwNumberOfNodes;
+      /** # of node that have attribute data attached*/
       unsigned m_numInfoNodes;
       member_type m_defaultValue;
       unsigned char byValue;
@@ -65,15 +66,19 @@ template<typename member_type>
       NodeTrieNode<member_type> *m_p_nodetrienodeCurrent;
   public:
       NodeTrie()
-      :m_dwNumberOfNodes(0), m_numInfoNodes(0)
+       : m_dwNumberOfNodes(0), m_numInfoNodes(0)
       {
           m_nodetrienodeRoot.m_member = NULL;
       }
 
       NodeTrie(unsigned  wNumberOfNodes, member_type defaultValue)
-      :m_dwNumberOfNodes(0), m_numInfoNodes(0), m_defaultValue(defaultValue), m_wNumberOfNodesPerHierarchyLevel(wNumberOfNodes), m_nodetrienodeRoot(wNumberOfNodes, defaultValue)
+        : m_dwNumberOfNodes(0), m_numInfoNodes(0), m_defaultValue(defaultValue),
+          m_wNumberOfNodesPerHierarchyLevel(wNumberOfNodes),
+          m_nodetrienodeRoot(wNumberOfNodes, defaultValue)
       {
-          m_wNodeSizeInByte = sizeof (NodeTrieNode<member_type>) + sizeof (NodeTrieNode<member_type>*) * m_wNumberOfNodesPerHierarchyLevel + sizeof (void*);
+          m_wNodeSizeInByte = sizeof (NodeTrieNode<member_type>)
+            + sizeof (NodeTrieNode<member_type>*) * m_wNumberOfNodesPerHierarchyLevel
+            + sizeof (void*);
       }
 
       ~NodeTrie()
@@ -86,11 +91,15 @@ template<typename member_type>
           return m_dwNumberOfNodes;
       }
 
-      void Create(unsigned short  wNumberOfNodes)
+      /** @param wNumberOfNodes: # nodes per hierarchy level
+       *   "unsigned" data type: same bit width as CPU
+       *    arch->fast */
+      void Create(unsigned numberOfNodesPerHierarchyLevel)
       {
-          m_nodetrienodeRoot.Create(wNumberOfNodes);
-          m_wNumberOfNodesPerHierarchyLevel = wNumberOfNodes;
-          m_wNodeSizeInByte = sizeof (NodeTrieNode<member_type>) + sizeof (NodeTrieNode<member_type>*) * wNumberOfNodes + sizeof (void*);
+          m_nodetrienodeRoot.Create(numberOfNodesPerHierarchyLevel);
+          m_wNumberOfNodesPerHierarchyLevel = numberOfNodesPerHierarchyLevel;
+          m_wNodeSizeInByte = sizeof (NodeTrieNode<member_type>)
+            + sizeof (NodeTrieNode<member_type>*) * numberOfNodesPerHierarchyLevel + sizeof (void*);
       }
 
       inline NodeTrieNode<member_type> *contains_inline(

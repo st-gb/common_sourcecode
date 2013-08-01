@@ -192,10 +192,11 @@ namespace Windows_API
   {
     if( m_hFile != INVALID_HANDLE_VALUE )
     {
-      DWORD dwNumberOfBytesWritten;
+      static DWORD dwNumberOfBytesWritten;
 //      if( )
       const std::string & r_std_str = m_std_stringstream.str();
-      DWORD dwSizeOfCharStringToWriteInByte = r_std_str.length();
+      static DWORD dwSizeOfCharStringToWriteInByte;
+      dwSizeOfCharStringToWriteInByte = r_std_str.length();
       const char * p_ch = r_std_str.c_str();
 //      memcpy(m_buffer, p_ch, dwSizeOfCharStringToWriteInByte);
       //error code may have been set to "ERROR_ALREADY_EXISTS" from CreateFile(...)

@@ -347,6 +347,7 @@
   #define LOG(to_ostream) ; /* ";" for use in "else LOG(...)" -> "else ;" */
   #define LOG_SPRINTF(...) ; /**/
   #define LOGN(to_ostream) ;/*empty->do not log*/
+  #define LOGN_DEBUG(to_ostream) ; /*empty->do not log*/
   #define LOGW(to_ostream) ;/*empty->do not log*/
   #define LOGWN(to_ostream) ;/*empty->do not log*/
   #define LOGWN_WSPRINTF(...) ;/*empty->do not log*/

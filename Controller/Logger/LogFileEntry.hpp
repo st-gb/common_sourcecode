@@ -20,9 +20,9 @@ typedef unsigned char BYTE;
 
 class LogFileEntry
 {
-  //All time members need to have the same data type for unified access
-  //( to not access beyond the space for a data type ) to node members of a
-  //NodeTrie.
+  /** All time members need to have the same data type for unified access
+  * ( to not access beyond the space for a data type ) to node members of a
+  * NodeTrie. */
   typedef uint16_t datatype_for_1_byte_numbers ;
 public:
   uint16_t threadID; //0-2^16 numbers -> needs at least 2 bytes
@@ -37,6 +37,7 @@ public:
   uint16_t nanosecond;
   std::string * p_std_strMessage;
   const std::string * p_std_strThreadName;
+  LogFileEntry() : this->p_std_strThreadName(p_std_strThreadName) {  }
 };
 
 #endif /* LOGFILEENTRY_HPP_ */

@@ -347,7 +347,7 @@ void ServiceBase::GetPossibleSolution(
       std::stringstream strstream ;
       strstream <<
         "possible solution:\n"
-        "-close the \"Services\" (MMC's services.msc) window in order to let the service be "
+        "-close the \"Services\" (MMC's \"services.msc\") window in order to let the service be "
             "deleted\n"
         //This was once the case ("Services" window was closed yet?!):
         "-exit THIS program in order to let the service be "
@@ -355,6 +355,7 @@ void ServiceBase::GetPossibleSolution(
         "-if you want to install a service and a service with the same name "
           "is still running->stop the service with the same name first\n"
         "\n-Stop the execution of the service: \""
+        //TODO change to "char *" or output to an non-"std::basic_stringstream"
         << tchServiceName
         << "\"\n"
         << " -inside the service control manager\n"

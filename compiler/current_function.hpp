@@ -8,8 +8,10 @@
 #ifndef CURRENT_FUNCTION_HPP_
 #define CURRENT_FUNCTION_HPP_
 
-  /** Get 1st namespace, class or function name character
-   *  can e.g. be "inline virtual void FuncName(" */
+  /** @brief Get 1st namespace, class or function name character
+   *  can e.g. be "inline virtual void FuncName(" 
+   * Works with GCC ("__PRETTY_FUNCTION__") and maybe with MSVC ("__FUNCSIG__").
+   */
   inline const char * Get1stIdentifierChar(
     const char * prettyFunctionFormattedFunctionName,
     const char * endOfFunctionName)
@@ -36,7 +38,9 @@
 
   /** GCC's __PRETTY_FUNCTION__ format is:
    * >>return type<< [namespace::]>>class name<< "::"
-* >>function name<< >>parameters list (only data type, no identifiers )<<*/
+  * >>function name<< >>parameters list (only data type, no identifiers )<<
+  * Works with GCC ("__PRETTY_FUNCTION__") and maybe with MSVC ("__FUNCSIG__").
+  */
   inline std::string GetClassName(const char * prettyFunctionFormattedFunctionName)
   {
     char * string = (char *) prettyFunctionFormattedFunctionName,
@@ -72,9 +76,12 @@
     return "::"; //means : global scope
   }
 
+  //TODO the identifier before a function name may also be a namespace name?!
   /** GCC's __PRETTY_FUNCTION__ format is:
    * >>return type<< [namespace::]>>class name<< "::"
-* >>function name<< >>parameters list (only data type, no identifiers )<<*/
+  * >>function name<< >>parameters list (only data type, no identifiers )<<
+  * Works with GCC ("__PRETTY_FUNCTION__") and maybe with MSVC ("__FUNCSIG__").
+  */
   inline std::string GetFunctionName(
     const char * const prettyFunctionFormattedFunctionName)
   {

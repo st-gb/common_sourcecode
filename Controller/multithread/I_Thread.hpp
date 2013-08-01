@@ -22,6 +22,7 @@ typedef unsigned long DWORD ;
 //DWORD (WINAPI *LPTHREAD_START_ROUTINE)(LPVOID);
 
 #include "thread_function_calling_convention.h"
+#include <Controller/multithread/nativeCriticalSectionType.hpp>
 #include <map> //class std::map
 #include <string> //class std::string
 
@@ -34,6 +35,8 @@ typedef DWORD ( //__stdcall is important for Windows' ::CreateThread()
 /** Base class for specific (Linux/ POSIX etc.) thread implementation */
 class I_Thread
 {
+  typedef nativeCriticalSection cs_type;
+  static cs_type s_critical_section_type;
 protected:
   BYTE m_byThreadType ;
 public:
@@ -58,9 +61,34 @@ public:
 //  I_Thread() {} ;
   /** For releasing ressources */
   virtual void Delete() {} ;
+  virtual unsigned GetThreadID() { return 0; }
   virtual int GetThreadPriority() = 0;
   virtual bool IsRunning() = 0;//{ return false;};
+  /** @brief should be inline because is called from logger.
+   *  @return value is valid until the container element is changed.
+   *    To be safe, get a copy of its dereferenced ("*") value after calling this
+   *    function */
+  //TODO malfunction after getting thread name if more than 1 thread?!
+  static const std::string * const GetThreadName(const unsigned threadID)
+  {
+    //Enter the critical section to guard against changing the thread name
+    //container at the same time.
+    s_critical_section_type.Enter();
+    I_Thread::threadNameMapType::const_iterator c_iter =
+      I_Thread::s_threadNumber2Name.find(threadID);
+    if( c_iter != I_Thread::s_threadNumber2Name.end() )
+    {
+      s_critical_section_type.Leave();
+      return & (std::string &) c_iter->second;
+    }
+    else
+    {
+      s_critical_section_type.Leave();
+      return NULL;
+    }
+  }
   static void SetCurrentThreadName(const char * const);
+  static void SetThreadName(const char * const, unsigned threadID);
 //  virtual I_Thread( BYTE byThreadType ) = 0 ;
   virtual //static
     BYTE start(
@@ -72,23 +100,15 @@ public:
       pfnThreadFunc pfnthreadfunc,
       void * p_v,
       const char * const threadName,
-      /*BYTE*/ enum priority prio = default_priority)
-  {
-    SetCurrentThreadName(threadName);
-    return start(pfnthreadfunc, p_v, prio);
-  }
+      /*BYTE*/ enum priority prio = default_priority);
     BYTE start(
       pfnThreadFunc pfnthreadfunc,
       void * p_v,
       /*BYTE*/ enum priority prio,
-      const char * const threadName)
-  {
-    SetCurrentThreadName(threadName);
-    return start(pfnthreadfunc, p_v, prio);
-  }
+      const char * const threadName);
   /** Blocking/ synchronous wait from thread that calls this function until the
    * thread is terminated */
-  virtual void * WaitForTermination() { return 0 ; }
+  virtual void * WaitForTermination() const { return 0 ; }
 //  virtual ~I_Thread() {} ;
 } ;
 

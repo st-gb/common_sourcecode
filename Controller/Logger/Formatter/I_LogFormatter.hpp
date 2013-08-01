@@ -72,7 +72,7 @@ public:
   }
 };
 
-/** Base class for log stream formatter. Child classes may e.g. format as HTML.
+/** @brief Base class for log stream formatter. Child classes may e.g. format as HTML.
  * Name should not contain a log destination like a file (because formatting
  * ought to be independent of the log destination), so name it like
  * "log formatter". */

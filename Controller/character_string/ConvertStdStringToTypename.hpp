@@ -13,11 +13,11 @@
 #include <string> //class std::string
 #include <sstream> //for class std::istringstream
 
-//Convert std::string to e.g. a float value:
-//float fValue ; std::string stdstr = "8.0";
-// ConvertStdStringToTypename<float>(fValue , stdstr ) ;
+/** @brief Convert std::string to e.g. a float value:
+* float fValue ; std::string stdstr = "8.0";
+* ConvertStdStringToTypename<float>(fValue , stdstr ) ; */
 template <typename typenameConvertFromString>
-//true: succeeded.
+/** @return true: succeeded. */
 bool ConvertStdStringToTypename(
    typenameConvertFromString & r_typename_convert_from_string,
    const std::string & c_r_std_str

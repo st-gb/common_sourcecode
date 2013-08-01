@@ -19,7 +19,21 @@
 class I_LogFormatter;
 class Logger;
 
-/** Handles the formatted log entry: e.g. outputs this to a socket or file */
+/** @brief Handles the (output of a) log entry _after_ it has been formatted.
+ *  So e.g. following subclasses are possible:
+ *  -rolling file output (if log file exceeds >>n<< entries then it is logged
+ *   to another file )
+ *  -appending file output: writes always to the same log file.
+ *
+ *  So in contrast to log4j the calling of the _actual_/physical output (Windows API, std::ofstream, ...)
+ *  is separated from the appending (rolling file or not) and does not need to
+ *  be implemented in 1 single class.
+ *  So _not_ all appender+outputter combinations must be implemented in a single class.
+ *
+ *  This class holds (pointers to)
+ *   -@see outputter
+ *   -@see formatter
+ *  */
 class FormattedLogEntryProcessor
 {
 protected:
@@ -138,6 +152,11 @@ public:
 #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
   }
 
+  I_LogEntryOutputter * GetOutputHandler()
+  {
+    return m_p_outputhandler;
+  }
+  
   virtual unsigned Log(//ostream & ostr
 //    const std::string & r_stdstrMessage,
     const LogFileEntry & logfileentry,
@@ -147,7 +166,7 @@ public:
     ) const = 0;
 //  //"virtual" in order to "OpenFile" call subclasses overwritten function
 //  //if any.
-  virtual bool Open(std::string & actualFilePath) = 0;
+  virtual bool Open(std::string & actualFilePath);
 //  virtual bool OpenA( const std::string & r_stdstrFilePath, bool bRolling = false) ;
   inline unsigned OutputTimeStampEtc_Inline(
 //    const std::string & r_stdstr,

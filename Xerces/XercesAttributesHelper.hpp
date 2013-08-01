@@ -214,21 +214,25 @@ public:
 //   const std::string & r_stdstr
 //  ) ;
 
-//template idea for converting string to other data type
-//from http://www.codeguru.com/forum/showthread.php?t=231056:
-//_Must_ be _defined_ here because of the template type: the templates type gets
-// replaced by the actual data type. When the declaration is separated from
-// the definition (what it usual) the template type is replaced by the actual
-//parameter, but the definition's template type is _not_ being replaced.
-//So it gets an error message like
-//"undefined reference to `bool XercesAttributesHelper::getValue<std::string>
-//(std::string&, char*) const'"
-//Also see here: http://www.codeproject.com/KB/cpp/templatesourceorg.aspx
+/** template idea for converting string to other data type
+* from http://www.codeguru.com/forum/showthread.php?t=231056:
+* _Must_ be _defined_ here because of the template type: the templates type gets
+*  replaced by the actual data type. When the declaration is separated from
+*  the definition (what it usual) the template type is replaced by the actual
+* parameter, but the definition's template type is _not_ being replaced.
+* So it gets an error message like
+* "undefined reference to `bool XercesAttributesHelper::getValue<std::string>
+* (std::string&, char*) const'"
+* Also see here: http://www.codeproject.com/KB/cpp/templatesourceorg.aspx
+*
+* @return true: success */
 template <typename T>
  bool ConvertXercesAttributesValue(
   const XERCES_CPP_NAMESPACE::Attributes & cr_xerces_attributes ,
    T & r_templateType,
-   const XMLCh * const cpc_xmlchAttributeName
+   const XMLCh * const cpc_xmlchAttributeName//,
+//   //e.g. "std::boolalpha"
+//   std::ios_base * (*f)(std::ios_base&) = NULL
   )
 {
   const XMLCh * cp_xmlchAttributeValue = cr_xerces_attributes.getValue(
@@ -264,10 +268,19 @@ template <typename T>
 //        return ! ( iss //>> f
 //          >> r_templateType
 //          ).fail();
-        bool b = ! ( iss //>> f
+//        if( f)
+//          iss >> f;
+//        std::boolalpha
+#ifdef _DEBUG
+        iss >> r_templateType;
+        bool fail = iss.fail();
+        bool bGood = iss.good();
+#else
+        bool bGood = ! ( iss //>> f
             >> r_templateType
             ).fail();
-        return b;
+#endif
+        return bGood;
     }
     //      else
     //        byReturn = XERCES_ATTRIBUTE_VALUE_DOES_NOT_EXIST ;
@@ -315,6 +328,12 @@ template <typename T>
   return false ;
 }
 
+/* Converts attribute with name r_stdstrAttributeName from cr_xerces_attributes
+ *  to the datatype r_templateType **/
+//TODO maybe create class with member variable of type XERCES_CPP_NAMESPACE::Attributes
+// that makes the "cr_xerces_attributes" param obsolete.
+//Or derive class from XERCES_CPP_NAMESPACE::Attributes, so the 
+//XERCES_CPP_NAMESPACE::Attributes paramter would not be needed.
 template <typename T>
   bool ConvertXercesAttributesValue(
     const XERCES_CPP_NAMESPACE::Attributes & cr_xerces_attributes ,

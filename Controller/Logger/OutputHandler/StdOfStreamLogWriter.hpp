@@ -12,6 +12,7 @@
 //class I_LogEntryOutputter
 #include <Controller/Logger/OutputHandler/I_LogEntryOutputter.hpp>
 
+/** Actual/physical output of formatted log file entries via std::ofstream. */
 class StdOfStreamLogWriter
   : public I_LogEntryOutputter
 {

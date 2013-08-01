@@ -11,8 +11,13 @@
 #include <string> //class std::string
 #include <Controller/multithread/nativeCriticalSectionType.hpp>
 
-/** Base class for all classes that DO the actual / physical output.
- * So e.g. std::ofstream and Windows API outputs are possible.*/
+/** @brief Base class for all classes that DO the actual / physical output.
+ * So e.g. following outputs are possible:
+ * -output to a file via:
+ *  -std::ofstream (via "<<" operator )
+ *  -Windows API ( via "WriteFile(...)" )
+ * -to a socket
+ * */
 class I_LogEntryOutputter
 {
 protected:

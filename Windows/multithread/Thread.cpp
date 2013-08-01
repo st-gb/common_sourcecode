@@ -39,7 +39,9 @@ namespace Windows_API
       ::CloseHandle(m_handleThread ) ;
   }
 
-  BYTE Thread::start(pfnThreadFunc pfn_threadfunc, void * p_v, /*BYTE*/
+  BYTE Thread::start(
+    pfnThreadFunc pfn_threadfunc,
+    void * p_v, /*BYTE*/
     enum I_Thread::priority prio )
   {
     //Because "start" may be called for the same object multiple times.
@@ -71,6 +73,10 @@ namespace Windows_API
       }
       return I_Thread::no_error ;
     }
+//    else
+    //http://msdn.microsoft.com/en-us/library/windows/desktop/ms686746%28v=vs.85%29.aspx:
+    //"Note that no thread identifier will ever be 0."
+//    m_dwThreadId = 0;
     return I_Thread::error ;
   }
 
@@ -79,12 +85,29 @@ namespace Windows_API
     LOGN_DEBUG( FULL_FUNC_NAME << " begin" )
     PossiblyCloseThreadHandle();
   }
-  void * Thread::WaitForTermination()
+  void * Thread::WaitForTermination() const
   {
     DWORD dwExitCode ;
+    LOGN_DEBUG( FULL_FUNC_NAME << " before WaitForSingleObject" )
     //Waits for the end of the thread determined by the handle.
     ::WaitForSingleObject(m_handleThread, INFINITE) ;
     ::GetExitCodeThread(m_handleThread, & dwExitCode ) ;
+    return (void *) dwExitCode ;
+  }
+
+  /** @brief Waits for each loop iteration max. @param milliseconds milliseconds
+   *  for this thread to end.
+   * */
+  void * Thread::WaitForTermination(fastestUnsignedDataType milliseconds) const
+  {
+    DWORD dwExitCode ;
+    LOGN_DEBUG( FULL_FUNC_NAME << " before WaitForSingleObject" )
+    do
+    {
+      //Waits for the end of the thread determined by the handle.
+      ::WaitForSingleObject(m_handleThread, milliseconds) ;
+      ::GetExitCodeThread(m_handleThread, & dwExitCode ) ;
+    }while(dwExitCode == STILL_ACTIVE);
     return (void *) dwExitCode ;
   }
 }
