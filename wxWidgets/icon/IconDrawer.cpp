@@ -40,7 +40,7 @@ void wxIconDrawer::DrawColouredBarsIcon(
   BYTE numberOfBars
   )
 {
-  LOGN( FULL_FUNC_NAME << "--numberOfBars: " << (WORD) numberOfBars)
+  LOGN( "numberOfBars: " << (WORD) numberOfBars)
   //    wxMemoryDC m_wxmemorydc ;
     //http://docs.wxwidgets.org/2.6/wx_wxmemorydc.html:
     //"A bitmap must be selected into the new memory DC before it may be used
@@ -163,12 +163,12 @@ void wxIconDrawer::DrawText(
 
 void wxIconDrawer::ReleaseRessources()
 {
-  LOGN("wxIconDrawer::ReleaseRessources begin--m_p_wxbitmapMask:"
+  LOGN(/*"wxIconDrawer::ReleaseRessources "*/ "begin--m_p_wxbitmapMask:"
     << m_p_wxbitmapMask)
   if( m_p_wxbitmapMask )
   {
-    LOGN("wxIconDrawer::ReleaseRessources freeing resources for the mask "
-      "bitmap")
+    LOGN(/*"wxIconDrawer::ReleaseRessources "*/
+      "freeing resources for the mask bitmap")
 //      m_p_wxbitmapMask->FreeResource();
     delete m_p_wxbitmapMask;
     //http://docs.wxwidgets.org/2.8/wx_wxbitmap.html#wxbitmapdtor:
@@ -189,5 +189,5 @@ void wxIconDrawer::ReleaseRessources()
     // " wxT("deleting bitmap still selected into wxMemoryDC") );"
 //      m_wxmemorydc.UnRef();
   }
-  LOGN("wxIconDrawer::ReleaseRessources end")
+  LOGN(/*"wxIconDrawer::ReleaseRessources "*/ "end")
 }

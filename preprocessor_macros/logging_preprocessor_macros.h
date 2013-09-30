@@ -210,7 +210,7 @@
       /*Use critical section for thread sync. else mixed/ corrupted output
        *  like here: "SendCommandAndGetResponse end\0pe"
        */ \
-      OWN_LOGGER_LOG_ENTER_CRIT_SEC_LOGGER_NAME(loggerName) \
+      /*OWN_LOGGER_LOG_ENTER_CRIT_SEC_LOGGER_NAME(loggerName)*/ \
       g_std_basicstring_log_char_typeLog = stringstream.str() ; \
       /*g_logger->Log(to_ostream) ; */ \
       /*g_logger.Log( stdstr ) ;*/ \
@@ -229,7 +229,7 @@
         \
         OWN_LOGGER_LOG_LOGGER_NAME_FUNCNAME_TYPE( logger , \
           g_std_basicstring_log_char_typeLog, messageType) \
-        OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger) \
+        /*OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger)*/ \
       } \
       /*LOG4CPLUS_INFO(log4cplus_logger, g_std_basicstring_log_char_typeLog ); */\
       /*g_logger.Log("test ") ; */ }
@@ -293,6 +293,7 @@
       std::cerr << to_ostream << std::endl;
     #define LOGN_INFO(to_ostream) LOGN_TYPE(to_ostream, LogLevel::info)
     #define LOGN_DEBUG(to_ostream) LOGN_TYPE(to_ostream, LogLevel::debug)
+    #define LOGN_SUCCESS(to_ostream) LOGN_TYPE(to_ostream, LogLevel::success)
     #define LOGN_WARNING(to_ostream) LOGN_TYPE(to_ostream, LogLevel::warning )
     #define LOG_FUNC_NAME_LN(to_ostream) LOG( __F << to_ostream )
     #define LOGN_LOGGER_NAME(logger_name,to_ostream) \

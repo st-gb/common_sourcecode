@@ -102,7 +102,7 @@ template<typename member_type>
             + sizeof (NodeTrieNode<member_type>*) * numberOfNodesPerHierarchyLevel + sizeof (void*);
       }
 
-      inline NodeTrieNode<member_type> *contains_inline(
+      inline NodeTrieNode<member_type> * contains_inline(
         unsigned char *p_vBegin, size_type wBytesize, bool bFullMatch)
       {
 //          std::stringstream strstream;
@@ -691,8 +691,8 @@ template<typename member_type>
       }
 
       NodeTrieNode<member_type> *insert_inline(unsigned char *p_vBegin,
-        unsigned short  wBytesize, member_type member_value,
-        member_type defaultValue = 0)
+        unsigned short  wBytesize, member_type member_value
+        /*,member_type defaultValue = 0*/)
       {
           NodeTrieNode<member_type> *p = insert_inline(
           p_vBegin, wBytesize);

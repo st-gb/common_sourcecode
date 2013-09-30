@@ -11,6 +11,8 @@
 #include "I_LogFormatter.hpp"
 //GetClassName(...), GetFunctionName(...)
 #include <compiler/current_function.hpp>
+//convertToStdString(...)
+#include <Controller/character_string/convertFromAndToStdString.hpp>
 
 namespace CSS
 {
@@ -48,14 +50,30 @@ namespace CSS
         )
       {
     //    static std::string std_strTime;
-        GetTimeAsString(logfileentry//, std_strTime
-          );
+        GetTimeAsString(logfileentry /*, std_strTime*/ );
+//        char * threadName = logfileentry.p_std_strThreadName ?
+//          << "[" << logfileentry.p_std_strThreadName << "] " :
+//          << "[" "Thread-"          << logfileentry.threadID << "] ";
+        static std::string std_strThreadName;
+        static const std::string * p_std_strThreadName;
+        static const char * p_chThreadName;
+        p_std_strThreadName = logfileentry.p_std_strThreadName;
+        if( p_std_strThreadName)
+          p_chThreadName = p_std_strThreadName->c_str();
+        else
+        {
+          std_strThreadName = "Thread-" + convertToStdString(logfileentry.threadID);
+          p_chThreadName = std_strThreadName.c_str();
+        }
         if( prettyFunctionFormattedFunctionName)
           * m_p_std_ostream
             << m_p_chTimeString << " "
             << GetLogLevelAsString(messageType) << " "
-            << "[" "Thread-"
-            << logfileentry.threadID << "] "
+//            << logfileentry.p_std_strThreadName ?
+//              << "[" << logfileentry.p_std_strThreadName << "] " :
+//              << "[" "Thread-"
+//              << logfileentry.threadID << "] "
+            << "[" << p_chThreadName << "] "
             //  e.g. "[Thread-1]"
             << GetClassName(//__PRETTY_FUNCTION__
               prettyFunctionFormattedFunctionName) << " "

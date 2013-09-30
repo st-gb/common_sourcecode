@@ -7,6 +7,7 @@
 
 #include "FormattedLogEntryProcessor.hpp"
 #include "../Formatter/HTMLlogFormatter.hpp" //class HTMLlogFormatter::HTMLlogFormatter(...)
+#include "../Formatter/Log4jFormatter.hpp" //class Log4jFormatter::(...)
 #include "../Logger.hpp"
 
 FormattedLogEntryProcessor::FormattedLogEntryProcessor(
@@ -112,6 +113,9 @@ I_LogFormatter * FormattedLogEntryProcessor::CreateFormatter(//BYTE type = 1
       strcmp("html", c_p_chType) == 0
     )
     m_p_log_formatter = new HTMLlogFormatter(//m_p_std_ofstream
+      this);
+  else if(strcmp("log4j", c_p_chType) == 0)
+    m_p_log_formatter = new CSS::LogFormatter::Log4jFormatter(//m_p_std_ofstream
       this);
   else
     m_p_log_formatter = new I_LogFormatter(//m_p_std_ofstream

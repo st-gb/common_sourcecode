@@ -51,8 +51,7 @@ Logger::~Logger()
 }
 
 #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-void Logger::AddExcludeFromLogging(
-  const std::string & cr_stdstr )
+void Logger::ExcludeFunctionFromLogging(const std::string & cr_stdstr )
 {
   static std::vector<FormattedLogEntryProcessor *>::const_iterator
     c_iterFormattedLogEntryProcessors;
@@ -66,6 +65,12 @@ void Logger::AddExcludeFromLogging(
         , FormattedLogEntryProcessor::string_end) ;
     ++ c_iterFormattedLogEntryProcessors;
   }
+}
+
+void Logger::AddExcludeFromLogging(
+  const std::string & cr_stdstr )
+{
+  ExcludeFunctionFromLogging(cr_stdstr);
 }
 #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 
@@ -142,7 +147,9 @@ DWORD Logger::Log(//ostream & ostr
  *  -outputhandler: std::ofstream
  *  -log level: info*/
 bool Logger::OpenFileA( //std::string & r_stdstrFilePath
-  std::string & r_std_strLogFilePath, unsigned maxNumLogEntries /*=500*/)
+  std::string & r_std_strLogFilePath,
+  unsigned maxNumLogEntries /*=500*/,
+  LogLevel::MessageType lvl /*=LogLevel::info*/ )
 {
   bool bSuccess = false;
 //  Log4jFormatter formatter = new Log4jFormatter(*this);
@@ -155,7 +162,7 @@ bool Logger::OpenFileA( //std::string & r_stdstrFilePath
     //NULL, //I_LogFormatter * p_log_formatter,
     "txt",
     maxNumLogEntries,
-    LogLevel::info //enum LogLevel::MessageType logLevel
+    lvl //enum LogLevel::MessageType logLevel
     );
 //  I_LogFormatter * p_logformatter = logfileappender->CreateFormatter("txt");
 //  logEntryHandler->Open();

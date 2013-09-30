@@ -51,6 +51,8 @@
 //      timevalCurrentTime.tv_usec * 1000;
 //  }
 
+namespace Linux
+{
   //see http://www.opengroup.org/onlinepubs/9699919799/functions/gettimeofday.html:
   // "Applications should use the clock_gettime() function instead of the
   //  obsolescent gettimeofday() function."
@@ -129,5 +131,6 @@
 //     else return -1L;
 //    }
   }
-
+  inline DWORD GetTimeCountInMilliSeconds(){ return GetTickCount(); }
+} //namespace Linux
 //#endif /* GETTICKCOUNT_HPP_ */

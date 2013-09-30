@@ -10,8 +10,9 @@
 
 namespace ASCIIcodepage850
 {
-  //values from de.wikipedia.org/wiki/Codepage_850
-  enum ASCIIcodepage850_chars
+  /** @ brief Code page for West Europe
+   * values from de.wikipedia.org/wiki/Codepage_850 */
+  enum ASCIIcodepage850_HTML_codes
   {
     //"è" as in "Apr_è_s Ski";
     egrave = 0x8A,
@@ -22,6 +23,18 @@ namespace ASCIIcodepage850
     Ouml = 214, //"Oe" (falls wieder anderer Zeichensatz)
     Uuml = 220, //"Ue" (falls wieder anderer Zeichensatz)
     szlig = 223 //"sz" (falls wieder anderer Zeichensatz)
+  };
+  /** @ brief Code page for West Europe
+   * values from de.wikipedia.org/wiki/Codepage_850 */
+  enum ASCIIcodepage850_chars
+  {
+    ae = 228, //"ae" (falls wieder anderer Zeichensatz)
+    oe = 246, //"oe" (falls wieder anderer Zeichensatz)
+    ue = 252, //"ue" (falls wieder anderer Zeichensatz)
+    Ae = 196, //"Ae" (falls wieder anderer Zeichensatz)
+    Oe = 214, //"Oe" (falls wieder anderer Zeichensatz)
+    Ue = 220, //"Ue" (falls wieder anderer Zeichensatz)
+    sz = 223 //"sz" (falls wieder anderer Zeichensatz)
   };
 }
 

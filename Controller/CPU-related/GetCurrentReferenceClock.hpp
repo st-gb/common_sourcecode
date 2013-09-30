@@ -36,7 +36,8 @@ inline DWORD GetTimeCountInMilliseconds()
     //http://msdn.microsoft.com/en-us/library/ms724408%28VS.85%29.aspx:
     //"The return value is the number of milliseconds that have elapsed since
     // the system was started."
-    ::GetTickCount() ;
+//    ::GetTickCount() ;
+    OperatingSystem::GetTimeCountInMilliSeconds();
 }
 
 inline DWORD GetTickCountDiffInMilliseconds(
@@ -180,7 +181,7 @@ inline
 
 //  s_dwTickCountInMilliseconds = GetTimeCountInMilliseconds();
 
-  GetTimeCountInSeconds(s_TimeCountInSeconds);
+  OperatingSystem::GetTimeCountInSeconds(s_TimeCountInSeconds);
 //  s_ullPreviousTimeStampCounter = //ReadTimeStampCounter() ;
 //    ReadTSCinOrder(
 //      //pass thread affinity mask
@@ -226,7 +227,7 @@ inline
 
       //Because the time difference is  too large:take a TSC measurement (again).
       s_ullPreviousTimeStampCounter = //ReadTimeStampCounter() ;
-        ReadTSCinOrder(
+          NS_SetThreadAffinityMask::ReadTSCinOrder(
           //pass thread affinity mask
           1 //        dwThreadAffinityMask
           ) ;
@@ -274,7 +275,7 @@ inline
   //    SHOW_VIA_GUI( _T("GetCurrentReferenceClock before ReadTSCinOrder") )
 
       s_ullCurrentTimeStampCounter = //ReadTimeStampCounter() ;
-        ReadTSCinOrder(//pass thread affinity mask
+          NS_SetThreadAffinityMask::ReadTSCinOrder(//pass thread affinity mask
           1) ;
   //    SHOW_VIA_GUI( _T("GetCurrentReferenceClock after ReadTSCinOrder") )
 

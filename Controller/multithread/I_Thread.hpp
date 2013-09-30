@@ -93,17 +93,17 @@ public:
   virtual //static
     BYTE start(
       pfnThreadFunc,
-      void * p_v,
+      void * p_vpfnThreadFuncParam,
       /*BYTE*/ enum priority prio = default_priority) = 0 ;
-  /*virtual*/ //static
+  virtual //static
     BYTE start(
       pfnThreadFunc pfnthreadfunc,
-      void * p_v,
-      const char * const threadName,
+      void * p_vThreadFuncParam,
+      const char * /*const*/ threadName,
       /*BYTE*/ enum priority prio = default_priority);
     BYTE start(
       pfnThreadFunc pfnthreadfunc,
-      void * p_v,
+      void * p_vThreadFuncParam,
       /*BYTE*/ enum priority prio,
       const char * const threadName);
   /** Blocking/ synchronous wait from thread that calls this function until the

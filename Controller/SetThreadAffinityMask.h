@@ -17,4 +17,15 @@
   #include <Linux/SetThreadAffinityMask.h>
 #endif
 
+namespace OperatingSystem
+{
+  inline unsigned long int SetThreadAffinityMask(//DWORD
+    unsigned long dwThreadAffinityMask)
+  {
+#ifdef __linux__
+    return Linux::SetThreadAffinityMask(dwThreadAffinityMask);
+#endif
+  }
+}
+
 #endif /* SETTHREADAFFINITYMASK_H_ */

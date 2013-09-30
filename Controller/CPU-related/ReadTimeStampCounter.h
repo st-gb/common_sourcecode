@@ -123,54 +123,59 @@ __inline__ uint64_t ReadTSCinOrderFromEnglishWikipedia(void)
     return (uint64_t)hi << 32 | lo;
 }
 
-inline unsigned ReadTimeStampCounter(DWORD dwThreadAffinityMask, uint64_t & rdtscValue)
+namespace NS_SetThreadAffinityMask
 {
-  DWORD dwPreviousAffMask = ::SetThreadAffinityMask( //::GetCurrentThread() ,
-      dwThreadAffinityMask) ;
-  if( dwPreviousAffMask )
+  inline unsigned ReadTimeStampCounter(
+    DWORD dwThreadAffinityMask,
+    uint64_t & rdtscValue)
   {
-    rdtscValue = ReadTimeStampCounter();
-    return 0;
+    DWORD dwPreviousAffMask = OperatingSystem::SetThreadAffinityMask( //::GetCurrentThread() ,
+        dwThreadAffinityMask) ;
+    if( dwPreviousAffMask )
+    {
+      rdtscValue = ::ReadTimeStampCounter();
+      return 0;
+    }
+    return 1;
   }
-  return 1;
-}
 
-inline ULONGLONG ReadTSCinOrder( DWORD dwThreadAffinityMask )
-{
-  ULONGLONG ull = 0 ;
-  DEBUGN("inline ULONGLONG ReadTSCinOrder( DWORD dwThreadAffinityMask ) begin")
-  //http://en.wikipedia.org/wiki/Rdtsc:
-  //"There is no promise that the timestamp counters of multiple CPUs on a
-  //single motherboard will be synchronized. In such cases, programmers can
-  // only get reliable results by locking their code to a single CPU."
-  DWORD dwPreviousAffMask = ::SetThreadAffinityMask( //::GetCurrentThread() ,
-      dwThreadAffinityMask) ;
-  if( dwPreviousAffMask )
+  inline ULONGLONG ReadTSCinOrder( DWORD dwThreadAffinityMask )
   {
-    //http://www.ccsl.carleton.ca/~jamuir/rdtscpm1.pdf:
-//    CPUID(); //"force all previous instructions to complete"
-    //from http://en.wikipedia.org/wiki/CPUID
-    // #Accessing_the_id_from_other_languages:
-//    asm ( "mov 1, %%eax; " // a into eax
-//           "cpuid" ) ;
+    ULONGLONG ull = 0 ;
+    DEBUGN(/*"inline ULONGLONG ReadTSCinOrder( DWORD dwThreadAffinityMask ) "*/"begin")
+    //http://en.wikipedia.org/wiki/Rdtsc:
+    //"There is no promise that the timestamp counters of multiple CPUs on a
+    //single motherboard will be synchronized. In such cases, programmers can
+    // only get reliable results by locking their code to a single CPU."
+    DWORD dwPreviousAffMask = OperatingSystem::SetThreadAffinityMask( //::GetCurrentThread() ,
+        dwThreadAffinityMask) ;
+    if( dwPreviousAffMask )
+    {
+      //http://www.ccsl.carleton.ca/~jamuir/rdtscpm1.pdf:
+  //    CPUID(); //"force all previous instructions to complete"
+      //from http://en.wikipedia.org/wiki/CPUID
+      // #Accessing_the_id_from_other_languages:
+  //    asm ( "mov 1, %%eax; " // a into eax
+  //           "cpuid" ) ;
 
-    //from http://ibiblio.org/gferg/ldp/GCC-Inline-Assembly-HOWTO.html#s3
-    //  see table "Intel Code             |      AT&T Code"
+      //from http://ibiblio.org/gferg/ldp/GCC-Inline-Assembly-HOWTO.html#s3
+      //  see table "Intel Code             |      AT&T Code"
 
-////    //call CPUID function 1:
-//    asm ( "mov $1, %eax") ; //write "1" into register "eax" for "CPUID fct. "1"
-////    //http://www.ccsl.carleton.ca/~jamuir/rdtscpm1.pdf,
-////    //  chapter 3.1. Out-of-Order-Execution
-//    asm ( "cpuid" ) ; //this forces all previous operations to complete.
-//    ull = ReadTimeStampCounter() ;
+  ////    //call CPUID function 1:
+  //    asm ( "mov $1, %eax") ; //write "1" into register "eax" for "CPUID fct. "1"
+  ////    //http://www.ccsl.carleton.ca/~jamuir/rdtscpm1.pdf,
+  ////    //  chapter 3.1. Out-of-Order-Execution
+  //    asm ( "cpuid" ) ; //this forces all previous operations to complete.
+  //    ull = ReadTimeStampCounter() ;
 
-    ull = ReadTSCinOrderFromEnglishWikipedia();
+      ull = ReadTSCinOrderFromEnglishWikipedia();
 
-    //Restore the previous thread affinity mask.
-    ::SetThreadAffinityMask( dwPreviousAffMask ) ;
+      //Restore the previous thread affinity mask.
+      OperatingSystem::SetThreadAffinityMask( dwPreviousAffMask ) ;
+    }
+    DEBUGN(/*"inline ULONGLONG ReadTSCinOrder( DWORD dwThreadAffinityMask ) "*/"end")
+    return ull ;
   }
-  DEBUGN("inline ULONGLONG ReadTSCinOrder( DWORD dwThreadAffinityMask ) end")
-  return ull ;
 }
 
 #endif /* READTIMESTAMPCOUNTER_H_ */

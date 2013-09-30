@@ -119,6 +119,12 @@ public:
 //    m_wxcondition.Wait() ;
     Wait() ;
   }
+
+  /** Sets the specified event object to the nonsignaled state. */
+  void ResetEvent()
+  {
+    //m_wxcondition.
+  }
   wxCondError Signal()
   {
 #ifdef COMPILE_WITH_LOG

@@ -43,6 +43,7 @@ extern "C" {
   typedef unsigned long int DWORD ;
   #define WINAPI __stdcall
   WINBASEAPI void WINAPI Sleep(DWORD);
+  #include <fastest_data_type.h> //
 #endif //#ifdef _WIN32
 
 #ifdef  __cplusplus
@@ -52,16 +53,27 @@ extern "C" {
 namespace OperatingSystem
 {
 #ifdef _WIN32 //Built-in macro for MSVC, MinGW (also for 64 bit Windows)
-  inline void Sleep(unsigned long dwMilliSeconds )
+  inline void Sleep(/*unsigned long*/ fastestUnsignedDataType milliSeconds )
   {
-    ::Sleep(dwMilliSeconds) ;
+    ::Sleep(milliSeconds) ;
+//    Sleep(dwMilliSeconds) ;
+  }
+  inline void SleepMilliSeconds(fastestUnsignedDataType milliSeconds )
+  {
+    ::Sleep(milliSeconds) ;
 //    Sleep(dwMilliSeconds) ;
   }
 #else //#ifdef _WIN32
   #include <unistd.h>
-  inline void Sleep(unsigned long dwMilliSeconds )
+  inline void Sleep(/*unsigned long*/ fastestUnsignedDataType milliSeconds )
   {
-    usleep( 1000 * dwMilliSeconds );
+    usleep( 1000 * milliSeconds );
+  }
+  inline void SleepMilliSeconds(fastestUnsignedDataType milliSeconds )
+  {
+    //micro (10^-6 * 10^3 = *10^-3
+    //1 millisecond = 1000 microseconds
+    usleep( 1000 * milliSeconds );
   }
 #endif //#ifdef _WIN32
 }

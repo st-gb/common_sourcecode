@@ -103,8 +103,10 @@ public:
       {
         if(
         #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
-          //&&
-          IsNotFiltered(* logfileentry.p_std_strMessage)
+          prettyFunctionFormattedFunctionName &&
+          FunctionIsNotFiltered(/* *logfileentry.p_std_strMessage*/
+            prettyFunctionFormattedFunctionName,
+            strlen(prettyFunctionFormattedFunctionName) )
            &&
         #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 //          m_p_std_ofstream->good()

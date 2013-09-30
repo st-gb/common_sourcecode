@@ -95,6 +95,8 @@
 
 #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
     void AddExcludeFromLogging(const std::string & cr_stdstr ) ;
+//    void ExcludeMessageFromLogging(const std::string & cr_stdstr ) ;
+    void ExcludeFunctionFromLogging(const std::string & cr_stdstr ) ;
 #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 
     void AddFormattedLogEntryProcessor(
@@ -102,8 +104,8 @@
     {
       m_formattedLogEntryProcessors.push_back(p_formattedlogentryprocessor);
     }
-    const std::vector<FormattedLogEntryProcessor *> &
-      GetFormattedLogEntryProcessors() const
+    /*const*/ std::vector<FormattedLogEntryProcessor *> &
+      GetFormattedLogEntryProcessors() //const
     {
       return m_formattedLogEntryProcessors;
     }
@@ -194,7 +196,7 @@
       static std::vector<FormattedLogEntryProcessor *>::const_iterator
         c_iterFormattedLogEntryProcessors;
       c_iterFormattedLogEntryProcessors = m_formattedLogEntryProcessors.begin();
-      FormattedLogEntryProcessor * p_formattedlogentryprocessor;
+      static FormattedLogEntryProcessor * p_formattedlogentryprocessor;
       while( c_iterFormattedLogEntryProcessors !=
           m_formattedLogEntryProcessors.end() )
       { //TODO SIGSEV here called from MainFrame::OnClose->mp_wxx86infoandcontrolapp->EndGetCPUcoreDataViaIPCthread() ;:
@@ -307,7 +309,10 @@
     bool OpenFile( //std::string & r_stdstrFilePath
       std::tstring & r_stdtstrFilePath ) ;
 #endif //COMPILE_LOGGER_WITH_TSTRING_SUPPORT
-    bool OpenFileA(std::string & r_std_strFilePath, unsigned numEntries = 500 );
+    bool OpenFileA(
+      std::string & r_std_strFilePath,
+      unsigned numEntries = 500,
+      LogLevel::MessageType lvl = LogLevel::info);
 //    void SetCurrentThreadName(const char * const name)
 //    {
 //      unsigned currentThreadNumber = OperatingSystem::GetCurrentThreadNumber();

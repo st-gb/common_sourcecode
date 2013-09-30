@@ -37,7 +37,7 @@ public:
   uint16_t nanosecond;
   std::string * p_std_strMessage;
   const std::string * p_std_strThreadName;
-  LogFileEntry() : this->p_std_strThreadName(p_std_strThreadName) {  }
+//  LogFileEntry() : p_std_strThreadName(p_std_strThreadName) {  }
 };
 
 #endif /* LOGFILEENTRY_HPP_ */

@@ -65,6 +65,10 @@ namespace Windows_API
         == WAIT_TIMEOUT;
     }
     inline void PossiblyCloseThreadHandle();
+    /** Implementation with same method name seems to hide base class function
+     *  So declare base class's "start" function here again.
+    //see http://stackoverflow.com/questions/16005894/a-function-from-a-base-class-is-being-hidden-in-the-subclass-how-do-i-fix-this */
+    using I_Thread::start;
     BYTE start(
       pfnThreadFunc,
       void * p_v,

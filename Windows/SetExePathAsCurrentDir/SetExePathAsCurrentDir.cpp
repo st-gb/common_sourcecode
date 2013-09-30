@@ -8,14 +8,14 @@
     #include <tchar.h> //_tcsrchr()
 #endif
 
-//Services get their current working dir set to "%WINDIR%/System32", 
-//e.g. C:\WINDOWS\System32, but this is often unwanted because if wanting 
-//to read or write to files:
-//-this path often has less privileges
-//-the configuration file should be chosen from the same dir as where the exe
-// resides by default
-//So change the path of the current working dir to the path where the 
-//executable resides.
+/** Services get their current working dir set to "%WINDIR%/System32",
+* e.g. C:\WINDOWS\System32, but this is often unwanted because if wanting
+* to read or write to files:
+* -this path often has less privileges
+* -the configuration file should be chosen from the same dir as where the exe
+*  resides by default
+* So change the path of the current working dir to the path where the
+* executable resides. */
 DWORD SetExePathAsCurrentDir()
 {
   TCHAR artchThisExesPath [ MAX_PATH

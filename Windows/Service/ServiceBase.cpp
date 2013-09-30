@@ -245,7 +245,7 @@ DWORD ServiceBase::PauseService(
   , std::string & r_stdstrMsg
   )
 {
-  LOGN(FULL_FUNC_NAME << " begin")
+  LOGN("begin")
   SC_HANDLE schService ;
   SC_HANDLE schSCManager;
   SERVICE_STATUS ssStatus; 
@@ -292,7 +292,7 @@ DWORD ServiceBase::PauseService(
         //printf("OpenService failed (%d)\n", GetLastError());
       DWORD dw = ::GetLastError() ;
       GetErrorDescriptionFromOpenServiceErrCode( dw , r_stdstrMsg ) ;
-      LOGN(FULL_FUNC_NAME << " OpenService failed: " << r_stdstrMsg)
+      LOGN("OpenService failed: " << r_stdstrMsg)
       return FALSE;
     }
  
@@ -303,10 +303,10 @@ DWORD ServiceBase::PauseService(
             &ssStatus) )  // address of status info 
     {
         //printf("ControlService failed (%d)\n", GetLastError()); 
-      LOGN(FULL_FUNC_NAME << " return FALSE")
+      LOGN("return FALSE")
       return FALSE;
     }
-  LOGN(FULL_FUNC_NAME << " end")
+  LOGN("end")
   return TRUE ;
 }
 
@@ -516,10 +516,11 @@ DWORD ServiceBase::CreateService(
   return dwLastError ;
 }
 
-//Use number because that enables language-independent messaged
-//return: 0 = success
-//DWORD
-BYTE ServiceBase::DeleteService(
+/**
+* @return: 0 = success
+*   Use number because that enables language-independent messages
+//DWORD BYTE */
+fastestUnsignedDataType ServiceBase::DeleteService(
    //SC_HANDLE & r_schSCManager
    //,
    const TCHAR * tchServiceName
@@ -527,7 +528,7 @@ BYTE ServiceBase::DeleteService(
    , DWORD  & dwErrorCodeFor1stError
    )
 { 
-  SC_HANDLE schSCManager = OpenSCManager( 
+  SC_HANDLE schSCManager = ::OpenSCManager(
     NULL,                    // local machine 
     NULL,                    // ServicesActive database 
     //SC_MANAGER_ALL_ACCESS
@@ -575,7 +576,7 @@ BYTE ServiceBase::DeleteService(
     ::CloseServiceHandle(schService);
   }
     //return TRUE;
-  return 0 ;
+  return NoError ;
 }
 
 //SERVICE_STATUS_HANDLE //WINAPI
@@ -718,7 +719,7 @@ DWORD THREAD_FUNCTION_CALLING_CONVENTION ServiceBase::
 //  const TCHAR * c_p_tchServiceName = (const TCHAR *) p_v;
   SERVICE_TABLE_ENTRY * ar_service_table_entry =
     (SERVICE_TABLE_ENTRY * ) p_v;
-  //LOGN( FULL_FUNC_NAME << "--begin")
+  //LOGN( "begin")
   //SERVICE_TABLE_ENTRYA ("char") or SERVICE_TABLE_ENTRYW ( wchar_t )
 
 //    LOGN("Before starting service ctrl dispatcher--current thread id:" <<
@@ -726,8 +727,7 @@ DWORD THREAD_FUNCTION_CALLING_CONVENTION ServiceBase::
 //        << "\nNote: it may take 2 minutes or even more until the service control "
 //        "dispatcher has finished to start")
 
-  DEBUG( FULL_FUNC_NAME
-    << "--before calling ::StartServiceCtrlDispatcher("
+  DEBUG( "before calling ::StartServiceCtrlDispatcher("
     << ar_service_table_entry << ")\n");
   //"The StartServiceCtrlDispatcher function connects the main thread of a
   //service process to the service control manager, which causes the thread
@@ -750,11 +750,11 @@ DWORD THREAD_FUNCTION_CALLING_CONVENTION ServiceBase::
 //        LOGN(stdstr)
 //      g_std_ofstream <<
 //      g_std_basicstring_log_char_typeLog
-      //LOGN( FULL_FUNC_NAME << "--return 1\n" )
+      //LOGN( "return 1" )
       return 1;
     }
-  DEBUGN( FULL_FUNC_NAME << "--return 0")
-  //g_std_ofstream << FULL_FUNC_NAME << "--return 0\n";
+  DEBUGN( "return 0")
+  //g_std_ofstream << "--return 0\n";
   return 0;
 }
 

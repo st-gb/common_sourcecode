@@ -8,6 +8,7 @@
 #include "pthreadBasedI_Thread.hpp"
 #include <pthread.h> //int pthread_create(...)
 #include <Controller/GetErrorMessageFromLastErrorCode.hpp>
+//#include <Controller/Err GetLastErrorCode.hpp>
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 
 namespace Linux
@@ -56,7 +57,9 @@ namespace Linux
       pthread_kill(m_pthread_t, 0) != ESRCH;
   }
 
-  BYTE pthreadBasedI_Thread::start( pfnThreadFunc pfn_threadfunc, void * p_v,
+  BYTE pthreadBasedI_Thread::start(
+    pfnThreadFunc pfn_threadfunc,
+    void * p_v,
     /*BYTE*/ I_Thread::priority priority /*= default_priority*/ )
   {
     int nRetVal = 1 ;

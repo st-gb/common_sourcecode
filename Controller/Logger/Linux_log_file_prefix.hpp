@@ -16,12 +16,15 @@
 #define LINUX_LOG_FILE_PREFIX_HPP_
 
 #include <ostream> //class ostream
-#include <sys/time.h> // gettimeofday(...)
+#include <sys/time.h> // gettimeofday(...), struct timeval
 //#include <sys/types.h> //gettid()
-#include <pthread.h> //pthread_self()
+//#include <pthread.h> //pthread_self()
+#include <sys/types.h> //gettid();
+#include <sys/syscall.h> //syscall(...)
 #include <time.h> // localtime(...)
 #include <Controller/Logger/LogFileEntry.hpp> //class LogFileEntry
 #include <Controller/multithread/I_Thread.hpp> //class I_Thread
+#include <Linux/GetCurrentThreadNumber.h>
 
 //#define LOG_FILE_PREFIX()
 
@@ -63,7 +66,7 @@ inline void GetLogFilePrefix(LogFileEntry & r_logfileentry)
 //  r_logfileentry.threadID = gettid();
   //http://www.kernel.org/doc/man-pages/online/pages/man3/pthread_self.3.html
   // "link with -pthread"
-  r_logfileentry.threadID = ::pthread_self();
+  r_logfileentry.threadID = Linux::GetCurrentThreadNumber();
   I_Thread::threadNameMapType::const_iterator c_iterThreadNumber2ThreadName =
     I_Thread::s_threadNumber2Name.find(r_logfileentry.threadID);
   if( c_iterThreadNumber2ThreadName != I_Thread::s_threadNumber2Name.end() )

@@ -15,6 +15,7 @@
 //#include <Controller/GetErrorMessageFromLastErrorCode.hpp>
 //For ::GetLastErrorMessageString(DWORD ,std::wstring)
 #include <Windows/ErrorCode/ErrorCodeFromGetLastErrorToString.h>
+#include <fastest_data_type.h> //typedef fastestUnsignedDataType
 
 typedef unsigned long DWORD;
 
@@ -70,8 +71,8 @@ public:
     , SC_HANDLE schSCManager
     ) ;
   //return: 0 = success
-  static //DWORD
-    BYTE DeleteService(
+  static //DWORD BYTE
+    fastestUnsignedDataType DeleteService(
       const TCHAR * tchServiceName
       , DWORD & dwErrorCodeFor1stError
    ) ;

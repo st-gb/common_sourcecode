@@ -17,6 +17,7 @@
 
 #include <Controller/multithread/I_Thread.hpp>
 #include <wx/thread.h>
+#include <fastest_data_type.h> //typedef fastestUnsignedDataType
 
 class wxThreadFuncStarterThread
   : public wxThread
@@ -43,6 +44,41 @@ public:
   //static
     BYTE start( pfnThreadFunc, void * p_v, BYTE priority =
       WXTHREAD_DEFAULT_PRIORITY) ;
+
+  enum I_Thread::priority wxThreadPrio2I_ThreadPrio(
+    fastestUnsignedDataType wxThreadPriority)
+  {
+    switch(wxThreadPriority)
+    {
+      case WXTHREAD_DEFAULT_PRIORITY:
+        return I_Thread::default_priority;
+      case WXTHREAD_MAX_PRIORITY:
+        return I_Thread::maximum_priority;
+    }
+    return I_Thread::default_priority;
+  }
+  fastestUnsignedDataType I_ThreadPrio2wxThreadPrio(
+    const I_Thread::priority priority)
+  {
+    switch(priority)
+    {
+      case I_Thread::default_priority:
+        return WXTHREAD_DEFAULT_PRIORITY;
+      case I_Thread::maximum_priority:
+        return WXTHREAD_MAX_PRIORITY;
+    }
+    return WXTHREAD_DEFAULT_PRIORITY;
+  }
+  /** Implementation with same method name seems to hide base class function
+   *  So declare base class's "start" function here again.
+  //see http://stackoverflow.com/questions/16005894/a-function-from-a-base-class-is-being-hidden-in-the-subclass-how-do-i-fix-this */
+  using I_Thread::start;
+  BYTE start(pfnThreadFunc threadFunc, void * p_vThreadFuncParam,
+    I_Thread::priority prio)
+  {
+    fastestUnsignedDataType wxThreadPrio = I_ThreadPrio2wxThreadPrio(prio);
+    return start(threadFunc, p_vThreadFuncParam, wxThreadPrio);
+  }
   int GetThreadPriority()
   {
     return mp_wxthreadfuncstarterthread->GetPriority();

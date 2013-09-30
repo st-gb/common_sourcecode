@@ -67,6 +67,7 @@ void HTMLlogFormatter::WriteHeader()
     "    <th>time</th>"
     "    <th>thread name</th>"
     "    <th>thread ID</th>"
+    "    <th>code pos.</th>"
     "    <th>message</th>"
     "   </tr>\n";
 }
@@ -120,6 +121,7 @@ void HTMLlogFormatter::WriteLogFileEntry(
   else
     * m_p_std_ostream << "</td>\n<td>";
   * m_p_std_ostream << logfileentry.threadID;
+  * m_p_std_ostream << "</td>\n<td>" << prettyFunctionFormattedFunctionName;
   * m_p_std_ostream << "</td>\n    "
         "<td ";
   OutputCSSclass(messageType);

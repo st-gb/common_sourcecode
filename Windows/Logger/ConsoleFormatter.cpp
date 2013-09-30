@@ -10,23 +10,23 @@
 
 //namespace Logger
 //{
-  ConsoleFormatter::ConsoleFormatter(
-    const FormattedLogEntryProcessor * p_formattedlogentryprocessor)
-    : I_LogFormatter(p_formattedlogentryprocessor)
-  {
-    //http://msdn.microsoft.com/en-us/library/windows/desktop/ms686974%28v=vs.85%29.aspx
-    CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
-    m_hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    if ( m_hStdout != INVALID_HANDLE_VALUE &&
-        GetConsoleScreenBufferInfo(m_hStdout, & csbiInfo) )
-    {
-      m_wOldColorAttrs = csbiInfo.wAttributes;
-//      m_hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    }
-    else
-      m_wOldColorAttrs = FOREGROUND_INTENSITY;
-//      throw std::exception();
-  }
+//  ConsoleFormatter::ConsoleFormatter(
+//    const FormattedLogEntryProcessor * p_formattedlogentryprocessor)
+//    : I_LogFormatter(p_formattedlogentryprocessor)
+//  {
+//    //http://msdn.microsoft.com/en-us/library/windows/desktop/ms686974%28v=vs.85%29.aspx
+//    CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
+//    m_hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+//    if ( m_hStdout != INVALID_HANDLE_VALUE &&
+//        GetConsoleScreenBufferInfo(m_hStdout, & csbiInfo) )
+//    {
+//      m_wOldColorAttrs = csbiInfo.wAttributes;
+////      m_hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+//    }
+//    else
+//      m_wOldColorAttrs = FOREGROUND_INTENSITY;
+////      throw std::exception();
+//  }
 
   ConsoleFormatter::~ConsoleFormatter()
   {

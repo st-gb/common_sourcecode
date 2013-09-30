@@ -34,7 +34,7 @@ namespace Windows_API
 
   inline void Thread::PossiblyCloseThreadHandle()
   {
-    LOGN_DEBUG( FULL_FUNC_NAME << " m_handleThread:" << m_handleThread)
+    LOGN_DEBUG( "m_handleThread:" << m_handleThread)
     if( m_handleThread )
       ::CloseHandle(m_handleThread ) ;
   }
@@ -59,7 +59,7 @@ namespace Windows_API
     {
 #ifdef _DEBUG
       int ThreadPriority = ::GetThreadPriority(m_handleThread);
-      LOGN_DEBUG( FULL_FUNC_NAME << "current thread priority "
+      LOGN_DEBUG( "current thread priority "
         << ThreadPriority)
 #endif
       if( prio != I_Thread::default_priority)
@@ -82,13 +82,13 @@ namespace Windows_API
 
   Thread::~Thread()
   {
-    LOGN_DEBUG( FULL_FUNC_NAME << " begin" )
+    LOGN_DEBUG( "begin" )
     PossiblyCloseThreadHandle();
   }
   void * Thread::WaitForTermination() const
   {
     DWORD dwExitCode ;
-    LOGN_DEBUG( FULL_FUNC_NAME << " before WaitForSingleObject" )
+    LOGN_DEBUG( "before WaitForSingleObject" )
     //Waits for the end of the thread determined by the handle.
     ::WaitForSingleObject(m_handleThread, INFINITE) ;
     ::GetExitCodeThread(m_handleThread, & dwExitCode ) ;
@@ -101,7 +101,7 @@ namespace Windows_API
   void * Thread::WaitForTermination(fastestUnsignedDataType milliseconds) const
   {
     DWORD dwExitCode ;
-    LOGN_DEBUG( FULL_FUNC_NAME << " before WaitForSingleObject" )
+    LOGN_DEBUG( "before WaitForSingleObject" )
     do
     {
       //Waits for the end of the thread determined by the handle.

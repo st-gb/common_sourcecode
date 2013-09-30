@@ -14,6 +14,7 @@
 #include <Controller/Logger/OutputHandler/I_LogEntryOutputter.hpp>
 #include <Controller/Logger/Formatter/I_LogFormatter.hpp> //class ILogFormatter
 #include <limits.h> //UINT_MAX
+#include <fastest_data_type.h>
 
 //Fwd decl.
 class I_LogFormatter;
@@ -125,7 +126,12 @@ public:
   const std::string & GetFilePath() const { return m_filePath; }
   I_LogFormatter * GetFormatter() { return m_p_log_formatter; }
   enum LogLevel::MessageType GetLogLevel() { return m_logLevel; }
-  inline bool IsNotFiltered(const std::string & r_std_strTestIfFiltered) const
+
+  /** @param p_ch : char data type, so "std::string::c_str()" and char string
+   * are possible.
+   *  @param strLen : for std::string pass std::string::length() */
+  inline bool FunctionIsNotFiltered(/*const std::string & r_std_strTestIfFiltered*/
+    const char * const p_ch, const fastestUnsignedDataType strLen) const
   {
 #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
     bool bIsNotFiltered = true;
@@ -135,8 +141,8 @@ public:
       //If NOT in the container.
       ( (NodeTrie<BYTE> &) m_trie).//exists_inline(
         contains_inline(
-        (unsigned char*) r_std_strTestIfFiltered.c_str() ,
-        (WORD) r_std_strTestIfFiltered.length( ) ,
+        (unsigned char*) /*r_std_strTestIfFiltered.c_str()*/ p_ch ,
+        /*(WORD) r_std_strTestIfFiltered.length()*/ strLen ,
         false // allow prefix match: e.g. "hello" is prefix of "hello1"
         );
     if( p_ntn

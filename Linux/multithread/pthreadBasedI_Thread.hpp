@@ -27,12 +27,19 @@ namespace Linux
     pthreadBasedI_Thread(I_Thread::thread_type = I_Thread::joinable );
     virtual
     ~pthreadBasedI_Thread();
-    BYTE start(pfnThreadFunc, void * p_v, /*BYTE*/ I_Thread::priority
-        priority = default_priority) ;
+    /** impl. with same method name seems to hide base class function
+    //see http://stackoverflow.com/questions/16005894/a-function-from-a-base-class-is-being-hidden-in-the-subclass-how-do-i-fix-this */
+    using I_Thread::start;
+//    pthread_t GetThreadHandle(){ return m_pthread_t; }
+    BYTE start(
+      pfnThreadFunc,
+      void * p_vThreadFuncParameter,
+      /*BYTE*/ I_Thread::priority priority = default_priority) ;
 //    BYTE start(DWORD (*)(void*), void*, I_Thread::priority)
     //inline
       void * WaitForTermination() ;
     int GetThreadPriority();
+    void * GetThreadHandle() {return (void *) & m_pthread_t;}
     //TODO implement IsRunning
     bool IsRunning();
   };

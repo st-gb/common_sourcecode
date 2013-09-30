@@ -81,7 +81,7 @@ namespace std
    return ar_p_tch ;
  }
 
-#if defined _UNICODE || defined UNICODE
+#if defined( _UNICODE) || defined(UNICODE)
  //TCHAR = wchar_t
  inline std::tstring GetStdTstring_Inline(const std::string & cr_str )
  {

@@ -88,7 +88,9 @@ void wxThreadBasedI_Thread::Delete()
 
 //@return I_Thread::no_error on success, else I_Thread::error
   //static
-  BYTE wxThreadBasedI_Thread::start( pfnThreadFunc pfn_threadfunc, void * p_v,
+  BYTE wxThreadBasedI_Thread::start(
+    pfnThreadFunc pfn_threadfunc,
+    void * p_v,
     BYTE priority)
   {
     LOGN("wxThreadBasedI_Thread::start(" << (void *) pfn_threadfunc

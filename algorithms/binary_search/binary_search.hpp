@@ -241,6 +241,7 @@ MANUFACTURER_ID_NAMESPACE_BEGIN
 //  }
 
   /**
+   * @return BinarySearch::no_element or index
    * @param array must be sorted in ascending order.
    * @param arraySize: array size of @see ascendingSortedArray
    * @param referredValue : value to get array index for closest less or equal value for

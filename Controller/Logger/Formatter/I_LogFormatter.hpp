@@ -148,6 +148,7 @@ public:
     * m_p_std_ostream
       << m_p_chTimeString
       << " thread ID:" << logfileentry.threadID << " "
+      << prettyFunctionFormattedFunctionName << " "
       << * logfileentry.p_std_strMessage
 //      << "\n"
       ;

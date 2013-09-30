@@ -17,6 +17,13 @@
 #include <preprocessor_macros/string_typedefs.h> //LPCTSTR
 #include <string.h>
 
+#ifdef _WIN32
+  #define COMPARE_STRING_CASE_INSENSITIVE _wcsicmp
+#else
+  #include <wchar.h> //wcscasecmp()
+  #define COMPARE_STRING_CASE_INSENSITIVE wcscasecmp
+#endif
+
 namespace MFC_Compatibility
 {
 //  class CString ;
@@ -86,7 +93,7 @@ namespace MFC_Compatibility
       return
         //http://msdn.microsoft.com/en-us/library/k59z8dwe%28v=vs.80%29.aspx:
         //"Perform a lowercase comparison of strings."
-        _wcsicmp( c_str(), //cr_str.c_str()
+        COMPARE_STRING_CASE_INSENSITIVE( c_str(), //cr_str.c_str()
           cpc_tch ) ;
       #else //#ifdef UNICODE
       return

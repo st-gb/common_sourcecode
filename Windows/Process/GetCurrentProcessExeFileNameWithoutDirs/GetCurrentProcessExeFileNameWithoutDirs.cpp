@@ -8,7 +8,7 @@
 //#include "StdAfx.h"
 #include "GetCurrentProcessExeFileNameWithoutDirs.hpp"
 
-std::tstring GetExeFileNameWithoutDirs()
+std::tstring CurrentProcess::GetExeFileNameWithoutDirs()
 {
   return GetExeFileNameWithoutDirs_inline();
 }

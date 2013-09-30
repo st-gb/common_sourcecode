@@ -63,13 +63,14 @@ I_LogFormatter::I_LogFormatter(//std::ofstream * p_std_ofstream
     PLACE_HOLDER_BEGIN_STRING "minute" PLACE_HOLDER_END_STRING ":"
     PLACE_HOLDER_BEGIN_STRING "second" PLACE_HOLDER_END_STRING "s"
     PLACE_HOLDER_BEGIN_STRING "millisecond" PLACE_HOLDER_END_STRING "ms";
+  m_p_chTimeString = (char *) m_TimeFormatString.c_str();
   CreateTimePlaceHolderToLogFileEntryMemberMapping();
 }
 
 I_LogFormatter::~I_LogFormatter()
 {
-  if( m_p_chTimeString )
-    delete [] m_p_chTimeString;
+//  if( m_p_chTimeString )
+//    delete [] m_p_chTimeString;
 //  DeleteTimePlaceHolderToLogFileEntryMemberNodeTrie();
   m_nodetrieTimePlaceHolderToLogFileEntryMember.DeleteWithMember();
 //  LOGN_INFO("m_dwNumberOfNodes for PlaceHolderToLogFileEntryMember trie:"
@@ -283,8 +284,9 @@ void I_LogFormatter::Init(std::ostream /*&*/ * p_std_ostream /*= NULL*/,
 void I_LogFormatter::SetTimeFormat(const std::string & TimeFormatString)
 {
   m_TimeFormatString = TimeFormatString;
-  if( m_p_chTimeString)
-    delete [] m_p_chTimeString;
+//  if( m_p_chTimeString)
+//    //points to m_TimeFormatString.c_str()
+//    delete [] m_p_chTimeString;
   //  CreateTimeStringArray();
   //  BYTE NumberOfPlaceHolders =
   uint16_t arraySize = GetNeededArraySizeForTimeString(m_TimeFormatString);

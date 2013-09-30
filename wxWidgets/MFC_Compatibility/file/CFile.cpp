@@ -64,7 +64,7 @@ inline //virtual
     //http://docs.wxwidgets.org/trunk/classwx_file.html
     // #70f2abe0e310dcf77ea6aeaac60df25b:
     // "Opens the file, returning true if successful."
-    Open( GetwxString_Inline( lpcstrFileName ), wxfile_openmode ) ;
+    Open( wxWidgets::GetwxString_Inline( lpcstrFileName ), wxfile_openmode ) ;
 //  return false ;
 }
 #endif //#if defined( _UNICODE) || defined(UNICODE)

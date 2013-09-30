@@ -14,17 +14,25 @@ template<typename charType> class CommandLineArgs
 {
   unsigned m_argumentCount;
   charType ** m_stringArray; //array (1st "*") of strings (2nd "*")
+  charType * fullProgramPath;
 public:
+  enum ArgIndices { FullProgramPathArgIndex = 0};
   CommandLineArgs() {};
   CommandLineArgs(int argc, charType ** stringArray)
     : m_argumentCount(argc), m_stringArray(stringArray)
   {
+    fullProgramPath = stringArray[FullProgramPathArgIndex];
+  }
+  charType * GetFullProgramPath()
+  {
+    return fullProgramPath;
   }
   charType ** const GetStringArray() const { return m_stringArray; }
   void Set(int argc, charType * stringArray[])
   {
     m_argumentCount = argc;
     m_stringArray = stringArray;
+    fullProgramPath = stringArray[FullProgramPathArgIndex];
   }
   unsigned contains(charType * compareString)
   {

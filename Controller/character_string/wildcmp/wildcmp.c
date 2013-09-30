@@ -1,5 +1,6 @@
-#include <winnt.h> //for STDAPICALLTYPE
 #include <ctype.h> //_toupper(...)
+#ifdef _WIN32
+  #include <winnt.h> //for STDAPICALLTYPE
 
 //Dieser Quellcode stammt von Wes Jones ? bzw. dessen DirectoryChangesW-
 //Wrapper?
@@ -59,3 +60,6 @@ BOOL STDAPICALLTYPE wildcmp(LPCTSTR string, LPCTSTR wild )
   //If the '\0' char (string end) is reached, return "TRUE".
   return ( ! * wild ) ? TRUE : FALSE;
 }
+#else
+  #define STDAPICALLTYPE /* empty string*/
+#endif

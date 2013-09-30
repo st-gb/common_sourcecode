@@ -12,6 +12,8 @@
   #include <preprocessor_macros/logging_preprocessor_macros.h> //DEBUGN(...)
 //  #include <windef.h> //DWORD
 
+namespace Linux
+{
   /** Use inline->faster, avoid g++ error/ warning */
   inline unsigned long int SetThreadAffinityMask(//DWORD
     unsigned long dwThreadAffinityMask)
@@ -51,5 +53,6 @@
 //      //Invert return value
 //      ! nReturnValue;
   }
+}//namespace Linux
 
 #endif /* LINUX_SETTHREADAFFINITYMASK_H_ */
