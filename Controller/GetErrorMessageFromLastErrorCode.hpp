@@ -16,5 +16,6 @@ typedef unsigned long DWORD;
 
 std::string GetErrorMessageFromLastErrorCodeA() ;
 std::string GetErrorMessageFromErrorCodeA(DWORD dwErrorCode) ;
+std::wstring GetErrorMessageFromErrorCodeW(DWORD dwErrorCode) ;
 
 #endif /* GETERRORMESSAGEFROMLASTERRORCODE_H_ */

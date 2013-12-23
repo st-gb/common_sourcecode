@@ -8,6 +8,7 @@
 
 #include <string> //std::wstring
 #include <stdlib.h> //_itow(...)
+#include <windows.h> //FormatMessageW(...)
 
 //#ifndef _MSC_VER
 //  #include <Windows_compatible_typedefs.h>
@@ -290,7 +291,7 @@ LPWSTR PDH_CPUcoreUsageGetter::GetPerfnameByIndex(WORD wIndex )
 
 void PDH_CPUcoreUsageGetter::GetPercentProcessorTimeName()
 {
-  DEBUGN("PDH_CPUcoreUsageGetter::GetPercentProcessorTimeName" )
+  DEBUGN(/*"PDH_CPUcoreUsageGetter::GetPercentProcessorTimeName"*/ "begin" )
   m_lpwstrPercentProcessorTimeCounterName = GetPerfnameByIndex(
     //http://msdn.microsoft.com/en-us/library/aa372648%28VS.85%29.aspx:
     //can be seen in registry path
@@ -324,6 +325,9 @@ void PDH_CPUcoreUsageGetter::GetPercentProcessorTimeName()
 
   //see also http://support.microsoft.com/kb/287159
 }
+
+//TODO check if this is right
+#define PERF_DETAIL_NOVICE 0
 
 void PDH_CPUcoreUsageGetter::GetCounterObjects()
 {
@@ -424,8 +428,8 @@ float PDH_CPUcoreUsageGetter::
 //  float fRet = -1.0 ;
 //  m_fReturnValue = -1.0 ;
 //  PDH_STATUS pdh_status ;
-  DEBUGN("PDH_CPUcoreUsageGetter::GetPercentalUsageForCore for core "
-      << (WORD) byCoreID )
+  DEBUGN(//"PDH_CPUcoreUsageGetter::GetPercentalUsageForCore"
+    " for core " << (WORD) byCoreID )
 //  printf("Starting the process...\n");
 
   //pdh_status = PdhCollectQueryData(
@@ -476,10 +480,12 @@ float PDH_CPUcoreUsageGetter::
       }
       else
       {
-//        std::wstring wstr ;
-//        if( GetPDHerrorCodeString(pdh_status, wstr) )
-//          DEBUGWN(L"PdhGetFormattedCounterValue failed: " << (DWORD) pdh_status
-//            << wstr )
+#ifdef _DEBUG
+        std::wstring wstr ;
+        if( GetPDHerrorCodeString(m_pdh_status, wstr) )
+          DEBUGN("PdhGetFormattedCounterValue failed: " << (DWORD) m_pdh_status
+            << wstr )
+#endif
       }
     }
     else
@@ -602,8 +608,8 @@ float PDH_CPUcoreUsageGetter::
 
 void PDH_CPUcoreUsageGetter::SetNumberOfCPUcores( WORD wNumLogicalCPUcores )
 {
-  DEBUGN("PDH_CPUcoreUsageGetter::SetNumberOfCPUcores(" 
-    << wNumLogicalCPUcores << ")" )
+  DEBUGN(//"PDH_CPUcoreUsageGetter::SetNumberOfCPUcores(" <<
+    wNumLogicalCPUcores << ")" )
   m_wNumLogicalCPUcores = wNumLogicalCPUcores ;
   m_ar_pdh_cpu_core_usage_getter_per_core_atts = new 
     PDH_CPUcoreUsageGetterPerCoreAtts[ wNumLogicalCPUcores ] ;

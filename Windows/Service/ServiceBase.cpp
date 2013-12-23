@@ -124,7 +124,7 @@ void ServiceBase::GetErrorDescriptionFromStartServiceCtrlDispatcherErrCode(
       "Typically, this error indicates that the program is being run as a "
       "console application rather than as a service. "
       "If the program will be run as a console application for debugging "
-      "purposes, structure it such that service-specific code is not called "
+      "purposes, structure it so that service-specific code is not called "
       "when this error is returned." ;
     break;
   case ERROR_INVALID_DATA:

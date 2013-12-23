@@ -78,8 +78,8 @@ public:
   wxBitmap * m_p_wxbitmapToDrawOn;
 
   wxIconDrawer(
-    WORD wWidth = 16,
-    WORD wHeight = 16,
+    int nWidth = 16,
+    int nHeight = 16,
     int nColorDepth = //1
     //wxBITMAP_SCREEN_DEPTH
     //http://docs.wxwidgets.org/trunk/interface_2wx_2bitmap_8h.html#92f17e2abdf285ce14f0ef47997fdb06 :
@@ -89,14 +89,16 @@ public:
     :
     m_bOk(false),
     m_wxbitmap(
-      wWidth //int width
-      , wHeight //int height
+      nWidth //int width
+      , nHeight //int height
       , //1//int depth = -1
+      /** http://docs.wxwidgets.org/2.8/wx_wxbitmap.html#wxbitmapctor
+      * "A depth of -1 indicates the depth of the current screen or visual." */
       nColorDepth
       )//,
 //    m_wxbitmapMask(
-//      wWidth //int width
-//      , wHeight //int height
+//      nWidth //int width
+//      , nHeight //int height
 //      , 1//int depth = -1
 //      //nColorDepth
 //      )
@@ -104,9 +106,11 @@ public:
     //m_wxmask(m_wxbitmap)
   {
     m_p_wxbitmapToDrawOn = new wxBitmap(
-      wWidth //int width
-      , wHeight //int height
+      nWidth //int width
+      , nHeight //int height
       , //1//int depth = -1
+      /** http://docs.wxwidgets.org/2.8/wx_wxbitmap.html#wxbitmapctor
+      * "A depth of -1 indicates the depth of the current screen or visual." */
       nColorDepth
       );
     //http://docs.wxwidgets.org/stable/wx_wxmemorydc.html#wxmemorydc:
@@ -114,16 +118,28 @@ public:
     //successful in creating a usable device context."
     if( m_p_wxbitmapToDrawOn && m_wxmemorydc.IsOk() )
     {
-      WORD wNumberOfBits = wWidth * wHeight / 8;
-      m_ar_chBits = new char[wNumberOfBits];
+      //TODO mask pixels seem to be too less: there is graphic snow at the
+      //bottom of the items
+      const int numPixels = nWidth * nHeight;
+      const int numberOfBytes = numPixels / 8 + (numPixels % 8 == 0 ? 0 : 1);
+      m_ar_chBits = new char[numberOfBytes];
       if( m_ar_chBits)
       {
-        while( wNumberOfBits --)
-          m_ar_chBits[wNumberOfBits] = //255;
-           //"0" means: can be drawn onto.
-           0;
-        m_p_wxbitmapMask = new wxBitmap(m_ar_chBits,wWidth,wHeight);
-        LOGN("wxIconDrawer()--m_p_wxbitmapMask:" << m_p_wxbitmapMask)
+//        while( numberOfBytes --)
+//          m_ar_chBits[numberOfBytes] = //255;
+//           //"0" means: can be drawn onto.
+//           0;
+        memset(m_ar_chBits,
+          //"0" means: can be drawn onto.
+          0
+          ,numberOfBytes);
+        /** http://docs.wxwidgets.org/2.8/wx_wxmask.html#wxmask :
+         * "the masked area is black and the unmasked area is white.
+         * When associated with a bitmap and drawn in a device context,
+         * the unmasked area of the bitmap will be drawn, and
+         * the masked area will not be drawn."*/
+        m_p_wxbitmapMask = new wxBitmap(m_ar_chBits, nWidth, nHeight);
+        LOGN(/*"wxIconDrawer()--"*/ "m_p_wxbitmapMask:" << m_p_wxbitmapMask)
         if( m_p_wxbitmapMask)
         {
 //          m_wxbitmapMask.Create(m_ar_chBits,)
@@ -156,9 +172,9 @@ public:
 
   ~wxIconDrawer()
   {
-    LOGN("~wxIconDrawer (address:" << this << ") begin")
+    LOGN(/*"~wxIconDrawer"*/ "(address:" << this << ") begin")
     ReleaseRessources();
-    LOGN("~wxIconDrawer end")
+    LOGN(/*"~wxIconDrawer"*/ "end")
   }
 
   bool Create(

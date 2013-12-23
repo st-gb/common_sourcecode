@@ -23,7 +23,7 @@ namespace CSS
         //        "%day%.%month%.%year% %hour%:%minute%:%second%,%millisecond%";
         //see http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/helpers/ISO8601DateFormat.html:
         // "yyyy-MM-dd HH:mm:ss,SSS" for example "1999-11-27 15:49:37,459".
-        "%year%-%month%-%day% %hour%:%minute%:%second%,%millisecond%");
+        "{year}-{month}-{day} {hour}:{minute}:{second},{millisecond}");
     }
 
     Log4jFormatter::~Log4jFormatter()

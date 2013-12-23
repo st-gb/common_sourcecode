@@ -311,6 +311,7 @@
 #endif //COMPILE_LOGGER_WITH_TSTRING_SUPPORT
     bool OpenFileA(
       std::string & r_std_strFilePath,
+      const char * const format = "log4j",
       unsigned numEntries = 500,
       LogLevel::MessageType lvl = LogLevel::info);
 //    void SetCurrentThreadName(const char * const name)

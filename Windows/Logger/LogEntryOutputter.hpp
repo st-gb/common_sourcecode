@@ -74,6 +74,7 @@ namespace Windows_API
 //    bool OpenFile2( const std::string & c_r_stdstrFilePath );
     bool OpenFlushingFile(const std::string & c_r_stdstrFilePath);
     int RenameFileThreadUnsafe(const std::string & r_stdstrFilePath);
+    void TruncateOutputSizeToZero();
     unsigned DoOutput();
   };
 

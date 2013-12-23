@@ -61,4 +61,22 @@ bool ConvertStdStringToTypename(
   return bGood;
 }
 
+/** @brief Convert std::string to e.g. a float value:
+* float fValue ; std::string stdstr = "8.0";
+* ConvertStdStringToTypename<float>(fValue , stdstr ) ; */
+template <typename typenameConvertFromString>
+/** @return true: succeeded. */
+bool ConvertStdStringToTypename(
+   typenameConvertFromString & r_typename_convert_from_string,
+   const char * const c_str
+   //,std::ios_base& (*f)(std::ios_base&)
+  )
+{
+  bool bGood = false;
+  if(c_str )
+    bGood = ConvertStdStringToTypename(r_typename_convert_from_string,
+      std::string(c_str) );
+  return bGood;
+}
+
 #endif /* CONVERTSTDSTRINGTOTYPENAME_HPP_ */

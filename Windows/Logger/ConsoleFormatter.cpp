@@ -28,6 +28,8 @@
 ////      throw std::exception();
 //  }
 
+namespace Windows
+{
   ConsoleFormatter::~ConsoleFormatter()
   {
     if( m_hStdout != INVALID_HANDLE_VALUE )
@@ -64,3 +66,4 @@
 ////    _cprintf("%s", c_r_std_strMessage.c_str() );
 //  }
 //} /* namespace Logger */
+}

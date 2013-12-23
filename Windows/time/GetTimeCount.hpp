@@ -5,7 +5,7 @@
 #include <preprocessor_macros/logging_preprocessor_macros.h>
 #include <iomanip> //std::setprecision(...)
 
-namespace Windows
+namespace Windows_API
 {
   inline bool GetTimeCountInSeconds(//LARGE_INTEGER *lpPerformanceCount
     long double & TimeCountInSeconds )

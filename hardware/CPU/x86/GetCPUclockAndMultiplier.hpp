@@ -126,8 +126,11 @@ namespace CPU
       secondsPassed = (double)(timerStepsPassed.QuadPart)
         // / (double)(lPerfCounterStepsPerSecond.QuadPart);
         * secondsPerTimerTick;
-      //Get multiplier and voltage no matter if the reference clock will
-      // be calculated. Else these values might _never_ be updated in GUI.
+      /* Get multiplier and voltage no matter if the reference clock will
+      * be calculated. Else these values might _never_ be updated in GUI.
+      *
+      * function declaration should be (needs to be declared before this function):
+      * "(inline) float GetVoltageAndMultiplier(DWORD affMask, float & r_fVoltageInVolt)" */
       multiplier = GetVoltageAndMultiplier(affMask, r_fVoltageInVolt);
       if( secondsPassed < MIN_TIME_SPAN_IN_S )
       {
@@ -243,6 +246,7 @@ namespace CPU
       , waitTimeInSeconds //float & waitTimeInSeconds,
       , r_fVoltageInVolt //float & r_fVoltageInVolt
       );
+    DEBUGN("ref.clock= CPUclock(" << CPUclock << ") / multi(" << r_fMultiplier << ")")
     r_fReferenceClockInMHz = CPUclock / r_fMultiplier;
   }
 

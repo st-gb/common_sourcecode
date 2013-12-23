@@ -11,9 +11,8 @@ namespace Apache_Xerces
 {
 
   DocumentLocationSAX2Handler::DocumentLocationSAX2Handler()
+    : m_c_p_c_locator(NULL)
   {
-    // TODO Auto-generated constructor stub
-
   }
 
   DocumentLocationSAX2Handler::~DocumentLocationSAX2Handler()

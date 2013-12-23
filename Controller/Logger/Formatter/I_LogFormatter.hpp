@@ -125,6 +125,7 @@ public:
     );
   void SetStdOstream(std::ostream * p_std_ostream)
     { m_p_std_ostream = p_std_ostream; }
+  void SetDefaultTimeFormat();
   void SetTimeFormat(const std::string & TimeFormatString);
   /** Must be virtual for polymorphism
    * @brief write HTML header (opening tags) for instance. */

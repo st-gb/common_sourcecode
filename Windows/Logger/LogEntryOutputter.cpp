@@ -181,6 +181,12 @@ namespace Windows_API
     return retVal;
   }
 
+  //TODO implement
+  void LogEntryOutputter::TruncateOutputSizeToZero()
+  {
+
+  }
+
   /** 0=success */
   unsigned LogEntryOutputter::Close()
   {

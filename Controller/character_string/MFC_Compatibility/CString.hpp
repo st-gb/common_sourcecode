@@ -16,6 +16,8 @@
 #include <Controller/character_string/stdtstr.hpp> //GetStdString_Inline(...)
 #include <preprocessor_macros/string_typedefs.h> //LPCTSTR
 #include <string.h>
+#include <stdio.h> // vsprintf (from _vstprintf)
+#include <cstdarg> //va_start, va_arg, va_list
 
 #ifdef _WIN32
   #define COMPARE_STRING_CASE_INSENSITIVE _wcsicmp
@@ -26,14 +28,16 @@
 
 namespace MFC_Compatibility
 {
+//  typedef CString_char_type char;
 //  class CString ;
 //  std::string::operator CString() const ;
   //  typedef CStdStr CString ;
   class CString
 //    : public std::string
     //"TCHAR": "wchar_t" (16 bit) if "UNICODE", else "char" (8 bit)
-    : public std::basic_string<TCHAR>
+    : public std::basic_string<TCHAR /*CString_char_type*/>
   {
+//    typedef char_type CString_char_type;
   public:
     //Implementing an empty constructor is needed because there is also a
     //parameterized c'tor.
@@ -154,6 +158,49 @@ namespace MFC_Compatibility
     {
       return find(ch, nStart) ;
     }
+    void Format( LPCTSTR lpszFormat, ...)
+    {
+    	//TODO should be calculated!: examine needed string lenghts for
+    	//all variadic arguments!
+    	//see http://en.wikipedia.org/wiki/Variadic_function
+    	//http://en.cppreference.com/w/cpp/utility/variadic
+    	va_list args;
+    	va_start(args, lpszFormat);
+    	LPCTSTR currentChar = lpszFormat;
+    	bool percent = false;
+
+    	unsigned outputFormatStringLen = 0;
+    	while( *currentChar != '\0' )
+    	{
+    		if( * currentChar == '%' )
+    			percent = true;
+    		else
+    		{
+    			if( percent )
+    			{
+    				switch( * currentChar )
+    				{
+    				case 's':
+    					char * p_ch = va_arg(args, char *);
+    					outputFormatStringLen += strlen( p_ch);
+    					break;
+    				}
+    			}
+    			percent = false;
+    		}
+
+    		va_arg(args, int);
+    		++ currentChar;
+    	}
+    	va_end(args);
+    	outputFormatStringLen ++;
+    	TCHAR arch[200 /*outputFormatStringLen*/];
+//    	sprintf(lpszFormat, va_list);
+    	//http://stackoverflow.com/questions/695982/passing-an-ellipsis-to-another-variadic-function
+    	va_start(args, lpszFormat);
+//    	vsprintf
+    	_vstprintf(arch, lpszFormat, args);
+    }
     //see http://msdn.microsoft.com/en-us/library/aa314338%28VS.60%29.aspx:
 //    char GetAt(int pos) const
     TCHAR GetAt(//int pos
@@ -264,7 +311,67 @@ namespace MFC_Compatibility
       size_type length = //length() ;
         size() ;
       return //(const CString &)
-        static_cast<CString> ( substr(length - wNumChars,wNumChars) ) ;
+        static_cast<CString> ( substr(length - wNumChars, wNumChars) ) ;
+    }
+    /** http://msdn.microsoft.com/en-us/library/aa300662%28v=vs.60%29.aspx:
+       "TrimLeft removes newline, space, and tab characters." */
+    void TrimLeft( )
+    {
+    	TCHAR * p_tch = (TCHAR *) c_str();
+    	TCHAR * p_tchBeginOfNewString = _T('\0');
+    	while( * p_tch != _T('\0') )
+    	{
+    		switch( * p_tch )
+    		{
+    		case _T('\n') :
+    		case _T(' ') :
+    		case _T('\t') :
+    	      p_tchBeginOfNewString = p_tch + 1;
+    		  ++ p_tch;
+    		break;
+    		default :
+      		  * p_tch = _T('\0');
+        	  break;
+    		}
+    	}
+    	if( p_tchBeginOfNewString )
+    	{
+//    		p_tchBeginOfNewString,
+    		//data =
+    		this->assign(p_tchBeginOfNewString);
+    	}
+    }
+    /** http://msdn.microsoft.com/en-us/library/aa300662%28v=vs.60%29.aspx:
+     "TrimRight removes trailing newline, space, and tab characters from the string." */
+    void TrimRight( )
+    {
+//    	iterator = this->end()
+    	TCHAR * p_tch = (TCHAR *) c_str() + length() - 1;
+    	const TCHAR * p_tchBeginOfString = c_str();
+    	const TCHAR * p_tchNewEndOfString = _T('\0');
+    	while( p_tch != p_tchBeginOfString )
+    	{
+    		switch( * p_tch )
+    		{
+    		case _T('\n') :
+    		case _T(' ') :
+    		case _T('\t') :
+			  p_tchNewEndOfString = p_tch ;
+    		  -- p_tch;
+    		break;
+    		default :
+    		  /** Force "while" loop to terminate. */
+      		  p_tch = (TCHAR *) p_tchBeginOfString;
+        	  break;
+    		}
+    	}
+    	if( p_tchNewEndOfString )
+    	{
+//    		p_tchBeginOfNewString,
+    		//data =
+    		this->assign(p_tchBeginOfString,
+				p_tchNewEndOfString - p_tchBeginOfString - 1);
+    	}
     }
 //    CString Tokenize( char * p_ch, int & r_nCurrentPos) const
     CString Tokenize( TCHAR * p_tch, int & r_nCurrentPos

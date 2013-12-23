@@ -14,7 +14,13 @@
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 //#include "Appender/AppendingFileOutput.hpp"
 #include "Formatter/Log4jFormatter.hpp"
-#include "OutputHandler/StdOfStreamLogWriter.hpp"
+#ifdef _WIN32
+  #include <Windows/Logger/LogEntryOutputter.hpp>
+  typedef Windows_API::LogEntryOutputter LogEntryOutputter_type;
+#else
+  #include "OutputHandler/StdOfStreamLogWriter.hpp"
+  typedef StdOfStreamLogWriter LogEntryOutputter_type;
+#endif
 #include "Appender/RollingFileOutput.hpp"
 
 using namespace CSS::LogFormatter;
@@ -148,25 +154,27 @@ DWORD Logger::Log(//ostream & ostr
  *  -log level: info*/
 bool Logger::OpenFileA( //std::string & r_stdstrFilePath
   std::string & r_std_strLogFilePath,
+  const char * const format /*="log4j"*/,
   unsigned maxNumLogEntries /*=500*/,
   LogLevel::MessageType lvl /*=LogLevel::info*/ )
 {
   bool bSuccess = false;
 //  Log4jFormatter formatter = new Log4jFormatter(*this);
-  StdOfStreamLogWriter * outputhandler = new StdOfStreamLogWriter();
+//  StdOfStreamLogWriter * outputhandler = new StdOfStreamLogWriter();
+  LogEntryOutputter_type * outputhandler = new LogEntryOutputter_type();
 //  AppendingFileOutput * logEntryHandler = new AppendingFileOutput(
   RollingFileOutput * logEntryHandler = new RollingFileOutput(
     * this, //Logger & logger 
     r_std_strLogFilePath,
     outputhandler , //I_LogEntryOutputter * p_outputhandler,
     //NULL, //I_LogFormatter * p_log_formatter,
-    "txt",
+    /*"txt"*/ format,
     maxNumLogEntries,
     lvl //enum LogLevel::MessageType logLevel
     );
 //  I_LogFormatter * p_logformatter = logfileappender->CreateFormatter("txt");
 //  logEntryHandler->Open();
-  logEntryHandler->Open(r_std_strLogFilePath);
+  bSuccess = logEntryHandler->Open(r_std_strLogFilePath);
 //  if(p_logformatter) p_logformatter->/*WriteHeader()*/Init();
   AddFormattedLogEntryProcessor( logEntryHandler);
 

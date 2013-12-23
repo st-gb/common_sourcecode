@@ -49,14 +49,19 @@ namespace Apache_Xerces
       std::wstring & r_std_wstrDocumentIDandLocation
       )
     {
-      r_std_wstrDocumentIDandLocation =
-        L"\nIt is referenced in document\n"
-//        + Xerces::ToStdString( m_c_p_c_locator->getSystemId() )
-        + //Xerces::ConvertXercesStringToStdWstring( m_c_p_c_locator->getSystemId() )
-        GET_WCHAR_STRING_FROM_XERCES_STRING( m_c_p_c_locator->getSystemId() )
-        + L"\nin line:" + GetStdWstring( GetLineNumber() )
-        + L", column:" + GetStdWstring( GetColumnNumber() )
-        ;
+      /** Is NULL/ never assigned in "setDocumentLocator(...)" if the file
+       *   does not exist?! */
+      if( m_c_p_c_locator )
+      {
+        r_std_wstrDocumentIDandLocation =
+          L"\nIt is referenced in document\n"
+  //        + Xerces::ToStdString( m_c_p_c_locator->getSystemId() )
+          + //Xerces::ConvertXercesStringToStdWstring( m_c_p_c_locator->getSystemId() )
+          GET_WCHAR_STRING_FROM_XERCES_STRING( m_c_p_c_locator->getSystemId() )
+          + L"\nin line:" + GetStdWstring( GetLineNumber() )
+          + L", column:" + GetStdWstring( GetColumnNumber() )
+          ;
+      }
     }
     void setDocumentLocator(
       const XERCES_CPP_NAMESPACE::Locator * const cpc_locator )

@@ -11,7 +11,31 @@
   #define PZZWSTR wchar_t * //needed for pdh.h
 #endif //#ifndef _MSC_VER
 //#define UNICODE
-#include <Pdh.h> //HCOUNTER, HQUERY
+//#include <Pdh.h> //HCOUNTER, HQUERY
+
+/** From sourceforge.net/apps/trac/mingw-w64/browser/experimental/headers_additions_test/include/pdh.h?rev=5328, begin */
+typedef HANDLE PDH_HCOUNTER;
+typedef HANDLE PDH_HQUERY;
+
+typedef PDH_HCOUNTER HCOUNTER;
+typedef PDH_HQUERY HQUERY;
+
+#define PDH_FUNCTION PDH_STATUS WINAPI
+typedef LONG PDH_STATUS;
+//typedef PDH_STATUS (WINAPI *CounterPathCallBack)(DWORD_PTR);
+typedef struct _PDH_FMT_COUNTERVALUE {
+  DWORD CStatus;
+  /*__C89_NAMELESS*/ union {
+    LONG longValue;
+    double doubleValue;
+    LONGLONG largeValue;
+    LPCSTR AnsiStringValue;
+    LPCWSTR WideStringValue;
+  };
+} PDH_FMT_COUNTERVALUE,*PPDH_FMT_COUNTERVALUE;
+#define PDH_FMT_DOUBLE ((DWORD) 0x00000200)
+/** From sourceforge.net/apps/trac/mingw-w64/browser/experimental/headers_additions_test/include/pdh.h?rev=5328, END */
+
 //#include <global.h> //for DEBUGN(...)
 
 #ifndef _MSC_VER //because .lib files (->load-time dyn linking)

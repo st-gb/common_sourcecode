@@ -34,6 +34,7 @@ public:
     m_stringArray = stringArray;
     fullProgramPath = stringArray[FullProgramPathArgIndex];
   }
+  /** @return UINT_MAX for inequality */
   unsigned contains(charType * compareString)
   {
     charType * string;
@@ -41,18 +42,20 @@ public:
     for(unsigned stringIndex = 0; stringIndex < m_argumentCount; ++ stringIndex)
     {
       string = m_stringArray[stringIndex];
+//      if( _tcscmp( ) == 0
       charIndex = 0;
       while( string[charIndex] != 0 && string[charIndex] ==
           compareString[charIndex] )
       {
         ++ charIndex;
       }
-      if( charIndex > 0)
-      {
-        -- charIndex;
+//      if( charIndex > 0)
+//      {
+//        -- charIndex;
+        //If last characters are equal
         if( string[charIndex] == compareString[charIndex] )
           return stringIndex;
-      }
+//      }
     }
     return UINT_MAX;
   }

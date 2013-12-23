@@ -267,16 +267,22 @@ void I_LogFormatter::Init(std::ostream /*&*/ * p_std_ostream /*= NULL*/,
     //The std::ostream must be set every time the formatter changes.
     SetStdOstream( p_std_ostream );
   WriteHeader();
-  if( ! p_std_strLogTimeFormatString)
-  {
+//  if( ! p_std_strLogTimeFormatString)
+//  {
+//  }
+}
+
+void I_LogFormatter::SetDefaultTimeFormat()
+{
+  const std::string * p_std_strLogTimeFormatString = NULL;
 #ifdef _WIN32
-    p_std_strLogTimeFormatString = & s_std_strDefaultWindowsLogTimeFormatString;
+  p_std_strLogTimeFormatString = & s_std_strDefaultWindowsLogTimeFormatString;
 #endif
 #ifdef __linux__
-    p_std_strLogTimeFormatString = & s_std_strDefaultLinuxLogTimeFormatString;
+  p_std_strLogTimeFormatString = & s_std_strDefaultLinuxLogTimeFormatString;
 #endif
-  }
-  SetTimeFormat( * p_std_strLogTimeFormatString);
+  if( p_std_strLogTimeFormatString)
+    SetTimeFormat( * p_std_strLogTimeFormatString);
 }
 
 /** Create array for formatting the time string into.

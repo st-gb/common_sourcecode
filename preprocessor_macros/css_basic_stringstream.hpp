@@ -20,6 +20,7 @@
 #include <sstream> //class std::basic_stringstream
 #include "logging_preprocessor_macros_definitions.h" //
 #include <Controller/character_string/getUTF8string.hpp> //getUTF8string(...)
+#include <fastest_data_type.h> //fastestUnsignedDataType
 
 namespace css
 {
@@ -97,9 +98,10 @@ namespace css
       //return _M_insert<std::string>(r_std_str);
       //return
 
-      for(short w = 0; p_ch[w] != '\0'; ++ w)
+      for(fastestUnsignedDataType charIndex = 0; p_ch[charIndex] != '\0'; ++ charIndex)
       {
-        put( (char_type) p_ch[w] );
+        /** For GCC4.8.1 TDM must use "this->put", else compiler error.*/
+        this->put( (char_type) p_ch[charIndex] );
       }
       /** @see ostream.tcc */
       return *this;
@@ -165,7 +167,8 @@ namespace css
       for(std::string::size_type characterIndex = 0; characterIndex <
         r_std_str.length() ; ++ characterIndex)
       {
-        put( (char_type) r_std_str.at(characterIndex) );
+        /** For GCC4.8.1 TDM must use "this->put", else compiler error.*/
+        this->put( (char_type) r_std_str.at(characterIndex) );
       }
       /**@see ostream.tcc */
       return *this;

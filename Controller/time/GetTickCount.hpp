@@ -15,20 +15,35 @@
 
 #ifdef __linux__
   #include <Linux/time/GetTickCount.hpp>
+  #ifndef OPERATING_SYSTEM_NAME
+    #define OPERATING_SYSTEM_NAME Linux
+  #endif
 #endif
 #ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
   #include <Windows/time/GetTimeCount.hpp>
+  #ifndef OPERATING_SYSTEM_NAME
+    #define OPERATING_SYSTEM_NAME Windows
+  #endif
+  /** from http://www.cprogramming.com/tutorial/namespaces.html */
+//  namespace OperatingSystem = Windows;
 #endif
+
 namespace OperatingSystem
 {
 #ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
-  //TODO: all code into #include <Windows/time/GetTimeCount.hpp>
-  inline DWORD GetTimeCountInMilliSeconds(){
-    return Windows::GetTimeCountInMilliSeconds(); }
+//  //TODO: all code into #include <Windows/time/GetTimeCount.hpp>
+//  using namespace Windows;
+  /*inline*/ DWORD GetTimeCountInMilliSeconds(){
+    return Windows_API::GetTimeCountInMilliSeconds(); }
   inline bool GetTimeCountInSeconds(//LARGE_INTEGER *lpPerformanceCount
     long double & TimeCountInSeconds )
   {
-    return Windows::GetTimeCountInSeconds(TimeCountInSeconds);
+    return Windows_API::GetTimeCountInSeconds(TimeCountInSeconds);
+  }
+  inline bool GetTimeCountInNanoSeconds(//LARGE_INTEGER *lpPerformanceCount
+    long double & TimeCountInNanoSeconds  )
+  {
+    return Windows_API::GetTimeCountInNanoSeconds(TimeCountInNanoSeconds);
   }
 #else
     inline DWORD GetTimeCountInMilliSeconds(){

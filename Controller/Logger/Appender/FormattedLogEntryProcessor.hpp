@@ -239,6 +239,14 @@ public:
   {
     m_logLevel = LogLevel::GetAsNumber(c_r_std_strLogLevel);
   }
+  /** For outputting to a std::ostream or derived class
+  * see http://www.cplusplus.com/forum/general/20792/
+  * see http://www.learncpp.com/cpp-tutorial/93-overloading-the-io-operators/:
+  */
+  friend std::ostream & operator << (std::ostream & std_ostream,
+    const FormattedLogEntryProcessor &
+    ) //const
+    ;
 };
 
 #endif /* FORMATTEDLOGENTRYPROCESSOR_HPP_ */

@@ -171,3 +171,14 @@ void FormattedLogEntryProcessor::SetFormatter(I_LogFormatter * p_logformatter)
     m_p_log_formatter->Init(m_p_outputhandler->GetStdOstream() );
 
 }
+
+std::ostream & //VoltageAndFreq::
+  operator << (std::ostream & std_ostream
+  ,const FormattedLogEntryProcessor & formattedLogEntryProcessor
+  ) //const
+{
+//    std::ostream std_ostream;
+  std_ostream << "log level" << formattedLogEntryProcessor.m_logLevel <<
+    "; file path:" << formattedLogEntryProcessor.m_filePath << ";";
+  return std_ostream;
+}
