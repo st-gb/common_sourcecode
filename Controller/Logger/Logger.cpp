@@ -14,7 +14,7 @@
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 //#include "Appender/AppendingFileOutput.hpp"
 #include "Formatter/Log4jFormatter.hpp"
-#ifdef _WIN32
+#ifdef _WIN32_
   #include <Windows/Logger/LogEntryOutputter.hpp>
   typedef Windows_API::LogEntryOutputter LogEntryOutputter_type;
 #else

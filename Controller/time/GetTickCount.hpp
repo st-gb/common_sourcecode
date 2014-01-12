@@ -33,7 +33,9 @@ namespace OperatingSystem
 #ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
 //  //TODO: all code into #include <Windows/time/GetTimeCount.hpp>
 //  using namespace Windows;
-  /*inline*/ DWORD GetTimeCountInMilliSeconds(){
+  /** Use "inline" for all functions to avoid "multiple definitions" linker  
+      error when this file is _expanded_ multiple times in source code.*/
+  inline DWORD GetTimeCountInMilliSeconds(){
     return Windows_API::GetTimeCountInMilliSeconds(); }
   inline bool GetTimeCountInSeconds(//LARGE_INTEGER *lpPerformanceCount
     long double & TimeCountInSeconds )

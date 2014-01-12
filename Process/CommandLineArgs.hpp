@@ -34,8 +34,10 @@ public:
     m_stringArray = stringArray;
     fullProgramPath = stringArray[FullProgramPathArgIndex];
   }
+
+  //TODO rename method to sth like "GetStringArrayIndex() "
   /** @return UINT_MAX for inequality */
-  unsigned contains(charType * compareString)
+  unsigned contains(charType * compareString) const
   {
     charType * string;
     unsigned charIndex;
