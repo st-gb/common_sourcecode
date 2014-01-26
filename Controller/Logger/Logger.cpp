@@ -21,6 +21,8 @@
   #include "OutputHandler/StdOfStreamLogWriter.hpp"
   typedef StdOfStreamLogWriter LogEntryOutputter_type;
 #endif
+#include <Controller/Logger/OutputHandler/StdCoutLogWriter.hpp> //class StdCoutLogWriter
+#include <Controller/Logger/Appender/RollingFileOutput.hpp>
 #include "Appender/RollingFileOutput.hpp"
 
 using namespace CSS::LogFormatter;
@@ -79,6 +81,34 @@ void Logger::AddExcludeFromLogging(
   ExcludeFunctionFromLogging(cr_stdstr);
 }
 #endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
+
+#ifndef __ANDROID__
+void Logger::AddConsoleLogEntryWriter()
+{
+  std::string std_strDummyLogFilePath = "dummy.txt";
+  /*Logger::*/StdCoutLogWriter * std_cout_logentryoutputter = new
+    /*Logger::*/StdCoutLogWriter();
+  //    I_LogFormatter logformatter = new I_LogFormatter::CreateFormatter();
+  RollingFileOutput * consoleappender = new RollingFileOutput(
+    g_logger,
+    std_strDummyLogFilePath,
+    std_cout_logentryoutputter,
+    "txt",
+  //      consoleformatter,
+    100,
+    //Use minimum log level "success" to also output coloured success messages.
+    LogLevel::success/*warning*/
+  //      LogLevel::GetAsNumber(m_model.m_logfileattributes.m_std_strLevel)
+    );
+  //    logfileappender->CreateFormatter("txt"/*, std_strLogTimeFormatString*/ );
+//  StdCoutLogWriter * p_StdCoutLogWriter = new StdCoutLogWriter(
+//    consoleappender);
+  consoleappender->Open(std_strDummyLogFilePath);
+  consoleappender->GetFormatter()->SetDefaultTimeFormat();
+//  consoleappender->SetFormatter(p_StdCoutLogWriter);
+  g_logger.AddFormattedLogEntryProcessor( consoleappender);
+}
+#endif
 
 /** Do not call this method thread-unsafe -> enter a critical section before
  * calling it */

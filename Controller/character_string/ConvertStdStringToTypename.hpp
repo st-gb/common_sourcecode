@@ -61,6 +61,14 @@ bool ConvertStdStringToTypename(
   return bGood;
 }
 
+namespace NS_ConvertStdStringToTypename
+{
+  enum ConvertStdStringToTypename
+  {
+    failed = 0,
+    succeeded
+  };
+}
 /** @brief Convert std::string to e.g. a float value:
 * float fValue ; std::string stdstr = "8.0";
 * ConvertStdStringToTypename<float>(fValue , stdstr ) ; */

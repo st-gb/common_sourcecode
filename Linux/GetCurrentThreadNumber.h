@@ -7,6 +7,8 @@
 /** from http://stackoverflow.com/questions/6374523/how-to-detect-compilation-by-android-ndk-in-a-c-c-file */
 #ifdef __ANDROID__
 	#define LINUX_GET_CURRENT_THREAD_NUMBER_DUMMY_IMPLEMENTATION
+	//from https://groups.google.com/forum/#!topic/android-ndk/808Ti2v1I0s
+	#include <unistd.h>
 #endif
 #if !defined(LINUX_GET_CURRENT_THREAD_NUMBER_DUMMY_IMPLEMENTATION)
 	#include <sys/types.h> //gettid();
@@ -19,7 +21,9 @@ namespace Linux
   inline //DWORD 
     unsigned GetCurrentThreadNumber() { return //::pthread_self(); 
 #ifdef LINUX_GET_CURRENT_THREAD_NUMBER_DUMMY_IMPLEMENTATION
-	  0; /** "SYS_gettid" not defined in Android NDK */
+	/** "SYS_gettid" not defined in Android NDK */
+	  //0;
+    pthread_self();
 #else
 	  /** http://linux.die.net/man/2/syscall */
 	  ::syscall(SYS_gettid);

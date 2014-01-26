@@ -13,7 +13,10 @@
 #ifndef GETTICKCOUNT_HPP_
 #define GETTICKCOUNT_HPP_
 
-#ifdef __linux__
+#include <stdint.h> //uint64_t
+typedef uint64_t TimeCountInNanosec_type;
+
+#if defined (__linux__) || defined(__ANDROID__)
   #include <Linux/time/GetTickCount.hpp>
   #ifndef OPERATING_SYSTEM_NAME
     #define OPERATING_SYSTEM_NAME Linux
@@ -43,11 +46,16 @@ namespace OperatingSystem
     return Windows_API::GetTimeCountInSeconds(TimeCountInSeconds);
   }
   inline bool GetTimeCountInNanoSeconds(//LARGE_INTEGER *lpPerformanceCount
-    long double & TimeCountInNanoSeconds  )
+    TimeCountInNanosec_type & TimeCountInNanoSeconds  )
   {
     return Windows_API::GetTimeCountInNanoSeconds(TimeCountInNanoSeconds);
   }
 #else
+  inline bool GetTimeCountInNanoSeconds(//LARGE_INTEGER *lpPerformanceCount
+    TimeCountInNanosec_type & TimeCountInNanoSeconds  )
+  {
+	return Linux::GetTimeCountInNanoSeconds(TimeCountInNanoSeconds);
+  }
     inline DWORD GetTimeCountInMilliSeconds(){
       return Linux::GetTimeCountInMilliSeconds(); }
     inline bool GetTimeCountInSeconds(long double & TimeCountInSeconds)

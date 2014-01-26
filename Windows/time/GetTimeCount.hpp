@@ -74,15 +74,16 @@ namespace Windows_API
 
   /** get time in 10^(-9) seconds */
   inline bool GetTimeCountInNanoSeconds(//LARGE_INTEGER *lpPerformanceCount
-    long double & TimeCountInNanoSeconds )
+    /*long double */ TimeCountInNanosec_type & TimeCountInNanoSeconds )
   {
-    bool b = GetTimeCountInSeconds(TimeCountInNanoSeconds);
+    long double TimeCountInSeconds;
+    bool b = GetTimeCountInSeconds(TimeCountInSeconds);
     if( b )
-      TimeCountInNanoSeconds *=
+      TimeCountInNanoSeconds = (TimeCountInNanosec_type) (TimeCountInSeconds *
         //to nanoseconds
         //http://en.wikipedia.org/wiki/Nanoseconds:
         //"A nanosecond (ns) is one billionth of a second (10−9 "
-        1000000000.0f;
+        1000000000.0f);
     return b;
   }
 }

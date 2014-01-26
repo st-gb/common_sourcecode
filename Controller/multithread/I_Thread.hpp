@@ -35,7 +35,7 @@ typedef DWORD ( //__stdcall is important for Windows' ::CreateThread()
 /** Base class for specific (Linux/ POSIX etc.) thread implementation */
 class I_Thread
 {
-  typedef nativeCriticalSection cs_type;
+  typedef nativeCriticalSection_type cs_type;
   static cs_type s_critical_section_type;
 protected:
   BYTE m_byThreadType ;

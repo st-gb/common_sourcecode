@@ -25,16 +25,17 @@ namespace ASCIIcodepage850
     szlig = 223 //"sz" (falls wieder anderer Zeichensatz)
   };
   /** @ brief Code page for West Europe
-   * values from de.wikipedia.org/wiki/Codepage_850 */
+   * values from de.wikipedia.org/wiki/Codepage_850
+   * / http://de.wikipedia.org/wiki/ISO_8859-1 */
   enum ASCIIcodepage850_chars
   {
-    ae = 228, //"ae" (falls wieder anderer Zeichensatz)
-    oe = 246, //"oe" (falls wieder anderer Zeichensatz)
-    ue = 252, //"ue" (falls wieder anderer Zeichensatz)
-    Ae = 196, //"Ae" (falls wieder anderer Zeichensatz)
-    Oe = 214, //"Oe" (falls wieder anderer Zeichensatz)
-    Ue = 220, //"Ue" (falls wieder anderer Zeichensatz)
-    sz = 223 //"sz" (falls wieder anderer Zeichensatz)
+    ae = 228, //0xE4 "ae" (falls wieder anderer Zeichensatz)
+    oe = 246, //0xF6 "oe" (falls wieder anderer Zeichensatz)
+    ue = 252, //0xFC "ue" (falls wieder anderer Zeichensatz)
+    Ae = 196, //0xC4 "Ae" (falls wieder anderer Zeichensatz)
+    Oe = 214, //0xD6 "Oe" (falls wieder anderer Zeichensatz)
+    Ue = 220, //0xDC "Ue" (falls wieder anderer Zeichensatz)
+    sz = 223 //0xDF "sz" (falls wieder anderer Zeichensatz)
   };
 }
 

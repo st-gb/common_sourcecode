@@ -10,14 +10,15 @@
 
 #include <errno.h> //for "errno"
 
-
-
-//Make the function inline (->no function overhead/ call stack->faster)
-//because it includes just 1 instruction->we would not save space in the exe
-//if it was a real function with a call stack.
-inline /*DWORD*/ unsigned long int GetLastErrorCode()
+namespace Linux
 {
-  return errno ;
+  /** Make the function inline (->no function overhead/ call stack->faster)
+  * because it includes just 1 instruction->we would not save space in the exe
+  * if it was a real function with a call stack. */
+  inline /*DWORD*/ unsigned long int GetLastErrorCode()
+  {
+    return errno ;
+  }
 }
 
 #endif /* GETLASTERRORCODE_HPP_ */

@@ -9,8 +9,8 @@
 #define NATIVECRITICALSECTIONTYPE_HPP_
 
 #ifdef _WIN32 //pre-defined macro, also for 64 bit Windows
-	#include <Windows/multithread/CriticalSection.hpp>
-	typedef OperatingSystem::Windows::CriticalSection nativeCriticalSection;
+  #include <Windows/multithread/CriticalSection.hpp>
+  typedef OperatingSystem::Windows::CriticalSection nativeCriticalSection_type;
 #endif
 
 #ifdef __linux__
@@ -19,7 +19,7 @@
 //  typedef wxCriticalSectionBasedI_CriticalSection CriticalSection_type;
 
   #include <Linux/multithread/pthread_Based_I_CriticalSection.hpp>
-  typedef pthread_Based_I_CriticalSection nativeCriticalSection;
+  typedef pthread_Based_I_CriticalSection nativeCriticalSection_type;
   typedef pthread_Based_I_CriticalSection CriticalSection_type;
 
 #endif

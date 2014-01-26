@@ -32,6 +32,10 @@ namespace OperatingSystem
         //critical section by using the InitializeCriticalSection"
         ::InitializeCriticalSection(& m_critical_section);
       }
+      ~CriticalSection()
+      {
+        ::DeleteCriticalSection(& m_critical_section);
+      }
       void Enter()
       {
         ::EnterCriticalSection(& m_critical_section);

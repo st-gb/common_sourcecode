@@ -146,6 +146,14 @@ public:
 //    static std::string std_strTime;
     GetTimeAsString(logfileentry//, std_strTime
       );
+#ifdef __ANDROID__
+    * m_p_std_ostream
+      << m_p_chTimeString
+      << prettyFunctionFormattedFunctionName << " "
+      << (* logfileentry.p_std_strMessage).c_str()
+//      << "\n"
+      ;
+#else
     * m_p_std_ostream
       << m_p_chTimeString
       << " thread ID:" << logfileentry.threadID << " "
@@ -153,16 +161,19 @@ public:
       << * logfileentry.p_std_strMessage
 //      << "\n"
       ;
+#endif
   }
 
   virtual void WriteMessage(const std::string & r_std_strMessage,
     enum MessageType messageType = LogLevel::info)
   {
-    * m_p_std_ostream << r_std_strMessage << "\n";
+    /** "c_str()" is needed for ANDROID compiler */
+    * m_p_std_ostream << r_std_strMessage.c_str() << "\n";
   }
   virtual void WriteTimeStamp(const std::stringstream & std_str_stream)
   {
-    * m_p_std_ostream << std_str_stream.str() << ":";
+	/** "c_str()" is needed for ANDROID compiler */
+    * m_p_std_ostream << std_str_stream.str().c_str() << ":";
   }
 };
 

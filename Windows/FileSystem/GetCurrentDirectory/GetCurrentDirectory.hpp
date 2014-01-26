@@ -12,7 +12,7 @@
 
 namespace Windows
 {
-  unsigned GetCurrentDirectory(std::tstring & r_std_tstrCurrentDirectory)
+  inline unsigned GetCurrentWorkingDir_Inl(std::tstring & r_std_tstrCurrentDirectory)
   {
     unsigned retVal = 1;
     DWORD dw =
@@ -48,6 +48,54 @@ namespace Windows
     if( lptstrCurrentDirectory )
       delete [] lptstrCurrentDirectory ;
     return retVal;
+  }
+
+  inline unsigned GetCurrentWorkingDirA_inl(std::string & r_std_strCurrentDirectory)
+  {
+    unsigned retVal = 1;
+    DWORD dw =
+    //http://msdn.microsoft.com/en-us/library/aa364934(VS.85).aspx:
+    //If the buffer that is pointed to by lpBuffer is not large
+    //enough, the return value specifies the required size of
+    //the buffer, in characters, including the null-terminating
+    //character.
+    ::GetCurrentDirectoryA(
+      //__in   DWORD nBufferLength,
+      0 ,
+      //__out  LPTSTR lpBuffer
+      NULL
+    );
+    LPSTR lpstrCurrentDirectory = new
+      CHAR[dw] ;
+    if(
+      //If the function succeeds, the return value specifies the
+      //number of characters that are written to the buffer, not
+      //including the terminating null character.
+      ::GetCurrentDirectoryA(
+        //The length of the buffer for the current directory string,
+        //in TCHARs. The buffer length must include room for a
+        //terminating null character.
+        dw
+        , lpstrCurrentDirectory
+        ) == (dw - 1)
+      )
+    {
+      r_std_strCurrentDirectory = std::string(lpstrCurrentDirectory);
+      retVal = 0;
+    }
+    if( lpstrCurrentDirectory )
+      delete [] lpstrCurrentDirectory ;
+    return retVal;
+  }
+
+  unsigned GetCurrentWorkingDir(std::tstring & r_std_tstrCurrentDirectory)
+  {
+    return GetCurrentWorkingDir_Inl(r_std_tstrCurrentDirectory);
+  }
+
+  unsigned GetCurrentWorkingDirA(std::string & r_std_strCurrentDirectory)
+  {
+    return GetCurrentWorkingDirA_inl(r_std_strCurrentDirectory);
   }
 }
 

@@ -212,6 +212,9 @@
       PossiblyLeaveCritSec();
       return 0;
     }
+#ifndef __ANDROID__
+    void AddConsoleLogEntryWriter();
+#endif //#ifndef __ANDROID__
     DWORD Log(//ostream & ostr
       const std::string & r_stdstrMessage,
       enum LogLevel::MessageType messageType =

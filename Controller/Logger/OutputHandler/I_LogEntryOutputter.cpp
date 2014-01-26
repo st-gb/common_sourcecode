@@ -7,7 +7,7 @@
 
 #include "I_LogEntryOutputter.hpp"
 #include <Controller/Logger/Logger.hpp> //class Logger
-extern Logger g_logger;
+//extern Logger g_logger;
 
 I_LogEntryOutputter::I_LogEntryOutputter()
   : m_p_std_ostream(NULL)

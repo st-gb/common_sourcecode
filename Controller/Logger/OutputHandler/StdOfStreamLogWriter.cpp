@@ -6,11 +6,12 @@
  */
 
 #include "StdOfStreamLogWriter.hpp"
-#ifdef _WIN32
-  #include <windows.h> //GetLastError()
-#else
+//#ifdef _WIN32
+//  #include <windows.h> //GetLastError()
+//#else
   #include <Controller/GetLastErrorCode.hpp>//OperatingSystem::GetLastErrorCode()
-#endif
+  #include <Controller/GetErrorMessageFromLastErrorCode.hpp>
+//#endif
 
 StdOfStreamLogWriter::StdOfStreamLogWriter()
 //C++ style initialisation.
@@ -116,14 +117,20 @@ inline bool StdOfStreamLogWriter::SetStdOstream(
 #ifdef _DEBUG
 //    bool bOfstreamIsGood = mp_ofstream->good() ;
 #endif
-  bool bFileIsOpen = m_p_std_ofstream->//good() ;
+  const bool bFileIsOpen = m_p_std_ofstream->//good() ;
     //TODO "is_open" returned true
     //if no entry in file system rights was defined for user this program ran
     //under in NTFS file system running on Windows. But no file was created.
     //
-    is_open();
-  if( bFileIsOpen)
+    is_open() && m_p_std_ofstream->good();
+  if( bFileIsOpen )
     m_p_std_ostream = m_p_std_ofstream;
+  else
+  {
+    throw OpeningLogFileException(
+      //TODO Windows returns "success" even if log file could not be opened
+      ::GetErrorMessageFromLastErrorCodeA().c_str() );
+  }
   return bFileIsOpen;
 }
 

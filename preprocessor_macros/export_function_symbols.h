@@ -25,12 +25,20 @@
   //For exporting this function with the same name as in the source file.
   //Especially for MinGW this is needed in order to be called automatically
   //for DLL attach / detach etc. actions.
+#ifdef __cplusplus
   #define EXPORT extern "C" __declspec(dllexport)
 #else
+  __declspec(dllexport)
+#endif
+#else
+#ifdef __cplusplus
   //http://www.linuxquestions.org/questions/programming-9/
   // how-to-export-function-symbols-750534/:
   //"__attribute__ ((visibility("default")))  // (similar to __declspec(dllexport))"
   #define EXPORT extern "C" //__attribute__ ((visibility("default")))
+#else
+	#define EXPORT
+#endif
 #endif
 
 #ifndef _WIN32 //Built-in macro for MSVC, MinGW (also for 64 bit Windows)

@@ -67,15 +67,9 @@ inline void GetLogFilePrefix(LogFileEntry & r_logfileentry)
   //http://www.kernel.org/doc/man-pages/online/pages/man3/pthread_self.3.html
   // "link with -pthread"
   r_logfileentry.threadID = Linux::GetCurrentThreadNumber();
-  I_Thread::threadNameMapType::const_iterator c_iterThreadNumber2ThreadName =
-    I_Thread::s_threadNumber2Name.find(r_logfileentry.threadID);
-  if( c_iterThreadNumber2ThreadName != I_Thread::s_threadNumber2Name.end() )
-  {
-    r_logfileentry.p_std_strThreadName = (std::string * const)
-      & c_iterThreadNumber2ThreadName->second;
-  }
-  else
-    r_logfileentry.p_std_strThreadName = NULL;
+#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+  r_logfileentry.p_std_strThreadName = I_Thread::GetThreadName(r_logfileentry.threadID);
+#endif
 }
 
 inline void outputLogFilePrefix(std::ostream & r_ostream)
