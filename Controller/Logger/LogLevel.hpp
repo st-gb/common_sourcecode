@@ -46,7 +46,10 @@ namespace LogLevel
       c_r_std_strLogLevel.length(), true);
     if( p_ntn )
       return (MessageType) p_ntn->m_member;
-    return warning;
+//    std::exception ex;
+//    ex.
+    throw NotInContainerException();
+//    return warning;
   }
   void CreateLogLevelStringToNumberMapping();
 };

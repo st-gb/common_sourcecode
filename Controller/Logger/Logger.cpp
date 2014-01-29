@@ -14,13 +14,19 @@
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 //#include "Appender/AppendingFileOutput.hpp"
 #include "Formatter/Log4jFormatter.hpp"
-#ifdef _WIN32_
+
+//#if DEFINED USE_STD_OFSTREAM_WRITER
+#if defined(_WIN32) && !defined(USE_STD_OFSTREAM_WRITER)
+  /** Use Windows API logger under Windows because this enables retrieving an
+   *   system error code for failure in contrast to std::ofstream logger */
   #include <Windows/Logger/LogEntryOutputter.hpp>
   typedef Windows_API::LogEntryOutputter LogEntryOutputter_type;
 #else
   #include "OutputHandler/StdOfStreamLogWriter.hpp"
   typedef StdOfStreamLogWriter LogEntryOutputter_type;
 #endif
+//#endif
+
 #include <Controller/Logger/OutputHandler/StdCoutLogWriter.hpp> //class StdCoutLogWriter
 #include <Controller/Logger/Appender/RollingFileOutput.hpp>
 #include "Appender/RollingFileOutput.hpp"
@@ -41,8 +47,8 @@ Logger::Logger(
   )
 {
 //  CreateTextFormatter();
-//  if( LogLevel::s_nodetrieLogLevelStringToNumber.size() == 0)
-//    LogLevel::CreateLogLevelStringToNumberMapping();
+  if( LogLevel::s_nodetrieLogLevelStringToNumber.size() == 0)
+    LogLevel::CreateLogLevelStringToNumberMapping();
 }
 
 Logger::~Logger()

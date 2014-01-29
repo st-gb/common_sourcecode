@@ -64,7 +64,7 @@
     //Use member variable: so it does not need to be created on stack for
     //every call to "Log(...)".
     typedef //OperatingSystem::Windows::I_CriticalSection
-      nativeCriticalSection CriticalSection_type;
+      nativeCriticalSection_type CriticalSection_type;
   #else
   #endif
     //Make public because accessed from preprocessor macro.
@@ -197,9 +197,12 @@
         c_iterFormattedLogEntryProcessors;
       c_iterFormattedLogEntryProcessors = m_formattedLogEntryProcessors.begin();
       static FormattedLogEntryProcessor * p_formattedlogentryprocessor;
+#ifdef _DEBUG
+      const int numFormattedLogEntryProcessors = m_formattedLogEntryProcessors.size();
+#endif
       while( c_iterFormattedLogEntryProcessors !=
           m_formattedLogEntryProcessors.end() )
-      { //TODO SIGSEV here called from MainFrame::OnClose->mp_wxx86infoandcontrolapp->EndGetCPUcoreDataViaIPCthread() ;:
+      { //TODO SIGSEGV here called from MainFrame::OnClose->mp_wxx86infoandcontrolapp->EndGetCPUcoreDataViaIPCthread() ;:
         //the pointer is invalid (value: 0x20) (because of multithreaded logging wout crit sec?!)
         p_formattedlogentryprocessor = ( * c_iterFormattedLogEntryProcessors);
         if( messageType >= p_formattedlogentryprocessor->m_logLevel )

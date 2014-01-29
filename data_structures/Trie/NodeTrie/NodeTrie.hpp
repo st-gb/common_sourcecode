@@ -38,6 +38,15 @@ class RootNodeNotInitalizedException
 
 };
 
+class NotInContainerException
+{
+//  std::string m_stdstr
+//  NotInContainerException(const * char ch)
+//  {
+//
+//  }
+};
+
 //this is the base class of node trie classes:
 //subclasses usually add a member with additional info if this node is the
 //string end.

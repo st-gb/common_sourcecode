@@ -13,6 +13,11 @@
  */
 
 #include "LogEntryOutputter.hpp"
+//::GetLastErrorCode()
+#include <Controller/GetLastErrorCode.hpp>
+//GetErrorMessageFromErrorCodeA(...)
+#include <Controller/GetErrorMessageFromLastErrorCode.hpp>
+//#include <FileSystem/GetCurrentWorkingDir.hpp>
 
 namespace Windows_API
 {
@@ -145,7 +150,20 @@ namespace Windows_API
       return true;
     }
     else
-      return false;
+    {
+//      std::string cwd;
+//      OperatingSystem::GetCurrentWorkingDirA_inl(cwd);
+//      std::string std_strFullPathToLogFile =  cwd + "/" + c_r_stdstrFilePath;
+      std::ostringstream oss;
+//      OperatingSystem::Get
+      const DWORD dwLastErrorCode = ::GetLastErrorCode();
+      oss //<< "Opening log file \"" << std_strFullPathToLogFile << "\" failed:"
+        << ::GetErrorMessageFromErrorCodeA(dwLastErrorCode) << " (error code:"
+        << dwLastErrorCode << ")";
+      throw OpeningLogFileException(/*std_strFullPathToLogFile.c_str()*/
+        oss.str().c_str() );
+//      return false;
+    }
   }
 #endif
 

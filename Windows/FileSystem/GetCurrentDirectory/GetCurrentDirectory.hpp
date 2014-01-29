@@ -9,6 +9,7 @@
 #define GETCURRENTDIRECTORY_HPP_
 
 #include <windows.h> //::GetCurrentDirectory(...)
+#include <Controller/character_string/stdtstr.hpp>
 
 namespace Windows
 {
