@@ -11,6 +11,8 @@
 //#else
   #include <Controller/GetLastErrorCode.hpp>//OperatingSystem::GetLastErrorCode()
   #include <Controller/GetErrorMessageFromLastErrorCode.hpp>
+  /** Class "LogFileAccessException" */
+  #include <Controller/Logger/LogFileAccessException.hpp>
 //#endif
 
 StdOfStreamLogWriter::StdOfStreamLogWriter()
@@ -127,9 +129,13 @@ inline bool StdOfStreamLogWriter::SetStdOstream(
     m_p_std_ostream = m_p_std_ofstream;
   else
   {
-    throw OpeningLogFileException(
+    throw LogFileAccessException(
       //TODO Windows returns "success" even if log file could not be opened
-      ::GetErrorMessageFromLastErrorCodeA().c_str() );
+//      ::GetErrorMessageFromLastErrorCodeA().c_str()
+      LogFileAccessException::openLogFile,
+      ::GetLastErrorCode(),
+       c_r_stdstrFilePath.c_str()
+      );
   }
   return bFileIsOpen;
 }

@@ -85,6 +85,7 @@ public:
 
   bool GetActualFilePath(std::string & str);
   bool Open(std::string & actualFilePath);
+
   unsigned Log(//ostream & ostr
 //    const std::string & r_stdstrMessage,
     const LogFileEntry & logfileentry,

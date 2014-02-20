@@ -15,22 +15,26 @@
 #ifndef WXTEXTCONTROLDIALOG_HPP_
 #define WXTEXTCONTROLDIALOG_HPP_
 
+#include <wx/sizer.h> //class wxSizer
 #include <wx/dialog.h> //Base class wxDialog
+#include <wx/textctrl.h> //class wxTextCtrl
 //SUPPRESS_UNUSED_VARIABLE_WARNING
 #include <compiler/GCC/suppress_unused_variable.h>
+#include <wx/button.h> //class wxButton
 
 class wxTextControlDialog
   : public wxDialog
 {
+public:
   enum flags
   {
-    OK_BUTTON = 1
+    OK_Button = 1,
+    Retry_Button = 2
   };
-public:
     wxTextControlDialog(
       const wxString & c_r_wxstrMessage,
-      const wxString & c_r_wxstrTitle,
-      unsigned flags = OK_BUTTON,
+      const wxString & c_r_wxstrTitle = wxT(""),
+      unsigned flags = OK_Button,
       long dialog_style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER
       )
       : wxDialog(
@@ -59,10 +63,12 @@ public:
         1,//proportion
         wxEXPAND);
 
-      if( flags & OK_BUTTON)
+      wxBoxSizer * p_buttonsSizer = new wxBoxSizer(wxHORIZONTAL);
+
+      if( flags & OK_Button)
       {
         wxButton * p_wxButtonOK = new wxButton(this, wxID_OK);
-        p_sizer->Add(
+        p_buttonsSizer->Add(
           p_wxButtonOK,
           //"in the main orientation of the wxBoxSizer - where 0 stands for not changeable"
           0,//proportion;
@@ -70,6 +76,18 @@ public:
           wxEXPAND //"The item will be expanded to fill the space assigned to the item"
           );
       }
+      if( flags & Retry_Button)
+      {
+        wxButton * p_wxButtonRetry = new wxButton(this, wxID_RETRY);
+        p_buttonsSizer->Add(
+          p_wxButtonRetry,
+          //"in the main orientation of the wxBoxSizer - where 0 stands for not changeable"
+          0,//proportion;
+          //flag
+          wxEXPAND //"The item will be expanded to fill the space assigned to the item"
+          );
+      }
+      p_sizer->Add(p_buttonsSizer);
       SetSizer(p_sizer);
       //  wxd.AddChild( p_wxtextctrl);
       Layout(); //stretch to the whole client window.

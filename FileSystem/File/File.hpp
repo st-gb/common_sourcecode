@@ -14,11 +14,16 @@ public:
   enum OpenMode { readOnly, writeOnly };
   
   virtual ~I_File() {};
+
   /** Open a file with an ANSI (= 8 bit) character file path. */
   virtual enum OpenError OpenA(const char * const, enum I_File::OpenMode openMode) = 0;
+  //TODO maybe provide error code on failure or throw an exception.
   virtual file_pointer_type GetFileSizeInBytes() = 0;
+  //TODO maybe provide error code on failure or throw an exception.
   virtual file_pointer_type GetCurrentFilePointerPosition() = 0;
   /** Read a single byte from the file. */
+  //TODO maybe provide error code on failure or throw an exception.
   virtual int ReadByte() = 0;
+  //TODO provide error code on failure or throw an exception.
   virtual bool SeekFilePointerPosition(const file_pointer_type &) = 0;
 };

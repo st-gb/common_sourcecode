@@ -17,6 +17,8 @@
 #include <Controller/GetLastErrorCode.hpp>
 //GetErrorMessageFromErrorCodeA(...)
 #include <Controller/GetErrorMessageFromLastErrorCode.hpp>
+/** class LogFileAccessException */
+#include <Controller/Logger/LogFileAccessException.hpp>
 //#include <FileSystem/GetCurrentWorkingDir.hpp>
 
 namespace Windows_API
@@ -48,13 +50,13 @@ namespace Windows_API
   bool LogEntryOutputter::OpenA( const std::string & c_r_stdstrFilePath )
   {
     m_std_strLogFilePath = c_r_stdstrFilePath;
-    bool bIsOpen = SetStdOstream(c_r_stdstrFilePath);
+    const bool bIsOpen = SetStdOstream(c_r_stdstrFilePath);
     return bIsOpen;
   }
 
   bool LogEntryOutputter::SetStdOstream(const std::string & c_r_stdstrFilePath)
   {
-    bool fileIsOpen = OpenFlushingFile(c_r_stdstrFilePath);
+    const bool fileIsOpen = OpenFlushingFile(c_r_stdstrFilePath);
     m_p_std_ostream = GetStdOstream();
 //    if( m_p_log_formatter )
 //      //When m_p_std_ofstream is <> NULL then it is logged to output.
@@ -92,14 +94,15 @@ namespace Windows_API
     // not writable (due to security rights) CreateFileA() just returns
     // ERROR_ALREADY_EXISTS with "CREATE_ALWAYS" but not the "access denied"
     // error code.
-    BOOL b = ::DeleteFileA(
+    const BOOL deleteFileSucceeded = ::DeleteFileA(
       c_r_stdstrFilePath.c_str() //_In_  LPCTSTR lpFileName
       );
     DWORD dwLastError = ::GetLastError();
-    //http://msdn.microsoft.com/en-us/library/windows/desktop/aa363915%28v=vs.85%29.aspx:
-    //"If an application attempts to delete a file that does not exist, the
-    //DeleteFile function fails with ERROR_FILE_NOT_FOUND
-    if( b || ( !b && ( dwLastError == ERROR_FILE_NOT_FOUND ||
+    /** http://msdn.microsoft.com/en-us/library/windows/desktop/aa363915%28v=vs.85%29.aspx:
+    * "If an application attempts to delete a file that does not exist, the
+    * DeleteFile function fails with ERROR_FILE_NOT_FOUND" */
+    if( deleteFileSucceeded || ( ! deleteFileSucceeded &&
+        ( dwLastError == ERROR_FILE_NOT_FOUND ||
         dwLastError == ERROR_PATH_NOT_FOUND) )
       )
     {
@@ -138,15 +141,23 @@ namespace Windows_API
         if( m_hFile == INVALID_HANDLE_VALUE || m_buffer == NULL )
           return false;
       }
-  #ifdef _DEBUG
-      DWORD dwLastError = ::GetLastError();
-      if( dwLastError == ERROR_ALREADY_EXISTS )
-        dwLastError = ERROR_ALREADY_EXISTS;
-  #endif //#ifdef _DEBUG
+//  #ifdef _DEBUG
+      /*DWORD*/ dwLastError = ::GetLastError();
+//      if( dwLastError == ERROR_ALREADY_EXISTS )
+//        dwLastError = ERROR_ALREADY_EXISTS;
+//  #endif //#ifdef _DEBUG
       if( m_hFile == INVALID_HANDLE_VALUE
 //          || m_dwGetLastErrorAfterCreateFileA != ERROR_SUCCESS
           )
+      {
+        LogFileAccessException lfae(/*std_strFullPathToLogFile.c_str()*/
+          /*oss.str().c_str()*/
+          LogFileAccessException::openLogFile,
+          dwLastError,
+          c_r_stdstrFilePath.c_str() );
+        throw lfae;
         return false;
+      }
       return true;
     }
     else
@@ -154,14 +165,18 @@ namespace Windows_API
 //      std::string cwd;
 //      OperatingSystem::GetCurrentWorkingDirA_inl(cwd);
 //      std::string std_strFullPathToLogFile =  cwd + "/" + c_r_stdstrFilePath;
-      std::ostringstream oss;
+//      std::ostringstream oss;
 //      OperatingSystem::Get
-      const DWORD dwLastErrorCode = ::GetLastErrorCode();
-      oss //<< "Opening log file \"" << std_strFullPathToLogFile << "\" failed:"
-        << ::GetErrorMessageFromErrorCodeA(dwLastErrorCode) << " (error code:"
-        << dwLastErrorCode << ")";
-      throw OpeningLogFileException(/*std_strFullPathToLogFile.c_str()*/
-        oss.str().c_str() );
+//      const DWORD dwLastErrorCode = ::GetLastErrorCode();
+//      oss //<< "Opening log file \"" << std_strFullPathToLogFile << "\" failed:"
+//        << ::GetErrorMessageFromErrorCodeA(dwLastErrorCode) << " (error code:"
+//        << dwLastErrorCode << ")";
+      LogFileAccessException lfae(/*std_strFullPathToLogFile.c_str()*/
+        /*oss.str().c_str()*/
+        LogFileAccessException::deleteLogFile,
+        dwLastError,
+        c_r_stdstrFilePath.c_str() );
+      throw lfae;
 //      return false;
     }
   }
@@ -171,6 +186,7 @@ namespace Windows_API
 //  {
 //
 //  }
+  //TODO throw LogFileAccessException on error
   int LogEntryOutputter::RenameFileThreadUnsafe(const std::string & r_std_strNewFilePath)
   {
     int retVal = 1;
@@ -199,10 +215,18 @@ namespace Windows_API
     return retVal;
   }
 
-  //TODO implement
+  //TODO throw LogFileAccessException on error
   void LogEntryOutputter::TruncateOutputSizeToZero()
   {
-
+    LARGE_INTEGER liOfs={0};
+    LARGE_INTEGER liNew={0};
+    //http://msdn.microsoft.com/en-us/library/windows/desktop/aa364957%28v=vs.85%29.aspx
+    //"If the function succeeds, the return value is nonzero."
+    ::SetFilePointerEx(m_hFile, liOfs, &liNew, FILE_BEGIN);
+    /** http://msdn.microsoft.com/en-us/library/windows/desktop/aa365531%28v=vs.85%29.aspx:
+    * "Sets the physical file size for the specified file to the current
+    * position of the file pointer." */
+    SetEndOfFile(m_hFile);
   }
 
   /** 0=success */
@@ -229,7 +253,7 @@ namespace Windows_API
        * http://msdn.microsoft.com/en-us/library/windows/desktop/cc644950%28v=vs.85%29.aspx
        *
        */
-      BOOL b =
+      const BOOL bWriteFileSucceeded =
   //#ifdef _WIN32
       ::WriteFile(
         m_hFile, //__in         HANDLE hFile,
@@ -240,15 +264,22 @@ namespace Windows_API
         NULL //__inout_opt  LPOVERLAPPED lpOverlapped
         );
 //      FlushFileBuffers(m_hFile);
-      if( b )
+      const DWORD dwOSerrorCode = ::GetLastError();
+//      if( bWriteFileSucceeded )
         m_std_stringstream.str(""); //clear: set the internal string to empty string.
-      else
+//      else
+      if( ! bWriteFileSucceeded )
       {
+        LogFileAccessException lfae(
+          LogFileAccessException::writeToFile,
+          dwOSerrorCode,
+          m_std_strLogFilePath.c_str()
+          );
+        throw lfae;
       }
-      DWORD dw = ::GetLastError();
       //"FILE_FLAG_WRITE_THROUGH | FILE_FLAG_NO_BUFFERING" in CreateFile(...)
       // leads to error code "87" (ERROR_INVALID_PARAMETER) after WriteFile(...)
-      return dw;
+      return dwOSerrorCode;
     }
     return 1;
 //    ++ dw;

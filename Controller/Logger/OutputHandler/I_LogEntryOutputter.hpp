@@ -9,22 +9,8 @@
 #define ILOGENTRYOUTPUTTER_HPP_
 
 #include <string> //class std::string
+/** typedef "nativeCriticalSection_type" */
 #include <Controller/multithread/nativeCriticalSectionType.hpp>
-
-class OpeningLogFileException
-{
-  std::string m_errorMessage;
-public:
-  OpeningLogFileException(const char * const pch)
-  {
-    m_errorMessage = pch;
-  }
-
-  const std::string & GetErrorMessage() const
-  {
-    return m_errorMessage;
-  }
-};
 
 /** @brief Base class for all classes that DO the actual / physical output.
  * So e.g. following outputs are possible:

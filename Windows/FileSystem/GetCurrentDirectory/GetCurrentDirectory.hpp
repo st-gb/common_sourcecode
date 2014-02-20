@@ -89,12 +89,16 @@ namespace Windows
     return retVal;
   }
 
-  unsigned GetCurrentWorkingDir(std::tstring & r_std_tstrCurrentDirectory)
+  /** Must be declared "inline", else multiple definitions of this function
+   *  are possible -> error when linking. */
+  inline unsigned GetCurrentWorkingDir(std::tstring & r_std_tstrCurrentDirectory)
   {
     return GetCurrentWorkingDir_Inl(r_std_tstrCurrentDirectory);
   }
 
-  unsigned GetCurrentWorkingDirA(std::string & r_std_strCurrentDirectory)
+  /** Must be declared "inline", else multiple definitions of this function
+   *  are possible -> error when linking. */
+  inline unsigned GetCurrentWorkingDirA(std::string & r_std_strCurrentDirectory)
   {
     return GetCurrentWorkingDirA_inl(r_std_strCurrentDirectory);
   }

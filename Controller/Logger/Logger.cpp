@@ -187,7 +187,9 @@ DWORD Logger::Log(//ostream & ostr
  *  -appender: rolling file,
  *  -formatter: plain TeXT,
  *  -outputhandler: std::ofstream
- *  -log level: info*/
+ *  -log level: info
+ *  @param r_std_strLogFilePath WARNING: may be modified by Outputhandler/
+ *   FormattedLogEntryProcessor. */
 bool Logger::OpenFileA( //std::string & r_stdstrFilePath
   std::string & r_std_strLogFilePath,
   const char * const format /*="log4j"*/,
