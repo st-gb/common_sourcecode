@@ -55,7 +55,7 @@ public:
 #ifdef _WIN32
       Windows::GetCurrentWorkingDirA_inl(std_strCurrentDirectory);
 #else
-      OperatingSystem::GetCurrentWorkingDirA_inl(std_strCurrentDirectory);
+      /*OperatingSystem*/Linux::GetCurrentWorkingDirA_inl(std_strCurrentDirectory);
 #endif
       std_strAbsoluteLogFilePath += std_strCurrentDirectory += m_logFilePath;
       return std_strAbsoluteLogFilePath;

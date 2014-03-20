@@ -27,6 +27,7 @@
 
   //for std::tstring
   #include <Controller/character_string/stdtstr.hpp>
+  #include <compiler/GCC/enable_disable_warning.h> //GCC_DIAG_OFF(...)
 
 //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 //  //#include <data_structures/Trie/byteTrie/Trie.hpp> //class Trie
@@ -198,7 +199,9 @@
       c_iterFormattedLogEntryProcessors = m_formattedLogEntryProcessors.begin();
       static FormattedLogEntryProcessor * p_formattedlogentryprocessor;
 #ifdef _DEBUG
+      GCC_DIAG_OFF(unused-variable)
       const int numFormattedLogEntryProcessors = m_formattedLogEntryProcessors.size();
+      GCC_DIAG_ON(unused-variable)
 #endif
       while( c_iterFormattedLogEntryProcessors !=
           m_formattedLogEntryProcessors.end() )

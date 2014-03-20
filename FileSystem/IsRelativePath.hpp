@@ -26,4 +26,18 @@ namespace FileSystem
 }
 #endif //#ifdef _WIN32
 
+#ifdef __linux__
+namespace FileSystem
+{
+  /** Must be declared "inline", else multiple definitions of this function
+   *  are possible -> error when linking. */
+  inline bool IsRelativePathA(const char * const path)
+  {
+    if( path != NULL && path[0] == '/' )
+      return false;
+    return true;
+  }
+}
+#endif
+
 #endif /* ISRELATIVEPATH_HPP_ */

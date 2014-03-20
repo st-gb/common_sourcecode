@@ -10,6 +10,7 @@ class I_File
 {
 public:
   typedef int64_t file_pointer_type;
+  enum CloseError {closingFileSucceeded = 0, closingFileFailed};
   enum OpenError {success = 0, accessDenied, fileNotFound, not_set };
   enum OpenMode { readOnly, writeOnly };
   

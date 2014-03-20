@@ -1,9 +1,11 @@
-#pragma once
-#ifndef OUTPUT_XML_INTEDED_HPP
-#define OUTPUT_XML_INTEDED_HPP
+/*
+ * OutputXMLintended.cpp
+ *
+ *  Created on: 01.03.2014
+ *      Author: mr.sys
+ */
 
-#include <ostream> //class std::ostream
-#include <locale>    /* for std::locale */
+#include "OutputXMLindented_inl.hpp"
 
 /** Because of outputting to a std::ostream (ANSI char streams) you may need
  *  to set the locale before calling this function. */
@@ -12,6 +14,7 @@ void OutputXMLindented(
   std::ostream & r_std_ostream,
   //from http://www.cantrip.org/locale.html
   std::locale locale = std::locale("")
-  );
-
-#endif //OUTPUT_XML_INTEDED_HPP
+  )
+{
+  OutputXMLindented_inl(p_chXML, r_std_ostream, locale);
+}

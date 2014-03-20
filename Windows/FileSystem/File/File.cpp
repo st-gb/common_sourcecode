@@ -13,6 +13,23 @@ namespace Windows_API
       ::CloseHandle( m_hFile);
     }
 
+    enum I_File::CloseError File::Close()
+    {
+      if( m_hFile != INVALID_HANDLE_VALUE )
+      {
+        BOOL retVal = ::CloseHandle(m_hFile);
+        if( retVal )
+        {
+          m_hFile = INVALID_HANDLE_VALUE;
+          return I_File::closingFileSucceeded;
+        }
+//        return I_File::closingFileFailed;
+      }
+//      else
+//        return I_File::alreadyClosed;
+      return I_File::closingFileFailed;
+    }
+
     I_File::file_pointer_type File::GetCurrentFilePointerPosition()
     {
       //http://stackoverflow.com/questions/17707020/is-there-no-getfilepointerex-windows-api-function

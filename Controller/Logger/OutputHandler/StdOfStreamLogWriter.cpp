@@ -129,11 +129,17 @@ inline bool StdOfStreamLogWriter::SetStdOstream(
     m_p_std_ostream = m_p_std_ofstream;
   else
   {
+    const DWORD dwLastErrorCode =
+#ifdef __linux__
+      Linux::GetLastErrorCode();
+#else
+      OperatingSystem::GetLastErrorCode();
+#endif
     throw LogFileAccessException(
       //TODO Windows returns "success" even if log file could not be opened
 //      ::GetErrorMessageFromLastErrorCodeA().c_str()
       LogFileAccessException::openLogFile,
-      ::GetLastErrorCode(),
+      dwLastErrorCode,
        c_r_stdstrFilePath.c_str()
       );
   }
@@ -162,10 +168,11 @@ int StdOfStreamLogWriter::RenameFileThreadUnsafe(
         m_std_strLogFilePath.c_str(), cr_std_strFilePath.c_str() //newname
         );
       retVal =
+//        OperatingSystem::GetLastErrorCode();
 #ifdef _WIN32
         ::GetLastError();
 #else
-        OperatingSystem::GetLastErrorCode();
+        Linux::GetLastErrorCode();
 #endif
       //"If the file is successfully renamed, a zero value is returned."
       if( retVal == 0)
