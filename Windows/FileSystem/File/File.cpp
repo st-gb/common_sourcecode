@@ -35,7 +35,13 @@ namespace Windows_API
       //http://stackoverflow.com/questions/17707020/is-there-no-getfilepointerex-windows-api-function
       LARGE_INTEGER liOfs={0};
       LARGE_INTEGER liNew={0};
-      ::SetFilePointerEx(m_hFile, liOfs, &liNew, FILE_CURRENT);
+      const BOOL success = ::SetFilePointerEx(m_hFile, liOfs, &liNew, FILE_CURRENT);
+      if( ! success )
+      {
+//        liNew.HighPart = MAXDWORD;
+//        liNew.LowPart = MAXDWORD;
+        liNew.QuadPart = -1;
+      }
       return liNew.QuadPart;
     }
 
@@ -65,6 +71,7 @@ namespace Windows_API
     enum I_File::OpenError File::OpenA(const char * const filePath,
         enum I_File::OpenMode openMode)
     {
+      m_filePathA = filePath;
       enum I_File::OpenError openError = I_File::not_set;
       DWORD dwDesiredAccess = 0, dwCreationDisposition = 0;
       switch(openMode)
@@ -133,9 +140,11 @@ namespace Windows_API
     {
       LARGE_INTEGER liOfs={offset};
       LARGE_INTEGER liNew={0};
-      //http://msdn.microsoft.com/en-us/library/windows/desktop/aa364957%28v=vs.85%29.aspx
-      //"If the function succeeds, the return value is nonzero."
-      return ::SetFilePointerEx(m_hFile, liOfs, &liNew, FILE_BEGIN);
+      /** http://msdn.microsoft.com/en-us/library/windows/desktop/aa364957%28v=vs.85%29.aspx
+      * "If the function succeeds, the return value is nonzero." */
+      const BOOL setFilePointerExSucceeded = ::SetFilePointerEx(m_hFile, liOfs,
+        & liNew, FILE_BEGIN);
+      return setFilePointerExSucceeded;
     }
 //  };
 }

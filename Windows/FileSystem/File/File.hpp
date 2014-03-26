@@ -15,6 +15,7 @@ namespace Windows_API
     private:
       HANDLE m_hFile;
     public:
+      File() : m_hFile(INVALID_HANDLE_VALUE) { }
       ~File();
 
     enum CloseError Close();

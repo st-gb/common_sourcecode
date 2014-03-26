@@ -184,7 +184,8 @@
       //Must guard the m_logfileentry variable because else it might be
       //changed while reading (in the logging OutputHandlers when the function
       //is entered a second time) from it.
-      PossiblyEnterCritSec();
+//      PossiblyEnterCritSec();
+
       //Use local LogFileEntry variable because this function may be called by
       //multiple threads synchronously (if then using member variable this could
       //get corrupted data).
@@ -215,7 +216,7 @@
             , prettyFunctionFormattedFunctionName);
         ++ c_iterFormattedLogEntryProcessors;
       }
-      PossiblyLeaveCritSec();
+//      PossiblyLeaveCritSec();
       return 0;
     }
 #ifndef __ANDROID__

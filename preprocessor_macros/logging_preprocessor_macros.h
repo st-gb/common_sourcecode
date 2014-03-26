@@ -223,6 +223,12 @@
     //dyn lib was attached to call the
     //logger's destructor, provide a macro with different logger variable names.
     #define LOG_LOGGER_NAME_TYPE(logger, to_ostream, messageType) { \
+      /** Avoid writing to the global string that gets the
+       *  css::basic_stringstream result  by different threads.
+       *  Else multiple same log messages may appear for different threads/
+       *  function names. */ \
+      OWN_LOGGER_LOG_ENTER_CRIT_SEC_LOGGER_NAME(logger) \
+      /*logger.PossiblyEnterCritSec() \ */ \
       /* E.g. do not log "info" messages if level is "warning". */ \
       if( messageType >= logger.GetLogLevel() ) { \
         WRITE_INTO_STRING_STREAM(logger, to_ostream) \
@@ -231,6 +237,7 @@
           g_std_basicstring_log_char_typeLog, messageType) \
         /*OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger)*/ \
       } \
+      OWN_LOGGER_LOG_LEAVE_CRIT_SEC_LOGGER_NAME(logger) \
       /*LOG4CPLUS_INFO(log4cplus_logger, g_std_basicstring_log_char_typeLog ); */\
       /*g_logger.Log("test ") ; */ }
     #define LOG_FUNCNAME_LOGGER_NAME_TYPE(logger, to_ostream, messageType) { \

@@ -26,6 +26,18 @@ namespace Linux
       file_pointer_type fileSize = ftell(m_pFile);
       return fileSize;
     }
+	
+	enum CloseError Close()
+	{
+	  const int retVal = fclose(m_pFile);
+	  /** http://www.cplusplus.com/reference/cstdio/fclose/: 
+	    "If the stream is successfully closed, a zero value is returned."
+		"On failure, EOF is returned." */
+      if( retVal == 0)
+	    return closingFileSucceeded;
+      return closingFileFailed;
+	}
+	
     enum OpenError OpenA(const char * const filePath, enum I_File::OpenMode openMode)
     {
       enum I_File::OpenError openError = I_File::not_set;
