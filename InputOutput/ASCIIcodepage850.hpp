@@ -8,9 +8,11 @@
 #ifndef ASCIICODEPAGE850_HPP_
 #define ASCIICODEPAGE850_HPP_
 
+/** see http://de.wikipedia.org/wiki/ISO_8859-1 */
 namespace ASCIIcodepage850
 {
   /** @ brief Code page for West Europe
+   * http://www.torsten-horn.de/techdocs/encoding.htm
    * values from de.wikipedia.org/wiki/Codepage_850 */
   enum ASCIIcodepage850_HTML_codes
   {
