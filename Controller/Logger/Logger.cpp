@@ -96,7 +96,7 @@ void Logger::AddConsoleLogEntryWriter()
     /*Logger::*/StdCoutLogWriter();
   //    I_LogFormatter logformatter = new I_LogFormatter::CreateFormatter();
   RollingFileOutput * consoleappender = new RollingFileOutput(
-    g_logger,
+    /*g_logger*/ * this,
     std_strDummyLogFilePath,
     std_cout_logentryoutputter,
     "txt",

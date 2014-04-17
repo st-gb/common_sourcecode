@@ -331,6 +331,26 @@
 //        currentThreadNumber) );
 //    }
 
+    void Remove(FormattedLogEntryProcessor * p_formattedLogEntryProcessor)
+    {
+      //Prevent concurrent writes while log formatter is exchanged.
+      PossiblyEnterCritSec();
+      //TODO thread safety
+      std::vector<FormattedLogEntryProcessor *>::iterator iter =
+//        m_formattedLogEntryProcessors.find(p_formattedlogentryprocessor);
+        m_formattedLogEntryProcessors.begin();
+      while(iter != m_formattedLogEntryProcessors.end() )
+      {
+        if( * iter == p_formattedLogEntryProcessor )
+        {
+          m_formattedLogEntryProcessors.erase(iter);
+          break;
+        }
+        ++ iter;
+      }
+      PossiblyLeaveCritSec();
+    }
+
     /** @brief Sets formatter for all formatted log entry processors (classes
      * like "RollingFileOutput"). */
     void SetFormatter(I_LogFormatter * p_logformatter)

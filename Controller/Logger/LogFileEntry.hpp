@@ -35,6 +35,7 @@ public:
   uint16_t millisecond;
   uint16_t microsecond;
   uint16_t nanosecond;
+  //TODO make private for not be inherited to subclass
   std::string * p_std_strMessage;
   const std::string * p_std_strThreadName;
 //  LogFileEntry() : p_std_strThreadName(p_std_strThreadName) {  }
