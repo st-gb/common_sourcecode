@@ -8,6 +8,8 @@
 #ifndef CURRENT_FUNCTION_HPP_
 #define CURRENT_FUNCTION_HPP_
 
+namespace PrettyFunctionFormattedFunctionSignature
+{
   /** @brief Get 1st namespace, class or function name character
    *  can e.g. be "inline virtual void FuncName(" 
    * Works with GCC ("__PRETTY_FUNCTION__") and maybe with MSVC ("__FUNCSIG__").
@@ -112,6 +114,7 @@
     return std::string(beginOfFunctionName,
       endOfFunctionName - beginOfFunctionName);
   }
+} // namespace PrettyFunctionFormattedFunctionSignature
 
 
 #endif /* CURRENT_FUNCTION_HPP_ */

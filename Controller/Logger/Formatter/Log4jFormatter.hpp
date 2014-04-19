@@ -75,9 +75,9 @@ namespace CSS
 //              << logfileentry.threadID << "] "
             << "[" << p_chThreadName << "] "
             //  e.g. "[Thread-1]"
-            << GetClassName(//__PRETTY_FUNCTION__
+            << PrettyFunctionFormattedFunctionSignature::GetClassName(//__PRETTY_FUNCTION__
               prettyFunctionFormattedFunctionName) << " "
-            << GetFunctionName(//__PRETTY_FUNCTION__
+            << PrettyFunctionFormattedFunctionSignature::GetFunctionName(//__PRETTY_FUNCTION__
               prettyFunctionFormattedFunctionName) << " "
             << * logfileentry.p_std_strMessage //<< std::endl
   //          << " thread ID:" << logfileentry.threadID << " "

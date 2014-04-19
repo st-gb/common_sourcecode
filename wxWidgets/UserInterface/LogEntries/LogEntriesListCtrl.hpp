@@ -15,6 +15,10 @@
 class Logger;
 //class I_LogEntryOutputter;
 //class I_LogFormatter;
+namespace wxWidgets
+{
+  class LogEntriesDialog;
+}
 
 /** = no pointers to strings ->whose content is changed */
 class PersistentLogEntry
@@ -32,6 +36,8 @@ class PersistentLogEntry
 //  uint16_t nanosecond;
 
 public:
+  std::string m_std_strNamespaceAndOrClassName;
+  std::string m_std_strFunctionName;
   std::string m_std_strMessage;
   std::string m_std_strThreadName;
 
@@ -54,15 +60,19 @@ namespace wxWidgets
     : public wxListCtrl,
     public FormattedLogEntryProcessor
   {
-    enum columnIndices { colID_timeStamp, colID_message };
+    enum columnIndices { colID_timeStamp, colID_namespaceAndClass,
+      colID_functionName, colID_message };
     typedef std::deque<PersistentLogEntry> container_type;
     container_type m_logentries;
     Logger & m_logger;
+    int m_currentScrollPos;
+    wxWidgets::LogEntriesDialog & m_logEntriesDialog;
   public:
     LogEntriesListCtrl(
       /*const*/ wxWindow * /*const*/ parent,
       const wxWindowID ID,
-      Logger & logger//,
+      Logger & logger,
+      wxWidgets::LogEntriesDialog & logEntriesDialog
 //      I_LogEntryOutputter * p_outputhandler,
 //      I_LogFormatter * p_log_formatter,
 //      enum LogLevel::MessageType logLevel
@@ -70,6 +80,8 @@ namespace wxWidgets
     virtual
     ~LogEntriesListCtrl();
 
+    void ClearLogEntries() { m_logentries.clear(); SetItemCount(0); }
+    void HighlightMatchingLineAndMoveThere(const wxString & value);
     unsigned Log(//ostream & ostr
   //    const std::string & r_stdstrMessage,
       const LogFileEntry & logfileentry,
@@ -78,7 +90,9 @@ namespace wxWidgets
       const char * const prettyFunctionFormattedFunctionName = NULL
       ) const;
     wxString OnGetItemText(long item, long column) const;
-    /** For callback of OnGetItemText(...). */
+    void OnScroll(wxScrollWinEvent & event);
+
+    /** For receiving messages/ for callback of OnGetItemText(...). */
     DECLARE_EVENT_TABLE()
   };
 
