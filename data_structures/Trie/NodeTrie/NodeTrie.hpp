@@ -33,10 +33,13 @@ typedef unsigned short WORD;
   #define NULL 0
 #endif
 
-class RootNodeNotInitalizedException
+namespace NS_NodeTrie
 {
+    class RootNodeNotInitalizedException
+    {
 
-};
+    };
+}
 
 class NotInContainerException
 {
@@ -695,7 +698,7 @@ template<typename member_type>
               return p_nodetrienodeCurrent;
           }
           else{
-              throw RootNodeNotInitalizedException();
+              throw NS_NodeTrie::RootNodeNotInitalizedException();
           }
       }
 

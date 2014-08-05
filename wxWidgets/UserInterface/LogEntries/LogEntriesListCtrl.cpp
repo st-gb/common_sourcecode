@@ -17,6 +17,9 @@
 namespace wxWidgets
 {
   BEGIN_EVENT_TABLE(LogEntriesListCtrl, wxListCtrl)
+    EVT_LIST_ITEM_SELECTED(LogEntriesDialog::logEntriesListCtrl, LogEntriesListCtrl::OnListItemSelected)
+//    EVT_LIST_ITEM_DESELECTED(LogEntriesDialog::logEntriesListCtrl, LogEntriesListCtrl::OnListItemDeselected)
+//    EVT_SCROLLWIN_THUMBRELEASE()
     //http://forums.wxwidgets.org/viewtopic.php?f=1&t=3157
     EVT_SCROLLWIN(LogEntriesListCtrl::OnScroll)
   END_EVENT_TABLE()
@@ -38,6 +41,7 @@ namespace wxWidgets
     , m_logger(logger)
     , m_logEntriesDialog(logEntriesDialog)
     , m_currentScrollPos(0)
+    , m_lastSeletedItemIndex(-1)
   {
     // Add first column
     wxListItem column;
@@ -75,22 +79,24 @@ namespace wxWidgets
       const wxString & searchFor)
   {
     //http://wiki.wxwidgets.org/WxListCtrl#Getting_the_selected_item_indexes
-    long itemIndex = -1;
+//    long itemIndex = -1;
     long lastSeletedItemIndex = -1;
     long firstLineToSearchIn = 0;
-    for (;;) {
-      itemIndex = GetNextItem(
-        itemIndex,
-        wxLIST_NEXT_ALL,
-        wxLIST_STATE_SELECTED);
-      if (itemIndex == -1)
-        break;
-      else
-        lastSeletedItemIndex = itemIndex;
-    }
+//    for (;;) {
+//      itemIndex = GetNextItem(
+//        itemIndex,
+//        wxLIST_NEXT_ALL,
+//        wxLIST_STATE_SELECTED);
+//      if (itemIndex == -1)
+//        break;
+//      else
+//        lastSeletedItemIndex = itemIndex;
+//    }
+    lastSeletedItemIndex = m_lastSeletedItemIndex;
     if( lastSeletedItemIndex != -1 )
       firstLineToSearchIn = lastSeletedItemIndex + 1;
-    if( m_logentries.size() > firstLineToSearchIn)
+    const int numLogEntries = m_logentries.size();
+    if( numLogEntries > firstLineToSearchIn)
     {
       const std::string std_strSearchFor = wxWidgets::GetStdString(searchFor);
       container_type::const_iterator c_iter = //m_logentries.begin();
@@ -98,16 +104,69 @@ namespace wxWidgets
       long currentItemIndex = firstLineToSearchIn;
       while( c_iter != m_logentries.end() )
       {
-        if( c_iter->m_std_strMessage.find(std_strSearchFor) != std::string::npos )
+        const std::string & std_strMessage = c_iter->m_std_strMessage;
+        if( std_strMessage.find(std_strSearchFor) != std::string::npos )
         {
           //http://wiki.wxwidgets.org/WxListCtrl#Select_or_Deselect_an_Item
           SetItemState(currentItemIndex, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
-          ScrollLines( currentItemIndex - m_currentScrollPos);
-//          SetScrollPos(wxVERTICAL, currentItemIndex - m_currentScrollPos);
+          const int numLinesToScroll = currentItemIndex - m_currentScrollPos;
+          //e.g. current item index: 100, current scroll pos: 101
+          //TODO scrolling is not done correctly
+          ScrollLines( numLinesToScroll);
+          m_currentScrollPos = /*m_currentScrollPos + numLinesToScroll*/
+            currentItemIndex;
+          m_lastSeletedItemIndex = currentItemIndex;
+//          SetScrollPos(wxVERTICAL, m_currentScrollPos);
+          Refresh();
           break;
         }
         ++ c_iter;
         ++ currentItemIndex;
+      }
+    }
+  }
+
+  void LogEntriesListCtrl::HighlightPreviousMatchingLineAndMoveThere(
+    const wxString & searchFor)
+  {
+    long lastSeletedItemIndex = -1;
+    long firstLineToSearchIn = 0;
+    lastSeletedItemIndex = m_lastSeletedItemIndex;
+
+    const int numLogEntries = m_logentries.size();
+
+    if( lastSeletedItemIndex == -1 )
+      firstLineToSearchIn = numLogEntries - 1;
+    else
+      firstLineToSearchIn = m_lastSeletedItemIndex - 1;
+
+    if( numLogEntries > firstLineToSearchIn)
+    {
+      const std::string std_strSearchFor = wxWidgets::GetStdString(searchFor);
+
+      container_type::const_reverse_iterator c_iter = //m_logentries.begin();
+        m_logentries.rbegin() +
+        //e.g. 10 - last line (9) - 1 = move by 0 positions after rbegin
+        (numLogEntries - firstLineToSearchIn - 1);
+
+      long currentItemIndex = firstLineToSearchIn;
+      while( c_iter != m_logentries.rend() )
+      {
+        const std::string & std_strMessage = c_iter->m_std_strMessage;
+        if( std_strMessage.find(std_strSearchFor) != std::string::npos )
+        {
+          //http://wiki.wxwidgets.org/WxListCtrl#Select_or_Deselect_an_Item
+          SetItemState(currentItemIndex, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+          const int numLinesToScroll = currentItemIndex - m_currentScrollPos;
+          ScrollLines( numLinesToScroll);
+          m_currentScrollPos = currentItemIndex;
+          m_lastSeletedItemIndex = currentItemIndex;
+//          SetScrollPos(wxVERTICAL, m_currentScrollPos);
+          Refresh();
+          break;
+        }
+        ++ c_iter;
+        -- currentItemIndex;
       }
     }
   }
@@ -172,6 +231,11 @@ namespace wxWidgets
       }
     }
     return wxT("xx");
+  }
+
+  void LogEntriesListCtrl::OnListItemSelected(wxListEvent & event)
+  {
+    m_lastSeletedItemIndex = event.GetIndex();
   }
 
   void LogEntriesListCtrl::OnScroll(wxScrollWinEvent & event)

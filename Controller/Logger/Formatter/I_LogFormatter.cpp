@@ -13,7 +13,7 @@
  */
 
 #include "Controller/Logger/Formatter/I_LogFormatter.hpp"
-//#include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
+#include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 #include <limits.h> //SHRT_MAX
 //#include <Controller/Logger/Logger.hpp> //class Logger
 #include <Controller/Logger/OutputHandler/I_LogEntryOutputter.hpp>
@@ -81,6 +81,8 @@ I_LogFormatter::~I_LogFormatter()
 void I_LogFormatter::CreateTimePlaceHolderToLogFileEntryMemberMapping()
 {
   std::string str = "year";
+  try
+  {
   //for initalizing a struct:
   //http://stackoverflow.com/questions/330793/how-to-initialize-a-struct-in-ansi-c99
   m_nodetrieTimePlaceHolderToLogFileEntryMember.insert_inline(
@@ -122,6 +124,10 @@ void I_LogFormatter::CreateTimePlaceHolderToLogFileEntryMemberMapping()
     (BYTE *) str.c_str(), str.size(), //(const void *)
     new PointerToLogFileEntryMemberAndNumFormatChars(3,
       & m_p_logfileentry->nanosecond) );
+  }catch( const NS_NodeTrie::RootNodeNotInitalizedException & e)
+  {
+    LOGN_ERROR("NS_NodeTrie::RootNodeNotInitalizedException")
+  }
 }
 
 /** Before formatting the numbers to string the maximum size of the resulting

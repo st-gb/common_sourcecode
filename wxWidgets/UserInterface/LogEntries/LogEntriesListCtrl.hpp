@@ -66,6 +66,7 @@ namespace wxWidgets
     container_type m_logentries;
     Logger & m_logger;
     int m_currentScrollPos;
+    int m_lastSeletedItemIndex;
     wxWidgets::LogEntriesDialog & m_logEntriesDialog;
   public:
     LogEntriesListCtrl(
@@ -82,6 +83,7 @@ namespace wxWidgets
 
     void ClearLogEntries() { m_logentries.clear(); SetItemCount(0); }
     void HighlightMatchingLineAndMoveThere(const wxString & value);
+    void HighlightPreviousMatchingLineAndMoveThere(const wxString & searchFor);
     unsigned Log(//ostream & ostr
   //    const std::string & r_stdstrMessage,
       const LogFileEntry & logfileentry,
@@ -90,6 +92,7 @@ namespace wxWidgets
       const char * const prettyFunctionFormattedFunctionName = NULL
       ) const;
     wxString OnGetItemText(long item, long column) const;
+    void OnListItemSelected(wxListEvent& event);
     void OnScroll(wxScrollWinEvent & event);
 
     /** For receiving messages/ for callback of OnGetItemText(...). */

@@ -59,7 +59,12 @@ namespace CSS
         static const char * p_chThreadName;
         p_std_strThreadName = logfileentry.p_std_strThreadName;
         if( p_std_strThreadName)
-          p_chThreadName = p_std_strThreadName->c_str();
+        {
+          //p_chThreadName = p_std_strThreadName->c_str();
+          std_strThreadName = * p_std_strThreadName + "-" +
+            convertToStdString(logfileentry.threadID);
+          p_chThreadName = std_strThreadName.c_str();
+        }
         else
         {
           std_strThreadName = "Thread-" + convertToStdString(logfileentry.threadID);

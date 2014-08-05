@@ -1,23 +1,33 @@
 #pragma once
 
-namespace OperatingSystem
-{
 #ifdef _WIN32
-#include <windows.h> //for SYSTEMTIME, GetLocalTime(SYSTEMTIME)
-#include <time.h> //struct tm
+	#include <windows.h> //for SYSTEMTIME, GetLocalTime(SYSTEMTIME)
+	#include <time.h> //struct tm
+#endif
 
-inline void GetCurrentTime(struct tm & tm_Current)
+/** Version for the "C" programming language. */
+inline void GetCurrentTime(struct tm * tm_Current)
 {
   //static 
   SYSTEMTIME s_systemtime ;
 
-  //Gets the same time as the Windows clock.
-  ::GetLocalTime( & s_systemtime );
+  /** Gets the same time as the Windows clock. */
+  GetLocalTime( & s_systemtime );
   tm_Current.tm_sec = s_systemtime.wSecond;
   tm_Current.tm_min = s_systemtime.wMinute;
   tm_Current.tm_hour = s_systemtime.wHour;
 }
 
+#ifdef __cplusplus
+namespace OperatingSystem
+{
+#endif
+inline void GetCurrentTime(struct tm & tm_Current)
+{
+	::GetCurrentTime(& GetCurrentTime);
+}
+#ifdef __cplusplus
+}
 #endif
 
 #ifdef __unix__
@@ -39,4 +49,6 @@ inline void GetCurrentTime(struct tm & tm_Current)
   ::memcpy(& tm_Current, p_tm, sizeof(struct tm) );
 }
 #endif
+#ifdef __cplusplus
 }
+#endif

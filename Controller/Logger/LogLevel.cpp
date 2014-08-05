@@ -6,6 +6,7 @@
  */
 
 #include "Controller/Logger/LogLevel.hpp"
+#include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN_ERROR
 
 #define ASCII_CODE_FOR_LOW_Z_PLUS1 0x7B // 'z' + 1
 
@@ -19,6 +20,8 @@ namespace LogLevel
   {
     std::string str = "info";
   //  LogLevel::s_nodetrieLogLevelStringToNumber.Create(255);
+    try
+    {
     s_nodetrieLogLevelStringToNumber.insert_inline( (BYTE *) str.c_str(),
       str.length(), LogLevel::info);
     str = "debug";
@@ -27,6 +30,10 @@ namespace LogLevel
     str = "warning";
     s_nodetrieLogLevelStringToNumber.insert_inline( (BYTE *) str.c_str(),
       str.length(), LogLevel::warning);
+    }catch( const NS_NodeTrie::RootNodeNotInitalizedException & e)
+    {
+      LOGN_ERROR("NS_NodeTrie::RootNodeNotInitalizedException")
+    }
   }
 }
 //

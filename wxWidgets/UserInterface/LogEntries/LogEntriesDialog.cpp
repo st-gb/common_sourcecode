@@ -15,11 +15,10 @@
 namespace wxWidgets
 {
 
-  enum winIDs { ClearLogEntriesButton, goToPreviousMatchButton, goToNextMatchButton};
-
   BEGIN_EVENT_TABLE(LogEntriesDialog, wxDialog)
     EVT_BUTTON( ClearLogEntriesButton, LogEntriesDialog::OnClearLogEntriesButton)
     EVT_BUTTON( goToNextMatchButton, LogEntriesDialog::OnGoToNextMatchButton)
+    EVT_BUTTON( goToPreviousMatchButton, LogEntriesDialog::OnGoToPreviousMatchButton)
     EVT_CLOSE(LogEntriesDialog::OnClose)
   END_EVENT_TABLE()
 
@@ -37,8 +36,11 @@ namespace wxWidgets
   {
     // TODO add a virtual list control
     m_p_logEntriesListCtrl = new
-      wxWidgets::LogEntriesListCtrl(this, wxID_ANY, (Logger &) logger,
-      (wxWidgets::LogEntriesDialog &) * this);
+      wxWidgets::LogEntriesListCtrl(
+        this,
+        /*wxID_ANY*/ logEntriesListCtrl,
+        (Logger &) logger,
+        (wxWidgets::LogEntriesDialog &) * this);
 
     wxBoxSizer * p_wxsizer = new wxBoxSizer(wxVERTICAL);
 
@@ -114,6 +116,23 @@ namespace wxWidgets
       , 0
       );
 
+    m_p_functionNameToSearch = new wxTextCtrl(
+        this,
+        wxID_ANY
+        );
+
+    p_wxsizer->Add(
+      m_p_functionNameToSearch
+      /** http://docs.wxwidgets.org/2.6/wx_wxsizer.html#wxsizeradd:
+      * [...]can change its size in the main orientation of the wxBoxSizer -
+      * where 0 stands for not changeable[...] */
+      , 0
+      ,
+      wxEXPAND |
+      wxALL
+      , 0
+      );
+
     p_wxsizer->Add(
       //p_wxlistctrl
       m_p_logEntriesListCtrl
@@ -145,6 +164,12 @@ namespace wxWidgets
   {
     const wxString & value = m_p_messageToSearch->GetValue();
     m_p_logEntriesListCtrl->HighlightMatchingLineAndMoveThere(value);
+  }
+
+  void LogEntriesDialog::OnGoToPreviousMatchButton(wxCommandEvent & evt)
+  {
+    const wxString & value = m_p_messageToSearch->GetValue();
+    m_p_logEntriesListCtrl->HighlightPreviousMatchingLineAndMoveThere(value);
   }
 
   void LogEntriesDialog::OnClose( wxCloseEvent & wxcmd )

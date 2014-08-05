@@ -24,15 +24,19 @@ namespace wxWidgets
   class LogEntriesDialog
     : public wxDialog
   {
-    wxTextCtrl * m_p_messageToSearch;
+    wxTextCtrl * m_p_messageToSearch, * m_p_functionNameToSearch;
     wxWidgets::LogEntriesListCtrl * m_p_logEntriesListCtrl;
   public:
+    enum winIDs { ClearLogEntriesButton, goToPreviousMatchButton,
+      goToNextMatchButton, logEntriesListCtrl};
+
     LogEntriesDialog(const Logger & logger);
     virtual
     ~LogEntriesDialog();
 
     void OnClose( wxCloseEvent & wxcmd );
     void OnGoToNextMatchButton(wxCommandEvent & evt);
+    void OnGoToPreviousMatchButton(wxCommandEvent & evt);
     void OnClearLogEntriesButton(wxCommandEvent & evt);
     /** For receiving messages. */
     DECLARE_EVENT_TABLE()
