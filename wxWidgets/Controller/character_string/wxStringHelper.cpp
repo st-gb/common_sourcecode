@@ -44,33 +44,24 @@ namespace wxWidgets
 
   wxString getwxString(const std::wstring & cr_stdwstr )
   {
-  //#ifdef wxUSE_WCHAR_T
-  //see wx/chartype.h:wxUSE_UNICODE_WCHAR->"typedef wchar_t wxStringCharType;"
-  //#ifdef wxUSE_UNICODE_WCHAR
-  #if wxUSE_UNICODE == 1
-    //std::wstring wstr(str.begin(), str.end() ) ;
-    wxString wxstr( cr_stdwstr.c_str() ) ;
-  #else
-    std::string stdstr(cr_stdwstr.begin(), cr_stdwstr.end() ) ;
-    wxString wxstr(( const unsigned char * ) stdstr.c_str() ) ;
-  #endif
-   return  wxstr ;
+    const wxString wxstr = getwxString_inline(cr_stdwstr);
+    return wxstr;
   }
 
-  std::wstring GetStdWstring(const wxString & cr_wxstr)
-  {
-    //see http://wiki.wxwidgets.org/Converting_everything_to_and_from_wxString
-    // #wxString_to_wchar_t.2A:
-  #ifdef UNICODE
-    std::wstring stdwstr = std::wstring( cr_wxstr.wc_str() ) ;
-  #else
-    //see http://wiki.wxwidgets.org/Converting_everything_to_and_from_wxString
-    // #wxString_to_char.2A
-    std::string stdstr = std::string( cr_wxstr.mb_str() ) ;
-    std::wstring stdwstr( stdstr.begin(), stdstr.end() ) ;
-  #endif
-    return stdwstr ;
-  }
+//  std::wstring GetStdWstring_Inline(const wxString & cr_wxstr)
+//  {
+//    //see http://wiki.wxwidgets.org/Converting_everything_to_and_from_wxString
+//    // #wxString_to_wchar_t.2A:
+//  #ifdef UNICODE
+//    std::wstring stdwstr = std::wstring( cr_wxstr.wc_str() ) ;
+//  #else
+//    //see http://wiki.wxwidgets.org/Converting_everything_to_and_from_wxString
+//    // #wxString_to_char.2A
+//    std::string stdstr = std::string( cr_wxstr.mb_str() ) ;
+//    std::wstring stdwstr( stdstr.begin(), stdstr.end() ) ;
+//  #endif
+//    return stdwstr ;
+//  }
 
   std::string GetStdString(const wxString & cr_wxstr)
   {

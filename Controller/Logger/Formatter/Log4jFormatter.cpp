@@ -32,7 +32,7 @@ namespace CSS
     }
 
     inline char * Log4jFormatter::GetLogLevelAsString(
-      enum MessageType messageType)
+      enum LogLevel::MessageType messageType)
     {
       switch(messageType)
       {

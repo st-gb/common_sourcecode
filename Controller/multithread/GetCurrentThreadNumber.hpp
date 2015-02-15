@@ -11,6 +11,15 @@
 #ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
   #include <windows.h> //::GetCurrentThreadId()
 #endif
+#ifdef __linux__
+  #include <Linux/GetCurrentThreadNumber.h>
+  using namespace Linux;
+  #include "preprocessor_macros/Windows_compatible_typedefs.h" //for DWORD
+//  #ifndef DWORD
+//    #define DWORD unsigned
+//  #endif
+#endif
+
 namespace OperatingSystem
 {
 #ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
@@ -24,8 +33,9 @@ namespace OperatingSystem
   }
 #endif
 #ifdef __linux__
-  #include <Linux/GetCurrentThreadNumber.h>
-  using namespace Linux;
+  inline DWORD GetCurrentThreadNumber() {
+    return Linux::GetCurrentThreadNumber();
+  }
 #endif
 };
 

@@ -1,5 +1,11 @@
 #pragma once
 
+#ifdef _WIN32
+  #include <windows.h> //InterlockedExchange
+#endif
+
+/** Writes value @param val into address of @param Target as 1 atomic operation. 
+    -> thread-safe */
 inline long AtomicExchange(long * Target, long val)
 {
 #ifdef _WIN32

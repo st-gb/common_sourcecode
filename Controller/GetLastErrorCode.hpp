@@ -13,8 +13,8 @@
   #include <Windows/ErrorCode/GetLastErrorCode.hpp>
 #endif
 #ifdef __linux__
-  #define OperatingSystem Linux
   #include <Linux/GetLastErrorCode.hpp>
+  #define OperatingSystem Linux
 #endif
 
 //namespace OperatingSystem

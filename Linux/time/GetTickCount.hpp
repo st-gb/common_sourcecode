@@ -53,23 +53,23 @@
 
 namespace Linux
 {
-  /** see http://www.opengroup.org/onlinepubs/9699919799/functions/gettimeofday.html:
-  * "Applications should use the clock_gettime() function instead of the
-  *  obsolescent gettimeofday() function." */
   inline bool GetTimeCountInNanoSeconds(//long double
-      uint64_t & TimeCountInNanoSeconds)
+    TimeCountInNanosec_type & TimeCountInNanoSeconds)
   {
     struct timespec s_timespec;
+    /** see http://www.opengroup.org/onlinepubs/9699919799/functions/gettimeofday.html:
+    * "Applications should use the clock_gettime() function instead of the
+    *  obsolescent gettimeofday() function." */
     /** Link to "librt" for "clock_gettime" */
     int ret = clock_gettime(
-		/** from http://linux.die.net/man/3/clock_gettime:
-		* CLOCK_REALTIME: System-wide realtime clock. Setting this clock requires
-		* appropriate privileges.
-		* CLOCK_MONOTONIC: Clock that cannot be set and represents monotonic time
-		* since some unspecified starting point. 
-		* Use CLOCK_MONOTONIC because this cannot be changed and so a time 
-		* difference can be calculated more safely. */
-		CLOCK_MONOTONIC //clockid_t clock_id
+      /** from http://linux.die.net/man/3/clock_gettime:
+      * CLOCK_REALTIME: System-wide realtime clock. Setting this clock requires
+      * appropriate privileges.
+      * CLOCK_MONOTONIC: Clock that cannot be set and represents monotonic time
+      * since some unspecified starting point.
+      * Use CLOCK_MONOTONIC because this cannot be changed and so a time
+      * difference can be calculated more safely. */
+      CLOCK_MONOTONIC //clockid_t clock_id
       , & s_timespec //struct timespec *tp
       );
     TimeCountInNanoSeconds = s_timespec.tv_sec * 1000000000 + s_timespec.tv_nsec;

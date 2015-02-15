@@ -1,0 +1,37 @@
+/* 
+ * File:   DictionaryFileRessAccessException.h
+ * Author: mr.sys
+ *
+ * Created on 14. Februar 2015, 15:20
+ */
+
+#ifndef DICTIONARYFILERESSACCESSEXCEPTION_HPP
+#define	DICTIONARYFILERESSACCESSEXCEPTION_HPP
+
+#include <FileSystem/File/File.hpp>
+#include "FileException.hpp"
+
+class FileReadException
+  : public FileException
+{
+  enum I_File::ReadResult m_res;
+public:
+  FileReadException(
+    const enum I_File::ReadResult res,
+    const DWORD operatinSystemErrorCode,
+    const char * const filePath )
+  {
+    m_res = res;
+    m_operatingSystemErrorCode = operatinSystemErrorCode;
+    m_filePath = filePath;
+  }
+  //DictionaryFileRessAccessException(const DictionaryFileRessAccessException& orig);
+  virtual ~FileReadException() { };
+  
+  enum I_File::ReadResult GetResult() const { return m_res; } 
+private:
+
+};
+
+#endif	/* DICTIONARYFILERESSACCESSEXCEPTION_HPP */
+

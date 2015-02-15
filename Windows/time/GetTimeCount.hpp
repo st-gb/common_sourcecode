@@ -9,9 +9,13 @@
 #ifdef __cplusplus
 namespace Windows_API
 {
-  inline GetTimeCountInSeconds(long double & timeCountInSeconds)
+#endif //#ifdef __cplusplus
+  inline bool GetTimeCountInSeconds(long double & timeCountInSeconds)
   {
     timeCountInSeconds = ::GetTimeCountInSeconds();
+	if( timeCountInSeconds > 0.0 )
+		return 1;
+	return 0;
   }
   
   inline DWORD GetTimeCountInMilliSeconds()
@@ -19,10 +23,13 @@ namespace Windows_API
     long double TimeCountInMilliSeconds;
     bool b = GetTimeCountInSeconds(TimeCountInMilliSeconds);
     if( b )
+	{
       TimeCountInMilliSeconds *=
         //to microseconds : 1 s = 1000 ms 
         1000.0f;
-    return TimeCountInMilliSeconds;
+		return TimeCountInMilliSeconds;
+	}
+	return 0;	
   }
 
   /** get time in 10^(-9) seconds */
@@ -39,4 +46,6 @@ namespace Windows_API
         1000000000.0f);
     return b;
   }
+#ifdef __cplusplus
 }
+#endif //#ifdef __cplusplus

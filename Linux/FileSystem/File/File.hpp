@@ -72,7 +72,21 @@ namespace Linux
     }
     int ReadByte()
     {
-      return fgetc(m_pFile);
+	  const int i = fgetc(m_pFile);
+	  /**http://pubs.opengroup.org/onlinepubs/009695399/functions/fgetc.html
+	  * "If the end-of-file indicator for the stream is set, or if the stream 
+	  * is at end-of-file, the end-of-file indicator for the stream shall be set 
+	  * and fgetc() shall return EOF. If a read error occurs, the error indicator 
+	  * for the stream shall be set, fgetc() shall return EOF, 
+	  * [CX] [Option Start]  and shall set errno to indicate the error." */
+	  if( i == EOF )
+	  {
+		if( errno == ESUCCESS)
+		  return I_File::endOfFileReached;
+		else
+		  return I_File::unknownReadError;
+	  }
+      return I_File::successfullyRead;
     }
     bool SeekFilePointerPosition(const file_pointer_type & filePos)
     {

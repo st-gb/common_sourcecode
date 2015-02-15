@@ -14,7 +14,7 @@
 
 /** Because of outputting to a std::ostream (ANSI char streams) you may need
  *  to set the locale before calling this function. */
-void OutputXMLindented_inl(
+inline void OutputXMLindented_inl(
   const char * p_chXML,
   std::ostream & r_std_ostream,
   //from http://www.cantrip.org/locale.html

@@ -47,8 +47,8 @@ Logger::Logger(
   )
 {
 //  CreateTextFormatter();
-  if( LogLevel::s_nodetrieLogLevelStringToNumber.size() == 0)
-    LogLevel::CreateLogLevelStringToNumberMapping();
+//  if( LogLevel::s_nodetrieLogLevelStringToNumber.size() == 0)
+//    LogLevel::CreateLogLevelStringToNumberMapping();
 }
 
 Logger::~Logger()

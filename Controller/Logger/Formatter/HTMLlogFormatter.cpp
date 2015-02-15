@@ -24,7 +24,7 @@ HTMLlogFormatter::~HTMLlogFormatter()
   // TODO Auto-generated destructor stub
 }
 
-inline void HTMLlogFormatter::OutputCSSclass(enum MessageType messageType)
+inline void HTMLlogFormatter::OutputCSSclass(enum LogLevel::MessageType messageType)
 {
   switch(messageType)
   {
@@ -45,7 +45,7 @@ inline void HTMLlogFormatter::OutputCSSclass(enum MessageType messageType)
       break;
     //avoid g++ "warning: enumeration value 'beyondLastLogMessageType'
     //not handled in switch.
-    case beyondLastLogMessageType:
+    case LogLevel::beyondLastLogMessageType:
     //case debug:
       break;
   }
@@ -94,7 +94,7 @@ inline std::string & MakeHTMLFormat(std::string * p_std_strMessage)
 
 void HTMLlogFormatter::WriteLogFileEntry(
   const LogFileEntry & logfileentry,
-  enum MessageType messageType /*= LogLevel::info*/,
+  enum LogLevel::MessageType messageType /*= LogLevel::info*/,
   const char * const prettyFunctionFormattedFunctionName /*= NULL*/
   )
 {
@@ -132,10 +132,10 @@ void HTMLlogFormatter::WriteLogFileEntry(
 
 void HTMLlogFormatter::WriteMessage(
   const std::string & r_std_strMessage,
-  enum MessageType messageType //= LogLevel::info
+  enum LogLevel::MessageType messageType //= LogLevel::info
   )
 {
-  if( messageType < beyondLastLogMessageType )
+  if( messageType < LogLevel::beyondLastLogMessageType )
   {
     * m_p_std_ostream
       << "<td ";

@@ -6,16 +6,18 @@ typedef unsigned char BYTE;
 #endif //#ifndef NULL
 #include <string.h> // memset(...)
 
+/** Using a template is more universal than using a pointer to the data:
+* e.g. a member function pointer (e.g. 8 bytes on 32 bit OS) does not
+* have the same size as a void pointer (4 bytes on 32 bit OS). */
 template <typename member_type>
 class NodeTrieNode
 {
 //private:
 public:
 //  static member_type s_defaultValue;
-  //Using a template is more universal than using a pointer to the data:
-  // e.g. a member function pointer (e.g. 8 bytes on 32 bit OS) does not
-  //have the same size as a void pointer (4 bytes on 32 bit OS).
 	member_type m_member;
+  NodeTrieNode ** m_arp_nodetrienode1LowerLevel ;
+  
 	NodeTrieNode()
 		: m_arp_nodetrienode1LowerLevel (NULL)
 	{
@@ -27,7 +29,8 @@ public:
 	void Create(unsigned wNumberOfNodesPerHierarchyLevel, member_type defaultValue)
 	{
 		m_arp_nodetrienode1LowerLevel = new NodeTrieNode * [
-		  wNumberOfNodesPerHierarchyLevel] ; unsigned pointerSize = sizeof(NodeTrieNode *);
+		  wNumberOfNodesPerHierarchyLevel] ; 
+    const unsigned pointerSize = sizeof(NodeTrieNode *);
 		//Value will have "abitrary" value -> set to NULL to mark the end.
 		//cites from: http://www.cplusplus.com/reference/clibrary/cstring/memset/
 		memset( //Pointer to the block of memory to fill.
@@ -62,13 +65,19 @@ public:
 		m_arp_nodetrienode1LowerLevel = NULL ;
     }
   }
+
+  bool IsCreated() const
+  {
+    return m_arp_nodetrienode1LowerLevel != NULL;
+  }
+  
   ~NodeTrieNode()
   {
-	Delete();
+    Delete();
 	//if( m_pv)
 	//	delete m_pv;
   }
-  NodeTrieNode ** m_arp_nodetrienode1LowerLevel ;
+  
 //  //pointer to specific attributes
 //  void * m_pv ;
 };

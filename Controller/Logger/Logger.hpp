@@ -38,8 +38,9 @@
   #include <Controller/multithread/GetCurrentThreadNumber.hpp>
 //  #include "HTMLlogFormatter.hpp"
 //  #include "Formatter/I_LogFormatter.hpp" //class ILogFormatter::WriteLogFileEntry(...)
-  #include "LogLevel.hpp" //namespace LogLevel::MessageType
-  using namespace LogLevel;
+
+  //#include "LogLevel.hpp" //namespace LogLevel::MessageType
+  //using namespace LogLevel;
 
   #include "LogFileEntry.hpp" //class LogFileEntry
 
@@ -52,8 +53,13 @@
 //  class I_LogFormatter;
 
   #include "Appender/FormattedLogEntryProcessor.hpp"
+  #include "LogLevel.hpp" //namespace LogLevel::MessageType
+
+  //#define ASCII_CODE_FOR_LOW_Z_PLUS1 0x7B // 'z' + 1
 
   class Logger
+    /** For log level string to number mapping: mapping needs to be . */
+    : public LogLevel
   {
   private:
 //    std::map<unsigned, std::string> m_threadNumber2Name;
@@ -87,12 +93,41 @@
   protected:
 
   public:
+//    static NodeTrie<BYTE> s_nodetrieLogLevelStringToNumber(
+//      ASCII_CODE_FOR_LOW_Z_PLUS1,
+//      LogLevel::beyondLastLogMessageType);
+    //#include "LogLevel.hpp" //namespace LogLevel::MessageType
+//    #include "LogLevel_GetAsNumber.hpp" //namespace LogLevel::MessageType
+  
     Logger( //const std::set<std::string> & cr_stdsetstdstrExcludeFromLogging
       ) ;
     /** by "virtual": avoid warning: `class Logger' has virtual functions but
      * non-virtual destructor.  */
     virtual ~Logger() ;
     Logger( std::string & stdstrFilePath ) ;
+
+    /*FORCEINLINE*/ inline
+    void PossiblyEnterCritSec()
+    {
+#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+  //Protect access to the trie: if 2 or more threads access the
+  // trie then an invalid array index for a trie level might be used?!
+  //If the output is _not_ synchronized and 2 or more threads are
+  // logging concurrently: the output may be mixed like:
+  // "22010.8.10 2010.99h:824.min 1051 19491msad24hread ID:tC8296ntCP51os
+  //  ter getting DOM implementationt("
+      m_critical_section_typeLogging.Enter() ;
+#endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+    }
+
+    inline void PossiblyLeaveCritSec()
+    {
+      /** #define COMPILE_LOGGER_MULTITHREAD_SAFE if multiple threads may do a
+       *  logging output simultaneously. */
+#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+      m_critical_section_typeLogging.Leave() ;
+#endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
+    }
 
 #ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
     void AddExcludeFromLogging(const std::string & cr_stdstr ) ;
@@ -103,7 +138,9 @@
     void AddFormattedLogEntryProcessor(
       FormattedLogEntryProcessor * p_formattedlogentryprocessor)
     {
+      PossiblyEnterCritSec();
       m_formattedLogEntryProcessors.push_back(p_formattedlogentryprocessor);
+      PossiblyLeaveCritSec();
     }
     /*const*/ std::vector<FormattedLogEntryProcessor *> &
       GetFormattedLogEntryProcessors() //const
@@ -124,29 +161,6 @@
 ////      << "\n"
 ////      ;
 //    }
-
-    /*FORCEINLINE*/ inline
-    void PossiblyEnterCritSec()
-    {
-#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-  //Protect access to the trie: if 2 or more threads access the
-  // trie then an invalid array index for a trie level might be used?!
-  //If the output is _not_ synchronized and 2 or more threads are
-  // logging concurrently: the output may be mixed like:
-  // "22010.8.10 2010.99h:824.min 1051 19491msad24hread ID:tC8296ntCP51os
-  //  ter getting DOM implementationt("
-      m_critical_section_typeLogging.Enter() ;
-#endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-    }
-                    
-    inline void PossiblyLeaveCritSec()
-    {
-      /** #define COMPILE_LOGGER_MULTITHREAD_SAFE if multiple threads may do a
-       *  logging output simultaneously. */
-#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-      m_critical_section_typeLogging.Leave() ;
-#endif //#ifdef COMPILE_LOGGER_MULTITHREAD_SAFE      
-    }
 
     inline void Ideas()
     {

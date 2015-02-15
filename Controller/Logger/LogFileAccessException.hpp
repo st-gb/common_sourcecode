@@ -42,6 +42,7 @@ public:
     m_filePath = logFilePath;
   }
 
+  /** Get errror message as 1-byte / ASCII string. */
   inline const std::string GetErrorMessageA() const
   {
     std::string std_strErrorMessage;

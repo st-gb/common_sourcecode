@@ -23,7 +23,7 @@
 #include <data_structures/Trie/NodeTrie/NodeTrie.hpp> //class NodeTrie
 
 #include "../LogLevel.hpp" //namespace LogLevel::MessageType
-using namespace LogLevel;
+//using namespace LogLevel;
 
 //typedef uint16_t WORD;
 //typedef
@@ -139,7 +139,7 @@ public:
    *   for every logentry. */
   virtual void WriteLogFileEntry(
     const LogFileEntry & logfileentry,
-    enum MessageType messageType = LogLevel::info,
+    enum LogLevel::MessageType messageType = LogLevel::info,
     const char * const prettyFunctionFormattedFunctionName = NULL
     )
   {
@@ -165,7 +165,7 @@ public:
   }
 
   virtual void WriteMessage(const std::string & r_std_strMessage,
-    enum MessageType messageType = LogLevel::info)
+    enum LogLevel::MessageType messageType = LogLevel::info)
   {
     /** "c_str()" is needed for ANDROID compiler */
     * m_p_std_ostream << r_std_strMessage.c_str() << "\n";

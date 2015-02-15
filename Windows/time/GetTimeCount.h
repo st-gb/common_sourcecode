@@ -7,11 +7,12 @@
   {
     long double timeCountInSeconds;
     LARGE_INTEGER PerformanceCounterValueInCounts;
-    /** http://msdn.microsoft.com/en-us/library/ms644904 
-  * Retrieves the current value of the performance counter, which is a high 
-  * resolution (<1us) time stamp that can be used for time-interval 
-  * measurements. */
-    if( QueryPerformanceCounter(
+    if( 
+      /** http://msdn.microsoft.com/en-us/library/ms644904 
+      * Retrieves the current value of the performance counter, which is a high 
+      * resolution (<1us) time stamp that can be used for time-interval 
+      * measurements. */
+	  QueryPerformanceCounter(
         & PerformanceCounterValueInCounts )
       )
     {

@@ -10,8 +10,12 @@
 
 #include <data_structures/Trie/NodeTrie/NodeTrie.hpp> //class NodeTrie
 
-namespace LogLevel
+  #define ASCII_CODE_FOR_LOW_Z_PLUS1 0x7B // 'z' + 1
+
+/*namespace*/ class LogLevel
 {
+      
+ public:
   /** Should be sorted so that the most messages get the lowest number:
    * e.g. level "info" outputs all messages of info and beyond info:
    * info, warning, error, ... */
@@ -30,28 +34,24 @@ namespace LogLevel
     error,
     beyondLastLogMessageType
   };
-  extern //static
-    NodeTrie<BYTE> s_nodetrieLogLevelStringToNumber;
+  static NodeTrie<BYTE> s_nodetrieLogLevelStringToNumber;
+//  static NodeTrie<BYTE> s_nodetrieLogLevelStringToNumber;(
+//    ASCII_CODE_FOR_LOW_Z_PLUS1,
+//    LogLevel::beyondLastLogMessageType);
+  
+  LogLevel()
+  {
+//    if( LogLevel::s_nodetrieLogLevelStringToNumber.size() == 0)
+//      LogLevel::CreateLogLevelStringToNumberMapping();
+  }
+  #include "LogLevel_GetAsNumber.hpp"
+};
+//  extern //static
+//    NodeTrie<BYTE> s_nodetrieLogLevelStringToNumber;
 
 //  LogLevel();
 //  virtual
 //  ~LogLevel();
-  inline enum MessageType GetAsNumber(const std::string & c_r_std_strLogLevel)
-  {
-    //      if( c_r_std_strLogLevel == "info" )
-    //        m_logLevel = LogLevel::log_message_typeINFO;
-    //      else if( c_r_std_strLogLevel == "warning" )
-    NodeTrieNode<BYTE> * p_ntn = s_nodetrieLogLevelStringToNumber.
-      contains_inline( (BYTE *) c_r_std_strLogLevel.c_str(),
-      c_r_std_strLogLevel.length(), true);
-    if( p_ntn )
-      return (MessageType) p_ntn->m_member;
-//    std::exception ex;
-//    ex.
-    throw NotInContainerException();
-//    return warning;
-  }
-  void CreateLogLevelStringToNumberMapping();
-};
+//};
 
 #endif /* LOGLEVEL_HPP_ */

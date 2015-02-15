@@ -16,6 +16,8 @@ public:
   enum CloseError {closingFileSucceeded = 0, closingFileFailed};
   enum OpenError {success = 0, accessDenied, fileNotFound, not_set };
   enum OpenMode { readOnly, writeOnly };
+  enum ReadResult { successfullyRead = 0, readLessThanIntended, 
+    endOfFileReached, unknownReadError };
 
   virtual ~I_File() {};
 

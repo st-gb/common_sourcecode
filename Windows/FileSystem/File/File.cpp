@@ -123,17 +123,39 @@ namespace Windows_API
     {
       BYTE by;
       DWORD dwNumberOfBytesRead;
+      const DWORD nNumberOfBytesToRead = 1;
       //"If the function succeeds, the return value is nonzero (TRUE)."
-      BOOL b = ::ReadFile(
+      const BOOL readFileReturnValue = ::ReadFile(
           m_hFile, //HANDLE hFile,
           & by, //_Out_        LPVOID lpBuffer,
-          1, //_In_         DWORD nNumberOfBytesToRead,
+          nNumberOfBytesToRead, //_In_         DWORD nNumberOfBytesToRead,
           & dwNumberOfBytesRead, //_Out_opt_    LPDWORD lpNumberOfBytesRead,
           NULL //_Inout_opt_  LPOVERLAPPED lpOverlapped
           );
-      if( ! b || dwNumberOfBytesRead < 1 )
-        return -1;
-      return by;
+      if( readFileReturnValue )
+      {
+        /** https://msdn.microsoft.com/en-us/library/windows/desktop/aa365467%28v=vs.85%29.aspx :
+         *  "When a synchronous read operation reaches the end of a file, 
+         *  ReadFile returns TRUE and sets *lpNumberOfBytesRead to zero." */
+        if( dwNumberOfBytesRead == 0 )
+        {
+          const DWORD dw = ::GetLastError();
+          return I_File::endOfFileReached;
+        }
+        else if( dwNumberOfBytesRead < nNumberOfBytesToRead )
+          return I_File::readLessThanIntended;
+      }
+      /** http://msdn.microsoft.com/en-us/library/windows/desktop/aa365467%28v=vs.85%29.aspx:
+       *  "If the function fails, or is completing asynchronously, the return 
+       *  value is zero (FALSE). To get extended error information, call the 
+       *  GetLastError function." */
+      else
+      {
+//        if( dwNumberOfBytesRead < 1 )
+//        else
+        return I_File::unknownReadError;
+      }
+      return I_File::successfullyRead;
     }
 
     bool File::SeekFilePointerPosition(const I_File::file_pointer_type & offset)

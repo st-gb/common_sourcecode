@@ -1,4 +1,6 @@
 #pragma once
+#ifndef __LINUX_GET_CURRENT_THREAD_ID
+#define __LINUX_GET_CURRENT_THREAD_ID
 
 //#ifdef __linux__
 //  #include <pthread.h> //pthread_self()
@@ -11,22 +13,25 @@
 	#include <unistd.h>
 #endif
 #if !defined(LINUX_GET_CURRENT_THREAD_NUMBER_DUMMY_IMPLEMENTATION)
-	#include <sys/types.h> //gettid();
-	/** http://manpages.courier-mta.org/htmlman2/syscall.2.html */
-	#include <sys/syscall.h> //syscall(...) /* For SYS_xxx definitions */
+    #include <sys/types.h> //gettid();
+    /** http://manpages.courier-mta.org/htmlman2/syscall.2.html */
+    #include <sys/syscall.h> //syscall(...) /* For SYS_xxx definitions */
 #endif
 
 namespace Linux
 {
   inline //DWORD 
-    unsigned GetCurrentThreadNumber() { return //::pthread_self(); 
+    unsigned GetCurrentThreadNumber()
+  {
+    return //::pthread_self();
 #ifdef LINUX_GET_CURRENT_THREAD_NUMBER_DUMMY_IMPLEMENTATION
 	/** "SYS_gettid" not defined in Android NDK */
 	  //0;
-    pthread_self();
+      pthread_self();
 #else
-	  /** http://linux.die.net/man/2/syscall */
-	  ::syscall(SYS_gettid);
+      /** http://linux.die.net/man/2/syscall */
+      ::syscall(SYS_gettid);
 #endif
   }
 }
+#endif //#ifef __LINUX_GET_CURRENT_THREAD_ID

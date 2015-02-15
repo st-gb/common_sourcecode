@@ -50,17 +50,17 @@ public:
   virtual void WriteTrailer();
 
   //inline
-  void OutputCSSclass(enum MessageType messageType);
+  void OutputCSSclass(enum LogLevel::MessageType messageType);
 
   //inline
   void WriteLogFileEntry(
     const LogFileEntry & logfileentry,
-    enum MessageType messageType = LogLevel::info,
+    enum LogLevel::MessageType messageType = LogLevel::info,
     const char * const prettyFunctionFormattedFunctionName = NULL
     );
 
   void WriteMessage(const std::string & r_std_strMessage,
-    enum MessageType messageType = LogLevel::info);
+    enum LogLevel::MessageType messageType = LogLevel::info);
   void WriteTimeStamp(const std::stringstream & std_str_stream)
   {
     * m_p_std_ostream << "<tr><td>" << std_str_stream.str() << "</td>";

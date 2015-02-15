@@ -25,6 +25,7 @@
 #include <assert.h>
 #include <sstream> //class std::stringstream
 #include "NodeTrieNode.hpp"
+#include <fastest_data_type.h>
 
 //#include "SimpleLinkedList.hpp"
 
@@ -33,22 +34,7 @@ typedef unsigned short WORD;
   #define NULL 0
 #endif
 
-namespace NS_NodeTrie
-{
-    class RootNodeNotInitalizedException
-    {
-
-    };
-}
-
-class NotInContainerException
-{
-//  std::string m_stdstr
-//  NotInContainerException(const * char ch)
-//  {
-//
-//  }
-};
+#include "exceptions.hpp"
 
 //this is the base class of node trie classes:
 //subclasses usually add a member with additional info if this node is the
@@ -80,11 +66,13 @@ template<typename member_type>
       NodeTrie()
        : m_dwNumberOfNodes(0), m_numInfoNodes(0)
       {
-          m_nodetrienodeRoot.m_member = NULL;
+        m_nodetrienodeRoot.m_member = NULL;
       }
 
       NodeTrie(unsigned  wNumberOfNodes, member_type defaultValue)
-        : m_dwNumberOfNodes(0), m_numInfoNodes(0), m_defaultValue(defaultValue),
+        : m_dwNumberOfNodes(0), 
+          m_numInfoNodes(0), 
+          m_defaultValue(defaultValue),
           m_wNumberOfNodesPerHierarchyLevel(wNumberOfNodes),
           m_nodetrienodeRoot(wNumberOfNodes, defaultValue)
       {
@@ -114,6 +102,19 @@ template<typename member_type>
             + sizeof (NodeTrieNode<member_type>*) * numberOfNodesPerHierarchyLevel + sizeof (void*);
       }
 
+      unsigned Create(const fastestUnsignedDataType numberOfNodes, 
+        member_type defaultValue)
+      {
+        m_dwNumberOfNodes = 0, 
+        m_numInfoNodes = 0, 
+        m_defaultValue = defaultValue;
+        m_wNumberOfNodesPerHierarchyLevel = numberOfNodes;
+        m_nodetrienodeRoot(numberOfNodes, defaultValue);
+        m_wNodeSizeInByte = sizeof (NodeTrieNode<member_type>)
+          + sizeof (NodeTrieNode<member_type>*) * m_wNumberOfNodesPerHierarchyLevel
+          + sizeof (void*);
+      }
+      
       inline NodeTrieNode<member_type> * contains_inline(
         unsigned char *p_vBegin, size_type wBytesize, bool bFullMatch)
       {
@@ -147,6 +148,11 @@ template<typename member_type>
         NULL;
       }
 
+      bool IsCreated() const
+      {
+        return m_nodetrienodeRoot.IsCreated();
+      }
+      
       inline bool IsTrieLeaf(NodeTrieNode<member_type> *p_nodetrienodeCurrent)
       {
           for(WORD byIndex = 0;byIndex < m_wNumberOfNodesPerHierarchyLevel;++byIndex)
@@ -702,6 +708,11 @@ template<typename member_type>
           }
       }
 
+      bool IsCreated()
+      {
+        return m_nodetrienodeRoot.m_arp_nodetrienode1LowerLevel != NULL;
+      }
+      
       NodeTrieNode<member_type> *insert_inline(unsigned char *p_vBegin,
         unsigned short  wBytesize, member_type member_value
         /*,member_type defaultValue = 0*/)

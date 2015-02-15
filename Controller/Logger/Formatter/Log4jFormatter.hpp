@@ -32,7 +32,7 @@ namespace CSS
       /** @see http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/Level.html
        * All strings must contain <= 5 characters for log file viewers? */
       //inline
-        char * GetLogLevelAsString(enum MessageType messageType);
+        char * GetLogLevelAsString(enum LogLevel::MessageType messageType);
 
       /** Write log file in "%d{ISO8601} [%t] C M %m%n" format/ pattern
        * -"%d{ISO8601}" : current time in ISO8601 format
@@ -45,7 +45,7 @@ namespace CSS
        * */
       virtual void WriteLogFileEntry(
         const LogFileEntry & logfileentry,
-        enum MessageType messageType = LogLevel::info,
+        enum LogLevel::MessageType messageType = LogLevel::info,
         const char * const prettyFunctionFormattedFunctionName = NULL
         )
       {

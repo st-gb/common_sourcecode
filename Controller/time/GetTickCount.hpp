@@ -14,13 +14,17 @@
 #define GETTICKCOUNT_HPP_
 
 #include <stdint.h> //uint64_t
+#include <inttypes.h> //uint64_t
 typedef uint64_t TimeCountInNanosec_type;
 
+//namespace OperatingSystem
+//{
 #if defined (__linux__) || defined(__ANDROID__)
   #include <Linux/time/GetTickCount.hpp>
   #ifndef OPERATING_SYSTEM_NAME
     #define OPERATING_SYSTEM_NAME Linux
   #endif
+  using namespace Linux;
 #endif
 #ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
   #include <Windows/time/GetTimeCount.hpp>
@@ -30,13 +34,14 @@ typedef uint64_t TimeCountInNanosec_type;
   /** from http://www.cprogramming.com/tutorial/namespaces.html */
 //  namespace OperatingSystem = Windows;
 #endif
+//}
 
 namespace OperatingSystem
 {
 #ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
 //  //TODO: all code into #include <Windows/time/GetTimeCount.hpp>
 //  using namespace Windows;
-  /** Use "inline" for all functions to avoid "multiple definitions" linker  
+  /** Use "inline" for all functions to avoid "multiple definitions" linker
       error when this file is _expanded_ multiple times in source code.*/
   inline DWORD GetTimeCountInMilliSeconds(){
     return Windows_API::GetTimeCountInMilliSeconds(); }

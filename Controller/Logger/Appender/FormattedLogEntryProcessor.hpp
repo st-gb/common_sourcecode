@@ -237,7 +237,7 @@ public:
   void SetFormatter(I_LogFormatter * p_logformatter);
   void SetLogLevel(const std::string & c_r_std_strLogLevel)
   {
-    m_logLevel = LogLevel::GetAsNumber(c_r_std_strLogLevel);
+    m_logLevel = LogLevel/*Logger*/::GetAsNumber(c_r_std_strLogLevel);
   }
   /** For outputting to a std::ostream or derived class
   * see http://www.cplusplus.com/forum/general/20792/

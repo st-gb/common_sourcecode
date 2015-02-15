@@ -5,7 +5,7 @@
 //int SetCurrentDirectory_inl(const char *);
 #if defined(__unix__) //Linux, Android NDK
   #include <Linux/FileSystem/SetCurrentWorkingDir/SetCurrentWorkingDir.hpp>
-  #define Linux OperatingSystem
+  #define OperatingSystem Linux
 #endif
 #ifdef _WIN32
   #define Windows OperatingSystem
