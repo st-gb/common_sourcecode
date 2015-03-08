@@ -2,6 +2,10 @@
 
 //#include <windows.h> // ::CreateFileA(...)
 //#include <FileAPI.h>
+#include <FileSystem/File/FileReadException.hpp>
+#include <FileSystem/File/EndOfFileException.hpp>
+#include <FileSystem/File/GetAbsoluteFilePath.hpp>
+#include <FileSystem/GetCurrentWorkingDir.hpp>
 
 namespace Windows_API
 {
@@ -108,6 +112,11 @@ namespace Windows_API
       {
       case ERROR_SUCCESS:
         openError = I_File::success;
+        {
+        std::string std_strCurrentWorkingDir;
+        OperatingSystem::GetCurrentWorkingDirA_inl(std_strCurrentWorkingDir);
+        m_filePathA = GetAbsoluteFilePath(std_strCurrentWorkingDir, filePath);
+        }
         break;
       case ERROR_FILE_NOT_FOUND:
         openError = I_File::fileNotFound;
@@ -119,15 +128,17 @@ namespace Windows_API
       return openError;
     }
 
+    /** @return a single byte f*/
     int File::ReadByte()
     {
-      BYTE by;
+      BYTE fileByte;
+      int returnValue = -1;
       DWORD dwNumberOfBytesRead;
       const DWORD nNumberOfBytesToRead = 1;
       //"If the function succeeds, the return value is nonzero (TRUE)."
       const BOOL readFileReturnValue = ::ReadFile(
           m_hFile, //HANDLE hFile,
-          & by, //_Out_        LPVOID lpBuffer,
+          & fileByte, //_Out_        LPVOID lpBuffer,
           nNumberOfBytesToRead, //_In_         DWORD nNumberOfBytesToRead,
           & dwNumberOfBytesRead, //_Out_opt_    LPDWORD lpNumberOfBytesRead,
           NULL //_Inout_opt_  LPOVERLAPPED lpOverlapped
@@ -139,11 +150,30 @@ namespace Windows_API
          *  ReadFile returns TRUE and sets *lpNumberOfBytesRead to zero." */
         if( dwNumberOfBytesRead == 0 )
         {
+#ifdef _DEBUG
           const DWORD dw = ::GetLastError();
-          return I_File::endOfFileReached;
+#endif
+          //return I_File::endOfFileReached;
+          EndOfFileException endOfFileException(m_filePathA.c_str () );
+          throw endOfFileException;
         }
         else if( dwNumberOfBytesRead < nNumberOfBytesToRead )
-          return I_File::readLessThanIntended;
+        {
+          const DWORD osErrorCode = GetLastError();
+          if( osErrorCode == ERROR_SUCCESS )
+          {
+            //return I_File::readLessThanIntended;
+            EndOfFileException endOfFileException(m_filePathA.c_str () );
+            throw endOfFileException;
+          }
+          else
+          {
+            FileReadException fileReadException(
+              I_File::unknownReadError, 
+              osErrorCode, m_filePathA.c_str () );
+            throw fileReadException;
+          }
+        }
       }
       /** http://msdn.microsoft.com/en-us/library/windows/desktop/aa365467%28v=vs.85%29.aspx:
        *  "If the function fails, or is completing asynchronously, the return 
@@ -151,11 +181,16 @@ namespace Windows_API
        *  GetLastError function." */
       else
       {
+        const DWORD osErrorCode = GetLastError();
 //        if( dwNumberOfBytesRead < 1 )
 //        else
-        return I_File::unknownReadError;
+        //return I_File::unknownReadError;
+        FileReadException fileReadException(
+          I_File::unknownReadError, 
+          osErrorCode, m_filePathA.c_str () );
+        throw fileReadException;
       }
-      return I_File::successfullyRead;
+      return /*I_File::successfullyRead*/ fileByte;
     }
 
     bool File::SeekFilePointerPosition(const I_File::file_pointer_type & offset)

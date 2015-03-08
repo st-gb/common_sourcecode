@@ -22,7 +22,7 @@ namespace wxWidgets
     EVT_CLOSE(LogEntriesDialog::OnClose)
   END_EVENT_TABLE()
 
-  LogEntriesDialog::LogEntriesDialog(const Logger & logger)
+  LogEntriesDialog::LogEntriesDialog(const Logger & logger, const unsigned GUIthreadID)
     : wxDialog(
       NULL //wxWindow * parent
        ,wxID_ANY //wxWindowID id
@@ -40,7 +40,8 @@ namespace wxWidgets
         this,
         /*wxID_ANY*/ logEntriesListCtrl,
         (Logger &) logger,
-        (wxWidgets::LogEntriesDialog &) * this);
+        (wxWidgets::LogEntriesDialog &) * this, 
+        GUIthreadID);
 
     wxBoxSizer * p_wxsizer = new wxBoxSizer(wxVERTICAL);
 

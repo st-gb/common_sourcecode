@@ -30,7 +30,7 @@ namespace wxWidgets
     enum winIDs { ClearLogEntriesButton, goToPreviousMatchButton,
       goToNextMatchButton, logEntriesListCtrl};
 
-    LogEntriesDialog(const Logger & logger);
+    LogEntriesDialog(const Logger & logger, const unsigned GUIthreadID);
     virtual
     ~LogEntriesDialog();
 

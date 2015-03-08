@@ -41,17 +41,74 @@ public:
   std::string m_std_strMessage;
   std::string m_std_strThreadName;
 
+  PersistentLogEntry() { }
   PersistentLogEntry(const LogFileEntry & logfileEntry)
   {
 //    threadID = logfileEntry.
 //    * this = logfileEntry; //obtain a full copy
     m_std_strMessage = * logfileEntry.p_std_strMessage;
+    if(logfileEntry.p_std_strThreadName)
+      m_std_strThreadName = * logfileEntry.p_std_strThreadName;
+    threadID = logfileEntry.threadID;
     millisecond = logfileEntry.millisecond;
     second = logfileEntry.second;
     hour = logfileEntry.hour;
     minute = logfileEntry.minute;
   }
 };
+
+/**https://wiki.wxwidgets.org/Custom_Events_in_wx2.8_and_earlier#Creating_a_Custom_Event_-_Method_4 */
+
+// Could have been DECLARE_EVENT_TYPE( MyFooCommandEvent, -1 )
+// Not needed if you only use the event-type in one .cpp file
+extern /*expdecl*/ const wxEventType LogCommandEvent;
+ 
+// A custom event that transports a whole wxString.
+class LogEvent: public wxCommandEvent
+{
+public:
+	LogEvent( wxEventType commandType = LogCommandEvent, int id = 0 )
+	:  wxCommandEvent(commandType, id) { }
+ 
+	// You *must* copy here the data to be transported
+	LogEvent( const LogEvent &event )
+	:  wxCommandEvent(event) { this->Set( event.GetPersistentLogEntry() ); }
+ 
+	// Required for sending with wxPostEvent()
+	wxEvent* Clone() const { return new LogEvent(*this); }
+ 
+	PersistentLogEntry GetPersistentLogEntry() const { return m_persistentLogEntry; }
+	void Set( const PersistentLogEntry & persistentLogEntry ) { 
+    m_persistentLogEntry = persistentLogEntry; }
+ 
+private:
+	PersistentLogEntry m_persistentLogEntry;
+};
+ 
+typedef void (wxEvtHandler::*LogEventFunction)(LogEvent &);
+ 
+// This #define simplifies the one below, and makes the syntax less
+// ugly if you want to use Connect() instead of an event table.
+#define LogEventHandler(func)                                         \
+	(wxObjectEventFunction)(wxEventFunction)(wxCommandEventFunction)\\
+	wxStaticCastEvent(LogEventFunction, &func)                    
+ 
+// Define the event table entry. Yes, it really *does* end in a comma.
+#define EVT_LOG(id, fn)                                            \
+	DECLARE_EVENT_TABLE_ENTRY( LogCommandEvent, id, wxID_ANY,  \
+	(wxObjectEventFunction)(wxEventFunction)                     \
+	(wxCommandEventFunction) wxStaticCastEvent(                  \
+	LogEventFunction, &fn ), (wxObject*) NULL ),
+ 
+// Optionally, you can do a similar #define for EVT_MYFOO_RANGE.
+#define EVT_MYFOO_RANGE(id1,id2, fn)                                 \
+	DECLARE_EVENT_TABLE_ENTRY( MyFooCommandEvent, id1, id2,      \\
+	MyFooEventHandler(fn), (wxObject*) NULL ),
+ 
+// If you want to use the custom event to send more than one sort
+// of data, or to more than one place, make it easier by providing
+// named IDs in an enumeration.
+enum { Foo_DoFirstThing = 1, Foo_DoSecondThing, Foo_DoThirdThing };
 
 namespace wxWidgets
 {
@@ -60,7 +117,8 @@ namespace wxWidgets
     : public wxListCtrl,
     public FormattedLogEntryProcessor
   {
-    enum columnIndices { colID_timeStamp, colID_namespaceAndClass,
+    static unsigned s_GUIthreadID;
+    enum columnIndices { colID_timeStamp, colID_threadName, colID_namespaceAndClass,
       colID_functionName, colID_message };
     typedef std::deque<PersistentLogEntry> container_type;
     container_type m_logentries;
@@ -73,7 +131,8 @@ namespace wxWidgets
       /*const*/ wxWindow * /*const*/ parent,
       const wxWindowID ID,
       Logger & logger,
-      wxWidgets::LogEntriesDialog & logEntriesDialog
+      wxWidgets::LogEntriesDialog & logEntriesDialog,
+      const unsigned GUIthreadID
 //      I_LogEntryOutputter * p_outputhandler,
 //      I_LogFormatter * p_log_formatter,
 //      enum LogLevel::MessageType logLevel
@@ -81,7 +140,16 @@ namespace wxWidgets
     virtual
     ~LogEntriesListCtrl();
 
-    void ClearLogEntries() { m_logentries.clear(); SetItemCount(0); }
+    inline void AddPersistentLogEntry(const PersistentLogEntry & persistentLogEntry)
+    {
+      //TODO insert entry based on timestamp
+      ( (container_type &) m_logentries).push_back(
+        persistentLogEntry );
+      const unsigned numLogEntries = m_logentries.size();
+      ( (LogEntriesListCtrl *)this)->SetItemCount( numLogEntries );
+    }
+    
+    void ClearLogEntries() { };
     void HighlightMatchingLineAndMoveThere(const wxString & value);
     void HighlightPreviousMatchingLineAndMoveThere(const wxString & searchFor);
     unsigned Log(//ostream & ostr
@@ -92,8 +160,10 @@ namespace wxWidgets
       const char * const prettyFunctionFormattedFunctionName = NULL
       ) const;
     wxString OnGetItemText(long item, long column) const;
+    void OnClose( wxCloseEvent & wxcmd );
     void OnListItemSelected(wxListEvent& event);
     void OnScroll(wxScrollWinEvent & event);
+    void OnLogEntry( LogEvent & event);
 
     /** For receiving messages/ for callback of OnGetItemText(...). */
     DECLARE_EVENT_TABLE()

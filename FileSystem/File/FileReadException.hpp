@@ -10,11 +10,14 @@
 
 #include <FileSystem/File/File.hpp>
 #include "FileException.hpp"
+#include <string> //class std::string
 
 class FileReadException
   : public FileException
 {
   enum I_File::ReadResult m_res;
+  unsigned m_operatingSystemErrorCode;
+  std::string m_filePath;
 public:
   FileReadException(
     const enum I_File::ReadResult res,

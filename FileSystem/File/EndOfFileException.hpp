@@ -9,10 +9,15 @@ public:
   //std::tstring str;
   TCHAR * m_filePath;
   
-  EndOfFileException(const TCHAR * const chFilePath)
-	: FileException(chFilePath)
+  EndOfFileException(const char * const chFilePath)
+    : FileException(chFilePath)
   {
   }
+  EndOfFileException(const wchar_t * const chFilePath)
+    : FileException(chFilePath)
+  {
+  }
+  
   ~EndOfFileException()
   {
   }  

@@ -8,11 +8,19 @@
 #include <wxWidgets/UserInterface/LogEntries/LogEntriesDialog.hpp>
 #include <wxWidgets/UserInterface/LogEntries/LogEntriesListCtrl.hpp>
 
+
 #include <wxWidgets/Controller/character_string/wxStringHelper.hpp>
 #include <Controller/Logger/Logger.hpp>
 /** PrettyFuntionFormattedFunctionSignature::GetClassName(...),
 * PrettyFuntionFormattedFunctionSignature::GetFunctionName(...) */
 #include <compiler/current_function.hpp>
+
+#include "Controller/TranslationControllerBase.hpp"
+
+//https://wiki.wxwidgets.org/Custom_Events_in_wx2.8_and_earlier#Creating_a_Custom_Event_-_Method_4
+const wxEventType LogCommandEvent = wxNewEventType();
+
+unsigned wxWidgets::LogEntriesListCtrl::s_GUIthreadID = 0;
 
 namespace wxWidgets
 {
@@ -22,13 +30,21 @@ namespace wxWidgets
 //    EVT_SCROLLWIN_THUMBRELEASE()
     //http://forums.wxwidgets.org/viewtopic.php?f=1&t=3157
     EVT_SCROLLWIN(LogEntriesListCtrl::OnScroll)
+    //from https://wiki.wxwidgets.org/Custom_Events_in_wx2.8_and_earlier#Creating_a_Custom_Event_-_Method_4
+    EVT_LOG( wxID_ANY, LogEntriesListCtrl::OnLogEntry )
+    EVT_CLOSE(LogEntriesListCtrl::OnClose)
+    // or EVT_MYFOO_RANGE( Foo_DoFirstThing, Foo_DoThirdThing, MyDestination::DoSomething )
+    // or EVT_MYFOO( Foo_DoFirstThing, MyDestination::DoFirstThing)
+    // or EVT_MYFOO( Foo_DoSecondThing, MyDestination::DoSecondThing)
+    // or EVT_MYFOO( Foo_DoThirdThing, MyDestination::DoThirdThing)
   END_EVENT_TABLE()
 
   LogEntriesListCtrl::LogEntriesListCtrl(
     /*const*/ wxWindow * /*const*/ parent,
     const wxWindowID ID,
     Logger & logger,
-    wxWidgets::LogEntriesDialog & logEntriesDialog
+    wxWidgets::LogEntriesDialog & logEntriesDialog,
+    const unsigned GUIthreadID
 //      I_LogEntryOutputter * p_outputhandler,
 //      I_LogFormatter * p_log_formatter,
 //      enum LogLevel::MessageType logLevel
@@ -43,6 +59,7 @@ namespace wxWidgets
     , m_currentScrollPos(0)
     , m_lastSeletedItemIndex(-1)
   {
+    s_GUIthreadID = GUIthreadID;
     // Add first column
     wxListItem column;
 
@@ -51,6 +68,11 @@ namespace wxWidgets
     column.SetWidth(50);
     InsertColumn(colID_timeStamp, column);
 
+    column.SetId(colID_threadName);
+    column.SetText( wxT("thread name or ID") );
+    column.SetWidth(70);
+    InsertColumn(colID_threadName, column);
+    
     column.SetId(colID_namespaceAndClass);
     column.SetText( wxT("namespace and/or class") );
     column.SetWidth(100);
@@ -180,6 +202,8 @@ namespace wxWidgets
   {
     PersistentLogEntry persistentLogEntry = logfileentry;
     persistentLogEntry.m_std_strMessage = * logfileentry.p_std_strMessage;
+    if(logfileentry.p_std_strThreadName)
+      persistentLogEntry.m_std_strThreadName = * logfileentry.p_std_strThreadName;
 
     persistentLogEntry.m_std_strNamespaceAndOrClassName =
       PrettyFunctionFormattedFunctionSignature::GetClassName(
@@ -189,10 +213,22 @@ namespace wxWidgets
       PrettyFunctionFormattedFunctionSignature::GetFunctionName(
       prettyFunctionFormattedFunctionName);
 
-    ( (container_type &) m_logentries).push_back(
-      persistentLogEntry );
-    const unsigned numLogEntries = m_logentries.size();
-    ( (LogEntriesListCtrl *)this)->SetItemCount( numLogEntries );
+    const DWORD dwCurrentThreadNumer = OperatingSystem::GetCurrentThreadNumber();
+    if( dwCurrentThreadNumer == s_GUIthreadID )
+    {
+      ( (LogEntriesListCtrl *) this)->AddPersistentLogEntry(persistentLogEntry);
+    }
+    else
+    {
+      /** Don't access GUI controls from another than the UI thread (else hangup/ crash) */
+//      int i = 0;
+      //https://wiki.wxwidgets.org/Custom_Events_in_wx2.8_and_earlier#Creating_a_Custom_Event_-_Method_4
+      LogEvent event( LogCommandEvent /*, Foo_DoFirstThing*/ );
+      // Add the exciting data. You can put anything you like
+      // into the class: ints, structs, binary data...
+      event.Set( persistentLogEntry );
+      wxPostEvent( (LogEntriesListCtrl *) this, event );
+    }
     return 0;
   }
 
@@ -217,6 +253,10 @@ namespace wxWidgets
           timeStamp;
         }
         break;
+      case colID_threadName :
+        return wxWidgets::getwxString(
+          logentry.m_std_strThreadName) + 
+          wxString::Format(wxT(" (%u)"), logentry.threadID);
       case colID_namespaceAndClass:
         return wxWidgets::getwxString(
           logentry.m_std_strNamespaceAndOrClassName);
@@ -233,6 +273,17 @@ namespace wxWidgets
     return wxT("xx");
   }
 
+  void LogEntriesListCtrl::OnLogEntry( LogEvent & event)
+  {
+//   int i = 0;
+    AddPersistentLogEntry(event.GetPersistentLogEntry() );
+  }
+  
+  void LogEntriesListCtrl::OnClose( wxCloseEvent & wxcmd )
+  {
+    m_logger.Remove(this);
+  }
+    
   void LogEntriesListCtrl::OnListItemSelected(wxListEvent & event)
   {
     m_lastSeletedItemIndex = event.GetIndex();
