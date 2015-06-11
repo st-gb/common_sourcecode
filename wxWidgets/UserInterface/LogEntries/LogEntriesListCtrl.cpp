@@ -98,7 +98,7 @@ namespace wxWidgets
   }
 
   void LogEntriesListCtrl::HighlightMatchingLineAndMoveThere(
-      const wxString & searchFor)
+      const SearchParams & searchParams )
   {
     //http://wiki.wxwidgets.org/WxListCtrl#Getting_the_selected_item_indexes
 //    long itemIndex = -1;
@@ -120,14 +120,36 @@ namespace wxWidgets
     const int numLogEntries = m_logentries.size();
     if( numLogEntries > firstLineToSearchIn)
     {
-      const std::string std_strSearchFor = wxWidgets::GetStdString(searchFor);
+      const std::string std_strSearchFor = wxWidgets::GetStdString(
+        searchParams.GetSearchString() );
       container_type::const_iterator c_iter = //m_logentries.begin();
         m_logentries.begin() + firstLineToSearchIn;
       long currentItemIndex = firstLineToSearchIn;
+      const bool searchInMessage = searchParams.IsSearchedInMessage();
+      const bool searchInFunctionName = searchParams.IsSearchedInFunctionName();
+      bool noMatchingMessageFound = false;
+      bool matchingLineFound = false;
       while( c_iter != m_logentries.end() )
       {
-        const std::string & std_strMessage = c_iter->m_std_strMessage;
-        if( std_strMessage.find(std_strSearchFor) != std::string::npos )
+//        noMatchingMessageFound = true;
+        //matchingLineFound = false;
+        if( searchInMessage )
+        {
+          const std::string & std_strMessage = c_iter->m_std_strMessage;
+          if( std_strMessage.find(std_strSearchFor) != std::string::npos )
+          {
+            matchingLineFound = true;
+          }
+        }
+        if( ! matchingLineFound && searchInFunctionName )
+        {
+          const std::string & std_strFunctionName = c_iter->m_std_strFunctionName;
+          if( std_strFunctionName.find(std_strSearchFor) != std::string::npos )
+          {
+            matchingLineFound = true;
+          }
+        }
+        if(matchingLineFound)
         {
           //http://wiki.wxwidgets.org/WxListCtrl#Select_or_Deselect_an_Item
           SetItemState(currentItemIndex, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
@@ -149,7 +171,7 @@ namespace wxWidgets
   }
 
   void LogEntriesListCtrl::HighlightPreviousMatchingLineAndMoveThere(
-    const wxString & searchFor)
+    const SearchParams & searchParams )
   {
     long lastSeletedItemIndex = -1;
     long firstLineToSearchIn = 0;
@@ -164,7 +186,10 @@ namespace wxWidgets
 
     if( numLogEntries > firstLineToSearchIn)
     {
-      const std::string std_strSearchFor = wxWidgets::GetStdString(searchFor);
+      const std::string std_strSearchFor = wxWidgets::GetStdString(
+        searchParams.GetSearchString() );
+      const bool searchInMessage = searchParams.IsSearchedInMessage();
+      const bool searchInFunctionName = searchParams.IsSearchedInFunctionName();
 
       container_type::const_reverse_iterator c_iter = //m_logentries.begin();
         m_logentries.rbegin() +
@@ -172,10 +197,27 @@ namespace wxWidgets
         (numLogEntries - firstLineToSearchIn - 1);
 
       long currentItemIndex = firstLineToSearchIn;
+      bool matchingLineFound = false;
       while( c_iter != m_logentries.rend() )
       {
-        const std::string & std_strMessage = c_iter->m_std_strMessage;
-        if( std_strMessage.find(std_strSearchFor) != std::string::npos )
+        //matchingLineFound = false;
+        if( searchInMessage )
+        {
+          const std::string & std_strMessage = c_iter->m_std_strMessage;
+          if( std_strMessage.find(std_strSearchFor) != std::string::npos )
+          {
+            matchingLineFound = true;
+          }
+        }
+        if( ! matchingLineFound && searchInFunctionName )
+        {
+          const std::string & std_strFunctionName = c_iter->m_std_strFunctionName;
+          if( std_strFunctionName.find(std_strSearchFor) != std::string::npos )
+          {
+            matchingLineFound = true;
+          }
+        }
+        if(matchingLineFound)
         {
           //http://wiki.wxwidgets.org/WxListCtrl#Select_or_Deselect_an_Item
           SetItemState(currentItemIndex, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);

@@ -113,6 +113,7 @@ template<typename member_type>
         m_wNodeSizeInByte = sizeof (NodeTrieNode<member_type>)
           + sizeof (NodeTrieNode<member_type>*) * m_wNumberOfNodesPerHierarchyLevel
           + sizeof (void*);
+        return m_wNodeSizeInByte;
       }
       
       inline NodeTrieNode<member_type> * contains_inline(

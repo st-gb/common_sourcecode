@@ -11,7 +11,7 @@
 //::GetErrorMessageFromLastErrorCode()
 #include <Controller/GetErrorMessageFromLastErrorCode.hpp>
 //#include <exception> //class std::exception
-#include <IO/FileAccessException.hpp> //base class
+#include <InputOutput/FileAccessException.hpp> //base class
 
 class LogFileAccessException
   : public /*std::exception*/ FileAccessException

@@ -150,8 +150,8 @@ namespace wxWidgets
     }
     
     void ClearLogEntries() { };
-    void HighlightMatchingLineAndMoveThere(const wxString & value);
-    void HighlightPreviousMatchingLineAndMoveThere(const wxString & searchFor);
+    void HighlightMatchingLineAndMoveThere(const SearchParams & searchParams );
+    void HighlightPreviousMatchingLineAndMoveThere(const SearchParams & searchParams );
     unsigned Log(//ostream & ostr
   //    const std::string & r_stdstrMessage,
       const LogFileEntry & logfileentry,

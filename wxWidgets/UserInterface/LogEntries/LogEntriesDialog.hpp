@@ -9,6 +9,7 @@
 #define LOGENTRIESDIALOG_HPP_
 
 #include <wx/dialog.h> //Base class
+#include "SearchParams.hpp"
 
 /** Forward declarations */
 namespace wxWidgets
@@ -24,6 +25,7 @@ namespace wxWidgets
   class LogEntriesDialog
     : public wxDialog
   {
+    SearchParams m_searchParams;
     wxTextCtrl * m_p_messageToSearch, * m_p_functionNameToSearch;
     wxWidgets::LogEntriesListCtrl * m_p_logEntriesListCtrl;
   public:
@@ -34,6 +36,8 @@ namespace wxWidgets
     virtual
     ~LogEntriesDialog();
 
+    void OnContextMenuMouseButtonDown(wxMouseEvent & evt);
+    void OnPopupClick(wxCommandEvent & evt);
     void OnClose( wxCloseEvent & wxcmd );
     void OnGoToNextMatchButton(wxCommandEvent & evt);
     void OnGoToPreviousMatchButton(wxCommandEvent & evt);
