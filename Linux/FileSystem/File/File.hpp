@@ -3,7 +3,7 @@
 #include <FileSystem/File/File.hpp> //base class I_File
 #include <stdio.h>
 #include <string> //class std::string
-#include <errno.h>
+#include <errno.h> //ESUCCESS, EACCESS
 
 namespace Linux
 {
@@ -18,6 +18,7 @@ namespace Linux
       // if 32 bit CPU, then 32 bit data type-> max. file size reported is
       // ~ "2^32 / 2 - 1"
       file_pointer_type currentFilePos = ftell(m_pFile);
+      //_ftelli64
       return currentFilePos;
     }
     file_pointer_type GetFileSizeInBytes()
@@ -70,6 +71,7 @@ namespace Linux
       }
       return openError;
     }
+
     int ReadByte()
     {
 	  const int i = fgetc(m_pFile);
@@ -81,21 +83,43 @@ namespace Linux
 	  * [CX] [Option Start]  and shall set errno to indicate the error." */
 	  if( i == EOF )
 	  {
-		if( errno == ESUCCESS)
+               // g++: "error: ‘ESUCCESS’ was not declared in this scope"
+		/*if( errno == ESUCCESS)
 		  return I_File::endOfFileReached;
-		else
+		else*/
 		  return I_File::unknownReadError;
 	  }
       return I_File::successfullyRead;
     }
-    bool SeekFilePointerPosition(const file_pointer_type & filePos)
+
+    enum ReadResult Read( unsigned char * buffer, unsigned bufferSizeInByte) 
+    {
+      const size_t numElesRead = fread(buffer, 
+        //From http://www.cplusplus.com/reference/cstdio/fread/
+        1, /** "Size, in bytes, of each element to be read."*/
+        /** Number of elements, each one with a size of size bytes. */
+        bufferSizeInByte,
+        m_pFile);
+        //ferror(m_pFile)
+      if( numElesRead == bufferSizeInByte)
+        return successfullyRead;
+      return unknownReadError;
+    }
+
+    enum SeekResult SeekFilePointerPosition(const file_pointer_type & filePos)
     {
       /** http://pubs.opengroup.org/onlinepubs/009696899/functions/fseek.html:
       * "The fseek() [CX] [Option Start]  and fseeko() [Option End] functions
       * shall return 0 if they succeed. */
-      const int retVal = fseek(m_pFile, filePos, SEEK_SET);
-      //TODO provide error code on failure.
-      return retVal == 0;
+      const int retVal = /*fseek*/fseeko64(m_pFile, filePos, SEEK_SET);
+      if(retVal == 0) return successfullySeeked;
+      //TODO provide proper error code on failure.
+      /*switch( errno )
+      {
+        case notAseekableStream;
+      }*/
+      return notAseekableStream;
     }
-  };
-}
+  };/** class File*/
+}/** namespace Linux */
+

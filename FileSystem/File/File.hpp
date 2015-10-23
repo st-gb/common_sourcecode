@@ -18,12 +18,13 @@ public:
   enum OpenMode { readOnly, writeOnly };
   enum ReadResult { successfullyRead = 0, readLessThanIntended, 
     endOfFileReached, unknownReadError };
+  enum SeekResult {successfullySeeked = 0, notAseekableStream };
 
   virtual ~I_File() {};
 
   /** Open a file with an ANSI (= 8 bit) character file path. */
   virtual enum OpenError OpenA(const char * const, enum I_File::OpenMode openMode) = 0;
-  std::string GetFilePathA() { return m_filePathA; }
+  std::string GetFilePathA() const { return m_filePathA; }
   //TODO maybe provide error code on failure or throw an exception.
   virtual file_pointer_type GetFileSizeInBytes() = 0;
   //TODO maybe provide error code on failure or throw an exception.
@@ -31,6 +32,9 @@ public:
   /** Read a single byte from the file. */
   //TODO maybe provide error code on failure or throw an exception.
   virtual int ReadByte() = 0;
+  virtual enum ReadResult Read( unsigned char * buffer, unsigned 
+    bufferSizeInByte) { return unknownReadError; 
+    /*throw FileException("not implemented yet");*/ }
   //TODO provide error code on failure or throw an exception.
-  virtual bool SeekFilePointerPosition(const file_pointer_type &) = 0;
+  virtual enum SeekResult SeekFilePointerPosition(const file_pointer_type &) = 0;
 };
