@@ -49,8 +49,10 @@ namespace Linux
         fopenOpenMode = "r";
         break;
       }
-      //http://stackoverflow.com/questions/15753090/c-fopen-fails-for-write-with-errno-is-2
-      m_pFile = fopen(filePath , fopenOpenMode.c_str() );
+      /**http://stackoverflow.com/questions/15753090/c-fopen-fails-for-write-with-errno-is-2
+       * http://www.gnu.org/software/libc/manual/html_node/File-Positioning.html :
+       *  must use fopen64, freopen64, or tmpfile64 for "ftello64" */
+      m_pFile = fopen64(filePath , fopenOpenMode.c_str() );
       if( m_pFile)
       {
         openError = I_File::success;
@@ -111,7 +113,12 @@ namespace Linux
       /** http://pubs.opengroup.org/onlinepubs/009696899/functions/fseek.html:
       * "The fseek() [CX] [Option Start]  and fseeko() [Option End] functions
       * shall return 0 if they succeed. */
+      //TODO recognize seek failures (can't be determined according to the re
+      // return value of fseek or errno
       const int retVal = /*fseek*/fseeko64(m_pFile, filePos, SEEK_SET);
+#ifdef _DEBUG
+      int errCode = errno;
+#endif //#ifdef _DEBUG
       if(retVal == 0) return successfullySeeked;
       //TODO provide proper error code on failure.
       /*switch( errno )
