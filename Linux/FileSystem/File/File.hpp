@@ -17,14 +17,15 @@ namespace Linux
       //TODO data type of ftell(): "long" has same size as CPU architecture:
       // if 32 bit CPU, then 32 bit data type-> max. file size reported is
       // ~ "2^32 / 2 - 1"
-      file_pointer_type currentFilePos = ftell(m_pFile);
+      file_pointer_type currentFilePos = ftello64(m_pFile);
       //_ftelli64
       return currentFilePos;
     }
     file_pointer_type GetFileSizeInBytes()
     {
-      fseek(m_pFile, 0, SEEK_END);
-      file_pointer_type fileSize = ftell(m_pFile);
+      /** Use 64 bit file offsets in order to support file sizes > 4GB */
+      fseeko64(m_pFile, 0, SEEK_END);
+      file_pointer_type fileSize = ftello64(m_pFile);
       return fileSize;
     }
 	
@@ -34,9 +35,9 @@ namespace Linux
 	  /** http://www.cplusplus.com/reference/cstdio/fclose/: 
 	    "If the stream is successfully closed, a zero value is returned."
 		"On failure, EOF is returned." */
-      if( retVal == 0)
-	    return closingFileSucceeded;
-      return closingFileFailed;
+    if( retVal == 0)
+      return closingFileSucceeded;
+    return closingFileFailed;
 	}
 	
     enum OpenError OpenA(const char * const filePath, enum I_File::OpenMode openMode)
@@ -47,6 +48,9 @@ namespace Linux
       {
       case I_File::readOnly:
         fopenOpenMode = "r";
+        break;
+      case I_File::writeOnly:
+        fopenOpenMode = "w";
         break;
       }
       /**http://stackoverflow.com/questions/15753090/c-fopen-fails-for-write-with-errno-is-2
