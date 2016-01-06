@@ -52,6 +52,13 @@ namespace Linux
       case I_File::writeOnly:
         fopenOpenMode = "w";
         break;
+      case I_File::readAndWrite:
+        /** http://www.gnu.org/software/libc/manual/html_node/Opening-Streams.html
+        "Open an existing file for both reading and writing. The initial
+        contents of the file are unchanged and the initial file position is at
+        the beginning of the file." */
+        fopenOpenMode = "r+";
+        break;
       }
       /**http://stackoverflow.com/questions/15753090/c-fopen-fails-for-write-with-errno-is-2
        * http://www.gnu.org/software/libc/manual/html_node/File-Positioning.html :
@@ -130,6 +137,28 @@ namespace Linux
         case notAseekableStream;
       }*/
       return notAseekableStream;
+    }
+
+    enum WriteResult Write(
+      const unsigned char buffer[],
+      const unsigned bufferSizeInByte) const
+    {
+      const size_t numElesWritten = fwrite(buffer,
+        //From http://www.cplusplus.com/reference/cstdio/fread/
+        1, /** "Size, in bytes, of each element to be read."*/
+        /** Number of elements, each one with a size of size bytes. */
+        bufferSizeInByte,
+        m_pFile);
+        //ferror(m_pFile)
+      if( numElesWritten == bufferSizeInByte)
+        return successfullyWritten;
+      /** @see http://pubs.opengroup.org/onlinepubs/009695399/functions/fputc.html */
+      switch(errno )
+      {
+      case EBADF :
+        return BadFileDescriptor;
+      }
+      return unknownWriteError;
     }
   };/** class File*/
 }/** namespace Linux */

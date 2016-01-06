@@ -1,4 +1,4 @@
-#pragma once
+#pragma once /** include guard */
 
 //http://ubuntuforums.org/showthread.php?t=889612
 #include <inttypes.h> //int64_t
@@ -15,10 +15,13 @@ public:
   typedef int64_t file_pointer_type;
   enum CloseError {closingFileSucceeded = 0, closingFileFailed};
   enum OpenError {success = 0, accessDenied, fileNotFound, not_set };
-  enum OpenMode { readOnly, writeOnly };
+  enum OpenMode { readOnly, writeOnly, readAndWrite };
   enum ReadResult { successfullyRead = 0, readLessThanIntended, 
     endOfFileReached, unknownReadError };
-  enum SeekResult {successfullySeeked = 0, notAseekableStream };
+  enum WriteResult { successfullyWritten = 0, unknownWriteError,
+    BadFileDescriptor, /** E.g. file only opened for in read mode ("r") */
+    FileExceedsMaxFileSize, NoFreeSpaceLeft};
+  enum SeekResult {successfullySeeked = 0, notAseekableStream};
 
   virtual ~I_File() {};
 
@@ -32,9 +35,15 @@ public:
   /** Read a single byte from the file. */
   //TODO maybe provide error code on failure or throw an exception.
   virtual int ReadByte() = 0;
-  virtual enum ReadResult Read( unsigned char * buffer, unsigned 
-    bufferSizeInByte) { return unknownReadError; 
+  virtual enum ReadResult Read(
+    unsigned char * buffer,
+    unsigned bufferSizeInByte)
+    { return unknownReadError;
     /*throw FileException("not implemented yet");*/ }
   //TODO provide error code on failure or throw an exception.
   virtual enum SeekResult SeekFilePointerPosition(const file_pointer_type &) = 0;
+  virtual enum WriteResult Write(
+    const unsigned char buffer[],
+    const unsigned bufferSizeInByte) const
+    { return unknownWriteError; }
 };
