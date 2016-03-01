@@ -4,6 +4,9 @@
 #include "GetCurrentWorkingDir.hpp"
 #include <string> //class std::string
 
+namespace FileSystem
+{
+
 /** Make inline to avoid multiple definitions linker error. */
 inline std::string GetAbsolutePathA(const char * const path)
 {
@@ -11,8 +14,10 @@ inline std::string GetAbsolutePathA(const char * const path)
   if( FileSystem::IsRelativePathA( path) )
   {
     std::string currentWorkingDir;
-    GetCurrentWorkingDirA_inl(currentWorkingDir);
-	str = currentWorkingDir + path;
+    OperatingSystem::GetCurrentWorkingDirA_inl(currentWorkingDir);
+	str = currentWorkingDir + "/" + path;
   }
   return str;
 }
+
+};//namespace FileSystem
