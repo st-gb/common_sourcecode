@@ -24,8 +24,8 @@
 //}
 
 #if defined(__unix__) //Linux, Android NDK
-  #define Linux OperatingSystem
   #include <Linux/FileSystem/GetCurrentWorkingDir/GetCurrentWorkingDir.hpp>
+  #define OperatingSystem Linux
 #endif
 #ifdef _WIN32
   #define Windows OperatingSystem

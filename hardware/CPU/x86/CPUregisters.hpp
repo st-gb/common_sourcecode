@@ -40,7 +40,8 @@
 class CPUregisters
 {
 public:
-  unsigned ZeroFlag;
+  enum FlagState { clear, set, unknown };
+  unsigned ZeroFlag, m_CarryFlag, m_OverFlowFlag;
 //  EAX, EBX, ECX, EDX;  AX, BX, CX, DX
   _32bitRegister ExtendedAccumulator, EBX, ECX, EDX, m_ExtendedStackPointer,
     m_ExtendedSourceIndex;
@@ -53,13 +54,15 @@ public:
   CPUregisters()
     //: ExtendedAccumulator(0), EBX(0), ECX(0), EDX(0)
     : m_DataSegment(0)
+     , m_CarryFlag(0)
+     , ZeroFlag(0)
+     , m_OverFlowFlag(0)
   {
     ExtendedAccumulator._32bitValue = 0;
     EBX._32bitValue = 0;
     ECX._32bitValue = 0;
     EDX._32bitValue = 0;
     m_ExtendedSourceIndex._32bitValue = 0;
-    ZeroFlag = 0;
   }
 
   inline void CoMPare(void * p_leftOperandRegisterAddress,
@@ -68,6 +71,11 @@ public:
     switch( registerByteWidth)
     {
       case 1 :
+        /** http://x86.renejeschke.de/html/file_module_x86_id_35.html
+        * The comparison is performed by subtracting the second operand from
+        * the first operand and then setting the status flags in the same
+        * manner as the SUB instruction. When an immediate value is used as an
+        * operand, it is sign-extended to the length of the first operand. */
         * ( (uint8_t *) p_leftOperandRegisterAddress) -= data;
         /** https://www.hellboundhackers.org/articles/read-article.php?article_id=729:
          * "The zero flag is set whenever the result of the subtraction is
@@ -81,11 +89,11 @@ public:
 
   inline unsigned getRegisterByteWidth(const std::string & registerName) const {
     const unsigned registerNameLength = registerName.length();
-    if( registerNameLength > 1 )
+    if( registerNameLength > 1 ) /** At least 2 characters long. */
     {
       const char lastChar = registerName.substr(registerNameLength - 1, 1).c_str()[0];
       const char secondFromLastChar = registerName.substr(
-        registerNameLength - 1, 1).c_str()[0];
+        registerNameLength - 2, 1).c_str()[0];
       switch( lastChar )
       {
         case 'l' : // "l" = "Low Byte",
@@ -104,6 +112,7 @@ public:
           switch( secondFromLastChar )
           {
             case 's' : // esp, sp
+            case 'b' : // ebp, bp
               if(registerNameLength == 2)
                 return 2;
               else
@@ -147,6 +156,8 @@ public:
           return (void *) & m_StackSegment;
         if( registerName == "esi" || registerName == "si" )
           p_32bitRegister = & m_ExtendedSourceIndex;
+        if( registerName == "esp" || registerName == "sp" )
+          p_32bitRegister = & m_ExtendedStackPointer;
       }
       if( p_32bitRegister )
       {
@@ -156,7 +167,8 @@ public:
             return (void *) & p_32bitRegister->_32bitValue;
             break;
           case 2 :
-            return (void *) & p_32bitRegister->fourByte.__16bitRegister.high2Bytes;
+            return (void *) & p_32bitRegister->fourByte.__16bitRegister.
+              high2Bytes;
           case 1 :
             const char lastChar = registerName.substr(numChars - 1, 1)[0];
             switch(lastChar)
@@ -192,13 +204,21 @@ public:
   {
     /** https://en.wikipedia.org/wiki/TEST_%28x86_instruction%29 :
      * "performs a bitwise AND on two operands. The flags SF, ZF, PF
-     * are modified while the result of the AND is discarded. The
-     * OF and CF flags are set to 0, while AF flag is undefined." */
+     * are modified while the result of the AND is discarded. */
+    signed result = leftValue & rightValue;
+    /** https://en.wikipedia.org/wiki/TEST_%28x86_instruction%29 :
+     * "The OF and CF flags are set to 0, while AF flag is undefined." */
+    m_OverFlowFlag = 0;
+    m_CarryFlag = 0;
+
+    //"The SF is set to the most significant bit of the result of the AND."
+//    m_SignFlag = result;
+    //"The parity flag is set to the bitwise XNOR of the result of the AND."
+
   //  signed leftValue = getValue(op1);
   //  signed rightValue = getValue(op2);
 
     /** "If the result of the AND is 0, the ZF is set to 1" */
-    signed result = leftValue & rightValue;
     ZeroFlag = result == 0;
   }
 };

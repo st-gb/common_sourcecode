@@ -2,6 +2,8 @@
 #include <string.h> //for strerror()
 #include <errno.h>
 
+namespace Linux
+{
 std::string EnglishMessageFromErrorCode(int nErrorCode)
 {
     std::string stdstrMessage ;
@@ -13,7 +15,7 @@ std::string EnglishMessageFromErrorCode(int nErrorCode)
     return stdstrMessage ;
 }
 
-//"A" means "ANSI" version (-> std::string)
+//"A" means "ANSI"-/1byte-character set-version (-> std::string)
 std::string GetErrorMessageFromLastErrorCodeA()
 {
   return EnglishMessageFromErrorCode(errno) ;
@@ -38,3 +40,4 @@ std::string PossibleSolution(//DWORD
   }
   return strSol ;
 }
+};

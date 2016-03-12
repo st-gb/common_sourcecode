@@ -57,6 +57,8 @@ public:
     return m_size;
   }
 
+  void setSize(unsigned newSizeInBytes) { m_size = newSizeInBytes; }
+
   unsigned char * GetArray() const { return m_pchArray; }
 
   void add(const unsigned char * arrayToAdd, const unsigned size)
