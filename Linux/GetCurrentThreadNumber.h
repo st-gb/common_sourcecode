@@ -9,7 +9,10 @@
 /** from http://stackoverflow.com/questions/6374523/how-to-detect-compilation-by-android-ndk-in-a-c-c-file */
 #ifdef __ANDROID__
 	#define LINUX_GET_CURRENT_THREAD_NUMBER_DUMMY_IMPLEMENTATION
-	//from https://groups.google.com/forum/#!topic/android-ndk/808Ti2v1I0s
+	/** from https://groups.google.com/forum/#!topic/android-ndk/808Ti2v1I0s
+	 * "gettid() is defined in <unistd.h> in Bionic.
+     *   The function isn't defined in GLibc for some odd reason." */
+#else
 	#include <unistd.h>
 #endif
 #if !defined(LINUX_GET_CURRENT_THREAD_NUMBER_DUMMY_IMPLEMENTATION)

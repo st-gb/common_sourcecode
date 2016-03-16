@@ -19,6 +19,8 @@
 #endif
 
 #if defined( __unix__) //|| defined (__ANDROID__)
+#include <sys/time.h> //gettimeofday
+
   inline void GetCurrentTime(struct tm * tm_Current)
   {
     static timeval timevalCurrentTime ;

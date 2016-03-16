@@ -12,6 +12,7 @@ namespace Linux
   {
     FILE * m_pFile;
   public:
+    File() : m_pFile(0) { }
     file_pointer_type GetCurrentFilePointerPosition()
     {
       //TODO data type of ftell(): "long" has same size as CPU architecture:
@@ -31,13 +32,20 @@ namespace Linux
 	
 	enum CloseError Close()
 	{
-	  const int retVal = fclose(m_pFile);
-	  /** http://www.cplusplus.com/reference/cstdio/fclose/: 
-	    "If the stream is successfully closed, a zero value is returned."
-		"On failure, EOF is returned." */
-    if( retVal == 0)
-      return closingFileSucceeded;
-    return closingFileFailed;
+	  if( m_pFile)
+	  {
+		  const int retVal = fclose(m_pFile);
+		  /** http://www.cplusplus.com/reference/cstdio/fclose/:
+			"If the stream is successfully closed, a zero value is returned."
+			"On failure, EOF is returned." */
+		if( retVal == 0)
+		{
+			m_pFile = NULL;
+		  return closingFileSucceeded;
+		}
+		return closingFileFailed;
+	  }
+      return closingFileFailed;
 	}
 	
     enum OpenError OpenA(const char * const filePath, enum I_File::OpenMode openMode)

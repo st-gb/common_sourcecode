@@ -27,7 +27,7 @@ public:
     : m_operatingSystemErrorCode(0)
   {
     const int stringLength = strlen(chFilePath);
-    m_filePath = new TCHAR[stringLength + 1];
+    m_filePath = new wchar_t[stringLength + 1];
 //    _tcscpy(m_filePath, chFilePath);
     for( unsigned int index = 0; index < stringLength; index ++ )
     {
@@ -47,7 +47,7 @@ public:
     
   }
   
-  TCHAR * GetFilePath() const
+  wchar_t * GetFilePath() const
   {
     return m_filePath;
   }

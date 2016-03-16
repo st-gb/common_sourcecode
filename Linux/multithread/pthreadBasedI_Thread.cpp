@@ -16,6 +16,8 @@ namespace Linux
   typedef void * (* pthread_start_func_type) (void *) ;
   pthreadBasedI_Thread::pthreadBasedI_Thread(
     I_Thread::thread_type i_thread_thread_type )
+    : m_pthread_t(0)
+     , successfullyCreated(0)
   {
     m_i_thread_thread_type = i_thread_thread_type ;
   }
@@ -27,7 +29,7 @@ namespace Linux
 
   int pthreadBasedI_Thread::GetThreadPriority()
   {
-    if( m_pthread_t != 0 )
+    if( successfullyCreated )
     {
   //      pthread_getspecific()
   //          sched_
@@ -52,7 +54,7 @@ namespace Linux
 
   bool pthreadBasedI_Thread::IsRunning()
   {
-    return m_pthread_t != 0 &&
+    return successfullyCreated &&
       //From http://stackoverflow.com/questions/2156353/how-do-you-query-a-pthread-to-see-if-it-is-still-running
       pthread_kill(m_pthread_t, 0) != ESRCH;
   }
@@ -104,9 +106,11 @@ namespace Linux
 //          ) ;
 //    }
     if( nRetVal )
-      LOGN_ERROR("Failed to create thread: " << GetErrorMessageFromLastErrorCodeA() )
+      LOGN_ERROR("Failed to create thread: " << OperatingSystem::
+		  GetErrorMessageFromLastErrorCodeA() )
     else
     {
+      successfullyCreated = 1;
       LOGN_INFO("pthreadBasedI_Thread::start(...)--created thread with ID"
         << m_pthread_t)
       if( priority != default_priority )
@@ -129,7 +133,7 @@ namespace Linux
   {
     LOGN("pthreadBasedI_Thread::WaitForTermination()--thread ID:"
       << m_pthread_t)
-    if( m_pthread_t != 0 )
+    if( successfullyCreated )
     {
       //http://www.kernel.org/doc/man-pages/online/pages/man3/pthread_join.3.html:
       //"The pthread_join() function waits for the thread specified by thread to
@@ -143,7 +147,7 @@ namespace Linux
         NULL
         ) ;
       if( nReturn )
-        LOGN("pthread_join failed:" << GetErrorMessageFromErrorCodeA( nReturn ) )
+        LOGN("pthread_join failed:" << OperatingSystem::GetErrorMessageFromErrorCodeA( nReturn ) )
       else
         LOGN("pthread_join succeeded")
       return (void *) nReturn ;

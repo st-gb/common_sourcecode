@@ -2,7 +2,7 @@
 #include <string.h> //for strerror()
 #include <errno.h>
 
-namespace Linux
+namespace /*Linux*/ OperatingSystem
 {
 std::string EnglishMessageFromErrorCode(int nErrorCode)
 {

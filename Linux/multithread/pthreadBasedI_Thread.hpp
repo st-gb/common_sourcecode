@@ -23,6 +23,7 @@ namespace Linux
   {
     I_Thread::thread_type m_i_thread_thread_type ;
     pthread_t m_pthread_t ;
+    unsigned successfullyCreated;
   public:
     pthreadBasedI_Thread(I_Thread::thread_type = I_Thread::joinable );
     virtual

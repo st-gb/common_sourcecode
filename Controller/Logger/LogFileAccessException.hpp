@@ -10,11 +10,15 @@
 
 //::GetErrorMessageFromLastErrorCode()
 #include <Controller/GetErrorMessageFromLastErrorCode.hpp>
+
 //#include <exception> //class std::exception
-#include <InputOutput/FileAccessException.hpp> //base class
+//#include <InputOutput/FileAccessException.hpp> //base class
+#include <FileSystem/File/FileException.hpp> //base class
+#include <FileSystem/GetAbsolutePath.hpp> //GetAbsolutePathA
+#include <Controller/character_string/stdtstr.hpp>
 
 class LogFileAccessException
-  : public /*std::exception*/ FileAccessException
+  : public /*std::exception*/ /*FileAccessException*/ FileException
 {
   std::string m_errorMessage;
 public:
@@ -34,12 +38,15 @@ public:
 //  }
   LogFileAccessException(
     const enum action action,
-    const DWORD operatinSystemErrorCode,
-    const char * const logFilePath)
+    const DWORD operatingSystemErrorCode,
+    //const wchar_t * const logFilePath
+    const char * const logFilePath
+	)
+    : FileException(logFilePath)
   {
     m_action = action;
-    m_operatingSystemErrorCode = operatinSystemErrorCode;
-    m_filePath = logFilePath;
+    m_operatingSystemErrorCode = operatingSystemErrorCode;
+//    m_filePath = /*(wchar_t *)*/ GetStdWstring( std::string(logFilePath) );
   }
 
   /** Get errror message as 1-byte / ASCII string. */
@@ -58,11 +65,12 @@ public:
       std_strErrorMessage = "other action regarding";
       break;
    }
-    const std::string std_strAbsoluteLogFilePath = GetAbsoluteFilePathA();
+    const std::string std_strFilePath = GetStdString_Inline(m_filePath);
+    const std::string std_strAbsoluteLogFilePath = FileSystem::GetAbsolutePathA(std_strFilePath.c_str() );
 
     std_strErrorMessage += " log file \"" + std_strAbsoluteLogFilePath + "\" failed:";
     const std::string std_strErrorMessageFromErrorCode =
-      ::GetErrorMessageFromErrorCodeA(m_operatingSystemErrorCode);
+      OperatingSystem::GetErrorMessageFromErrorCodeA(m_operatingSystemErrorCode);
     std_strErrorMessage += std_strErrorMessageFromErrorCode;
     return std_strErrorMessage;
   }

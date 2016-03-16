@@ -27,6 +27,8 @@ namespace FileSystem
 #endif //#ifdef _WIN32
 
 #ifdef __linux__
+#include <stddef.h> //NULL
+
 namespace FileSystem
 {
   /** Must be declared "inline", else multiple definitions of this function
