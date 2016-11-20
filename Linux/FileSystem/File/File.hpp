@@ -1,6 +1,7 @@
 #pragma once
 
 #include <FileSystem/File/File.hpp> //base class I_File
+#include <FileSystem/File/FileReadException.hpp>
 #include <stdio.h>
 #include <string> //class std::string
 #include <errno.h> //ESUCCESS, EACCESS
@@ -48,6 +49,8 @@ namespace Linux
       return closingFileFailed;
 	}
 	
+//	ErrnoTo
+
     enum OpenError OpenA(const char * const filePath, enum I_File::OpenMode openMode)
     {
       enum I_File::OpenError openError = I_File::not_set;
@@ -108,12 +111,16 @@ namespace Linux
 		/*if( errno == ESUCCESS)
 		  return I_File::endOfFileReached;
 		else*/
-		  return I_File::unknownReadError;
+        //return I_File::unknownReadError;
+        FileReadException fileReadException(
+          I_File::unknownReadError,
+          /*osErrorCode*/ errno, m_filePathA.c_str () );
+	    throw fileReadException;
 	  }
-      return I_File::successfullyRead;
+      return /*I_File::successfullyRead*/ i;
     }
 
-    enum ReadResult Read( unsigned char * buffer, unsigned bufferSizeInByte) 
+    enum ReadResult Read( unsigned char * buffer, unsigned bufferSizeInByte)
     {
       const size_t numElesRead = fread(buffer, 
         //From http://www.cplusplus.com/reference/cstdio/fread/
@@ -121,6 +128,12 @@ namespace Linux
         /** Number of elements, each one with a size of size bytes. */
         bufferSizeInByte,
         m_pFile);
+//      switch(errno)
+//      {
+//        case EACCESS:
+//      }
+      if( numElesRead < bufferSizeInByte)
+        return readLessThanIntended;
         //ferror(m_pFile)
       if( numElesRead == bufferSizeInByte)
         return successfullyRead;

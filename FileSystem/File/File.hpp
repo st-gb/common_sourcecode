@@ -16,7 +16,7 @@ public:
   enum CloseError {closingFileSucceeded = 0, closingFileFailed};
   enum OpenError {success = 0, accessDenied, fileNotFound, not_set };
   enum OpenMode { readOnly, writeOnly, readAndWrite };
-  enum ReadResult { successfullyRead = 0, readLessThanIntended, 
+  enum ReadResult { successfullyRead, readLessThanIntended,
     endOfFileReached, unknownReadError };
   enum WriteResult { successfullyWritten = 0, unknownWriteError,
     BadFileDescriptor, /** E.g. file only opened for in read mode ("r") */

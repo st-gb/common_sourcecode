@@ -18,7 +18,7 @@ static inline void memory_barrier() {
   * load or store instruction that follows the MFENCE instruction." */
 
   __sync_synchronize(); /** generates "lock orl" assembly code on x86. */
-#else ifdef(_WIN32)
+#else //ifdef(_WIN32)
   MemoryBarrier
 #endif
 }

@@ -1,7 +1,8 @@
 #pragma once
 
 #include <tchar.h>
-#include <string.h> //strlen
+#include <string.h> //strlen(...)
+#include <preprocessor_macros/Windows_compatible_typedefs.h> //DWORD
 
 class FileException
 {
@@ -41,11 +42,12 @@ public:
   {
     delete [] m_filePath;
   }
-  
-  inline const std::string GetErrorMessageA() const
-  {
-    
-  }
+
+  //TODO?
+//  inline const std::string GetErrorMessageA() const
+//  {
+//
+//  }
   
   wchar_t * GetFilePath() const
   {

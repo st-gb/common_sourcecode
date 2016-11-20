@@ -111,7 +111,7 @@ namespace Linux
     else
     {
       successfullyCreated = 1;
-      LOGN_INFO("pthreadBasedI_Thread::start(...)--created thread with ID"
+      LOGN_INFO("pthreadBasedI_Thread::start(...)--created thread with ID "
         << m_pthread_t)
       if( priority != default_priority )
       {

@@ -64,7 +64,7 @@
   private:
 //    std::map<unsigned, std::string> m_threadNumber2Name;
 //    LogWriter logwriter
-    std::vector<FormattedLogEntryProcessor *> m_formattedLogEntryProcessors;
+    /*volatile*/ std::vector<FormattedLogEntryProcessor *> m_formattedLogEntryProcessors;
   public:
 #ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
   #ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
@@ -209,7 +209,8 @@
         );
       m_logfileentry //logfileentry
         .p_std_strMessage = (std::string *) & r_stdstrMessage;
-      static std::vector<FormattedLogEntryProcessor *>::const_iterator
+      //"static" seemed to cause a SIGSEV error below
+      /*volatile static*/ std::vector<FormattedLogEntryProcessor *>::const_iterator
         c_iterFormattedLogEntryProcessors;
       c_iterFormattedLogEntryProcessors = m_formattedLogEntryProcessors.begin();
       static FormattedLogEntryProcessor * p_formattedlogentryprocessor;

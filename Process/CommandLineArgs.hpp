@@ -17,13 +17,15 @@ template<typename charType> class CommandLineArgs
   charType * fullProgramPath;
 public:
   typedef std::basic_string<charType> string_type;
-  enum ArgIndices { FullProgramPathArgIndex = 0};
+  enum ArgIndices { /** not necessarily the absolute/full path: may also be a 
+    relative path */
+    ProgramPathArgIndex  = 0};
 
   CommandLineArgs() {};
   CommandLineArgs(int argc, charType ** stringArray)
     : m_argumentCount(argc), m_stringArray(stringArray)
   {
-    fullProgramPath = stringArray[FullProgramPathArgIndex];
+    fullProgramPath = stringArray[ProgramPathArgIndex];
   }
 
   unsigned GetArgumentCount() const {return m_argumentCount; }
@@ -37,16 +39,16 @@ public:
 	  return string;
   }
 
-  charType * GetFullProgramPath()
+  charType * GetProgramPath()
   {
     return fullProgramPath;
   }
   charType ** const GetStringArray() const { return m_stringArray; }
-  void Set(int argc, charType * stringArray[])
+  void Set(int argumentCount, charType * stringArray[])
   {
-    m_argumentCount = argc;
+    m_argumentCount = argumentCount;
     m_stringArray = stringArray;
-    fullProgramPath = stringArray[FullProgramPathArgIndex];
+    fullProgramPath = stringArray[ProgramPathArgIndex];
   }
 
   //TODO rename method to sth like "GetStringArrayIndex() "

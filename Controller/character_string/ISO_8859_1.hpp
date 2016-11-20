@@ -3,6 +3,7 @@
 #include <fastest_data_type.h>
 #include <preprocessor_macros/bitmasks.h>
 #include <data_structures/UTF8string.hpp>
+#include <string.h> //strlen(...))
 
 typedef unsigned char BYTE;
 

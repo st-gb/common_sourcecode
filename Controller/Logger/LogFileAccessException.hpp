@@ -65,7 +65,7 @@ public:
       std_strErrorMessage = "other action regarding";
       break;
    }
-    const std::string std_strFilePath = GetStdString_Inline(m_filePath);
+    const std::string std_strFilePath = ::GetStdString_Inline(m_filePath);
     const std::string std_strAbsoluteLogFilePath = FileSystem::GetAbsolutePathA(std_strFilePath.c_str() );
 
     std_strErrorMessage += " log file \"" + std_strAbsoluteLogFilePath + "\" failed:";

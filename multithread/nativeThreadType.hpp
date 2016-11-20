@@ -18,9 +18,9 @@
 //  typedef wxCriticalSectionBasedI_CriticalSection nativeCriticalSection;
 //  typedef wxCriticalSectionBasedI_CriticalSection CriticalSection_type;
 
-  #include <Linux/multithread/pthread_Based_I_Thread.hpp>
+  #include <Linux/multithread/pthreadBasedI_Thread.hpp>
   typedef pthread_Based_I_CriticalSection nativeCriticalSection;
-  typedef pthread_Based_I_CriticalSection nativeThread_type;
+  typedef Linux::pthreadBasedI_Thread nativeThread_type;
 
 #endif
 

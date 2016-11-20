@@ -28,7 +28,9 @@ extern "C" {
 #endif
 
 typedef int BOOL ;
-#define FALSE 0
+#ifndef FALSE
+  #define FALSE 0
+#endif
 #ifndef TRUE //Avoid MSVC warning " warning C4005: 'TRUE': Macro-redefinition"
   #define TRUE !FALSE
 #endif
