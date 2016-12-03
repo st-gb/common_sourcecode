@@ -72,7 +72,7 @@ namespace Linux
       CLOCK_MONOTONIC //clockid_t clock_id
       , & s_timespec //struct timespec *tp
       );
-    TimeCountInNanoSeconds = s_timespec.tv_sec * 1000000000 + s_timespec.tv_nsec;
+    TimeCountInNanoSeconds = (TimeCountInNanosec_type) s_timespec.tv_sec * 1000000000 + s_timespec.tv_nsec;
     return ret == 0;
   }
 
