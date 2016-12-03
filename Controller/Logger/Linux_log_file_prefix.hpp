@@ -23,8 +23,8 @@
 #include <sys/syscall.h> //syscall(...)
 #include <time.h> // localtime(...)
 #include <Controller/Logger/LogFileEntry.hpp> //class LogFileEntry
-#include <Controller/multithread/I_Thread.hpp> //class I_Thread
-#include <Linux/GetCurrentThreadNumber.h>
+#include <OperatingSystem/multithread/I_Thread.hpp> //class I_Thread
+#include <OperatingSystem/Linux/GetCurrentThreadNumber.h>
 
 //#define LOG_FILE_PREFIX()
 

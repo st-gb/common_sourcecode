@@ -22,7 +22,7 @@
 #ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
   //#include <wx/thread.h> //wxCriticalSection
 //  #include <Windows/multithread/I_CriticalSection.hpp>
-  #include <Controller/multithread/nativeCriticalSectionType.hpp>
+  #include <OperatingSystem/multithread/nativeCriticalSectionType.hpp>
 #endif //#ifndef COMPILE_LOGGER_MULTITHREAD_SAFE
 
   //for std::tstring
@@ -35,7 +35,7 @@
 //#endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 
   #include "log_file_prefix.hpp" // GetLogFilePrefix(LogFileEntry)
-  #include <Controller/multithread/GetCurrentThreadNumber.hpp>
+  #include <OperatingSystem/multithread/GetCurrentThreadNumber.hpp>
 //  #include "HTMLlogFormatter.hpp"
 //  #include "Formatter/I_LogFormatter.hpp" //class ILogFormatter::WriteLogFileEntry(...)
 
@@ -76,7 +76,7 @@
   #endif
     //Make public because accessed from preprocessor macro.
     //wxCriticalSection m_critical_section_typeLogging ;
-    CriticalSection_type m_critical_section_typeLogging ;
+    nativeCriticalSection_type m_critical_section_typeLogging ;
 #endif
     /** Used for all FormattedLogEntryProcessors. */
     LogFileEntry m_logfileentry;

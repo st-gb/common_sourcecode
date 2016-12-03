@@ -8,7 +8,7 @@
 #ifndef PTHREADBASEDI_THREAD_HPP_
 #define PTHREADBASEDI_THREAD_HPP_
 
-#include <Controller/multithread/I_Thread.hpp> //class I_Thread
+#include <OperatingSystem/multithread/I_Thread.hpp> //class I_Thread
 //#include <bits/pthreadtypes.h> //pthread_t
 #include <pthread.h> //pthread_t
 //#include <bits/sigthread.h> //pthread_kill(..)

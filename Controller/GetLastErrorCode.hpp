@@ -13,7 +13,7 @@
   #include <Windows/ErrorCode/GetLastErrorCode.hpp>
 #endif
 #ifdef __linux__
-  #include <Linux/GetLastErrorCode.hpp>
+  #include <OperatingSystem/Linux/GetLastErrorCode.hpp>
   #define OperatingSystem Linux
 #endif
 

@@ -13,15 +13,9 @@
 	typedef Windows_API::Thread nativeThread_type;
 #endif
 
-#ifdef __linux__
-//  #include <wxWidgets/multithread/wxCriticalSectionBasedI_CriticalSection.hpp>
-//  typedef wxCriticalSectionBasedI_CriticalSection nativeCriticalSection;
-//  typedef wxCriticalSectionBasedI_CriticalSection CriticalSection_type;
-
-  #include <Linux/multithread/pthreadBasedI_Thread.hpp>
-  typedef pthread_Based_I_CriticalSection nativeCriticalSection;
+#ifdef __linux__ //TODO change to #ifdef POSIX
+  #include <OperatingSystem/POSIX/multithread/pthreadBasedI_Thread.hpp>
   typedef Linux::pthreadBasedI_Thread nativeThread_type;
-
 #endif
 
 #endif /* NATIVE_THREAD_TYPE_HPP_ */

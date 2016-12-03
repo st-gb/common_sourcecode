@@ -17,12 +17,13 @@ inline long AtomicExchange(long * Target, long val)
   /** https://gcc.gnu.org/onlinedocs/gcc-4.1.2/gcc/Atomic-Builtins.html :
    *
    * "That is, if the current value of *ptr is oldval, then write newval into *ptr. "
-   * " The “val” version returns the contents of *ptr before the operation." */
-  return __sync_val_compare_and_swap(
-    Target /** type *ptr */
-    , * Target //type oldval
-    , val /** type newval */
-    );
+   * " The ï¿½valï¿½ version returns the contents of *ptr before the operation." */
+//  return __sync_val_compare_and_swap(
+//    Target /** type *ptr */
+//    , * Target //type oldval
+//    , val /** type newval */
+//    );
+  return __sync_lock_test_and_set(Target, val);
 #endif
 #endif
 }

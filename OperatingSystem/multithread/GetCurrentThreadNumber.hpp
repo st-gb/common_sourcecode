@@ -12,7 +12,7 @@
   #include <windows.h> //::GetCurrentThreadId()
 #endif
 #ifdef __linux__
-  #include <Linux/GetCurrentThreadNumber.h>
+  #include <OperatingSystem/Linux/GetCurrentThreadNumber.h>
   using namespace Linux;
   #include "preprocessor_macros/Windows_compatible_typedefs.h" //for DWORD
 //  #ifndef DWORD

@@ -22,7 +22,7 @@ typedef unsigned long DWORD ;
 //DWORD (WINAPI *LPTHREAD_START_ROUTINE)(LPVOID);
 
 #include "thread_function_calling_convention.h"
-#include <Controller/multithread/nativeCriticalSectionType.hpp>
+#include <OperatingSystem/multithread/nativeCriticalSectionType.hpp>
 #include <map> //class std::map
 #include <string> //class std::string
 

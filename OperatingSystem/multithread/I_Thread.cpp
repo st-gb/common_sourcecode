@@ -4,8 +4,8 @@
  *  Created on: 10.02.2013
  *      Author: Stefan
  */
-#include <Controller/multithread/I_Thread.hpp>
-#include <Controller/multithread/GetCurrentThreadNumber.hpp>
+#include <OperatingSystem/multithread/I_Thread.hpp>
+#include <OperatingSystem/multithread/GetCurrentThreadNumber.hpp>
 
 //static var definitition:
 I_Thread::threadNameMapType I_Thread::s_threadNumber2Name;

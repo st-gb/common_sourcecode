@@ -8,7 +8,7 @@
 #ifndef PTHREAD_BASED_I_CRITICALSECTION_HPP_
 #define PTHREAD_BASED_I_CRITICALSECTION_HPP_
 
-#include <Controller/multithread/I_CriticalSection.hpp>
+#include <OperatingSystem/multithread/I_CriticalSection.hpp>
 //Code from http://en.wikipedia.org/wiki/Critical_section#Application_Level_Critical_Sections
 #include <pthread.h>
 

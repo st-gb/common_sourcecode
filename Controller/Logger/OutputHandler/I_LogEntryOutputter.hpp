@@ -10,7 +10,7 @@
 
 #include <string> //class std::string
 /** typedef "nativeCriticalSection_type" */
-#include <Controller/multithread/nativeCriticalSectionType.hpp>
+#include <OperatingSystem/multithread/nativeCriticalSectionType.hpp>
 
 /** @brief Base class for all classes that DO the actual / physical output.
  * So e.g. following outputs are possible:

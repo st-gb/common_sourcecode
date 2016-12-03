@@ -20,7 +20,7 @@ typedef uint64_t TimeCountInNanosec_type;
 //namespace OperatingSystem
 //{
 #if defined (__linux__) || defined(__ANDROID__)
-  #include <Linux/time/GetTickCount.hpp>
+  #include <OperatingSystem/Linux/time/GetTickCount.hpp>
   #ifndef OPERATING_SYSTEM_NAME
     #define OPERATING_SYSTEM_NAME Linux
   #endif

@@ -9,6 +9,7 @@
 #define COMMANDLINEARGS_HPP_
 
 #include <limits.h> //UINT_MAX
+//#include <>
 
 template<typename charType> class CommandLineArgs
 {
@@ -43,6 +44,12 @@ public:
   {
     return fullProgramPath;
   }
+//  charType * GetExeFileName()
+//  {
+//    string_type strfullProgramPath(fullProgramPath);
+//    strfullProgramPath.rfind()
+//    return fullProgramPath;
+//  }
   charType ** const GetStringArray() const { return m_stringArray; }
   void Set(int argumentCount, charType * stringArray[])
   {
