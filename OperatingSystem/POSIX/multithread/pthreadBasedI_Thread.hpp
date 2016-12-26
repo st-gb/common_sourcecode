@@ -15,7 +15,7 @@
 #include <signal.h> //pthread_kill(..)
 #include <errno.h> //ESRCH
 
-namespace Linux
+namespace POSIX
 {
 
   class pthreadBasedI_Thread

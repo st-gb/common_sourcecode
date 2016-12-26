@@ -11,7 +11,7 @@
 //#include <Controller/Err GetLastErrorCode.hpp>
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 
-namespace Linux
+namespace POSIX
 {
   typedef void * (* pthread_start_func_type) (void *) ;
   pthreadBasedI_Thread::pthreadBasedI_Thread(
@@ -131,8 +131,9 @@ namespace Linux
 
   void * pthreadBasedI_Thread::WaitForTermination()
   {
+    const DWORD currentThreadNumber = OperatingSystem::GetCurrentThreadNumber();
     LOGN("pthreadBasedI_Thread::WaitForTermination()--thread ID:"
-      << m_pthread_t)
+      << /*m_pthread_t*/ currentThreadNumber )
     if( successfullyCreated )
     {
       //http://www.kernel.org/doc/man-pages/online/pages/man3/pthread_join.3.html:

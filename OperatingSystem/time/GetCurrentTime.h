@@ -21,7 +21,7 @@
 #if defined( __unix__) //|| defined (__ANDROID__)
 #include <sys/time.h> //gettimeofday
 
-  inline void GetCurrentTime(struct tm * tm_Current)
+  inline void GetCurrentTime(struct tm * p_tm_Current)
   {
     static timeval timevalCurrentTime ;
     //see http://stackoverflow.com/questions/588307/c-obtaining-milliseconds-time-on-linux-clock-doesnt-seem-to-work-properly
@@ -35,6 +35,10 @@
     //see http://www.unix.com/programming/1991-time-microseconds.html
     //  submitted by "Perderabo" on 09-04-2001 :
     p_tm = ::localtime( & timevalCurrentTime.tv_sec ) ;
-    ::memcpy(& tm_Current, p_tm, sizeof(struct tm) );
+    /** http://www.cplusplus.com/reference/ctime/localtime/ :
+    * "The returned value points to an internal object whose validity or value 
+    *  may be altered by any subsequent call to gmtime or localtime."
+    *  -> So make a copy. */
+    ::memcpy(p_tm_Current, p_tm, sizeof(struct tm) );
   }
 #endif

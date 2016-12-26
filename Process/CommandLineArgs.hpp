@@ -30,7 +30,8 @@ public:
   }
 
   unsigned GetArgumentCount() const {return m_argumentCount; }
-  /*charType **/ string_type GetArgument(unsigned index) {
+  
+  /*charType **/ string_type GetArgument(unsigned index) const {
 	  string_type string;
 	  if( index < m_argumentCount )
 	  {
@@ -60,7 +61,7 @@ public:
 
   //TODO rename method to sth like "GetStringArrayIndex() "
   /** @return UINT_MAX for inequality */
-  unsigned contains(charType * compareString) const
+  unsigned contains(const charType * const compareString) const
   {
     charType * string;
     unsigned charIndex;

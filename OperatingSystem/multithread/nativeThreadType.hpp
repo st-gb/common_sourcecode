@@ -15,7 +15,7 @@
 
 #ifdef __linux__ //TODO change to #ifdef POSIX
   #include <OperatingSystem/POSIX/multithread/pthreadBasedI_Thread.hpp>
-  typedef Linux::pthreadBasedI_Thread nativeThread_type;
+  typedef POSIX::pthreadBasedI_Thread nativeThread_type;
 #endif
 
 #endif /* NATIVE_THREAD_TYPE_HPP_ */
