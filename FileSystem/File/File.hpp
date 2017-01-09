@@ -13,7 +13,7 @@ protected:
   std::string m_filePathA;
 public:
   typedef int64_t file_pointer_type;
-  enum CloseError {closingFileSucceeded = 0, closingFileFailed};
+  enum CloseError {closingFileSucceeded = 0, closingFileFailed, fileNotOpen};
   enum OpenError {success = 0, accessDenied, fileNotFound, not_set };
   enum OpenMode { readOnly, writeOnly, readAndWrite };
   enum ReadResult { successfullyRead, readLessThanIntended,
@@ -25,6 +25,7 @@ public:
 
   virtual ~I_File() {};
 
+  virtual bool IsOpen() const {}
   /** Open a file with an ANSI (= 8 bit) character file path. */
   virtual enum OpenError OpenA(const char * const, enum I_File::OpenMode openMode) = 0;
   std::string GetFilePathA() const { return m_filePathA; }

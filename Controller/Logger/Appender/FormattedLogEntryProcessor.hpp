@@ -14,7 +14,7 @@
 #include <Controller/Logger/OutputHandler/I_LogEntryOutputter.hpp>
 #include <Controller/Logger/Formatter/I_LogFormatter.hpp> //class ILogFormatter
 #include <limits.h> //UINT_MAX
-#include <fastest_data_type.h>
+#include <hardware/CPU/fastest_data_type.h>
 
 //Fwd decl.
 class I_LogFormatter;

@@ -25,7 +25,7 @@
 #include <assert.h>
 #include <sstream> //class std::stringstream
 #include "NodeTrieNode.hpp"
-#include <fastest_data_type.h>
+#include <hardware/CPU/fastest_data_type.h>
 
 //#include "SimpleLinkedList.hpp"
 

@@ -1,9 +1,12 @@
-#pragma once
+#pragma once /** include guard */
 
-#include <string> //std::string
+#include <string> /** class std::string */
 //#include "global.h" //for DWORD
 
-std::string EnglishMessageFromErrorCode(int nErrorCode) ;
+namespace OperatingSystem
+{
+  std::string EnglishMessageFromErrorCode(const int nOSerrorCode);
 
-std::string PossibleSolution(//DWORD
-  unsigned long dwErrorCode) ;
+  std::string PossibleSolution(//DWORD
+    const unsigned long dwErrorCode) ;
+}

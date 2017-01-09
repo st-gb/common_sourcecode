@@ -10,7 +10,7 @@
 
 #include <errno.h> //for "errno"
 
-namespace Linux
+namespace /*Linux*/ OperatingSystem
 {
   /** Make the function inline (->no function overhead/ call stack->faster)
   * because it includes just 1 instruction->we would not save space in the exe

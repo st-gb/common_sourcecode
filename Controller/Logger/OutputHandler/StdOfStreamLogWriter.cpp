@@ -9,8 +9,8 @@
 //#ifdef _WIN32
 //  #include <windows.h> //GetLastError()
 //#else
-  #include <Controller/GetLastErrorCode.hpp>//OperatingSystem::GetLastErrorCode()
-  #include <Controller/GetErrorMessageFromLastErrorCode.hpp>
+  #include <OperatingSystem/GetLastErrorCode.hpp>//OperatingSystem::GetLastErrorCode()
+  #include <OperatingSystem/GetErrorMessageFromLastErrorCode.hpp>
   /** Class "LogFileAccessException" */
   #include <Controller/Logger/LogFileAccessException.hpp>
 //#endif
@@ -70,7 +70,7 @@ bool StdOfStreamLogWriter::IsOpen()
   return isOpen;
 }
 
-/** ANSI version of Open */
+/** ANSI character string version of Open */
 bool StdOfStreamLogWriter::OpenA( const std::string & c_r_stdstrFilePath//,
   //bool bRolling
   )
@@ -129,12 +129,7 @@ inline bool StdOfStreamLogWriter::SetStdOstream(
     m_p_std_ostream = m_p_std_ofstream;
   else
   {
-    const DWORD dwLastErrorCode =
-#ifdef __linux__
-      Linux::GetLastErrorCode();
-#else
-      OperatingSystem::GetLastErrorCode();
-#endif
+    const DWORD dwLastErrorCode = OperatingSystem::GetLastErrorCode();
     throw LogFileAccessException(
       //TODO Windows returns "success" even if log file could not be opened
 //      ::GetErrorMessageFromLastErrorCodeA().c_str()
@@ -146,11 +141,15 @@ inline bool StdOfStreamLogWriter::SetStdOstream(
   return bFileIsOpen;
 }
 
+//TODO maybe return an enum of type "RenameResult" instead of returning an OS-dependent
+// error code
 int StdOfStreamLogWriter::RenameFileThreadUnsafe(
   const std::string & cr_std_strFilePath
   /*, enum I_LogEntryOutputter::open_mode open_mode*/)
 {
   int retVal = -1;
+  //TODO set last error code to success before renaming?
+  // else an error code may have been set before calling "rename"
   if( m_p_std_ofstream )
   {
     m_p_std_ofstream->close();
@@ -167,14 +166,8 @@ int StdOfStreamLogWriter::RenameFileThreadUnsafe(
         ( //oldname
         m_std_strLogFilePath.c_str(), cr_std_strFilePath.c_str() //newname
         );
-      retVal =
-//        OperatingSystem::GetLastErrorCode();
-#ifdef _WIN32
-        ::GetLastError();
-#else
-        Linux::GetLastErrorCode();
-#endif
-      //"If the file is successfully renamed, a zero value is returned."
+      retVal = OperatingSystem::GetLastErrorCode();
+      /** "If the file is successfully renamed, a zero value is returned." */
       if( retVal == 0)
       {
         m_std_strLogFilePath = cr_std_strFilePath;

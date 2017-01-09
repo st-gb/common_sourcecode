@@ -20,7 +20,7 @@
 #include <sstream> //class std::basic_stringstream
 #include "logging_preprocessor_macros_definitions.h" //
 #include <Controller/character_string/getUTF8string.hpp> //getUTF8string(...)
-#include <fastest_data_type.h> //fastestUnsignedDataType
+#include <hardware/CPU/fastest_data_type.h> //fastestUnsignedDataType
 
 namespace css
 {

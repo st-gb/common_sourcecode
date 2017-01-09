@@ -5,8 +5,8 @@
  *      Author: sgebauer
  */
 
-#ifndef GETLASTERRORCODE_H_
-#define GETLASTERRORCODE_H_
+#ifndef OPERATING_SYSTEM_GETLASTERRORCODE_H_
+#define OPERATING_SYSTEM_GETLASTERRORCODE_H_
 
 #ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
   #define OperatingSystem Windows_API
@@ -14,7 +14,7 @@
 #endif
 #ifdef __linux__
   #include <OperatingSystem/Linux/GetLastErrorCode.hpp>
-  #define OperatingSystem Linux
+  //#define OperatingSystem Linux
 #endif
 
 //namespace OperatingSystem
@@ -23,4 +23,4 @@
 //
 //} ;
 
-#endif /* GETLASTERRORCODE_H_ */
+#endif /* OPERATING_SYSTEM_GETLASTERRORCODE_H_ */

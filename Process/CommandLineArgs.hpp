@@ -31,14 +31,18 @@ public:
 
   unsigned GetArgumentCount() const {return m_argumentCount; }
   
-  /*charType **/ string_type GetArgument(unsigned index) const {
-	  string_type string;
-	  if( index < m_argumentCount )
-	  {
-		string = m_stringArray[index];
-		return m_stringArray[index];
-	  }
-	  return string;
+  //TODO if a std::basicstream would be returned then an empty string could
+  //  determine an error as command line args always consist of at least 1 character
+  /** @return NULL: array index out of range */
+  const charType * /*string_type*/ GetArgument(const unsigned index) const {
+//	  string_type string;
+    if( index < m_argumentCount )
+    {
+//      string = m_stringArray[index];
+      return m_stringArray[index];
+    }
+//   return string;
+     return NULL;
   }
 
   charType * GetProgramPath()

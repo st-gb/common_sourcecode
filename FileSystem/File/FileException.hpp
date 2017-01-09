@@ -9,18 +9,21 @@ class FileException
 public:
   //std::tstring str;
 //  TCHAR * m_filePath;
+  //TODO why not use a std::wstring here?->deleting the array in the destructor
+  // would be unneccessary
   wchar_t * m_filePath;
 //  std::wstring m_filePath;
   DWORD m_operatingSystemErrorCode;
   
-  FileException() : m_operatingSystemErrorCode(0) { }
+  FileException() : m_filePath(0), m_operatingSystemErrorCode(0) { }
   
   FileException(const wchar_t * const chFilePath)
     : m_operatingSystemErrorCode(0)
 //    , m_filePath(chFilePath)
   {
     const int stringLength = wcslen(chFilePath);
-    m_filePath = new wchar_t[stringLength + 1];
+    m_filePath = new wchar_t[stringLength 
+      /** Plus 1 character for string terminating '0' char.*/ + 1 ];
     wcscpy(m_filePath, chFilePath);
   }
   
@@ -40,7 +43,8 @@ public:
   
   ~FileException()
   {
-    delete [] m_filePath;
+    if( m_filePath)
+      delete [] m_filePath;
   }
 
   //TODO?

@@ -52,12 +52,14 @@ bool ConvertStdStringToTypename(
   std_istringstream >> r_typename_convert_from_string;
   bool bGood = //std_istringstream.good();
     ! std_istringstream.fail();
+#ifdef DEBUG
   if( ! bGood )
   {
     std::string std_str = std_istringstream.str();
     int n = std_str.length();
     n += 0;
   }
+#endif
   return bGood;
 }
 
@@ -74,7 +76,7 @@ namespace NS_ConvertStdStringToTypename
 * ConvertStdStringToTypename<float>(fValue , stdstr ) ; */
 template <typename typenameConvertFromString>
 /** @return true: succeeded. */
-bool ConvertStdStringToTypename(
+bool ConvertCharStringToTypename(
    typenameConvertFromString & r_typename_convert_from_string,
    const char * const c_str
    //,std::ios_base& (*f)(std::ios_base&)
