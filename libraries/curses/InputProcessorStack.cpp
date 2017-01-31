@@ -1,5 +1,6 @@
 #include "InputProcessorStack.hpp"
-#include "menu/Menu.hpp"
+//#include "menu/Menu.hpp"
+#include "Window.hpp" //class Window
 
 namespace Ncurses
 {

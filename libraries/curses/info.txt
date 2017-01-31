@@ -1,0 +1,7 @@
+This source code contained in this folder and subfolders should be a common 
+to "PDcurses" and "ncurses".
+
+ncurses and PDcurses differ: ncurses e.g. offers menus and forms but 
+PDcurses doesn't.
+So to provide helper functions respectively wrapper classes that should be 
+used the intersecting set of functions of both must be used. 

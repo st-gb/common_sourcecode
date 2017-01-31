@@ -1,6 +1,11 @@
 #pragma once//Include guard, more resource-saving than a #ifdef ... include guard
 
 #include "InputProcessorStack.hpp"
+#include <curses.h> //struct WINDOW
+
+//forward declaration
+struct _win_st;
+typedef struct _win_st WINDOW;
 
 namespace Ncurses
 {
@@ -13,7 +18,9 @@ namespace Ncurses
     static Ncurses::InputProcessorStack s_inputProcessorStack;
   public:
     enum handleActionRetCodes { inputNotHandled = -1 };
-    /** Must be virtual in order to enable. */
+    /** Must be "virtual" in order to enable overriding. */
     virtual int HandleAction(const int ch) { }
+    static WINDOW * CreateWindowRelativePos(WINDOW * windowForRelativePos,
+      int width, int height, int ypos, int xpos);
   };
 }

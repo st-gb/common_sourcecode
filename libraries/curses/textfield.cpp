@@ -3,12 +3,13 @@
 #include <string> //class std::string
 #include <hardware/CPU/fastest_data_type.h>
 #include "textfield.h"
+#include "color.h"
 #include <libraries/curses/curs_set_constants.h>
 
-/** Following code is from PDcurses demo, tui.c */
+/** Following code is from PDCurses-3.4/demos/tui.c, tui.h */
  
-#define KEY_ESC    0x1b     /* Escape */
-#define KEY_BKSP   0x8     /* Escape */
+#define KEY_ESC    0x1b  /** "Esc" key */
+#define KEY_BKSP   0x8   /** "<-" key */
 
 #ifndef PDCURSES
 static char wordchar(void)
@@ -38,45 +39,6 @@ static void repaintEditbox(WINDOW *win, int x, const char buffer[] )
     wrefresh(win);
 }
 
-/*static*/ void setcolor(WINDOW *win, chtype color)
-{
-    chtype attr = color & A_ATTR;  /* extract Bold, Reverse, Blink bits */
-
-#ifdef A_COLOR
-    attr &= ~A_REVERSE;  /* ignore reverse, use colors instead! */
-    wattrset(win, COLOR_PAIR(color & A_CHARTEXT) | attr);
-#else
-    attr &= ~A_BOLD;     /* ignore bold, gives messy display on HP-UX */
-    wattrset(win, attr);
-#endif
-}
-           
-/*static*/ void colorBox(WINDOW * win, chtype color, int hasbox)
-{
-    int maxy;
-#ifndef PDCURSES
-    int maxx;
-#endif
-    chtype attr = color & A_ATTR;  /* extract Bold, Reverse, Blink bits */
-    setcolor(win, color);
-#ifdef A_COLOR
-    if (has_colors())
-        wbkgd(win, COLOR_PAIR(color & A_CHARTEXT) | (attr & ~A_REVERSE));
-    else
-#endif
-    wbkgd(win, attr);
-    werase(win);
-#ifdef PDCURSES
-    maxy = getmaxy(win);
-#else
-    getmaxyx(win, maxy, maxx);
-#endif
-    if (hasbox && (maxy > 2))
-        box(win, 0, 0);
-    touchwin(win);
-    wrefresh(win);
-}
-
 /*  weditstr()     - edit string 
  * Description:
     The initial value of 'str' with a maximum length of 'field' - 1,
@@ -98,14 +60,10 @@ int editText(WINDOW * p_superWindow, std::string & std_str, int numChars)
 {
   std::string originalString;
   char * tp;
-  bool defdisp = TRUE, stop = FALSE, insert = TRUE;
+  bool defdisp = TRUE, stop = FALSE, insertMode = TRUE;
   int cury, curx, begy, begx, oldAttribute;
   WINDOW * p_editWindow;
   int currentInput = 0;
-
-//  if ((numChars >= MAXSTRLEN) || (buffer == NULL) ||
-//      ((int)strlen(buffer) > numChars - 1))
-//      return ERR;
 
   originalString = std_str;
 
@@ -114,7 +72,12 @@ int editText(WINDOW * p_superWindow, std::string & std_str, int numChars)
   wrefresh(p_superWindow);
   getyx(p_superWindow, cury, curx);
   getbegyx(p_superWindow, begy, begx);
-  p_editWindow = subwin(p_superWindow, 1, numChars /* number of colums */, begy + cury,
+  /** If window was created with derwin(...) or subwin(...) it isn't cleared
+   *  from screen after wdelete(...). So use newwin(...) instead. */
+  p_editWindow = //subwin( p_superWindow,
+    newwin(
+    1, numChars /* number of colums */, 
+    begy + cury,
     begx + curx);
   //TODO is NULL when (indirectly) called from changePartitionTableOffsets(...)
   if( ! p_editWindow )
@@ -128,7 +91,6 @@ int editText(WINDOW * p_superWindow, std::string & std_str, int numChars)
 
   int cursor_mode = //    insert ? 
 //    Curses::Cursor::Terminal_specific_high_visibility_mode : 
-//    Curses::Cursor::Terminal_specific_normal_mode ; 
     Curses::Cursor::Terminal_specific_normal_mode;
   curs_set(cursor_mode); /** Show cursor (if possible) */
 
@@ -139,6 +101,7 @@ int editText(WINDOW * p_superWindow, std::string & std_str, int numChars)
   {
 //    idle();
     repaintEditbox( p_editWindow, cursorPos, std_str.c_str() );
+    //TODO using wgetch(...) prevents processing of Curses::EventQueue g_eventQueue
     currentInput = wgetch(p_editWindow);
     switch( currentInput )
     {
@@ -154,12 +117,8 @@ int editText(WINDOW * p_superWindow, std::string & std_str, int numChars)
         stop = TRUE;
         break;
     case KEY_DC: //Delete Character
-//      if (bufferPointer - buffer < strlen(buffer) )
-      {
-//        memmove((void *)(bufferPointer), (const void *)(bufferPointer + 1),
-//          strlen(bufferPointer) );
-        std_str.erase(cursorPos, /** Only erase 1 character. */ 1  );
-      }
+      //TODO string length check needed?
+      std_str.erase(cursorPos, /** Only erase 1 character. */ 1  );
       break;
     case KEY_BKSP:
     case KEY_BACKSPACE:
@@ -180,8 +139,11 @@ int editText(WINDOW * p_superWindow, std::string & std_str, int numChars)
     case KEY_IC:          /* enter insert mode */
     case KEY_EIC:         /* exit insert mode */
       defdisp = FALSE;
-      insert = !insert;
-      curs_set(insert ? 2 : 1); /**set the cursor mode */
+      insertMode = !insertMode; /**Switch the insert mode*/
+      cursor_mode = insertMode ? 
+        Curses::Cursor::Terminal_specific_high_visibility_mode : 
+        Curses::Cursor::Terminal_specific_normal_mode;
+      cursor_mode = curs_set(cursor_mode); /**set the cursor mode*/
       break;
     default:
 //      {int i = 0;}
@@ -196,7 +158,6 @@ int editText(WINDOW * p_superWindow, std::string & std_str, int numChars)
       }
       else if(currentInput == wordchar() )   /* ^W */
       {
-//        tp = bufferPointer;
         int charPosAfterWord = cursorPos;
         while( (cursorPos > 0) && ( std_str.at(cursorPos - 1) == ' ') )
           cursorPos --;
@@ -205,7 +166,7 @@ int editText(WINDOW * p_superWindow, std::string & std_str, int numChars)
         /** Remove all characters between cursorPos and charPosAfterWord */
         std_str.erase(cursorPos, charPosAfterWord - cursorPos);
       }
-      else if (isprint(currentInput) )
+      else if (isprint(currentInput) ) /** If printable character. */
       {
         if (defdisp)
         {
@@ -213,31 +174,29 @@ int editText(WINDOW * p_superWindow, std::string & std_str, int numChars)
           std_str.clear();
           defdisp = FALSE;
         }
-        if (insert)
+        if (insertMode == insertChar )
         {
           if( std_str.length() < numChars - 1)
           {
-//            memmove((void *)(bufferPointer + 1), (const void *)bufferPointer,
-//                    strlen(bufferPointer) + 1);
             std_str.insert(cursorPos ++, 1, (char) currentInput);
-//            *bufferPointer++ = currentInput;
           }
         }
         else if( cursorPos < numChars - 1)
         {
-          /* append new string terminator */
-          if( cursorPos == std_str.size() ) //if terminating char at pointer
-              std_str += currentInput;
-          else
+          if( cursorPos == std_str.size() ) //if cursor is at last char 
+              std_str += currentInput; //append character.
+          else //Overwrite char
             std_str.at(cursorPos ++) = currentInput;
         }
       }
     }
   }
-  curs_set(0); /* set cursor to Invisible */
+  curs_set(Curses::Cursor::Invisible); /* set cursor to invisible */
   wattrset( p_editWindow, oldAttribute);
 //  repaintEditbox( p_editWindow, bufferPointer - buffer, buffer);
   delwin( p_editWindow);
+  touchwin(p_superWindow);
+  wrefresh(p_superWindow);
 //  }
   return currentInput;
 }

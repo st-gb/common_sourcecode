@@ -3,9 +3,10 @@
 
 /** ncurses menu functions and structs: unpost_menu(...), free_menu(...) */
 #include <menu.h> 
-#include "Menu.hpp"
-#include <stdlib.h>
-#include <map> //malloc(...), free(...)
+#include "Menu.hpp" //C++ ncurses menu wrapper
+#include <stdlib.h> //malloc(...), free(...)
+#include <map> //class std::map
+#include <libraries/curses/GetChar.hpp> // int GetChar(WINDOW * p_window);
 
 /** static/class variable definitons : */
 Ncurses::InputProcessorStack Ncurses::Window::s_inputProcessorStack;
@@ -14,7 +15,7 @@ namespace Ncurses
 {
   Menu::Menu()
     : m_ESCandENTERleavesMenu(true), 
-      stayInMenu(true), 
+      m_stayInMenu(true), 
       m_alignment(Vertical),
       m_menu(NULL)
   {
@@ -76,7 +77,7 @@ namespace Ncurses
     {
       case 27:
         if( m_ESCandENTERleavesMenu )
-          stayInMenu = false;
+          m_stayInMenu = false;
         break;
       case KEY_DOWN:
         if( m_alignment == Vertical )
@@ -109,7 +110,7 @@ namespace Ncurses
         FUNC func = m_functionToCallVector.at(ret);
         (*func)();
         if( m_ESCandENTERleavesMenu )
-          stayInMenu = false;
+          m_stayInMenu = false;
       }
         break;
       default:
@@ -123,32 +124,43 @@ namespace Ncurses
 
   int Menu::InsideMenu(bool ESCandENTERleavesMenu, WINDOW * windowToShowMenuIn)
   {
+    m_stayInMenu = true;
     m_ESCandENTERleavesMenu = ESCandENTERleavesMenu;
     int ret = -1;
     s_inputProcessorStack.add(this);
     
     if( ! windowToShowMenuIn )
       windowToShowMenuIn = stdscr;
-    WINDOW * submenuWin;
+    WINDOW * submenuWin = NULL;
     /** from https://de.wikibooks.org/wiki/Ncurses:_Men%C3%BCs */
     if( windowToShowMenuIn ) {
-      set_menu_win (m_menu, windowToShowMenuIn);
       
       int numRowsNeeded, numColumnsNeeded;
       int n = scale_menu(m_menu, & numRowsNeeded, & numColumnsNeeded);
       //TODO does the window return by "derwin(...)" need to be freed?
-      submenuWin = derwin(windowToShowMenuIn, numRowsNeeded /*# lines*/, 
-        numColumnsNeeded /* # columns */, 0 /*  begin_y */, 0 /*  begin_x */ );
-      set_menu_sub (m_menu, submenuWin );
+      submenuWin = //derwin(windowToShowMenuIn, 
+      /** If window was created with derwin(...) or subwin(...) it isn't cleared 
+       *  from screen after wdelete(...). So use newwin(...) instead. */
+        //newwin(
+        Ncurses::Window::CreateWindowRelativePos(
+        windowToShowMenuIn,
+        numRowsNeeded /*# lines*/, 
+        numColumnsNeeded /* # columns */, 
+        0 /*  begin_y relative to the standard screen (whole terminal) */, 
+        0 /*  begin_x  relative to the standard screen (whole terminal)*/ );
+//      set_menu_sub (m_menu, submenuWin );
+      set_menu_win (m_menu, /*windowToShowMenuIn*/ submenuWin);
     }
     post_menu(m_menu);
-    if( windowToShowMenuIn ) 
-      wrefresh(windowToShowMenuIn);
+    //refresh();
+    wrefresh(submenuWin);
+//    if( windowToShowMenuIn ) 
+//      wrefresh(windowToShowMenuIn);
     int ch;
     keypad(windowToShowMenuIn, TRUE);   /* enable cursor keys */
     do
     {
-      ch = wgetch(windowToShowMenuIn);
+      ch = Curses::GetChar(windowToShowMenuIn);
       /** https://linux.die.net/man/3/wgetch :
        * "In no-delay mode, if no input is waiting, the value ERR is returned."
        * ERR = no valid input. */
@@ -159,11 +171,19 @@ namespace Ncurses
         if( ret == Ncurses::Window::inputNotHandled )
   //      else
           s_inputProcessorStack.consume(ch);
+        wrefresh(/*windowToShowMenuIn*/ submenuWin);
+//        if(ch == )
       }
-    }while( stayInMenu );
+    }while( m_stayInMenu );
     unpost_menu(m_menu);
-    wrefresh(/*windowToShowMenuIn*/ submenuWin);
     s_inputProcessorStack.RemoveLastElement();
+    if( submenuWin )
+    {
+      delwin( submenuWin);
+    }
+    touchwin(windowToShowMenuIn);
+    wrefresh(windowToShowMenuIn);
+//    wrefresh(/*windowToShowMenuIn*/ submenuWin);
     return ret;
   }
 }

@@ -3,7 +3,7 @@
 #include <vector> //class std::vector
 #include <map> //class std::map
 //#include <libraries/ncurses/InputProcessorStack.hpp>
-#include <libraries/ncurses/Window.hpp>
+#include <libraries/curses/Window.hpp>
 
 /** Forward declarations (faster than to #include) */
 struct tagITEM;
@@ -29,7 +29,7 @@ namespace Ncurses
     typedef void (*FUNC)(void);
    private:
     bool m_ESCandENTERleavesMenu;
-    bool stayInMenu;
+    bool m_stayInMenu;
     enum style m_alignment;
     tagITEM ** m_menuItems;
     tagMENU * m_menu;
