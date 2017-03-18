@@ -1,10 +1,12 @@
-#pragma once
+/** This function is specific to an operating system.
+ So place this file into the OperatingSystem folder? */
+#pragma once /** include guard */
 
 //int SetCurrentDirectory(const char *);
 
 //int SetCurrentDirectory_inl(const char *);
 #if defined(__unix__) //Linux, Android NDK
-  #include <Linux/FileSystem/SetCurrentWorkingDir/SetCurrentWorkingDir.hpp>
+  #include <OperatingSystem/Linux/FileSystem/SetCurrentWorkingDir/SetCurrentWorkingDir.hpp>
   //#define OperatingSystem Linux
 #endif
 #ifdef _WIN32

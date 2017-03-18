@@ -1,9 +1,6 @@
-/*
- * LogEntriesListCtrl.hpp
- *
+/* LogEntriesListCtrl.hpp
  *  Created on: 12.04.2014
- *      Author: mr.sys
- */
+ *      Author: mr.sys */
 
 #ifndef LOGENTRIESLISTCTRL_HPP_
 #define LOGENTRIESLISTCTRL_HPP_
@@ -120,6 +117,8 @@ namespace wxWidgets
     static unsigned s_GUIthreadID;
     enum columnIndices { colID_timeStamp, colID_threadName, colID_namespaceAndClass,
       colID_functionName, colID_message };
+      enum windowIDs { ID_MakeFontLarger, ID_MakeFontSmaller, RightClick };
+    //TODO is this a performant data structure for OnGetItemText(...)?
     typedef std::deque<PersistentLogEntry> container_type;
     container_type m_logentries;
     Logger & m_logger;
@@ -162,8 +161,14 @@ namespace wxWidgets
     wxString OnGetItemText(long item, long column) const;
     void OnClose( wxCloseEvent & wxcmd );
     void OnListItemSelected(wxListEvent& event);
+    void OnMouseWheel(wxMouseEvent & mouseEvent);
     void OnScroll(wxScrollWinEvent & event);
     void OnLogEntry( LogEvent & event);
+    void OnRightClick(wxListEvent & evt);
+    void OnContextMenu(wxContextMenuEvent & event);
+    void OnMakeFontLarger(wxCommandEvent &);
+    void OnMakeFontSmaller(wxCommandEvent &);
+    void ShowPopupMenu(const wxPoint & point);
 
     /** For receiving messages/ for callback of OnGetItemText(...). */
     DECLARE_EVENT_TABLE()

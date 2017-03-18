@@ -1,1 +1,2 @@
-This folder contains operating system threads (there also exist nin-operating system threads)
+This folder contains operating system threads
+there also exist non-operating system threads, so maybe put it on top of "common_sourcecode"

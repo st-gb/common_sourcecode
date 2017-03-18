@@ -8,12 +8,12 @@
 #include <wxWidgets/UserInterface/LogEntries/LogEntriesDialog.hpp>
 #include <wxWidgets/UserInterface/LogEntries/LogEntriesListCtrl.hpp>
 
-
 #include <wxWidgets/Controller/character_string/wxStringHelper.hpp>
 #include <Controller/Logger/Logger.hpp>
 /** PrettyFuntionFormattedFunctionSignature::GetClassName(...),
 * PrettyFuntionFormattedFunctionSignature::GetFunctionName(...) */
 #include <compiler/current_function.hpp>
+#include <wx/menu.h> //class wxMenu
 
 #include "Controller/TranslationControllerBase.hpp"
 
@@ -25,11 +25,14 @@ unsigned wxWidgets::LogEntriesListCtrl::s_GUIthreadID = 0;
 namespace wxWidgets
 {
   BEGIN_EVENT_TABLE(LogEntriesListCtrl, wxListCtrl)
-    EVT_LIST_ITEM_SELECTED(LogEntriesDialog::logEntriesListCtrl, LogEntriesListCtrl::OnListItemSelected)
+    EVT_LIST_ITEM_SELECTED(LogEntriesDialog::logEntriesListCtrl, 
+      LogEntriesListCtrl::OnListItemSelected)
 //    EVT_LIST_ITEM_DESELECTED(LogEntriesDialog::logEntriesListCtrl, LogEntriesListCtrl::OnListItemDeselected)
 //    EVT_SCROLLWIN_THUMBRELEASE()
     //http://forums.wxwidgets.org/viewtopic.php?f=1&t=3157
     EVT_SCROLLWIN(LogEntriesListCtrl::OnScroll)
+    /** Non-scrollbar scrolling via mouse, touchpad  etc. */
+    EVT_MOUSEWHEEL(LogEntriesListCtrl::OnMouseWheel)
     //from https://wiki.wxwidgets.org/Custom_Events_in_wx2.8_and_earlier#Creating_a_Custom_Event_-_Method_4
     EVT_LOG( wxID_ANY, LogEntriesListCtrl::OnLogEntry )
     EVT_CLOSE(LogEntriesListCtrl::OnClose)
@@ -37,6 +40,14 @@ namespace wxWidgets
     // or EVT_MYFOO( Foo_DoFirstThing, MyDestination::DoFirstThing)
     // or EVT_MYFOO( Foo_DoSecondThing, MyDestination::DoSecondThing)
     // or EVT_MYFOO( Foo_DoThirdThing, MyDestination::DoThirdThing)
+    /**http://stackoverflow.com/questions/14487102/wxwidgets-contextmenu-popup */
+    EVT_LIST_ITEM_RIGHT_CLICK(
+      /** Needs to be the ID of _this_ list ctrl?! */
+      LogEntriesDialog::logEntriesListCtrl, 
+      LogEntriesListCtrl::OnRightClick)
+    EVT_CONTEXT_MENU(LogEntriesListCtrl::OnContextMenu)
+    EVT_MENU(ID_MakeFontLarger, LogEntriesListCtrl::OnMakeFontLarger )
+    EVT_MENU(ID_MakeFontSmaller, LogEntriesListCtrl::OnMakeFontSmaller )
   END_EVENT_TABLE()
 
   LogEntriesListCtrl::LogEntriesListCtrl(
@@ -330,22 +341,85 @@ namespace wxWidgets
   {
     m_lastSeletedItemIndex = event.GetIndex();
   }
+  
+  void LogEntriesListCtrl::OnMakeFontLarger(wxCommandEvent & cmdevt)
+  {
+    wxFont font = GetFont();
+    int fontPointSize = font.GetPointSize();
+    font.SetPointSize(++fontPointSize);
+    SetFont(font);
+    //TODO update list ctrl?
+//    Layout();
+  }
+  
+  void LogEntriesListCtrl::OnMakeFontSmaller(wxCommandEvent & cmdevt)
+  {
+    wxFont font = GetFont();
+    int fontPointSize = font.GetPointSize();
+    if( fontPointSize > 1)
+    {
+      font.SetPointSize(--fontPointSize);
+      SetFont(font);
+      //TODO update list ctrl?
+//      Layout();
+    }
+  }
+  
+  void LogEntriesListCtrl::ShowPopupMenu(const wxPoint & point)
+  {
+    /**from http://stackoverflow.com/questions/14487102/wxwidgets-contextmenu-popup
+    *  Show popupmenu at position */
+    wxMenu menu(wxT(""));
+//    const int col = event.GetColumn();
+//    const int index = event.GetIndex();
+    menu.Append(ID_MakeFontLarger, wxT("make font &larger\tCTRL++"));
+    menu.Append(ID_MakeFontSmaller, wxT("make font &smaller\tCTRL+-"));
+    PopupMenu(& menu, point );
+  }
+  
+  void LogEntriesListCtrl::OnContextMenu(wxContextMenuEvent & event)
+  {
+    ShowPopupMenu(event.GetPosition());
+  }
 
+  void LogEntriesListCtrl::OnRightClick(wxListEvent & event)
+  {
+    ShowPopupMenu(event.GetPoint() );
+  }
+
+  void LogEntriesListCtrl::OnMouseWheel(wxMouseEvent & mouseEvent)
+  {
+    if( mouseEvent.GetWheelAxis() == wxMOUSE_WHEEL_VERTICAL)
+    {
+      int numLinesToScroll = mouseEvent.GetLinesPerAction();
+      if( mouseEvent.GetWheelRotation() > 0 )
+        numLinesToScroll *= -1;
+//      m_currentScrollPos += numLinesToScroll;
+      ScrollLines(numLinesToScroll);
+    }
+  }
+  
   void LogEntriesListCtrl::OnScroll(wxScrollWinEvent & event)
   {
-    int i = event.GetPosition();
-    i = event.GetId();
+    /** see http://docs.wxwidgets.org/3.1.0/classwx_scroll_win_event.html#af6652b2f8110049e9c7208237a641960
+    * int wxScrollWinEvent:GetPosition():"Returns the position of the scrollbar 
+    * for the thumb track and release events. " */
+//    int pos = event.GetPosition();
+//    int id = event.GetId();
     /** The position of scroll pos BEFORE the scroll event. */
     m_currentScrollPos = GetScrollPos(wxVERTICAL);
     m_logEntriesDialog.SetTitle( wxString::Format(
-      wxT("log entries--first line:%u"),
-      m_currentScrollPos)
+      wxT("log entries--first line:%u/%ulines"),
+      m_currentScrollPos, GetItemCount() )
       );
 
     //TODO send custom event and call GetScrollPos() in event handler
     // instead of code this below.
 
-    wxEventType evtType= event.GetEventType();
+    wxEventType evtType = event.GetEventType();
+    //from wx/event.h
+//    int nnn = wxEVT_SCROLLWIN_LINEUP;
+    //TODO is this "switch" construct used at all??
     switch(evtType)
     {
     case 10147: //1 line up
@@ -364,7 +438,7 @@ namespace wxWidgets
     }
     /** Needed, else it immediately scrolls to top. */
     event.Skip();
-    i++;
+//    i++;
 //    Refresh();
   }
 
