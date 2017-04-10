@@ -14,6 +14,7 @@
 * PrettyFuntionFormattedFunctionSignature::GetFunctionName(...) */
 #include <compiler/current_function.hpp>
 #include <wx/menu.h> //class wxMenu
+#include <wx/accel.h> //class wxAcceleratorTable
 
 #include "Controller/TranslationControllerBase.hpp"
 
@@ -65,12 +66,39 @@ namespace wxWidgets
       ID, wxDefaultPosition, wxDefaultSize,
       wxLC_REPORT | wxLC_VIRTUAL | wxLC_EDIT_LABELS)
     , FormattedLogEntryProcessor(logger, NULL, NULL, LogLevel::debug)
+    , m_rightClickProcessed(false)
     , m_logger(logger)
     , m_logEntriesDialog(logEntriesDialog)
     , m_currentScrollPos(0)
     , m_lastSeletedItemIndex(-1)
   {
     s_GUIthreadID = GUIthreadID;
+    
+    BuildGUI();
+    //TODO senseful?
+    SetItemCount( m_logentries.size() );
+    logger.AddFormattedLogEntryProcessor(this);
+    
+    AddAccelerators();
+  }
+
+  LogEntriesListCtrl::~LogEntriesListCtrl()
+  {
+    m_logger.Remove(this);
+  }
+
+  void LogEntriesListCtrl::AddAccelerators()
+  {
+    /** from https://forums.wxwidgets.org/viewtopic.php?t=9911 */
+    wxAcceleratorEntry accel_entries[2];
+    accel_entries[0].Set(wxACCEL_CTRL, '-', ID_MakeFontSmaller);
+    accel_entries[1].Set(wxACCEL_CTRL, '+', ID_MakeFontLarger);
+    wxAcceleratorTable accel(2, accel_entries);
+    SetAcceleratorTable(accel);
+  }
+  
+  void LogEntriesListCtrl::BuildGUI()
+  {
     // Add first column
     wxListItem column;
 
@@ -98,16 +126,14 @@ namespace wxWidgets
     column.SetText( wxT("message") );
     column.SetWidth(500);
     InsertColumn(colID_message, column);
-
-    SetItemCount( m_logentries.size() );
-    logger.AddFormattedLogEntryProcessor(this);
   }
-
-  LogEntriesListCtrl::~LogEntriesListCtrl()
+  
+  void LogEntriesListCtrl::ClearLogEntries()
   {
-    m_logger.Remove(this);
+    m_logentries.clear();
+    SetItemCount(0);
   }
-
+  
   void LogEntriesListCtrl::HighlightMatchingLineAndMoveThere(
       const SearchParams & searchParams )
   {
@@ -133,6 +159,8 @@ namespace wxWidgets
     {
       const std::string std_strSearchFor = wxWidgets::GetStdString(
         searchParams.GetSearchString() );
+//      wxString::FromUTF8(searchParams.GetSearchString().c_str() );
+      
       container_type::const_iterator c_iter = //m_logentries.begin();
         m_logentries.begin() + firstLineToSearchIn;
       long currentItemIndex = firstLineToSearchIn;
@@ -375,16 +403,25 @@ namespace wxWidgets
     menu.Append(ID_MakeFontLarger, wxT("make font &larger\tCTRL++"));
     menu.Append(ID_MakeFontSmaller, wxT("make font &smaller\tCTRL+-"));
     PopupMenu(& menu, point );
+    
+    //http://wxwidgets.10942.n7.nabble.com/How-to-enable-shortcut-keys-in-popup-menus-wxMac-2-8-6-td70000.html
   }
   
   void LogEntriesListCtrl::OnContextMenu(wxContextMenuEvent & event)
   {
-    ShowPopupMenu(event.GetPosition());
+    if( ! m_rightClickProcessed )
+      ShowPopupMenu(event.GetPosition());
+    else
+      m_rightClickProcessed = false;
   }
 
   void LogEntriesListCtrl::OnRightClick(wxListEvent & event)
   {
     ShowPopupMenu(event.GetPoint() );
+    /** A right click also generates a context menu event. Prevent this event
+     * from being processed in "OnContextMenu" by setting it to true. */
+    m_rightClickProcessed = true;
+//    event.Skip();
   }
 
   void LogEntriesListCtrl::OnMouseWheel(wxMouseEvent & mouseEvent)

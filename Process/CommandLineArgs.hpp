@@ -20,7 +20,7 @@ public:
   typedef std::basic_string<charType> string_type;
   enum ArgIndices { /** not necessarily the absolute/full path: may also be a 
     relative path */
-    ProgramPathArgIndex  = 0};
+    ProgramPathArgIndex = 0, FirstProgramArg};
 
   CommandLineArgs() {};
   CommandLineArgs(int argc, charType ** stringArray)

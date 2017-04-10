@@ -114,6 +114,7 @@ namespace wxWidgets
     : public wxListCtrl,
     public FormattedLogEntryProcessor
   {
+    bool m_rightClickProcessed;
     static unsigned s_GUIthreadID;
     enum columnIndices { colID_timeStamp, colID_threadName, colID_namespaceAndClass,
       colID_functionName, colID_message };
@@ -147,8 +148,9 @@ namespace wxWidgets
       const unsigned numLogEntries = m_logentries.size();
       ( (LogEntriesListCtrl *)this)->SetItemCount( numLogEntries );
     }
-    
-    void ClearLogEntries() { };
+    inline void AddAccelerators();
+    inline void BuildGUI();
+    void ClearLogEntries();
     void HighlightMatchingLineAndMoveThere(const SearchParams & searchParams );
     void HighlightPreviousMatchingLineAndMoveThere(const SearchParams & searchParams );
     unsigned Log(//ostream & ostr

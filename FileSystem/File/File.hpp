@@ -3,6 +3,7 @@
 //http://ubuntuforums.org/showthread.php?t=889612
 #include <inttypes.h> //int64_t
 #include <string> //class std::string
+#include <hardware/CPU/fastest_data_type.h> //fastestUnsignedDataType
 
 /** Base class for native (regarding Operating System) file access. 
   Especially intended for getting error codes on failure in contrast to when
@@ -36,9 +37,11 @@ public:
   /** Read a single byte from the file. */
   //TODO maybe provide error code on failure or throw an exception.
   virtual int ReadByte() = 0;
+  /**@param bufferSizeInByte : in: buffer size to read    
+   *         out: number of bytes actually read. */
   virtual enum ReadResult Read(
-    unsigned char * buffer,
-    unsigned bufferSizeInByte)
+    uint8_t buffer [],
+    fastestUnsignedDataType & bufferSizeInByte)
     { return unknownReadError;
     /*throw FileException("not implemented yet");*/ }
   //TODO provide error code on failure or throw an exception.

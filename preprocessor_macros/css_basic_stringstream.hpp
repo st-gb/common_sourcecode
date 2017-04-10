@@ -20,6 +20,7 @@
 #include <sstream> //class std::basic_stringstream
 #include "logging_preprocessor_macros_definitions.h" //
 #include <Controller/character_string/getUTF8string.hpp> //getUTF8string(...)
+#include <Controller/character_string/ISO_8859_1.hpp> //GetAsUTF8(...)
 #include <hardware/CPU/fastest_data_type.h> //fastestUnsignedDataType
 
 namespace css
@@ -151,10 +152,8 @@ namespace css
 //        return *this << p_wchar_t;
 //      }
 
-    /**
-     * This function is necessary for wchar_t / wide strings to provide
-     * output for ANSI char strings.
-     */
+    /** This function is necessary for wchar_t / wide strings to provide
+     *  output for ANSI char strings. */
     __ostream_type & operator << (
         const std::string & r_std_str)
     {
@@ -164,12 +163,20 @@ namespace css
 //        return r_std_str;
       //return _M_insert<std::string>(r_std_str);
       //return
+      //Make UTF-8 conversion here or better at log formatters?
+      //Advantage if here: every charset -> UTF-8 conversion could be done here
+      //so only 1 conversion from UTF-8 to HTML output
+      fastestUnsignedDataType utf8ByteIndex;
+      BYTE * arch = ISO_8859_1::GetAsUTF8(r_std_str.c_str(), utf8ByteIndex);
       for(std::string::size_type characterIndex = 0; characterIndex <
-        r_std_str.length() ; ++ characterIndex)
+        /*r_std_str.length()*/ utf8ByteIndex ; ++ characterIndex)
       {
         /** For GCC4.8.1 TDM must use "this->put", else compiler error.*/
-        this->put( (char_type) r_std_str.at(characterIndex) );
+        /** "put" with "char" fails with characters like octal 366 (in general:
+         *  if > 127?) */
+        this->put( (char_type) /*r_std_str.at(*/arch[characterIndex] /*)*/ );
       }
+      delete [] arch;
       /**@see ostream.tcc */
       return *this;
     }

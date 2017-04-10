@@ -1,16 +1,16 @@
-/*
- * pthreadBasedI_Thread.cpp
- *
+/** pthreadBasedI_Thread.cpp
  *  Created on: Oct 12, 2010
- *      Author: sgebauer
- */
-
+ *      Author: sgebauer  */
 #include "pthreadBasedI_Thread.hpp"
 #include <pthread.h> //int pthread_create(...)
 #include <OperatingSystem/GetErrorMessageFromLastErrorCode.hpp>
 //#include <Controller/Err GetLastErrorCode.hpp>
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 
+#pragma message "link with -pthread."
+
+/** http://man7.org/linux/man-pages/man3/pthread_create.3.html : 
+ *  "CONFORMING TO: POSIX.1-2001, POSIX.1-2008." */
 namespace POSIX
 {
   typedef void * (* pthread_start_func_type) (void *) ;
@@ -61,16 +61,15 @@ namespace POSIX
 
   BYTE pthreadBasedI_Thread::start(
     pfnThreadFunc pfn_threadfunc,
-    void * p_v,
+    void * p_vThreadFunctionArgument,
     /*BYTE*/ I_Thread::priority priority /*= default_priority*/ )
   {
     int nRetVal = 1 ;
     if( m_i_thread_thread_type == I_Thread::joinable )
       nRetVal =
-        //cites from http://www.kernel.org/doc/man-pages/online/pages/man3/
-        // pthread_create.3.html:
-        //"On success, pthread_create() returns 0; on error, it returns an
-        //error number, and the contents of *thread are undefined."
+      /**from http://www.kernel.org/doc/man-pages/online/pages/man3/pthread_create.3.html:
+      * "On success, pthread_create() returns 0; on error, it returns an
+      * error number, and the contents of *thread are undefined." */
         pthread_create (
   //        pthread_t *__restrict __newthread,
           & m_pthread_t ,
@@ -78,10 +77,9 @@ namespace POSIX
           //"If attr is NULL, then the thread is created with default attributes."
           //"By default, a new thread is created in a joinable state
           NULL ,
-    //      void *(*__start_routine) (void *),
+          /* void *(*__start_routine) (void *),*/
           ( pthread_start_func_type ) pfn_threadfunc ,
-  //        void *__restrict __arg
-          p_v
+          p_vThreadFunctionArgument /** void *__restrict __arg */
           ) ;
 //    else
 //    {
@@ -111,7 +109,8 @@ namespace POSIX
     else
     {
       successfullyCreated = 1;
-      LOGN_INFO("pthreadBasedI_Thread::start(...)--created thread with ID "
+      //TODO m_pthread_t is not the OS thread ID
+      LOGN_INFO("pthreadBasedI_Thread::start(...)--created thread with POSIX ID "
         << m_pthread_t)
       if( priority != default_priority )
       {
@@ -136,11 +135,11 @@ namespace POSIX
       << /*m_pthread_t*/ currentThreadNumber )
     if( successfullyCreated )
     {
-      //http://www.kernel.org/doc/man-pages/online/pages/man3/pthread_join.3.html:
-      //"The pthread_join() function waits for the thread specified by thread to
-      //terminate."
-      //"On success, pthread_join() returns 0; on error, it returns an error
-      //number."
+      /** http://www.kernel.org/doc/man-pages/online/pages/man3/pthread_join.3.html:
+      * "The pthread_join() function waits for the thread specified by thread to
+      * terminate."
+      * "On success, pthread_join() returns 0; on error, it returns an error
+      * number." */
       int nReturn = pthread_join(
         m_pthread_t ,
         //"If retval is not NULL, then pthread_join() copies the exit status of the

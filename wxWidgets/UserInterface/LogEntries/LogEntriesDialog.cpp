@@ -98,10 +98,12 @@ namespace wxWidgets
         this,
         goToPreviousMatchButton,
         wxT("<") );
+    p_goToPreviousMatch->SetToolTip( wxT("go to previous match") );
     wxButton * p_goToNextMatch = new wxButton(
-        this,
-        goToNextMatchButton,
-        wxT(">") );
+      this,
+      goToNextMatchButton,
+      wxT(">") );
+    p_goToNextMatch->SetToolTip( wxT("go to NEXT match") );
 
     m_p_messageToSearch = new wxTextCtrl(
         this,
@@ -214,6 +216,7 @@ namespace wxWidgets
   {
     //LOGN_DEBUG("begin--m_searchInFunctionName:" << m_searchInFunctionName)
     const wxString & value = m_p_messageToSearch->GetValue();
+    /** Content is L"m\303\266gen" for "moegen" */
     m_searchParams.SetSearchString(value);
     //LOGN_DEBUG("m_searchInFunctionName:" << m_searchInFunctionName)
     m_p_logEntriesListCtrl->HighlightMatchingLineAndMoveThere(m_searchParams);

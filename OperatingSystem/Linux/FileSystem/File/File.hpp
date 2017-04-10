@@ -126,7 +126,7 @@ namespace Linux
       return /*I_File::successfullyRead*/ i;
     }
 
-    enum ReadResult Read( unsigned char * buffer, unsigned bufferSizeInByte)
+    enum ReadResult Read(uint8_t buffer[], fastestUnsignedDataType & bufferSizeInByte)
     {
       const size_t numElesRead = fread(buffer, 
         //From http://www.cplusplus.com/reference/cstdio/fread/
@@ -138,6 +138,7 @@ namespace Linux
 //      {
 //        case EACCESS:
 //      }
+      bufferSizeInByte = numElesRead;
       if( numElesRead < bufferSizeInByte)
         return readLessThanIntended;
         //ferror(m_pFile)

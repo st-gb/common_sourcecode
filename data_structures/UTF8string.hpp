@@ -1,6 +1,6 @@
 #pragma once
 
-#include <fastest_data_type.h>
+#include <hardware/CPU/fastest_data_type.h>
 //#include <Controller/character_string/ISO_8859_1.hpp>
 #include <preprocessor_macros/bitmasks.h>
 

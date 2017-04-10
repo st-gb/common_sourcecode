@@ -77,9 +77,12 @@ namespace wxWidgets
   //#else
   //  std::string str(( const char * ) wxstr.c_str() ) ;
   //#endif
-    //from http://wiki.wxwidgets.org/Converting_everything_to_and_from_wxString#
-    //  wxString_to_std::string:
-    std::string str = std::string( cr_wxstr.mb_str() );
+    /** from http://wiki.wxwidgets.org/Converting_everything_to_and_from_wxString#wxString_to_std::string: */
+    std::string str = std::string( cr_wxstr.mb_str(
+      /** When the wxString was an UTF-8 string (contained characters > 127) and 
+       *  "wxConvUTF8" was not specified then the resulting std::string was
+       *  empty. */
+      wxConvUTF8) );
    return str ;
   }
 }

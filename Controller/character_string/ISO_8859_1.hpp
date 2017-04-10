@@ -1,6 +1,6 @@
 #pragma once
 
-#include <fastest_data_type.h>
+#include <hardware/CPU/fastest_data_type.h>
 #include <preprocessor_macros/bitmasks.h>
 #include <data_structures/UTF8string.hpp>
 #include <string.h> //strlen(...))
@@ -74,7 +74,8 @@ namespace ISO_8859_1
     return 0;
   }
 
-  /** @param utf8ByteIndex: out: size of array after function ended. */
+  /** @param utf8ByteIndex: out: size of array after function ended. 
+    * @preturn must be freed by the caller of this function */
   inline BYTE * GetAsUTF8(const char * const p_ch,
     fastestUnsignedDataType & utf8ByteIndex)
   {

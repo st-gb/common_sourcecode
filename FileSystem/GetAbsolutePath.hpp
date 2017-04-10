@@ -34,6 +34,7 @@ inline std::string GetAbsolutePathA(const char * const path)
   if( FileSystem::IsRelativePathA( path) )
   {
     std::string currentWorkingDir;
+    //TODO also handle ".." in file path!
     OperatingSystem::GetCurrentWorkingDirA_inl(currentWorkingDir);
     str = currentWorkingDir + "/" + path;
   }

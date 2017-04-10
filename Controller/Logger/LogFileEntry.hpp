@@ -5,12 +5,9 @@
  * You are allowed to modify and use the source code from Trilobyte SE for free
  * if you are not making profit directly or indirectly with it or its adaption.
  * Else you may contact Trilobyte SE. */
-/*
- * LogFileEntry.hpp
- *
+/*  LogFileEntry.hpp
  *  Created on: 29.04.2012
- *      Author: Stefan
- */
+ *  Author: Stefan  */
 
 #ifndef LOGFILEENTRY_HPP_
 #define LOGFILEENTRY_HPP_
@@ -18,6 +15,8 @@
 typedef unsigned char BYTE;
 #include <stdint.h> //uint16_t
 
+//namespace CSS
+//{
 class LogFileEntry
 {
   /** All time members need to have the same data type for unified access
@@ -40,5 +39,6 @@ public:
   const std::string * p_std_strThreadName;
 //  LogFileEntry() : p_std_strThreadName(p_std_strThreadName) {  }
 };
+//}
 
 #endif /* LOGFILEENTRY_HPP_ */

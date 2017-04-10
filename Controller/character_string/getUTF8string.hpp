@@ -5,12 +5,9 @@
  * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
  * making profit with it or its adaption. Else you may contact Trilobyte SE.
  */
-/*
- * getUTF8string.hpp
- *
+/** getUTF8string.hpp
  *  Created on: 07.05.2011
- *      Author: Stefan
- */
+ *      Author: Stefan  */
 
 #ifndef GETUTF8STRING_HPP_
 #define GETUTF8STRING_HPP_
@@ -79,7 +76,9 @@
 ////  return std_str;
 //}
 
-inline void getUTF8string_inline(const wchar_t cr_wstr [], int size,
+inline void getUTF8string_inline(
+  const wchar_t cr_wstr [],
+  int size,
   std::string & std_str)
 {
   //see http://www.cplusplus.com/reference/string/string/begin/
