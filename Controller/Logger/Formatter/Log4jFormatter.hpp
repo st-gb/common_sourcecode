@@ -13,6 +13,7 @@
 #include <compiler/current_function.hpp>
 //convertToStdString(...)
 #include <Controller/character_string/convertFromAndToStdString.hpp>
+//#include <Controller/character_string/getUTF8string.hpp>
 
 namespace CSS
 {
@@ -71,8 +72,11 @@ namespace CSS
           p_chThreadName = std_strThreadName.c_str();
         }
         if( prettyFunctionFormattedFunctionName)
+        {
+          //TODO enable UTF-8 logging?
+          //std::string std_strUTF8 = getUTF8string(* logfileentry.p_std_strMessage);
           * m_p_std_ostream
-            << m_p_chTimeString << " "
+            << m_p_chFormattedTimeString << " "
             << GetLogLevelAsString(messageType) << " "
 //            << logfileentry.p_std_strThreadName ?
 //              << "[" << logfileentry.p_std_strThreadName << "] " :
@@ -88,6 +92,7 @@ namespace CSS
   //          << " thread ID:" << logfileentry.threadID << " "
       //      << "\n"
             ;
+        }
       }
     };
   } /* namespace LogFormatter */

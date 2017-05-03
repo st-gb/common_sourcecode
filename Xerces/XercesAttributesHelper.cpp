@@ -66,6 +66,7 @@ XercesAttributesHelper::~XercesAttributesHelper()
   )
 {
   bool bRetVal = false;
+  /** https://xerces.apache.org/xerces-c/apiDocs-3/classXMLString.html#a0f2f01d4ff14825e65bec0b709a401e2 */
   XMLCh * p_xmlchAttributeName = XERCES_CPP_NAMESPACE::XMLString::transcode(
     lpctstrAttrName) ;
   if( p_xmlchAttributeName
@@ -81,6 +82,10 @@ XercesAttributesHelper::~XercesAttributesHelper()
     //If the attribute exists.
     if(cp_xmlchAttributeValue)
     {
+      /** https://xerces.apache.org/xerces-c/apiDocs-3/classXMLString.html#a91b02742b80418fbc6c54b7dd353ad8c :
+       * "NOTE: The returned buffer is dynamically allocated and is the 
+       *  responsibility of the caller to delete it when not longer needed. 
+       *  You can call XMLString::release to release this returned buffer." */
       char * pchAttributeValue = XERCES_CPP_NAMESPACE::XMLString::transcode(
         cp_xmlchAttributeValue) ;
       if( pchAttributeValue )
@@ -94,15 +99,15 @@ XercesAttributesHelper::~XercesAttributesHelper()
 //              >> r_templateType
 //              ).fail();
 //
-//            //Release memory of dyn. alloc. buffer (else memory leaks).
-//            XERCES_CPP_NAMESPACE::XMLString::release(&pchAttributeValue);
+        /** Release memory of dyn. alloc. buffer (else memory leaks). */
+        XERCES_CPP_NAMESPACE::XMLString::release(& pchAttributeValue);
       }
 //        else
 //          byReturn = XERCES_ERROR_CONVERTING_ATTRIBUTE_VALUE_TO_C_STRING ;
     }
 //      else
 //        byReturn = XERCES_ATTRIBUTE_VALUE_DOES_NOT_EXIST ;
-    //Release memory of dyn. alloc. buffer (else memory leaks).
+    /** Release memory of dyn. alloc. buffer (else memory leaks). */
     XERCES_CPP_NAMESPACE::XMLString::release(& p_xmlchAttributeName);
   }
   return bRetVal ;

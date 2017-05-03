@@ -358,6 +358,7 @@ namespace wxWidgets
   {
 //   int i = 0;
     AddPersistentLogEntry(event.GetPersistentLogEntry() );
+    UpdateTitleBar();
   }
   
   void LogEntriesListCtrl::OnClose( wxCloseEvent & wxcmd )
@@ -435,6 +436,14 @@ namespace wxWidgets
       ScrollLines(numLinesToScroll);
     }
   }
+
+  void LogEntriesListCtrl::UpdateTitleBar()
+  {
+    m_logEntriesDialog.SetTitle( wxString::Format(
+      wxT("log entries--first line:%u/%ulines"),
+      m_currentScrollPos, GetItemCount() )
+      );
+  }
   
   void LogEntriesListCtrl::OnScroll(wxScrollWinEvent & event)
   {
@@ -445,10 +454,7 @@ namespace wxWidgets
 //    int id = event.GetId();
     /** The position of scroll pos BEFORE the scroll event. */
     m_currentScrollPos = GetScrollPos(wxVERTICAL);
-    m_logEntriesDialog.SetTitle( wxString::Format(
-      wxT("log entries--first line:%u/%ulines"),
-      m_currentScrollPos, GetItemCount() )
-      );
+    UpdateTitleBar();
 
     //TODO send custom event and call GetScrollPos() in event handler
     // instead of code this below.

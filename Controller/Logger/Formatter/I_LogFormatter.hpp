@@ -83,9 +83,12 @@ protected:
 //  const Logger * m_p_logger;
 //  const I_LogEntryOutputter * m_p_outputhandler;
   const FormattedLogEntryProcessor * m_p_formattedlogentryprocessor;
-  char * m_p_chTimeString;
+  /** Formatted string with placeholders replaced with actual time, e.g. 
+   *   "{year} {day]" -> "2010 6" */
+  char * m_p_chFormattedTimeString;
 //  std::ofstream * m_p_std_ostream;
   std::basic_ostream<char> * m_p_std_ostream;
+  /** Format string with placeholders for time members like "{year}{day]" */
   std::string m_TimeFormatString;
   static const std::string s_std_strDefaultLinuxLogTimeFormatString;
   static const std::string s_std_strDefaultWindowsLogTimeFormatString;
@@ -148,14 +151,14 @@ public:
       );
 #ifdef __ANDROID__
     * m_p_std_ostream
-      << m_p_chTimeString
+      << m_p_chFormattedTimeString
       << prettyFunctionFormattedFunctionName << " "
       << (* logfileentry.p_std_strMessage).c_str()
 //      << "\n"
       ;
 #else
     * m_p_std_ostream
-      << m_p_chTimeString
+      << m_p_chFormattedTimeString
       << " thread ID:" << logfileentry.threadID << " "
       << prettyFunctionFormattedFunctionName << " "
       << * logfileentry.p_std_strMessage

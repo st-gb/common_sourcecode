@@ -72,6 +72,13 @@ FormattedLogEntryProcessor::~FormattedLogEntryProcessor()
     delete m_p_log_formatter;
     m_p_log_formatter = NULL;
   }
+  if( m_p_outputhandler)
+  { //TODO an output handler may not be associated to just 1 FormattedLogEntryProcessor
+    // So deleting it here could cause trouble in another FormattedLogEntryProcessor
+    // that uses it
+    delete m_p_outputhandler;
+    m_p_outputhandler = NULL;
+  }
 }
 
 

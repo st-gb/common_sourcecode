@@ -104,8 +104,10 @@ namespace POSIX
 //          ) ;
 //    }
     if( nRetVal )
+      //TODO 1.:really rely on logging functions? 2.:1 error message was: 
+      // "Failed to create thread: Cannot allocate memory", nRetVal=11, errno=12
       LOGN_ERROR("Failed to create thread: " << OperatingSystem::
-		  GetErrorMessageFromLastErrorCodeA() )
+        GetErrorMessageFromLastErrorCodeA() )
     else
     {
       successfullyCreated = 1;

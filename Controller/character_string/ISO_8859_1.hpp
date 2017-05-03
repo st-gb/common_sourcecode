@@ -74,7 +74,7 @@ namespace ISO_8859_1
     return 0;
   }
 
-  /** @param utf8ByteIndex: out: size of array after function ended. 
+  /** @param utf8ByteIndex: out:# UFT-8 bytes written into the array without \0
     * @preturn must be freed by the caller of this function */
   inline BYTE * GetAsUTF8(const char * const p_ch,
     fastestUnsignedDataType & utf8ByteIndex)
@@ -101,6 +101,8 @@ namespace ISO_8859_1
       for(int i = 0; i < stringLength; ++ i )
       {
         currentChar = p_ch[i];
+        /** https://en.wikipedia.org/wiki/UTF-8#Description : 
+         *  Values below 80hex (128dec) are 1 byte UTF-8 sequences. */
         if( currentChar < 0x80 )
         {
           arbyUTF8[utf8ByteIndex ++] = currentChar;

@@ -28,6 +28,7 @@ namespace POSIX
     pthreadBasedI_Thread(I_Thread::thread_type = I_Thread::joinable );
     virtual
     ~pthreadBasedI_Thread();
+//    unsigned GetThreadID() { pthread_getthreadid_np() }
     /** impl. with same method name seems to hide base class function
     //see http://stackoverflow.com/questions/16005894/a-function-from-a-base-class-is-being-hidden-in-the-subclass-how-do-i-fix-this */
     using I_Thread::start;

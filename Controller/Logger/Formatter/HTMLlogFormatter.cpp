@@ -114,7 +114,7 @@ void HTMLlogFormatter::WriteLogFileEntry(
 //    << logfileentry.millisecond << "ms"
 //    << logfileentry.nanosecond << "ns"
 //    << std_strTime
-    << m_p_chTimeString
+    << m_p_chFormattedTimeString
     << "</td><td>";
   if( logfileentry.p_std_strThreadName )
     * m_p_std_ostream << * logfileentry.p_std_strThreadName << "</td>\n<td>";

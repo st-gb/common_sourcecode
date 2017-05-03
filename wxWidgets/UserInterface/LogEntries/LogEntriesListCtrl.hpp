@@ -160,6 +160,7 @@ namespace wxWidgets
         LogLevel::info,
       const char * const prettyFunctionFormattedFunctionName = NULL
       ) const;
+    inline void UpdateTitleBar();
     wxString OnGetItemText(long item, long column) const;
     void OnClose( wxCloseEvent & wxcmd );
     void OnListItemSelected(wxListEvent& event);

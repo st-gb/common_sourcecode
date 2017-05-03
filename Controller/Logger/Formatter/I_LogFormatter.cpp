@@ -48,7 +48,7 @@ I_LogFormatter::I_LogFormatter(//std::ofstream * p_std_ofstream
   :
 //    m_p_outputhandler(outputhandler),
     m_p_formattedlogentryprocessor(p_formattedlogentryprocessor),
-    m_p_chTimeString(NULL),
+    m_p_chFormattedTimeString(NULL),
     m_nodetrieTimePlaceHolderToLogFileEntryMember(256, NULL)
 {
   m_p_std_ostream = //p_std_ofstream;
@@ -63,14 +63,14 @@ I_LogFormatter::I_LogFormatter(//std::ofstream * p_std_ofstream
     PLACE_HOLDER_BEGIN_STRING "minute" PLACE_HOLDER_END_STRING ":"
     PLACE_HOLDER_BEGIN_STRING "second" PLACE_HOLDER_END_STRING "s"
     PLACE_HOLDER_BEGIN_STRING "millisecond" PLACE_HOLDER_END_STRING "ms";
-  m_p_chTimeString = (char *) m_TimeFormatString.c_str();
+//  m_p_chFormattedTimeString = (char *) m_TimeFormatString.c_str();
   CreateTimePlaceHolderToLogFileEntryMemberMapping();
 }
 
 I_LogFormatter::~I_LogFormatter()
 {
-//  if( m_p_chTimeString )
-//    delete [] m_p_chTimeString;
+  if( m_p_chFormattedTimeString )
+    delete [] m_p_chFormattedTimeString;
 //  DeleteTimePlaceHolderToLogFileEntryMemberNodeTrie();
   m_nodetrieTimePlaceHolderToLogFileEntryMember.DeleteWithMember();
 //  LOGN_INFO("m_dwNumberOfNodes for PlaceHolderToLogFileEntryMember trie:"
@@ -295,15 +295,16 @@ void I_LogFormatter::SetDefaultTimeFormat()
  *  Call when initializing or changing the time format.*/
 void I_LogFormatter::SetTimeFormat(const std::string & TimeFormatString)
 {
-  m_TimeFormatString = TimeFormatString;
-//  if( m_p_chTimeString)
+  if( m_p_chFormattedTimeString )
 //    //points to m_TimeFormatString.c_str()
-//    delete [] m_p_chTimeString;
+    //TODO invalid free here according to valgrind
+    delete [] m_p_chFormattedTimeString;
+  m_TimeFormatString = TimeFormatString;
   //  CreateTimeStringArray();
   //  BYTE NumberOfPlaceHolders =
   uint16_t arraySize = GetNeededArraySizeForTimeString(m_TimeFormatString);
   //= m_TimeFormatString.size() + NumberOfPlaceHolders * 5 + 1;
-  m_p_chTimeString = new char[ arraySize + 1];
+  m_p_chFormattedTimeString = new char[ arraySize + 1];
 }
 
 void Insert(char * & p_chDestination,
@@ -354,7 +355,7 @@ void I_LogFormatter::GetTimeAsString(const LogFileEntry & logfileentry//,
 //  std::string & std_strTime
   )
 {
-  char * p_chCurrentCharInFormattedTimeString = m_p_chTimeString;
+  char * p_chCurrentCharInFormattedTimeString = m_p_chFormattedTimeString;
 
 //  std_strTime = m_TimeFormatString;
   //Use static variables because they are global and aren't created on the

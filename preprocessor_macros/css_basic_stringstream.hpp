@@ -89,24 +89,47 @@ namespace css
     * via "<<" and are not possible. */
     __ostream_type
     & operator << (
-        const char * p_ch)
+      /** Use the "const" qualifier because else const strings are handled
+       *  by the generic ("template<typename _ValueT>") output function. */
+      const char * p_ch  )
     {
 //        #error "css::basic_stringstream"
       #if __GNUC__ > 3
 //        #pragma message("css::basic_stringstream << const char * ")
       #endif //#if __GNUC__ > 3
-//        return r_std_str;
       //return _M_insert<std::string>(r_std_str);
-      //return
 
-      for(fastestUnsignedDataType charIndex = 0; p_ch[charIndex] != '\0'; ++ charIndex)
+      //Make UTF-8 conversion here or better at log formatters?
+      //Advantage if here: every charset -> UTF-8 conversion could be done here
+      //so only 1 conversion from UTF-8 to HTML output
+      fastestUnsignedDataType numUTF8Bytes;
+      BYTE * p_UTF8byteArray = ISO_8859_1::GetAsUTF8(p_ch, numUTF8Bytes);
+      for(fastestUnsignedDataType utf8ByteIndex = 0; 
+        /* p_UTF8byteArray[charIndex] != '\0'*/ utf8ByteIndex < numUTF8Bytes; 
+        ++ utf8ByteIndex)
       {
         /** For GCC4.8.1 TDM must use "this->put", else compiler error.*/
-        this->put( (char_type) p_ch[charIndex] );
+        /** "put" with "char" fails with characters like octal 366 (in general:
+         *  if > 127?) */
+        this->put( (char_type) p_UTF8byteArray[utf8ByteIndex] );
       }
+      delete [] p_UTF8byteArray;
       /** @see ostream.tcc */
       return *this;
     }
+    
+    /** Must return an object of _this_ type, else following concatenations
+    * via "<<" and are not possible. */
+    __ostream_type
+    & operator << (
+      /** Omit the "const" qualifier because else non-const strings are handled
+       *  by the generic ("template<typename _ValueT>") output function. */
+      char * p_ch  )
+    {
+      /** Call "const char" string array function and return the result. */
+      return *this << (const char *) p_ch;
+    }
+    
     /** Must return an object of _this_ type, else following concatenations
     * via "<<" and are not possible. */
     __ostream_type
@@ -160,25 +183,10 @@ namespace css
 #if __GNUC__ > 3
 //      #pragma message("css::basic_stringstream << const std::string & ")
 #endif
-//        return r_std_str;
       //return _M_insert<std::string>(r_std_str);
-      //return
-      //Make UTF-8 conversion here or better at log formatters?
-      //Advantage if here: every charset -> UTF-8 conversion could be done here
-      //so only 1 conversion from UTF-8 to HTML output
-      fastestUnsignedDataType utf8ByteIndex;
-      BYTE * arch = ISO_8859_1::GetAsUTF8(r_std_str.c_str(), utf8ByteIndex);
-      for(std::string::size_type characterIndex = 0; characterIndex <
-        /*r_std_str.length()*/ utf8ByteIndex ; ++ characterIndex)
-      {
-        /** For GCC4.8.1 TDM must use "this->put", else compiler error.*/
-        /** "put" with "char" fails with characters like octal 366 (in general:
-         *  if > 127?) */
-        this->put( (char_type) /*r_std_str.at(*/arch[characterIndex] /*)*/ );
-      }
-      delete [] arch;
       /**@see ostream.tcc */
-      return *this;
+      /** Call the "const char *" string array function and return the result.*/
+      return *this << r_std_str.c_str();
     }
   };
 }; //namespace css

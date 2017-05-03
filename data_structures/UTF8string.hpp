@@ -89,6 +89,7 @@ public:
         ++ charIndex;
       }
       std_strReturn = std::string(p_ch, charIndex);
+      delete [] p_ch; /** release memory */
     }
     return std_strReturn;
   }
