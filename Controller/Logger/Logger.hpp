@@ -80,6 +80,8 @@
 #endif
     /** Used for all FormattedLogEntryProcessors. */
     LogFileEntry m_logfileentry;
+    /** Overall log level (for all in m_formattedLogEntryProcessors) : 
+     *  "pre-filters" log messages */
     enum LogLevel::MessageType m_logLevel;
     enum log_class
     {
@@ -139,6 +141,13 @@
       FormattedLogEntryProcessor * p_formattedlogentryprocessor)
     {
       PossiblyEnterCritSec();
+//      SetToLowestLogLevelOfAll();
+      fastestUnsignedDataType logLevel = p_formattedlogentryprocessor->GetLogLevel();
+      /** The lower the level the more messages are not pre-filtered.
+       *  -> less performant. */
+      if( logLevel <  m_logLevel)
+        //TODO set thread-safe via atomic function ?
+        m_logLevel = (LogLevel::MessageType) logLevel;
       m_formattedLogEntryProcessors.push_back(p_formattedlogentryprocessor);
       PossiblyLeaveCritSec();
     }

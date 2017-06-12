@@ -23,6 +23,7 @@ typedef unsigned long DWORD ;
 
 #include "thread_function_calling_convention.h"
 #include <OperatingSystem/multithread/nativeCriticalSectionType.hpp>
+#include <hardware/CPU/fastest_data_type.h> //typedef fastestUnsignedDataType
 #include <map> //class std::map
 #include <string> //class std::string
 
@@ -91,7 +92,7 @@ public:
   static void SetThreadName(const char * const, unsigned threadID);
 //  virtual I_Thread( BYTE byThreadType ) = 0 ;
   virtual //static
-    BYTE start(
+    fastestUnsignedDataType start(
       pfnThreadFunc,
       void * p_vpfnThreadFuncParam,
       /*BYTE*/ enum priority prio = default_priority) = 0 ;

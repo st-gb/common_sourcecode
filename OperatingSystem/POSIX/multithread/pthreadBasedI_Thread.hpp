@@ -33,7 +33,7 @@ namespace POSIX
     //see http://stackoverflow.com/questions/16005894/a-function-from-a-base-class-is-being-hidden-in-the-subclass-how-do-i-fix-this */
     using I_Thread::start;
 //    pthread_t GetThreadHandle(){ return m_pthread_t; }
-    BYTE start(
+    fastestUnsignedDataType start(
       pfnThreadFunc,
       void * p_vThreadFuncParameter,
       /*BYTE*/ I_Thread::priority priority = default_priority) ;

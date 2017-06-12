@@ -17,7 +17,7 @@
 
 #include <wx/thread.h> //for class wxCondition
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
-#include <Controller/multithread/I_Condition.hpp> //base class I_Condition
+#include <OperatingSystem/multithread/I_Condition.hpp> //base class I_Condition
 
 class wxConditionBasedI_Condition
   : public I_Condition
@@ -162,7 +162,7 @@ public:
 #endif
   }
   /** Overrides I_condition.WaitTimeout(...)  */
-  I_Condition::state WaitTimeOut(DWORD dwMilliSecondsToWait)
+  I_Condition::state WaitTimeOut(fastestUnsignedDataType dwMilliSecondsToWait)
   {
     wxCondError wxconderrorWait = m_wxcondition.WaitTimeout(
       dwMilliSecondsToWait);

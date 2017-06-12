@@ -15,9 +15,9 @@
 #ifndef WXTHREADBASEDI_THREAD_HPP_
 #define WXTHREADBASEDI_THREAD_HPP_
 
-#include <Controller/multithread/I_Thread.hpp>
+#include <OperatingSystem/multithread/I_Thread.hpp> //base class 
 #include <wx/thread.h>
-#include <fastest_data_type.h> //typedef fastestUnsignedDataType
+#include <hardware/CPU/fastest_data_type.h> //typedef fastestUnsignedDataType
 
 class wxThreadFuncStarterThread
   : public wxThread
@@ -73,7 +73,7 @@ public:
    *  So declare base class's "start" function here again.
   //see http://stackoverflow.com/questions/16005894/a-function-from-a-base-class-is-being-hidden-in-the-subclass-how-do-i-fix-this */
   using I_Thread::start;
-  BYTE start(pfnThreadFunc threadFunc, void * p_vThreadFuncParam,
+  fastestUnsignedDataType start(pfnThreadFunc threadFunc, void * p_vThreadFuncParam,
     I_Thread::priority prio)
   {
     fastestUnsignedDataType wxThreadPrio = I_ThreadPrio2wxThreadPrio(prio);

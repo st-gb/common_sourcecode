@@ -14,7 +14,7 @@
   #include <Windows/SetThreadAffinityMask.h>
 #endif
 #ifdef __linux__
-  #include <Linux/SetThreadAffinityMask.h>
+  #include <OperatingSystem/Linux/SetThreadAffinityMask.h>
 #endif
 
 namespace OperatingSystem

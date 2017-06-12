@@ -14,8 +14,8 @@
 #include <fstream> //for std::ifstream
 //#include <global.h> //LOGN()
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
-//GetErrorMessageFromLastErrorCodeA(...)
-#include <Controller/GetErrorMessageFromLastErrorCode.hpp>
+// OperatingSystem::GetErrorMessageFromLastErrorCodeA(...)
+#include <OperatingSystem/GetErrorMessageFromLastErrorCode.hpp>
 //#include <windef.h> //BYTE
 typedef unsigned char BYTE ;
 
@@ -54,7 +54,7 @@ BYTE ReadFileContent( std::string & r_stdstrFilePath )
   {
     LOGN_TYPE("failed to open file \"" << r_stdstrFilePath << "\": error code:"
       << //stdifstream.rdstate()
-      ::GetErrorMessageFromLastErrorCodeA(),
+      OperatingSystem::GetErrorMessageFromLastErrorCodeA(),
       LogLevel::error)
 
   }

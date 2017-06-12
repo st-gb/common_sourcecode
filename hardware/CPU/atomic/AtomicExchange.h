@@ -10,7 +10,9 @@ inline long AtomicExchange(long * Target, long val)
 {
 #ifdef _WIN32
   /** http://msdn.microsoft.com/en-us/library/windows/desktop/ms683590%28v=vs.85%29.aspx
-   * "The function returns the initial value of the Target parameter." */
+   * "The function returns the initial value of the Target parameter." 
+   * "This function generates a full memory barrier (or fence) to ensure that 
+   *  memory operations are completed in order." */
   return InterlockedExchange(Target, val);
 #else
 #ifdef __GNUC__
@@ -23,6 +25,9 @@ inline long AtomicExchange(long * Target, long val)
 //    , * Target //type oldval
 //    , val /** type newval */
 //    );
+   /** https://gcc.gnu.org/onlinedocs/gcc-4.4.5/gcc/Atomic-Builtins.html:
+   *  "[...] rather an atomic exchange operation. It writes value into *ptr,
+   *   and returns the previous contents of *ptr." */
   return __sync_lock_test_and_set(Target, val);
 #endif
 #endif

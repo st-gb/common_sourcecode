@@ -59,7 +59,7 @@ namespace POSIX
       pthread_kill(m_pthread_t, 0) != ESRCH;
   }
 
-  BYTE pthreadBasedI_Thread::start(
+  fastestUnsignedDataType pthreadBasedI_Thread::start(
     pfnThreadFunc pfn_threadfunc,
     void * p_vThreadFunctionArgument,
     /*BYTE*/ I_Thread::priority priority /*= default_priority*/ )
@@ -112,8 +112,7 @@ namespace POSIX
     {
       successfullyCreated = 1;
       //TODO m_pthread_t is not the OS thread ID
-      LOGN_INFO("pthreadBasedI_Thread::start(...)--created thread with POSIX ID "
-        << m_pthread_t)
+      LOGN_INFO("--created thread with POSIX ID " << m_pthread_t)
       if( priority != default_priority )
       {
         LOGN_INFO("pthreadBasedI_Thread::start(...)--setting thread prio to "

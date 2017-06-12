@@ -8,6 +8,7 @@
 #include <string> //class std::string
 #include <sstream> //for class std::istringstream
 //#include <iostream>
+#include "stdtstr.hpp" //GetStdWstring
 
 //  #include <exception> //for class std::exception
 //  #ifndef WIN32

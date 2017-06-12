@@ -30,9 +30,17 @@
 //see wxWidgets-2.9.1/include/wx/msw/tglbtn.h :
 // extern WXDLLIMPEXP_DATA_CORE(const char) wxCheckBoxNameStr[];
 
-#if wxMAJOR_VERSION > 1 && wxMINOR_VERSION > 8
-  typedef char wxCheckBoxNameStr_Type;
-#else
+#if wxMAJOR_VERSION > 1 
+  #if wxMAJOR_VERSION = 2
+    #if wxMINOR_VERSION > 8 // wxWidgets version >= 2.9
+      typedef char wxCheckBoxNameStr_Type;
+    #else // wxWidgets version element of [2.0 ... 2.8]
+      typedef wxChar wxCheckBoxNameStr_Type;
+    #endif
+  #else // wxWidgets version >= 3.0
+    typedef char wxCheckBoxNameStr_Type;
+  #endif
+#else //wxWidgets version = 1.x
   typedef wxChar wxCheckBoxNameStr_Type;
 #endif
 extern WXDLLIMPEXP_DATA_CORE(const wxCheckBoxNameStr_Type) wxCheckBoxNameStr[];

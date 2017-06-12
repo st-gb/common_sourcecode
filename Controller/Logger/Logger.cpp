@@ -49,6 +49,7 @@ Logger::Logger(
 //  CreateTextFormatter();
 //  if( LogLevel::s_nodetrieLogLevelStringToNumber.size() == 0)
 //    LogLevel::CreateLogLevelStringToNumberMapping();
+  m_logLevel = LogLevel::beyondLastLogMessageType;
 }
 
 Logger::~Logger()

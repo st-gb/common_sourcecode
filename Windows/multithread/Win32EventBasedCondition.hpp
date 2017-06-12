@@ -16,7 +16,7 @@
 #define WIN32EVENTBASEDCONDITION_HPP_
 
 #include <windows.h> //for HANDLE, ::WaitForSingleObject(...)
-#include <Controller/multithread/I_Condition.hpp> //Base class I_Condition
+#include <OperatingSystem/multithread/I_Condition.hpp> //Base class I_Condition
 
   class Win32EventBasedCondition
     : public I_Condition
