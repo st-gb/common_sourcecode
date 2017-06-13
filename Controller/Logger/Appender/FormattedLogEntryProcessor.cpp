@@ -140,6 +140,9 @@ I_LogFormatter * FormattedLogEntryProcessor::CreateFormatter(//BYTE type = 1
 #ifdef __linux__
   #undef _DEBUG
 #endif
+    /** This call is needed, else program crash in I_LogFormatter::
+     *   GetTimeAsString(...) because of NULL pointer */
+    m_p_log_formatter->SetTimeFormat(std_strLogTimeFormatString);
   }
   return m_p_log_formatter;
 }

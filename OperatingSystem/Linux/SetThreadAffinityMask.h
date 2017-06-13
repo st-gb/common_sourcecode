@@ -25,10 +25,9 @@ namespace Linux
 //    cpu_set_tAffMask = CPU_ALLOC(num_cpus);
 //    cpu_set_t * cpu_set_tAffinityMask ;
     //TODO check if it is working
-    //Cites from http://www.kernel.org/doc/man-pages/online/pages/man2/
-    // sched_setaffinity.2.html:
-    //"On success, sched_setaffinity() and sched_getaffinity() return 0.
-    //On error, -1 is returned, and errno is set appropriately."
+    /** Cites from http://www.kernel.org/doc/man-pages/online/pages/man2/sched_setaffinity.2.html
+     *  : "On success, sched_setaffinity() and sched_getaffinity() return 0.
+     *     On error, -1 is returned, and errno is set appropriately." */
     static int nReturnValue;
     nReturnValue = sched_setaffinity(
         //"If pid is zero, then the calling process is used."

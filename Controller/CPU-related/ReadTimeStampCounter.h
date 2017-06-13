@@ -117,6 +117,8 @@ __inline__ uint64_t ReadTSCinOrderFromEnglishWikipedia(void)
     __asm__ __volatile__ (
     "        xorl %%eax,%%eax \n"
     "        cpuid"      // serialize
+    //TODO g++ 4.x complains if using x86 CPU register "rbx"
+    //  it uses it for Position-Independent Code (PIC) for dynamic libraries?
     ::: "%rax", "%rbx", "%rcx", "%rdx");
     /* We cannot use "=A", since this would use %rax on x86_64 and return only the lower 32bits of the TSC */
     __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
@@ -143,10 +145,10 @@ namespace NS_SetThreadAffinityMask
   {
     ULONGLONG ull = 0 ;
     DEBUGN(/*"inline ULONGLONG ReadTSCinOrder( DWORD dwThreadAffinityMask ) "*/"begin")
-    //http://en.wikipedia.org/wiki/Rdtsc:
-    //"There is no promise that the timestamp counters of multiple CPUs on a
-    //single motherboard will be synchronized. In such cases, programmers can
-    // only get reliable results by locking their code to a single CPU."
+    /** http://en.wikipedia.org/wiki/Rdtsc:
+    * "There is no promise that the timestamp counters of multiple CPUs on a
+    * single motherboard will be synchronized. In such cases, programmers can
+    * only get reliable results by locking their code to a single CPU." */
     DWORD dwPreviousAffMask = OperatingSystem::SetThreadAffinityMask( //::GetCurrentThread() ,
         dwThreadAffinityMask) ;
     if( dwPreviousAffMask )
@@ -170,8 +172,9 @@ namespace NS_SetThreadAffinityMask
 
       ull = ReadTSCinOrderFromEnglishWikipedia();
 
-      //Restore the previous thread affinity mask.
-      OperatingSystem::SetThreadAffinityMask( dwPreviousAffMask ) ;
+      /** Restore the previous thread affinity mask.*/
+      //TODO program crashed (SIGSEGV)  when this line is uncommented
+//      OperatingSystem::SetThreadAffinityMask( dwPreviousAffMask ) ;
     }
     DEBUGN(/*"inline ULONGLONG ReadTSCinOrder( DWORD dwThreadAffinityMask ) "*/"end")
     return ull ;

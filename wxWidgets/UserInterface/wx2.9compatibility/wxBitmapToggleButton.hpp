@@ -31,7 +31,7 @@
 // extern WXDLLIMPEXP_DATA_CORE(const char) wxCheckBoxNameStr[];
 
 #if wxMAJOR_VERSION > 1 
-  #if wxMAJOR_VERSION = 2
+  #if wxMAJOR_VERSION == 2
     #if wxMINOR_VERSION > 8 // wxWidgets version >= 2.9
       typedef char wxCheckBoxNameStr_Type;
     #else // wxWidgets version element of [2.0 ... 2.8]
