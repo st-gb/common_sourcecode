@@ -2,15 +2,29 @@
 
 #include "Window.hpp" //class Ncurses::Window
 #include <curses.h> //WINDOW
+#include <hardware/CPU/fastest_data_type.h> //fastestUnsignedDataType
 
-namespace Ncurses
+namespace Curses
 {
   class MessageBox
-    : public Ncurses::Window
+    : public Curses::Window
   {
+  private:
+    WINDOW * m_p_buttonWindow;
+  protected:
+    WINDOW * m_p_MessageWindow, * m_p_windowToShowMessageIn;
     chtype m_colorPair, m_buttonColorPair;
+    /*volatile*/ bool m_showWindow;
   public:
     MessageBox(chtype colorPair, chtype buttonColorPair);
-    void ShowMessage(const char message [], WINDOW * windowToShowMessageIn);
+    virtual void ShowMessage(const char message [], WINDOW * windowToShowMessageIn);
+    void CreateCenteredButton(const char label []);
+    void BuildUserInterface(const char message []);
+    void Close();
+    void Destroy();
+    virtual void EventLoop();
+    void ShowMessageText(
+      const char message [],
+      const std::vector<fastestUnsignedDataType> &);
   };
 }

@@ -97,8 +97,10 @@ inline void ReadTSCinOrder(
 {
 //  if( ::SetThreadAffinityMask(::GetCurrentThread() , dwThreadAffinityMask) )
   {
-    //http://www.ccsl.carleton.ca/~jamuir/rdtscpm1.pdf:
-//    CPUID(); //"force all previous instructions to complete"
+    /** see http://www.ccsl.carleton.ca/~jamuir/rdtscpm1.pdf page 3/12 : 
+     * cpuid _before_ rdtsc :
+      "cpuid ; force all previous instructions to complete
+       rdtsc ; read time stamp counter"  */
     //from http://en.wikipedia.org/wiki/CPUID
     // #Accessing_the_id_from_other_languages:
     asm ( "mov 1, %%eax; " // a into eax
@@ -113,15 +115,23 @@ inline void ReadTSCinOrder(
  *   between different CPU cores */
 __inline__ uint64_t ReadTSCinOrderFromEnglishWikipedia(void)
 {
+    /** According to https://en.wikipedia.org/wiki/Time_Stamp_Counter#C.2B.2B :
+      *  " force every preceding instruction to complete before before allowing 
+      *  the program to continue" */
+    /** see https://www.ccsl.carleton.ca/~jamuir/rdtscpm1.pdf page 3/12 :
+     *  cpuid is placed _before_ rdtsc */
+//    __asm__ __volatile__ (
+//    "        xorl %%eax,%%eax \n"
+//    "        cpuid"      // serialize
+//    //TODO g++ 4.x complains if using x86 CPU register "rbx"
+//    //  it uses it for Position-Independent Code (PIC) for dynamic libraries?
+//    ::: "%rax", "%rbx", "%rcx", "%rdx");
+    asm ( "mov 1, %eax; " // a into eax
+       "cpuid" ) ;    
     uint32_t lo, hi;
-    __asm__ __volatile__ (
-    "        xorl %%eax,%%eax \n"
-    "        cpuid"      // serialize
-    //TODO g++ 4.x complains if using x86 CPU register "rbx"
-    //  it uses it for Position-Independent Code (PIC) for dynamic libraries?
-    ::: "%rax", "%rbx", "%rcx", "%rdx");
-    /* We cannot use "=A", since this would use %rax on x86_64 and return only the lower 32bits of the TSC */
-    __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
+    /* We cannot use "=A", since this would use %rax on x86_64 and return only 
+     * the lower 32bits of the TSC */
+    __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));    
     return (uint64_t)hi << 32 | lo;
 }
 

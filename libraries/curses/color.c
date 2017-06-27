@@ -6,43 +6,51 @@
 #ifdef __cplusplus
 extern "C" {
 #endif //#ifdef __cplusplus__
+  
+/** Only sets the color for the printed text.*/
 /*static*/ void setcolor(WINDOW * win, chtype color)
 {
-    chtype attr = color & A_ATTR;  /* extract Bold, Reverse, Blink bits */
-
+  chtype attr = color & A_ATTR;  /* extract Bold, Reverse, Blink bits */
 #ifdef A_COLOR
-    attr &= ~A_REVERSE;  /* ignore reverse, use colors instead! */
-    wattrset(win, COLOR_PAIR(color & A_CHARTEXT) | attr);
+  attr &= ~A_REVERSE;  /* ignore reverse, use colors instead! */
+  wattrset(win, COLOR_PAIR(color & A_CHARTEXT) | attr);
 #else
-    attr &= ~A_BOLD;     /* ignore bold, gives messy display on HP-UX */
-    wattrset(win, attr);
+  attr &= ~A_BOLD;     /* ignore bold, gives messy display on HP-UX */
+  wattrset(win, attr);
 #endif
 }
 
-/*static*/ void colorBox(WINDOW * win, chtype color, int hasbox)
+/** Sets the color for the WHOLE window, not just for the text printed as 
+ *  setcolor(...) only does. */
+/*static*/ void colorBox(WINDOW * windowToSetColourTo, chtype color, int drawBox)
 {
+  chtype attr = color & A_ATTR;  /* extract Bold, Reverse, Blink bits */
+  setcolor(windowToSetColourTo, color);
+#ifdef A_COLOR
+  if( has_colors() )
+    wbkgd(windowToSetColourTo, COLOR_PAIR(color & A_CHARTEXT) | (attr & ~A_REVERSE));
+  else
+#endif
+    wbkgd(windowToSetColourTo, attr);
+  /** Is needed to clear/erase the whole window. */
+  werase(windowToSetColourTo);
+  
+  if( drawBox )
+  {
     int maxy;
 #ifndef PDCURSES
     int maxx;
 #endif
-    chtype attr = color & A_ATTR;  /* extract Bold, Reverse, Blink bits */
-    setcolor(win, color);
-#ifdef A_COLOR
-    if (has_colors())
-        wbkgd(win, COLOR_PAIR(color & A_CHARTEXT) | (attr & ~A_REVERSE));
-    else
-#endif
-    wbkgd(win, attr);
-    werase(win);
 #ifdef PDCURSES
-    maxy = getmaxy(win);
+    maxy = getmaxy(windowToSetColourTo);
 #else
-    getmaxyx(win, maxy, maxx);
+    getmaxyx(windowToSetColourTo, maxy, maxx);
 #endif
-    if (hasbox && (maxy > 2))
-        box(win, 0, 0);
-    touchwin(win);
-    wrefresh(win);
+    if( maxy > 2 )
+      box(windowToSetColourTo, 0, 0);
+  }
+  touchwin(windowToSetColourTo);
+  wrefresh(windowToSetColourTo);
 }
 #ifdef __cplusplus__
 } //extern "C"

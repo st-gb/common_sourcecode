@@ -225,13 +225,15 @@
     #define LOG_LOGGER_NAME_TYPE(logger, to_ostream, messageType) { \
       /* E.g. do not log "info" messages if level is "warning". */ \
       if( messageType >= logger.GetLogLevel() ) { \
+        css::basic_stringstream<LOGGING_CHARACTER_TYPE> stringstream ; \
+        stringstream << to_ostream; \
         /** Avoid writing to the global string that gets the
          *  css::basic_stringstream result by different threads.
          *  Else multiple same log messages may appear for different threads/
          *  function names. */ \
         OWN_LOGGER_LOG_ENTER_CRIT_SEC_LOGGER_NAME(logger) \
         /*logger.PossiblyEnterCritSec() \ */ \
-        WRITE_INTO_STRING_STREAM(logger, to_ostream) \
+        g_std_basicstring_log_char_typeLog = stringstream.str() ; \
         \
         OWN_LOGGER_LOG_LOGGER_NAME_FUNCNAME_TYPE( logger , \
           g_std_basicstring_log_char_typeLog, messageType) \

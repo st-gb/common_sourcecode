@@ -50,14 +50,15 @@ std::string convertToStdString(
     typenameConvertToString typename_convert_to_string
   )
 {
-  //"static" : To not to create each time this function is called->faster.
-  static
-    std::ostringstream std_ostringstream;
-  //Set to empty string because the object is a local static variable and may
-  //have content from before.
-  std_ostringstream.str("");
-  std_ostringstream <<
-    typename_convert_to_string;
+  /** Do NOT use "static" here to not to create each time this function is
+   *  called (what would be faster) because of possible multithreading problems
+   *  when multiple threads would access the same std::ostringstream object :
+   *  https://stackoverflow.com/questions/4590626/c-static-variables-in-multithreaded-program */
+  /* static */ std::ostringstream std_ostringstream;
+  /** Set to empty string because the object is a local static variable and may
+  * have content from before. */
+//  std_ostringstream.str("");
+  std_ostringstream << typename_convert_to_string;
 //  std::string std_str = std_ostringstream.str() ;
   return std_ostringstream.str();
     //std_str ;
