@@ -126,23 +126,32 @@ namespace Linux
       return /*I_File::successfullyRead*/ i;
     }
 
-    enum ReadResult Read(uint8_t buffer[], fastestUnsignedDataType & bufferSizeInByte)
+    enum ReadResult Read(
+      uint8_t buffer[], 
+      fastestUnsignedDataType numberOfBytesToRead, 
+      fastestUnsignedDataType & numberOfBytesRead)
     {
       const size_t numElesRead = fread(buffer, 
         //From http://www.cplusplus.com/reference/cstdio/fread/
         1, /** "Size, in bytes, of each element to be read."*/
         /** Number of elements, each one with a size of size bytes. */
-        bufferSizeInByte,
+        numberOfBytesToRead,
         m_pFile);
 //      switch(errno)
 //      {
 //        case EACCESS:
 //      }
-      bufferSizeInByte = numElesRead;
-      if( numElesRead < bufferSizeInByte)
+#ifdef _DEBUG
+      if( numberOfBytesToRead != numElesRead)
+      {
+      int result = feof(m_pFile);
+      result = ferror(m_pFile);
+      }
+#endif
+      if( numElesRead < numberOfBytesToRead)
         return readLessThanIntended;
         //ferror(m_pFile)
-      if( numElesRead == bufferSizeInByte)
+      if( numElesRead == numberOfBytesToRead)
         return successfullyRead;
       return unknownReadError;
     }

@@ -41,7 +41,8 @@ public:
    *         out: number of bytes actually read. */
   virtual enum ReadResult Read(
     uint8_t buffer [],
-    fastestUnsignedDataType & bufferSizeInByte)
+    fastestUnsignedDataType numberOfBytesToRead,
+    fastestUnsignedDataType & numberOfBytesRead)
     { return unknownReadError;
     /*throw FileException("not implemented yet");*/ }
   //TODO provide error code on failure or throw an exception.

@@ -6,11 +6,12 @@
 #define COMMANDLINEOPTION_HPP
 
 /** @param charType: e.g. char or wchar_t */
-/*template<typename charType> class*/ struct CommandLineOption
+/*template<typename charType>*/ struct CommandLineOption
 {
   typedef char charType;
   const charType * optionName;
   const charType * possibleOptionValue;
+  void (*pfn )(const char []);
 };
 
 #endif /* COMMANDLINEOPTION_HPP */

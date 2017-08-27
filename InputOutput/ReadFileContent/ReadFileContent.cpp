@@ -5,54 +5,54 @@
  * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
  * making profit with it or its adaption. Else you may contact Trilobyte SE.
  */
-/*
- * ReadFileContent.cpp
- *
+/** ReadFileContent.cpp
  *  Created on: Jun 12, 2010
- *      Author: Stefan
- */
+ *      Author: Stefan  */
 #include <fstream> //for std::ifstream
 //#include <global.h> //LOGN()
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 // OperatingSystem::GetErrorMessageFromLastErrorCodeA(...)
 #include <OperatingSystem/GetErrorMessageFromLastErrorCode.hpp>
+#include "ReadFileContent.hpp"
+#include <data_structures/ByteArray.hpp> //class ByteArray
 //#include <windef.h> //BYTE
-typedef unsigned char BYTE ;
 
-BYTE ReadFileContent( std::string & r_stdstrFilePath )
+BYTE ReadFileContent( const char * strFilePath, ByteArray & byteArray )
 {
   BYTE by = 0 ;
   std::ifstream stdifstream ;
-  stdifstream.open( r_stdstrFilePath.c_str()
+  stdifstream.open( strFilePath
     , //std::ifstream::in
     // std::ios_base::in
     std::_S_in
     );
   if( stdifstream.is_open() )
   {
-    char * buffer ;
-    LOGN_TYPE("successfully opened file \"" << r_stdstrFilePath << "\"",
+//    char * buffer ;
+    LOGN_TYPE("successfully opened file \"" << strFilePath << "\"",
       LogLevel::success)
     //http://www.cplusplus.com/reference/iostream/istream/seekg/:
     stdifstream.seekg(0, std::ios::end);
-    int length = stdifstream.tellg();
+    const fastestUnsignedDataType fileSizeInBytes = stdifstream.tellg();
     stdifstream.seekg (0, std::ios::beg);
+    
     // allocate memory:
-    buffer = new char [length + 1 ];
+//    buffer = new uint8_t [length /*+ 1*/ ];
+    byteArray.SetCapacity(fileSizeInBytes);
 
     // read data as a block:
-    stdifstream.read (buffer,length);
-    buffer[ length ] =
-      //string terminating NULL char.
-      '\0' ;
-    r_stdstrFilePath = std::string( buffer ) ;
+    stdifstream.read( (char*) /*buffer*/ byteArray.GetArray(), fileSizeInBytes);
+//    buffer[ length ] =
+//      //string terminating NULL char.
+//      '\0' ;
+//    r_stdstrFilePath = std::string( buffer ) ;
     stdifstream.close();
-    delete[] buffer;
+//    delete[] buffer;
     by = 1 ;
   }
   else
   {
-    LOGN_TYPE("failed to open file \"" << r_stdstrFilePath << "\": error code:"
+    LOGN_TYPE("failed to open file \"" << strFilePath << "\": error code:"
       << //stdifstream.rdstate()
       OperatingSystem::GetErrorMessageFromLastErrorCodeA(),
       LogLevel::error)

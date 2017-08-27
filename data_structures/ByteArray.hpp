@@ -1,6 +1,7 @@
-#pragma once
+#pragma once /** Include guard */
 
 #include <string.h> //::strlen(...)
+#include <hardware/CPU/fastest_data_type.h> //fastestUnsignedDataType
 
 /** This class may e.g. hold the bytes of an UTF-8 string. */
 class ByteArray
@@ -60,6 +61,16 @@ public:
   void setSize(unsigned newSizeInBytes) { m_size = newSizeInBytes; }
 
   unsigned char * GetArray() const { return m_pchArray; }
+  
+  void SetCapacity(const fastestUnsignedDataType newCapacity)
+  {
+    unsigned char * newArray = new unsigned char[newCapacity];
+    ::memcpy(newArray, m_pchArray, m_size);
+    delete [] m_pchArray; /** Free memory for current array*/
+    m_pchArray = newArray;
+    m_capacity = newCapacity;
+    m_size = newCapacity;
+  }
 
   void add(const unsigned char * arrayToAdd, const unsigned size)
   {
