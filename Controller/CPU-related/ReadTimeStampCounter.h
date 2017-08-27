@@ -36,21 +36,24 @@
 //}
 
 //TODO use affinity mask for reading the TSC
-//http://en.wikipedia.org/wiki/Time_Stamp_Counter:
-//"[...]whether all cores (processors) have identical values in their
-//time-keeping registers. There is no promise that the timestamp counters of
-//multiple CPUs on a single motherboard will be synchronized.
-//In such cases, programmers can
-//only get reliable results by locking their code to a single CPU."
-//->on a motherboard CPU/ CPU core 0 may have TSC freq of 1000 MHz,
-//CPU/ CPU core 1 may have TSC freq of 1200 MHz.
-//If not using affinity mask TSC may be read on CPU0 and afterwards on CPU1.
+/** http://en.wikipedia.org/wiki/Time_Stamp_Counter:
+* "[...]whether all cores (processors) have identical values in their
+* time-keeping registers. There is no promise that the timestamp counters of
+* multiple CPUs on a single motherboard will be synchronized.
+* In such cases, programmers can
+* only get reliable results by locking their code to a single CPU."
+* ->on a motherboard CPU/ CPU core 0 may have TSC freq of 1000 MHz,
+* CPU/ CPU core 1 may have TSC freq of 1200 MHz.
+* If not using affinity mask TSC may be read on CPU0 and afterwards on CPU1.*/
 
-//for MSVC ReadTimeStampCounter() already defined in winnt.h
-#ifndef _MSC_VER //Microsoft compiler
+/** for MicroSoft Visual C++ : ReadTimeStampCounter() already defined in winnt.h */
+#ifndef _MSC_VER /** MicroSoft Compiler */
+  /** @param lowmostBits : "uint32_t" because this matches the size of the EAX 
+   *   CPU register */
   inline //ULONGLONG
-    void ReadTimeStampCounter(DWORD & a //r_dwLow
-      , DWORD & d //r_dwHigh
+    void ReadTimeStampCounter(
+      uint32_t & lowmostBits
+      , uint32_t & highmostBits
       )
   {
 //    unsigned a, d;
@@ -66,7 +69,7 @@
 //    return __rdtsc() ;
 //#else //__MINGW__ etc.
     //from http://www.cs.wm.edu/~kearns/001lab.d/rdtsc.html:
-    __asm__ volatile("rdtsc" : "=a" (a), "=d" (d));
+    __asm__ volatile("rdtsc" : "=a" (lowmostBits), "=d" (highmostBits));
     //return ((unsigned long long)a) | (((unsigned long long)d) << 32) ;
   }
   inline ULONGLONG ReadTimeStampCounter()
@@ -89,9 +92,11 @@
   }
 #endif
 
+/** @param lowmostBits : "uint32_t" because this matches the size of the EAX 
+   *   CPU register */
 inline void ReadTSCinOrder(
-  DWORD & r_dwLowEAX ,
-  DWORD & r_dwHighEDX ,
+  uint32_t & lowmostBits ,
+  uint32_t & highmostBits ,
   DWORD dwThreadAffinityMask
   )
 {
@@ -105,7 +110,7 @@ inline void ReadTSCinOrder(
     // #Accessing_the_id_from_other_languages:
     asm ( "mov 1, %%eax; " // a into eax
            "cpuid" ) ;
-    ReadTimeStampCounter(r_dwLowEAX, r_dwHighEDX ) ;
+    ReadTimeStampCounter(lowmostBits, highmostBits ) ;
 //    return TRUE ;
   }
 }
@@ -120,14 +125,15 @@ __inline__ uint64_t ReadTSCinOrderFromEnglishWikipedia(void)
       *  the program to continue" */
     /** see https://www.ccsl.carleton.ca/~jamuir/rdtscpm1.pdf page 3/12 :
      *  cpuid is placed _before_ rdtsc */
-//    __asm__ __volatile__ (
-//    "        xorl %%eax,%%eax \n"
-//    "        cpuid"      // serialize
-//    //TODO g++ 4.x complains if using x86 CPU register "rbx"
-//    //  it uses it for Position-Independent Code (PIC) for dynamic libraries?
-//    ::: "%rax", "%rbx", "%rcx", "%rdx");
-    asm ( "mov 1, %eax; " // a into eax
-       "cpuid" ) ;    
+    __asm__ __volatile__ (
+      "        xorl %%eax,%%eax \n"
+      "        cpuid"      // serialize
+      //TODO g++ 4.x complains if using x86 CPU register "rbx"
+      //  it uses it for Position-Independent Code (PIC) for dynamic libraries?
+      ::: "%rax", "%rbx", "%rcx", "%rdx");
+    /** The following doesn't seem to function. */
+//    asm ( "mov 1, %eax; " // a into eax
+//       "cpuid" ) ;    
     uint32_t lo, hi;
     /* We cannot use "=A", since this would use %rax on x86_64 and return only 
      * the lower 32bits of the TSC */
