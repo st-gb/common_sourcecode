@@ -21,15 +21,28 @@ namespace Linux
       //TODO data type of ftell(): "long" has same size as CPU architecture:
       // if 32 bit CPU, then 32 bit data type-> max. file size reported is
       // ~ "2^32 / 2 - 1"
-      file_pointer_type currentFilePos = ftello64(m_pFile);
+      file_pointer_type currentFilePos =
+#ifdef ANDROID //Android does not know "ftello64"
+        ftell(m_pFile);
+#else
+        ftello64(m_pFile);
+#endif
       //_ftelli64
       return currentFilePos;
     }
     file_pointer_type GetFileSizeInBytes()
     {
       /** Use 64 bit file offsets in order to support file sizes > 4GB */
+#ifdef ANDROID //Android does not know "fseeko64"
+      fseek(m_pFile, 0, SEEK_END);
+#else
       fseeko64(m_pFile, 0, SEEK_END);
+#endif
+#ifdef __ANDROID__ //Android does not know "ftello64"
+      file_pointer_type fileSize = ftello(m_pFile);
+#else
       file_pointer_type fileSize = ftello64(m_pFile);
+#endif
       return fileSize;
     }
 	
@@ -80,7 +93,11 @@ namespace Linux
       /**http://stackoverflow.com/questions/15753090/c-fopen-fails-for-write-with-errno-is-2
        * http://www.gnu.org/software/libc/manual/html_node/File-Positioning.html :
        *  must use fopen64, freopen64, or tmpfile64 for "ftello64" */
+#ifdef ANDROID //Android does not know "fopen64"
+      m_pFile = fopen(filePath , fopenOpenMode.c_str() );
+#else
       m_pFile = fopen64(filePath , fopenOpenMode.c_str() );
+#endif
       if( m_pFile)
       {
         openError = I_File::success;
@@ -163,7 +180,11 @@ namespace Linux
       * shall return 0 if they succeed. */
       //TODO recognize seek failures (can't be determined according to the re
       // return value of fseek or errno
+#ifdef ANDROID //Android does not know "fseeko64"
+      const int retVal = fseek(m_pFile, filePos, SEEK_SET);
+#else
       const int retVal = /*fseek*/fseeko64(m_pFile, filePos, SEEK_SET);
+#endif
 #ifdef _DEBUG
       int errCode = errno;
 #endif //#ifdef _DEBUG
