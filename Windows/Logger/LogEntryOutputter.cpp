@@ -14,9 +14,9 @@
 
 #include "LogEntryOutputter.hpp"
 //::GetLastErrorCode()
-#include <Controller/GetLastErrorCode.hpp>
+#include <OperatingSystem/GetLastErrorCode.hpp>
 //GetErrorMessageFromErrorCodeA(...)
-#include <Controller/GetErrorMessageFromLastErrorCode.hpp>
+#include <OperatingSystem/GetErrorMessageFromLastErrorCode.hpp>
 /** class LogFileAccessException */
 #include <Controller/Logger/LogFileAccessException.hpp>
 //#include <FileSystem/GetCurrentWorkingDir.hpp>

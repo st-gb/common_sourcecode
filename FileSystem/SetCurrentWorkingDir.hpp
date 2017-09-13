@@ -14,15 +14,15 @@
   #include <Windows/FileSystem/SetCurrentWorkingDir/SetCurrentWorkingDir.hpp>
 #endif
 
-namespace OperatingSystem
-{
-inline void SetCurrentWorkingDirA_inl(const char * ch)
-{
-#if defined(__unix__) //Linux, Android NDK
-  Linux::SetCurrentWorkingDirA_inl(ch);
-#endif
-#ifdef _WIN32
-  Windows::SetCurrentWorkingDirA_inl(ch);
-#endif
-}
-}
+//namespace OperatingSystem
+//{
+//inline void SetCurrentWorkingDirA_inl(const char * ch)
+//{
+//#if defined(__unix__) //Linux, Android NDK
+//  Linux::SetCurrentWorkingDirA_inl(ch);
+//#endif
+//#ifdef _WIN32
+//  Windows::SetCurrentWorkingDirA_inl(ch);
+//#endif
+//}
+//}

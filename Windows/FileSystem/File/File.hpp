@@ -23,6 +23,6 @@ namespace Windows_API
     file_pointer_type GetFileSizeInBytes();
     enum OpenError OpenA(const char * const filePath, enum I_File::OpenMode openMode);
     int ReadByte();
-    bool SeekFilePointerPosition(const file_pointer_type &);
+    enum SeekResult SeekFilePointerPosition(const file_pointer_type &);
   };
 }

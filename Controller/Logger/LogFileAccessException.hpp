@@ -9,7 +9,7 @@
 #define LOGFILEACCESSEXCEPTION_HPP_
 
 //::GetErrorMessageFromLastErrorCode()
-#include <OperatingSystem/GetErrorMessageFromLastErrorCode.hpp>
+#include <OperatingSystem/GetErrorMessageFromErrorCode.h>
 
 //#include <exception> //class std::exception
 //#include <InputOutput/FileAccessException.hpp> //base class
