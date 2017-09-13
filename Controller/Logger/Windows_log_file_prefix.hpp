@@ -18,7 +18,7 @@
 //there were compile errors when windows.h was included.
 #include <windows.h> //for SYSTEMTIME, GetLocalTime(SYSTEMTIME)
 #include "LogFileEntry.hpp" //class LogFileEntry
-#include <Controller/multithread/I_Thread.hpp> //class I_Thread
+#include <OperatingSystem/multithread/I_Thread.hpp> //class I_Thread
 
 #define USE_SYSTEM_TIME_FOR_LOGGING
 

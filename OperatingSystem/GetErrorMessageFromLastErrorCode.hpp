@@ -14,14 +14,14 @@ typedef unsigned long DWORD;
 //#ifdef __unix__
 //  #define Operating_Sytem Linux
 //#endif
-
+#ifdef _WIN32
+  #define OperatingSytem Windows
+#endif
 //Implementation/ definition of these functions should be in a file in the
 //appropriate folder ("Windows" / "Linux" ).
 namespace OperatingSystem
 {
 std::string GetErrorMessageFromLastErrorCodeA() ;
-std::string GetErrorMessageFromErrorCodeA(DWORD dwErrorCode) ;
-std::wstring GetErrorMessageFromErrorCodeW(DWORD dwErrorCode) ;
 };
 //#ifdef __unix__
 

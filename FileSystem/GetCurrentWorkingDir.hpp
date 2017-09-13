@@ -29,22 +29,23 @@
 //  #undef OperatingSystem
 #endif
 #ifdef _WIN32
-  #define Windows OperatingSystem
+  //#define Windows OperatingSystem
   #include <Windows/FileSystem/GetCurrentDirectory/GetCurrentDirectory.hpp>
+
 #endif
 
-namespace /*CurrentProcess*/ OperatingSystem
-{
-  inline void GetCurrentWorkingDirA_inl(std::string & r_stdstr )
-  {
-#if defined(__unix__) //Linux, Android NDK
-    Linux_::GetCurrentWorkingDirA_inl(r_stdstr);
-#endif
-#ifdef _WIN32
-	Windows::GetCurrentWorkingDirA_inl(r_stdstr);
-#endif
-  }
-}
+//namespace /*CurrentProcess*/ OperatingSystem
+//{
+//  inline void GetCurrentWorkingDirA_inl(std::string & r_stdstr )
+//  {
+//#if defined(__unix__) //Linux, Android NDK
+//    Linux_::GetCurrentWorkingDirA_inl(r_stdstr);
+//#endif
+//#ifdef _WIN32
+//	Windows::GetCurrentWorkingDirA_inl(r_stdstr);
+//#endif
+//  }
+//}
 
 //void SetCurrentWorkingDir(const std::string & r_stdstr ) ;
 

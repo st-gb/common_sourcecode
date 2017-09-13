@@ -2,7 +2,7 @@
 
 #include <windows.h>
 
-namespace Windows
+namespace OperatingSystem
 {
   /** Make inline, else linker error "multiple definition of 
   *  `OperatingSystem::SetCurrentWorkingDirA_inl(char const*)'" */

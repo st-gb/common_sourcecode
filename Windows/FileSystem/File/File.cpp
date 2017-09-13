@@ -115,7 +115,7 @@ namespace Windows_API
         {
         std::string std_strCurrentWorkingDir;
         OperatingSystem::GetCurrentWorkingDirA_inl(std_strCurrentWorkingDir);
-        m_filePathA = GetAbsoluteFilePath(std_strCurrentWorkingDir, filePath);
+        m_filePathA = FileSystem::GetAbsoluteFilePath(std_strCurrentWorkingDir, filePath);
         }
         break;
       case ERROR_FILE_NOT_FOUND:
@@ -193,7 +193,7 @@ namespace Windows_API
       return /*I_File::successfullyRead*/ fileByte;
     }
 
-    bool File::SeekFilePointerPosition(const I_File::file_pointer_type & offset)
+    enum I_File::SeekResult File::SeekFilePointerPosition(const I_File::file_pointer_type & offset)
     {
       LARGE_INTEGER liOfs={offset};
       LARGE_INTEGER liNew={0};
@@ -201,7 +201,7 @@ namespace Windows_API
       * "If the function succeeds, the return value is nonzero." */
       const BOOL setFilePointerExSucceeded = ::SetFilePointerEx(m_hFile, liOfs,
         & liNew, FILE_BEGIN);
-      return setFilePointerExSucceeded;
+      return setFilePointerExSucceeded ? successfullySeeked : notAseekableStream;
     }
 //  };
 }

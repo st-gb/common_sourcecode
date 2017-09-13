@@ -11,7 +11,7 @@
 #include <windows.h> //::GetCurrentDirectory(...)
 #include <Controller/character_string/stdtstr.hpp>
 
-namespace Windows
+namespace OperatingSystem
 {
   inline unsigned GetCurrentWorkingDir_Inl(std::tstring & r_std_tstrCurrentDirectory)
   {

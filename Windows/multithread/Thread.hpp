@@ -15,9 +15,9 @@
 #ifndef THREAD_HPP_
 #define THREAD_HPP_
 
-#include <Controller/multithread/I_Thread.hpp> //pfnThreadFunc
+#include <OperatingSystem/multithread/I_Thread.hpp> //pfnThreadFunc
 #include <windows.h> //HANDLE
-#include <fastest_data_type.h> //typedef fastestUnsignedDataType
+#include <hardware/CPU/fastest_data_type.h> //typedef fastestUnsignedDataType
 
 namespace Windows_API
 {
@@ -69,7 +69,7 @@ namespace Windows_API
      *  So declare base class's "start" function here again.
     //see http://stackoverflow.com/questions/16005894/a-function-from-a-base-class-is-being-hidden-in-the-subclass-how-do-i-fix-this */
     using I_Thread::start;
-    BYTE start(
+    fastestUnsignedDataType start(
       pfnThreadFunc,
       void * p_v,
       /*BYTE*/ enum I_Thread::priority prio = I_Thread::default_priority) ;

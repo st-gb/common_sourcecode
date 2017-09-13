@@ -9,7 +9,7 @@
 #define OPERATING_SYSTEM_GETLASTERRORCODE_H_
 
 #ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
-  #define OperatingSystem Windows_API
+  //#define OperatingSystem Windows_API
   #include <Windows/ErrorCode/GetLastErrorCode.hpp>
 #endif
 #ifdef __linux__
