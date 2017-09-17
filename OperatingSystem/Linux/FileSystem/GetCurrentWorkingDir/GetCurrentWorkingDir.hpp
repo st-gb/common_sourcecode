@@ -12,7 +12,7 @@
 #include <unistd.h> //getcwd(...)
 #include <string> //class std::string
 
-namespace Linux_
+namespace /*Linux_*/ OperatingSystem
 {
   inline void GetCurrentWorkingDirA_inl(std::string & r_stdstr )
   {

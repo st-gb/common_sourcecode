@@ -3,7 +3,7 @@
 #include <stdlib.h> //free(...)
 #include <unistd.h> //getcwd(...)
 
-namespace Linux
+namespace /*Linux*/ OperatingSystem
 {
   inline int SetCurrentWorkingDirA_inl(//std::string & r_stdstr
     const char * pchCurrentWorkingDir)
