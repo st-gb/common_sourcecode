@@ -26,7 +26,7 @@ public:
 
   virtual ~I_File() {};
 
-  virtual bool IsOpen() const {}
+  virtual bool IsOpen() const { return false;}
   /** Open a file with an ANSI (= 8 bit) character file path. */
   virtual enum OpenError OpenA(const char * const, enum I_File::OpenMode openMode) = 0;
   std::string GetFilePathA() const { return m_filePathA; }

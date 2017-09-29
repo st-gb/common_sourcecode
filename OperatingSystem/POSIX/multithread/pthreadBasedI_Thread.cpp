@@ -47,7 +47,11 @@ namespace POSIX
         );
       if( n != 0)
         return I_Thread::error_getting_priority;
+#ifdef __ANDROID__
+        return I_Thread::error_getting_priority;
+#else
       return sched_paramVal.__sched_priority;
+#endif
     }
     return 0;
   }
@@ -118,7 +122,9 @@ namespace POSIX
         LOGN_INFO("pthreadBasedI_Thread::start(...)--setting thread prio to "
           << (unsigned) priority)
         struct sched_param param_set, param_get;
+#ifndef __ANDROID__
         param_set.__sched_priority = priority;
+#endif
         int policy;
         if( pthread_getschedparam(m_pthread_t, &policy, &param_get) == 0)
           if( pthread_setschedparam(m_pthread_t, policy, &param_set) == 0)

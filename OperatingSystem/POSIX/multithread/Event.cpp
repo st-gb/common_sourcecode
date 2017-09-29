@@ -24,9 +24,20 @@ Condition::~Condition() {
 
 I_Condition::state Condition::Broadcast()
 {
-  pthread_mutex_lock(& m_mutex);
-  int i = pthread_cond_broadcast( & m_condition);  
-  pthread_mutex_unlock(& m_mutex);
+  /** https://linux.die.net/man/3/pthread_mutex_lock :
+   *  "If successful, the pthread_mutex_lock() and pthread_mutex_unlock()
+   *  functions shall return zero" */
+  const int lockResult = pthread_mutex_lock(& m_mutex);
+  /** https://linux.die.net/man/3/pthread_cond_broadcast :
+   *  "If successful, the pthread_cond_broadcast() and pthread_cond_signal() functions shall return
+   *   zero" */
+  const int broadcastResult = pthread_cond_broadcast( & m_condition);
+  /** https://linux.die.net/man/3/pthread_mutex_unlock :
+   *  "If successful, the pthread_mutex_lock() and pthread_mutex_unlock()
+   *  functions shall return zero" */
+  const int unlockResult = pthread_mutex_unlock(& m_mutex);
+  return lockResult == broadcastResult == unlockResult == 0 ? success :
+    other_error;
 }
 
 I_Condition::state Condition::Wait()
@@ -34,11 +45,12 @@ I_Condition::state Condition::Wait()
   /** https://linux.die.net/man/3/pthread_cond_wait :
    *  "They shall be called with mutex locked by the calling thread or 
    *   undefined behavior results."  */
-  pthread_mutex_lock(& m_mutex);
+  const int lockResult = pthread_mutex_lock(& m_mutex);
   /** https://linux.die.net/man/3/pthread_cond_wait : 
    *  "These functions atomically release mutex and cause the calling thread 
    *  to block on the condition variable cond" */
-  int i = pthread_cond_wait( & m_condition, & m_mutex );
-  pthread_mutex_unlock(& m_mutex);
+  const int waitResult = pthread_cond_wait( & m_condition, & m_mutex );
+  const int unlockResult = pthread_mutex_unlock(& m_mutex);
+  return lockResult == waitResult == unlockResult == 0 ? success : other_error;
 }
 }

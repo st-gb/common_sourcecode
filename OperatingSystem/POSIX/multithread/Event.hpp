@@ -20,7 +20,7 @@ namespace pthread
 
     I_Condition::state Wait();
     I_Condition::state Broadcast();
-    I_Condition::state WaitTimeOut(fastestUnsignedDataType dwMilliSecondsToWait) { }
+    I_Condition::state WaitTimeOut(fastestUnsignedDataType dwMilliSecondsToWait) { return other_error;}
   private:
     pthread_mutex_t m_mutex;
     pthread_cond_t m_condition;
