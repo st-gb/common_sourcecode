@@ -1,9 +1,6 @@
-/*
- * NodeTrie.hpp
- *
+/** NodeTrie.hpp
  *  Created on: Nov 22, 2010
- *      Author: Stefan
- */
+ *      Author: Stefan    */
 #ifndef NODETRIE_HPP
 #define NODETRIE_HPP
 
@@ -36,6 +33,8 @@ typedef unsigned short WORD;
 
 #include "exceptions.hpp"
 
+#include "NodeTrieIterator.hpp"
+
 //this is the base class of node trie classes:
 //subclasses usually add a member with additional info if this node is the
 //string end.
@@ -46,6 +45,10 @@ template<typename member_type>
   {
   public:
     typedef unsigned int size_type;
+
+    /** See https://stackoverflow.com/questions/3582608/how-to-correctly-implement-custom-iterators-and-const-iterators */
+    typedef NodeTrieIterator<member_type>              iterator;
+    typedef NodeTrieIterator<const member_type>        const_iterator;    
   private:
       bool bExists;
       char ch;
@@ -69,12 +72,13 @@ template<typename member_type>
         m_nodetrienodeRoot.m_member = NULL;
       }
 
-      NodeTrie(unsigned  wNumberOfNodes, member_type defaultValue)
+      NodeTrie(fastestUnsignedDataType numberOfNodesPerHierarchyLevel, 
+              member_type defaultValue)
         : m_dwNumberOfNodes(0), 
           m_numInfoNodes(0), 
           m_defaultValue(defaultValue),
-          m_wNumberOfNodesPerHierarchyLevel(wNumberOfNodes),
-          m_nodetrienodeRoot(wNumberOfNodes, defaultValue)
+          m_wNumberOfNodesPerHierarchyLevel(numberOfNodesPerHierarchyLevel),
+          m_nodetrienodeRoot(numberOfNodesPerHierarchyLevel, defaultValue)
       {
           m_wNodeSizeInByte = sizeof (NodeTrieNode<member_type>)
             + sizeof (NodeTrieNode<member_type>*) * m_wNumberOfNodesPerHierarchyLevel
@@ -83,9 +87,137 @@ template<typename member_type>
 
       ~NodeTrie()
       {
-          FreeMemory();
+        FreeMemory();
+//        assert( m_dwNumberOfNodes == 0);
       }
+      
+//      typedef 
+//
+      NodeTrieNode<member_type> * traverseDirectingLeaves(
+        NodeTrieIterator<member_type> & nodeTrieIterator,
+        NodeTrieNode<member_type> * p_nodetrienodeCurrent) const
+      {
+        for(fastestUnsignedDataType arrayIndex = 0;
+            arrayIndex < m_wNumberOfNodesPerHierarchyLevel; 
+            ++ arrayIndex)
+        {
+          if(p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[arrayIndex])
+          {
+            nodeTrieIterator.addVisitedNode(
+              TrieNodeArrayAndArrayIndex<member_type>(p_nodetrienodeCurrent, arrayIndex) );
+            p_nodetrienodeCurrent = p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[arrayIndex];
+            if( p_nodetrienodeCurrent->m_member != m_defaultValue )
+            {
+//              nodeTrieIterator.SetInfoNode();
+              return p_nodetrienodeCurrent;
+            }
+//            p_nodetrienodeSuperordinate = p_nodetrienodeCurrent;
+            arrayIndex = 0;
+            continue;
+          }
+        }
+        return NULL;
+      }
+      
+      iterator end()
+      {
+        return NodeTrieIterator<member_type>(/*m_nodetrienodeRoot*/*this, NULL, NULL);
+      }
+      
+      iterator begin()
+      {
+        NodeTrieNode<member_type> * p_nodetrienodeCurrent = NULL;
+        NodeTrieNode<member_type> * p_nodetrienodeSuperordinate = NULL;
+        if(m_nodetrienodeRoot.m_arp_nodetrienode1LowerLevel)
+        {
+          p_nodetrienodeCurrent = & m_nodetrienodeRoot;
+          p_nodetrienodeSuperordinate = & m_nodetrienodeRoot; 
+          NodeTrieIterator<member_type> nodeTrieIterator(/*m_nodetrienodeRoot,*/
+            * this,
+            p_nodetrienodeSuperordinate, p_nodetrienodeCurrent);
+          
+          traverseDirectingLeaves(nodeTrieIterator, p_nodetrienodeCurrent);
+          return nodeTrieIterator;
+        }
+        return /*NodeTrieIterator<member_type>(*this, NULL, NULL)*/ end();
+      }
+      
+      NodeTrieNode<member_type> * GetNextNodeAtHigherArrayIndex(
+        TrieNodeArrayAndArrayIndex<member_type> & trieNodeArrayAndArrayIndex,
+        NodeTrieIterator<member_type> * p_nodeTrieIterator) const
+      {
+        NodeTrieNode<member_type> * p_nodetrienodeCurrent = trieNodeArrayAndArrayIndex.p_NodeTrie;
 
+        for(fastestUnsignedDataType arrayIndex = trieNodeArrayAndArrayIndex.arrayIndex + 1; 
+            arrayIndex < m_wNumberOfNodesPerHierarchyLevel; arrayIndex ++)
+        {
+          if( p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[arrayIndex])
+          {
+            p_nodeTrieIterator->addVisitedNode(
+              TrieNodeArrayAndArrayIndex<member_type>(p_nodetrienodeCurrent, arrayIndex) );
+            p_nodetrienodeCurrent = p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[arrayIndex];
+            return p_nodetrienodeCurrent;
+          }
+        }
+        return NULL;
+      }
+      
+      NodeTrieNode<member_type> * GetNextInfoNodeAtHigherArrayIndex(
+        NodeTrieIterator<member_type> & nodeTrieIterator,
+        TrieNodeArrayAndArrayIndex<member_type> & trieNodeArrayAndArrayIndex) const
+      {
+        do
+        {
+          trieNodeArrayAndArrayIndex = nodeTrieIterator.visitedNodes.top();
+          /** Go 1 level directing root. */
+          nodeTrieIterator.visitedNodes.pop();
+
+          NodeTrieNode<member_type> * p_nodetrienodeCurrent = 
+            GetNextNodeAtHigherArrayIndex(
+            trieNodeArrayAndArrayIndex, & nodeTrieIterator);
+          if( p_nodetrienodeCurrent != NULL)
+          {
+            if( p_nodetrienodeCurrent->m_member != m_defaultValue )
+            {
+  //              nodeTrieIterator.SetInfoNode();
+              return p_nodetrienodeCurrent;
+            }
+          }
+        }
+        while( ! nodeTrieIterator.visitedNodes.empty() );
+        return NULL;
+      }
+      
+      iterator GetNextInfoNode(//std::stack</*NodeTrieNode<member_type> * */ 
+//        TrieNodeArrayAndArrayIndex<member_type> > & visitedNodes
+        NodeTrieIterator<member_type> * p_nodeTrieIterator) const
+      {
+        while( ! p_nodeTrieIterator->visitedNodes.empty() )
+        {
+          TrieNodeArrayAndArrayIndex<member_type> trieNodeArrayAndArrayIndex = 
+            p_nodeTrieIterator->visitedNodes.top();
+          NodeTrieNode<member_type> * p_nodetrienodeCurrent = trieNodeArrayAndArrayIndex.GetPointer();
+          
+          /** Go to leaf direction. */
+          NodeTrieNode<member_type> * traverseDirectingLeavesResult = 
+            traverseDirectingLeaves(* p_nodeTrieIterator, p_nodetrienodeCurrent);
+          if( traverseDirectingLeavesResult == NULL)
+          {
+            p_nodetrienodeCurrent = GetNextInfoNodeAtHigherArrayIndex(
+              *p_nodeTrieIterator, trieNodeArrayAndArrayIndex);
+            if(p_nodetrienodeCurrent) /** Next info node found. */
+              return * p_nodeTrieIterator;
+            /** Go to leaf direction. */
+//            traverseDirectingLeavesResult = 
+//              traverseDirectingLeaves(* p_nodeTrieIterator, p_nodetrienodeCurrent);
+          }
+          else /** Next info node found */
+            return * p_nodeTrieIterator;
+        }
+        /** No info node found->return an interator representing "end()" */
+        return NodeTrieIterator<member_type>(/*m_nodetrienodeRoot*/ *this, NULL, NULL);
+      }
+      
       unsigned long getNumberOfNodes() const
       {
           return m_dwNumberOfNodes;
@@ -96,7 +228,7 @@ template<typename member_type>
        *    arch->fast */
       void Create(unsigned numberOfNodesPerHierarchyLevel)
       {
-          m_nodetrienodeRoot.Create(numberOfNodesPerHierarchyLevel);
+          m_nodetrienodeRoot.Create(numberOfNodesPerHierarchyLevel, m_defaultValue);
           m_wNumberOfNodesPerHierarchyLevel = numberOfNodesPerHierarchyLevel;
           m_wNodeSizeInByte = sizeof (NodeTrieNode<member_type>)
             + sizeof (NodeTrieNode<member_type>*) * numberOfNodesPerHierarchyLevel + sizeof (void*);
@@ -244,6 +376,13 @@ template<typename member_type>
           return bContainsByteArray;
       }
 
+      /** Deletes the trie nodes together with the dynamically/heap allocated 
+       *   member data stored at the nodes.
+       * 
+       *  Uses a depth-first search: if a leaf is reached this node is deleted 
+       *   and the depth-frist search is started again beginning from the root
+       *   node.
+       */
       void DeleteWithMember()
       {
         if (m_nodetrienodeRoot.m_arp_nodetrienode1LowerLevel)
@@ -595,7 +734,10 @@ template<typename member_type>
 //          assert( m_dwNumberOfNodes == 0);
       }
 
-      NodeTrieNode<member_type> *CreateNodes(NodeTrieNode<member_type> *p_nodetrienodeCurrent, unsigned char *p_vBegin, unsigned short  wBytesize)
+      NodeTrieNode<member_type> *CreateNodes(
+        NodeTrieNode<member_type> * p_nodetrienodeCurrent, 
+        unsigned char *p_vBegin, 
+        unsigned short  wBytesize)
       {
           BYTE byValue;
           NodeTrieNode<member_type> * p_nodetrienodeNew = NULL;
