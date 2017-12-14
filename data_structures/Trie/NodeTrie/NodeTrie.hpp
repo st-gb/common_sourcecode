@@ -869,6 +869,18 @@ template<typename member_type>
       }
       return p;
     }
+    /** This function is for easy transition from/to a std::map */
+    NodeTrieNode<member_type> * insert(std::string & str, member_type member_value)
+    {
+      return insert_inline(str.c_str(), str.length(), member_value);
+    }
+//    std::pair<const _Key, _Tp>
+//    /** This function is for easy transition from/to a std::map */
+//    NodeTrieNode<member_type> * insert(std::pair<std::string str, member_type member_value> )
+//    {
+//      return insert_inline(str.c_str(), str.length(), member_value);
+//    }
+
     size_type size() { return m_dwNumberOfNodes; }
   };
 

@@ -32,6 +32,7 @@ public:
   virtual ~FileReadException() { };
   
   enum I_File::ReadResult GetResult() const { return m_res; } 
+  unsigned GetOSerrorCode() const { return m_operatingSystemErrorCode; }
 private:
 
 };
