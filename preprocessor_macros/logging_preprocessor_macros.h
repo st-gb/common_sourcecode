@@ -19,12 +19,21 @@
   #include "no_op_debug_output_macros.h"
 #endif
 
+#ifdef GCC
 //see http://gcc.gnu.org/onlinedocs/gcc/Function-Names.html
 #define FULL_FUNC_NAME \
   /*__PRETTY_FUNCTION__ expands to: >>return type<< >>class name<< "::"
    * >>function name<< >>parameters list (only data type, no identifiers )<<
    * */ \
   __PRETTY_FUNCTION__
+#endif
+#ifdef _MSC_VER
+  //see https://social.msdn.microsoft.com/Forums/vstudio/de-DE/02c69018-a182-48b3-94d1-250252aa00a7/prettyfunction?forum=vclanguage
+#define FULL_FUNC_NAME \
+  /*__FUNCSIG__ expands to: >>return type<< >>calling convention<< >>function name<< >>parameter type<<
+  * */ \
+  __FUNCSIG__
+#endif
 
 //MinGW can't use wide stream (at least low versions of MinGW)
 #ifndef __MINGW32__
@@ -140,7 +149,7 @@
       #define OWN_LOGGER_LOG_LOGGER_NAME_FUNCNAME_TYPE(logger_name, \
         std_basic_string, messageType) \
         std::string std_strUTF8 = getUTF8string(std_basic_string); \
-        logger_name.Log( std_strUTF8, messageType, __PRETTY_FUNCTION__ ) ;
+        logger_name.Log( std_strUTF8, messageType, FULL_FUNC_NAME ) ;
     #else //#if defined(LOGGING_CHARACTER_TYPE_ID) && LOGGING_CHARACTER_TYPE_ID == 0
       #define OWN_LOGGER_LOG_LOGGER_NAME(logger_name, std_basic_string) \
         logger_name.Log( std_basic_string ) ;
@@ -149,7 +158,7 @@
         logger_name.Log( std_basic_string, messageType) ;
       #define OWN_LOGGER_LOG_LOGGER_NAME_FUNCNAME_TYPE(logger_name, \
         std_basic_string, messageType) \
-        logger_name.Log( std_basic_string, messageType, __PRETTY_FUNCTION__ ) ;
+        logger_name.Log( std_basic_string, messageType, FULL_FUNC_NAME ) ;
     #endif //#if defined(LOGGING_CHARACTER_TYPE_ID) && LOGGING_CHARACTER_TYPE_ID == 0
       /*std::vector<unsigned char> std_vec_by;
       getUTF8string(std_basic_string, std_vec_by);

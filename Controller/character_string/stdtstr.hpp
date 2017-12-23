@@ -43,9 +43,12 @@ namespace std
 }
 
  #if defined _UNICODE || defined UNICODE
+  //typedef wchar_t TCHAR;
    std::tstring operator + (
      const std::tstring & r_tstring,
      const std::string & r_string ) ;
+#else
+  //typedef char TCHAR;
  #endif
 
  std::tstring Getstdtstring(const std::string & str ) ;
@@ -65,7 +68,7 @@ namespace std
        -- wNumberOfStrings; wNumberOfStrings < //(WORD) -1
        65535 ; -- wNumberOfStrings )
      {
-       wStringLength = strlen(ar_cp_ch[wNumberOfStrings] );
+       wStringLength = (WORD) strlen(ar_cp_ch[wNumberOfStrings] );
 //       LOGN("ANSI char string array to wide char array--length of current "
 //         "string:" << wStringLength)
        ar_p_tch[wNumberOfStrings] = new wchar_t[ wStringLength //term NULL char
@@ -101,7 +104,7 @@ namespace std
  inline TCHAR ** GetTCHARarray_Inline(const char ** const ar_cp_ch,
      WORD wNumberOfStrings)
   {
-     return Get_wchar_t_Array_Inline(ar_cp_ch, wNumberOfStrings);
+     return (TCHAR **) Get_wchar_t_Array_Inline(ar_cp_ch, wNumberOfStrings);
   }
 #else //#if defined _UNICODE || defined UNICODE
  //TCHAR = char

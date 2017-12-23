@@ -3,6 +3,9 @@
 #ifdef _WIN32
   #include <windows.h> //for SYSTEMTIME, GetLocalTime(SYSTEMTIME)
   #include <time.h> //struct tm
+  #ifdef GetCurrentTime /**  <winbase.h> : #define GetTickCount() GetCurrentTime()  */
+    #undef GetCurrentTime
+  #endif
 
   /** Version for the "C" programming language. */
   inline void GetCurrentTime(struct tm * tm_Current)

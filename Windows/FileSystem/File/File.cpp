@@ -119,6 +119,7 @@ namespace Windows_API
         }
         break;
       case ERROR_FILE_NOT_FOUND:
+      case ERROR_PATH_NOT_FOUND:
         openError = I_File::fileNotFound;
         break;
       case ERROR_ACCESS_DENIED:

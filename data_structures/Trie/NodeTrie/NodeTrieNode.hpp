@@ -15,6 +15,7 @@ class NodeTrieNode
 //private:
 public:
 //  static member_type s_defaultValue;
+	//typedef fastestUnsignedDataType size_type;
 	member_type m_member;
   NodeTrieNode ** m_arp_nodetrienode1LowerLevel ;
   

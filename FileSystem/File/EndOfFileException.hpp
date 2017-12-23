@@ -7,7 +7,7 @@ class EndOfFileException
 {
 public:
   //std::tstring str;
-  TCHAR * m_filePath;
+  //TCHAR * m_filePath;
   
   EndOfFileException(const char * const chFilePath)
     : FileException(chFilePath)

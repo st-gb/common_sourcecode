@@ -857,7 +857,7 @@ template<typename member_type>
       }
       
       NodeTrieNode<member_type> *insert_inline(unsigned char *p_vBegin,
-        unsigned short  wBytesize, member_type member_value
+        size_type wBytesize, member_type member_value
         /*,member_type defaultValue = 0*/)
       {
           NodeTrieNode<member_type> *p = insert_inline(
