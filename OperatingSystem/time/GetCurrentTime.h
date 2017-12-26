@@ -23,6 +23,7 @@
 
 #if defined( __unix__) //|| defined (__ANDROID__)
 #include <sys/time.h> //gettimeofday
+#include <string.h> //memcpy(...)
 
   inline void GetCurrentTime(struct tm * p_tm_Current)
   {

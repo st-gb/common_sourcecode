@@ -19,7 +19,7 @@
   #include "no_op_debug_output_macros.h"
 #endif
 
-#ifdef GCC
+#ifdef __GNUC__
 //see http://gcc.gnu.org/onlinedocs/gcc/Function-Names.html
 #define FULL_FUNC_NAME \
   /*__PRETTY_FUNCTION__ expands to: >>return type<< >>class name<< "::"
