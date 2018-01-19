@@ -2,7 +2,7 @@
 //#include "menu/Menu.hpp"
 #include "Window.hpp" //class Window
 
-namespace Ncurses
+namespace Curses
 {
   void InputProcessorStack::consume(const int ch) {
     container_type::const_reverse_iterator iter = m_inputProcessorStack.rbegin();
@@ -14,9 +14,9 @@ namespace Ncurses
       *  first added element. */
       for( ; iter != m_inputProcessorStack.rend() ; iter++ )
       {
-        Ncurses::Window * p_win = *iter;
+        Curses::Window * p_win = *iter;
         /** If event was consumed by window. */
-        if( p_win->HandleAction(ch) > Ncurses::Window::inputNotHandled )
+        if( p_win->HandleAction(ch) > Curses::Window::inputNotHandled )
           break;
       }
     }

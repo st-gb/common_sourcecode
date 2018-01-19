@@ -367,6 +367,7 @@
   #define LOG_SPRINTF(...) ; /**/
   #define LOGN(to_ostream) ;/*empty->do not log*/
   #define LOGN_ERROR(to_ostream) ; /*empty->do not log*/
+  #define LOGN_SUCCESS(to_ostream) ; /*empty->do not log*/
   #define LOGN_DEBUG(to_ostream) ; /*empty->do not log*/
   #define LOGN_INFO(to_ostream) ; /*empty->do not log*/
   #define LOGN_WARNING(to_ostream) ; /*empty->do not log*/

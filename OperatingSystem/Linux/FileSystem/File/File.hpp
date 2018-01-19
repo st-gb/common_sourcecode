@@ -6,6 +6,16 @@
 #include <string> //class std::string
 #include <errno.h> //ESUCCESS, EACCESS
 
+//#if defined(ANDROID) || defined(__ANDROID__)
+#ifdef ANDROID //Android does not know "fseeko64" and ftello64" functions
+  #define ftell_version ftell
+  #define fseek_version fseek
+#else
+  /** Use 64 bit file offsets in order to support file sizes > 4GB */
+  #define ftell_version ftello64
+  #define fseek_version fseeko64
+#endif
+
 namespace Linux
 {
   class File
@@ -21,28 +31,15 @@ namespace Linux
       //TODO data type of ftell(): "long" has same size as CPU architecture:
       // if 32 bit CPU, then 32 bit data type-> max. file size reported is
       // ~ "2^32 / 2 - 1"
-      file_pointer_type currentFilePos =
-#ifdef ANDROID //Android does not know "ftello64"
-        ftell(m_pFile);
-#else
-        ftello64(m_pFile);
-#endif
+      file_pointer_type currentFilePos = ftell_version(m_pFile);
       //_ftelli64
       return currentFilePos;
     }
     file_pointer_type GetFileSizeInBytes()
     {
-      /** Use 64 bit file offsets in order to support file sizes > 4GB */
-#ifdef ANDROID //Android does not know "fseeko64"
-      fseek(m_pFile, 0, SEEK_END);
-#else
-      fseeko64(m_pFile, 0, SEEK_END);
-#endif
-#ifdef __ANDROID__ //Android does not know "ftello64"
-      file_pointer_type fileSize = ftello(m_pFile);
-#else
-      file_pointer_type fileSize = ftello64(m_pFile);
-#endif
+      fseek_version(m_pFile, 0, SEEK_END);
+      file_pointer_type fileSize = ftell_version(m_pFile);
+      fseek_version(m_pFile, 0, SEEK_SET);
       return fileSize;
     }
 	
@@ -70,9 +67,9 @@ namespace Linux
       return m_pFile != NULL;
     }
 
-    enum OpenError OpenA(const char * const filePath, enum I_File::OpenMode openMode)
+    enum OpenResult OpenA(const char * const filePath, enum I_File::OpenMode openMode)
     {
-      enum I_File::OpenError openError = I_File::not_set;
+      enum I_File::OpenResult openError = I_File::not_set;
       std::string fopenOpenMode;
       switch(openMode)
       {
@@ -130,13 +127,27 @@ namespace Linux
 	  * [CX] [Option Start]  and shall set errno to indicate the error." */
 	  if( i == EOF )
 	  {
+            const int feofResult = feof(m_pFile);
+            /** http://pubs.opengroup.org/onlinepubs/009695399/functions/feof.html :
+              *  "The feof() function shall return non-zero if and only if the 
+              *  end-of-file indicator is set for stream" */
+            const bool endOfFileReached = feofResult != 0;
+            I_File::ReadResult readResult;
+            if(endOfFileReached)
+                readResult = I_File::endOfFileReached;
+            else
+                readResult = I_File::unknownReadError;
+            /** http://pubs.opengroup.org/onlinepubs/009695399/functions/ferror.html :
+             *  "The ferror() function shall return non-zero if and only if the 
+             *  error indicator is set for stream." */
+            const int ferrorResult = ferror (m_pFile);
                // g++: "error: ‘ESUCCESS’ was not declared in this scope"
 		/*if( errno == ESUCCESS)
 		  return I_File::endOfFileReached;
 		else*/
         //return I_File::unknownReadError;
         FileReadException fileReadException(
-          I_File::unknownReadError,
+          readResult,
           /*osErrorCode*/ errno, m_filePathA.c_str () );
 	    throw fileReadException;
 	  }
@@ -148,7 +159,7 @@ namespace Linux
       fastestUnsignedDataType numberOfBytesToRead, 
       fastestUnsignedDataType & numberOfBytesRead)
     {
-      const size_t numElesRead = fread(buffer, 
+      /*const size_t numElesRead*/ numberOfBytesRead = fread(buffer, 
         //From http://www.cplusplus.com/reference/cstdio/fread/
         1, /** "Size, in bytes, of each element to be read."*/
         /** Number of elements, each one with a size of size bytes. */
@@ -159,16 +170,16 @@ namespace Linux
 //        case EACCESS:
 //      }
 #ifdef _DEBUG
-      if( numberOfBytesToRead != numElesRead)
+      if( numberOfBytesToRead != numberOfBytesRead)
       {
       int result = feof(m_pFile);
       result = ferror(m_pFile);
       }
 #endif
-      if( numElesRead < numberOfBytesToRead)
+      if( numberOfBytesRead < numberOfBytesToRead)
         return readLessThanIntended;
         //ferror(m_pFile)
-      if( numElesRead == numberOfBytesToRead)
+      if( numberOfBytesRead == numberOfBytesToRead)
         return successfullyRead;
       return unknownReadError;
     }

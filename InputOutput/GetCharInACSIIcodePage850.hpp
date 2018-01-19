@@ -7,7 +7,7 @@ namespace UTF8byteSequence
 {
   enum bytePos { oneByteUTF8Char, none, last, insideUTF8sequence};
 
-  bool IsByteOfMultiByteUTF8sequence(
+  inline bool IsByteOfMultiByteUTF8sequence(
     const unsigned char ch
     )
   {
@@ -18,7 +18,7 @@ namespace UTF8byteSequence
   }
 
   /** @param currentBytePosWithinUTF8sequence: 0-based index */
-  enum bytePos IsByteOfUTF8sequence(
+  inline enum bytePos IsByteOfUTF8sequence(
     const unsigned char * UTF8sequenceBegin,
     const unsigned currentBytePosWithinUTF8sequence)
   {

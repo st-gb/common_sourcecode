@@ -15,7 +15,7 @@ protected:
 public:
   typedef int64_t file_pointer_type;
   enum CloseError {closingFileSucceeded = 0, closingFileFailed, fileNotOpen};
-  enum OpenError {success = 0, accessDenied, fileNotFound, not_set };
+  enum OpenResult {success = 0, accessDenied, fileNotFound, not_set };
   enum OpenMode { readOnly, writeOnly, readAndWrite };
   enum ReadResult { successfullyRead, readLessThanIntended,
     endOfFileReached, unknownReadError };
@@ -28,7 +28,7 @@ public:
 
   virtual bool IsOpen() const { return false;}
   /** Open a file with an ANSI (= 8 bit) character file path. */
-  virtual enum OpenError OpenA(const char * const, enum I_File::OpenMode openMode) = 0;
+  virtual enum OpenResult OpenA(const char * const, enum I_File::OpenMode openMode) = 0;
   std::string GetFilePathA() const { return m_filePathA; }
   //TODO maybe provide error code on failure or throw an exception.
   virtual file_pointer_type GetFileSizeInBytes() = 0;

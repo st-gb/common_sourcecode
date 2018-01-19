@@ -7,7 +7,7 @@
 struct _win_st;
 typedef struct _win_st WINDOW;
 
-namespace Ncurses
+namespace Curses
 {
   /** Base class of all wrapper classes for ncurses controls. */
   class Window
@@ -15,7 +15,7 @@ namespace Ncurses
   protected:
     /** "static"-> 1 stack for all objects of class "Window" and its 
      *   descendants;not thread-safe: */
-    static Ncurses::InputProcessorStack s_inputProcessorStack;
+    static Curses::InputProcessorStack s_inputProcessorStack;
   public:
     enum handleActionRetCodes { inputNotHandled = -1 };
     /** Must be "virtual" in order to enable overriding. */

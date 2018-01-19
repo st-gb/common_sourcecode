@@ -21,7 +21,7 @@ namespace Windows_API
     enum CloseError Close();
     file_pointer_type GetCurrentFilePointerPosition();
     file_pointer_type GetFileSizeInBytes();
-    enum OpenError OpenA(const char * const filePath, enum I_File::OpenMode openMode);
+    enum OpenResult OpenA(const char * const filePath, enum I_File::OpenMode openMode);
     int ReadByte();
     enum SeekResult SeekFilePointerPosition(const file_pointer_type &);
   };

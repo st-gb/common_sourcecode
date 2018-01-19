@@ -1,6 +1,6 @@
 #include "Window.hpp"
 
-namespace Ncurses
+namespace Curses
 {
   WINDOW * Window::CreateWindowRelativePos(
     WINDOW * p_windowForRelativePos,
