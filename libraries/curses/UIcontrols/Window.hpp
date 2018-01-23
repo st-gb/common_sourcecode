@@ -1,6 +1,6 @@
 #pragma once//Include guard, more resource-saving than a #ifdef ... include guard
 
-#include "InputProcessorStack.hpp"
+#include "../InputProcessorStack.hpp"
 #include <curses.h> //struct WINDOW
 
 //forward declaration
@@ -9,6 +9,7 @@ typedef struct _win_st WINDOW;
 
 namespace Curses
 {
+  //TODO: rename to: BasicUIcontrol?
   /** Base class of all wrapper classes for ncurses controls. */
   class Window
   {

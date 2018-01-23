@@ -108,7 +108,10 @@ namespace Curses
         break;
       case 0xA: /* Return- bzw. Enter-Taste -> ASCII-Code */
       {
-        ret = item_index(current_item(m_menu) );
+        ITEM * currentMenuItem = current_item(m_menu);
+        /** https://linux.die.net/man/3/item_index : "The function item_index 
+         *  returns the (zero-origin) index of item in the menu's item pointer list." */
+        ret = item_index(currentMenuItem);
         FUNC func = m_functionToCallVector.at(ret);
         (*func)();
         if( m_ESCandENTERleavesMenu )
@@ -181,8 +184,14 @@ namespace Curses
     {
       delwin( submenuWin);
     }
+    /** https://linux.die.net/man/3/touchwin :
+       */
     touchwin(windowToShowMenuIn);
-    wrefresh(windowToShowMenuIn);
+    /** https://linux.die.net/man/3/wrefresh :
+     *  "The routine wrefresh copies the named window to the physical terminal 
+     * screen, taking into account what is already there to do optimizations."*/
+//    wrefresh(windowToShowMenuIn);
+    
 //    wrefresh(/*windowToShowMenuIn*/ submenuWin);
     return ret;
   }

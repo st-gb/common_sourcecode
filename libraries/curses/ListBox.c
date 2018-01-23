@@ -23,6 +23,38 @@ void outputDirEntriesList(
 //  wrefresh(inputWindow);
 }
 
+void drawScrollBar(WINDOW * inputWindow, int numberOfListBoxEntries, 
+    int numberOfLinesForListBoxEntries, int firstListBoxEntryToShow)
+{
+  float p = 1.0f;
+  if( numberOfListBoxEntries > numberOfLinesForListBoxEntries)
+    p = (float) numberOfLinesForListBoxEntries / numberOfListBoxEntries;
+  const int numberOfThumbLines = numberOfLinesForListBoxEntries * p;
+  
+  int lastScrollBarThumbLine;
+  int firstIndex;
+  if( numberOfListBoxEntries - firstListBoxEntryToShow == numberOfLinesForListBoxEntries )
+  {
+    firstIndex = numberOfLinesForListBoxEntries - numberOfThumbLines;
+  }
+  else
+  {
+    const float firstEntryDivByNumEntries = (float) firstListBoxEntryToShow / 
+      numberOfListBoxEntries;
+    firstIndex = (float) (firstEntryDivByNumEntries
+      * numberOfLinesForListBoxEntries);
+  }
+  lastScrollBarThumbLine = numberOfThumbLines + firstIndex + 1;
+  for(int index = firstIndex + 1; index < lastScrollBarThumbLine; index ++)
+  {
+    //https://stackoverflow.com/questions/6617419/add-a-scrollbar-on-ncurses-or-make-it-like-more
+//    mvwprintw(inputWindow, index, 0, "%c", 30);
+//    mvwaddch(inputWindow, index, 0, 30);
+    //http://melvilletheatre.com/articles/ncurses-extended-characters/index.html
+    mvwaddch(inputWindow, index, 1, ACS_CKBOARD);
+  }
+}
+
 //TODO
 /** @param listBoxItems: last element must be NULL
  *  @return selected index or UINT_MAX if ESC was pressed */
@@ -34,17 +66,17 @@ unsigned int listBox(
   WINDOW * inputWindow;
   int oldYCursorPosOfBodyWindow, oldXcursorPosOfBodyWindow;
   int bodyWindowMaxY, bodyWindowMaxX;
-  int numberOfLinesForInputBox, numberOfColumnsForInputBox, currentDirEntryIndex,
+  int numberOfLinesForInputBox, numberOfColumnsForInputBox, currentListBoxEntryIndex,
     currentDescStringLength,
     maxFieldDescInChars = 0;
-  int numberOfDirectoryEntries;
+  int numberOfListBoxEntries;
   int c = 0;
   bool stop = FALSE;
 
-  for (numberOfDirectoryEntries = 0; /** last element has to be NULL */
-    listBoxItems[numberOfDirectoryEntries] &&
-    (currentDescStringLength = strlen(listBoxItems[numberOfDirectoryEntries]) ) > 0;
-    numberOfDirectoryEntries++)
+  for (numberOfListBoxEntries = 0; /** last element has to be NULL */
+    listBoxItems[numberOfListBoxEntries] &&
+    (currentDescStringLength = strlen(listBoxItems[numberOfListBoxEntries]) ) > 0;
+    numberOfListBoxEntries++)
   {
     if( currentDescStringLength > maxFieldDescInChars)
       maxFieldDescInChars = currentDescStringLength;
@@ -53,7 +85,7 @@ unsigned int listBox(
   const unsigned titleLenghtInChars = strlen(title);
 
   /** numberOfInputWindows ^= number of fields now */
-  numberOfLinesForInputBox = numberOfDirectoryEntries + 2;
+  numberOfLinesForInputBox = numberOfListBoxEntries + 2;
   numberOfColumnsForInputBox = titleLenghtInChars > maxFieldDescInChars + 4 ?
       titleLenghtInChars : maxFieldDescInChars /*+ field*/ + 4;
 
@@ -91,17 +123,19 @@ unsigned int listBox(
 
   mvwprintw(inputWindow, 0, 0, "%s", title);
 
-  outputDirEntriesList(0, listBoxItems, numberOfDirectoryEntries, 
+  outputDirEntriesList(0, listBoxItems, numberOfListBoxEntries, 
     title, inputWindow);
 
-  const int selectionMarkerYpos = 1;
+  const int selectionMarkerYpos = 2;
   mvwprintw(inputWindow, 1, selectionMarkerYpos, "%c", 'x');
   
-  const unsigned numberOfLinesForDirEntries = numberOfLinesForInputBox - 1;
+  const unsigned numberOfLinesForListBoxEntries = numberOfLinesForInputBox - 1;
 
-  currentDirEntryIndex = 0;
+  currentListBoxEntryIndex = 0;
 //    unsigned selectionIndex;
-  unsigned firstDirEntryToShow = 0;
+  unsigned firstListBoxEntryToShow = 0;
+  drawScrollBar(inputWindow, numberOfListBoxEntries, 
+    numberOfLinesForListBoxEntries, firstListBoxEntryToShow);
   while (!stop)
   {
     c = wgetch(inputWindow);
@@ -112,19 +146,23 @@ unsigned int listBox(
     case KEY_UP:
 //      currentDirEntryIndex = (currentDirEntryIndex + numberOfDirectoryEntries 
 //        - 1) % numberOfDirectoryEntries;
-      if( currentDirEntryIndex > 0)
+      if( currentListBoxEntryIndex > 0)
       {
-        currentDirEntryIndex --;
-      if( currentDirEntryIndex < firstDirEntryToShow )
+        currentListBoxEntryIndex --;
+      if( currentListBoxEntryIndex < firstListBoxEntryToShow )
       {
-        outputDirEntriesList(--firstDirEntryToShow, listBoxItems,
-          numberOfDirectoryEntries, title, inputWindow);
+        outputDirEntriesList(--firstListBoxEntryToShow, listBoxItems,
+          numberOfListBoxEntries, title, inputWindow);
         mvwprintw(inputWindow, 1, selectionMarkerYpos, "%c", 'x');
+        //https://stackoverflow.com/questions/6617419/add-a-scrollbar-on-ncurses-or-make-it-like-more
+//        mvwprintw(, 1, 0, "%c", 0x25B2);
+        drawScrollBar(inputWindow, numberOfListBoxEntries, 
+          numberOfLinesForListBoxEntries, firstListBoxEntryToShow);
       }
       else
-        if( numberOfDirectoryEntries > 0) /** Prevent division by 0. */
+        if( numberOfListBoxEntries > 0) /** Prevent division by 0. */
         {
-          const int lineNumber = currentDirEntryIndex - firstDirEntryToShow + 1;
+          const int lineNumber = currentListBoxEntryIndex - firstListBoxEntryToShow + 1;
           /** Erase previous selection */
           mvwprintw(inputWindow, lineNumber + 1, selectionMarkerYpos, "%c", ' ');
           mvwprintw(inputWindow, lineNumber, selectionMarkerYpos, "%c", 'x');
@@ -137,22 +175,23 @@ unsigned int listBox(
 //        currentDirEntryIndex = 0;
 //      else
 //        ++currentDirEntryIndex;
-      if( currentDirEntryIndex + 1 < numberOfDirectoryEntries)
+      if( currentListBoxEntryIndex + 1 < numberOfListBoxEntries)
       {
-          currentDirEntryIndex++;
-      if( currentDirEntryIndex - firstDirEntryToShow + 1 > numberOfLinesForDirEntries )
+          currentListBoxEntryIndex++;
+      if( currentListBoxEntryIndex - firstListBoxEntryToShow + 1 > numberOfLinesForListBoxEntries )
       {
 //        firstDirEntryToShow = currentDirEntryIndex - 
 //          numberOfLinesForDirEntries + 1;
-        firstDirEntryToShow++;
-        outputDirEntriesList(firstDirEntryToShow, listBoxItems, 
-          numberOfDirectoryEntries, title, inputWindow);
+        firstListBoxEntryToShow++;
+        outputDirEntriesList(firstListBoxEntryToShow, listBoxItems, 
+          numberOfListBoxEntries, title, inputWindow);
 //        wrefresh(pBodyWindow);
-        mvwprintw(inputWindow, numberOfLinesForDirEntries, selectionMarkerYpos, "%c", 'x');
+        mvwprintw(inputWindow, numberOfLinesForListBoxEntries, selectionMarkerYpos, "%c", 'x');
+        drawScrollBar(inputWindow, numberOfListBoxEntries, numberOfLinesForListBoxEntries, firstListBoxEntryToShow);
       }
       else
       {
-          const int lineNumber = currentDirEntryIndex - firstDirEntryToShow;
+          const int lineNumber = currentListBoxEntryIndex - firstListBoxEntryToShow;
         /** Erase previous selection */
         mvwprintw(inputWindow, lineNumber, selectionMarkerYpos, "%c", ' ');
         /** Show current selection */
@@ -177,7 +216,7 @@ unsigned int listBox(
 //    default:
 //      if(ESCkeyPressed(c) )
       stop = TRUE;
-      currentDirEntryIndex = UINT_MAX /*UINT32_MAX*/;
+      currentListBoxEntryIndex = UINT_MAX /*UINT32_MAX*/;
       }
       break;          
     }
@@ -188,5 +227,5 @@ unsigned int listBox(
   touchwin(pBodyWindow);
   wmove(pBodyWindow, oldYCursorPosOfBodyWindow, oldXcursorPosOfBodyWindow);
   wrefresh(pBodyWindow);
-  return currentDirEntryIndex;
+  return currentListBoxEntryIndex;
 }

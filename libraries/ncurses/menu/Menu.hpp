@@ -3,7 +3,7 @@
 #include <vector> //class std::vector
 #include <map> //class std::map
 //#include <libraries/ncurses/InputProcessorStack.hpp>
-#include <libraries/curses/Window.hpp>
+#include <libraries/curses/UIcontrols/Window.hpp>
 
 /** Forward declarations (faster than to #include) */
 struct tagITEM;
