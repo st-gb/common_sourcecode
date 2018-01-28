@@ -7,6 +7,7 @@
 #include <stdlib.h> //malloc(...), free(...)
 #include <map> //class std::map
 #include <libraries/curses/GetChar.hpp> // int GetChar(WINDOW * p_window);
+//#include <eti.h> //E_OK
 
 /** static/class variable definitons : */
 Curses::InputProcessorStack Curses::Window::s_inputProcessorStack;
@@ -83,7 +84,19 @@ namespace Curses
         break;
       case KEY_DOWN:
         if( m_alignment == Vertical )
-          menu_driver(m_menu, REQ_DOWN_ITEM);
+        {
+          /** https://linux.die.net/man/3/menu_driver : */
+          int menu_driverReturnCode = menu_driver(m_menu, REQ_DOWN_ITEM);
+#ifdef _DEBUG
+//          menu_driverReturnCode += 0;
+          switch(menu_driverReturnCode)
+          {
+            case E_OK :
+              break;
+          }
+//          int i = menu_driverReturnCode;
+#endif //_DEBUG
+        }
         else
           ret = Curses::Window::inputNotHandled;
         break;
@@ -174,7 +187,9 @@ namespace Curses
         if( ret == Curses::Window::inputNotHandled )
   //      else
           s_inputProcessorStack.consume(ch);
-        wrefresh(/*windowToShowMenuIn*/ submenuWin);
+        /** Without refreshing the menu window a changed menu item entry 
+         *  selection doesn't become visible. */
+        wrefresh(submenuWin /*windowToShowMenuIn*/);
 //        if(ch == )
       }
     }while( m_stayInMenu );
@@ -182,17 +197,21 @@ namespace Curses
     s_inputProcessorStack.RemoveLastElement();
     if( submenuWin )
     {
+//      wrefresh(submenuWin);
       delwin( submenuWin);
     }
     /** https://linux.die.net/man/3/touchwin :
-       */
-    touchwin(windowToShowMenuIn);
-    /** https://linux.die.net/man/3/wrefresh :
+        "throw away all optimization information about which parts of the 
+     *  window have been touched, by pretending that the entire window has been
+     *  drawn on." */
+//    touchwin(windowToShowMenuIn);
+    
+    /** This finally hides menu items from a curses window.
+     * https://linux.die.net/man/3/wrefresh :
      *  "The routine wrefresh copies the named window to the physical terminal 
      * screen, taking into account what is already there to do optimizations."*/
-//    wrefresh(windowToShowMenuIn);
-    
-//    wrefresh(/*windowToShowMenuIn*/ submenuWin);
+    wrefresh(windowToShowMenuIn);
+//    wrefresh(/*submenuWin*/ windowToShowMenuIn);
     return ret;
   }
 }

@@ -14,8 +14,7 @@ protected: /** To inherit to subclasses. */
   curses::LayoutManagerBase * mp_layoutManager;
 public:
   WindowHandleWindow() : handle(NULL), mp_layoutManager(NULL) { }
-  void setLayout(curses::LayoutManagerBase * p_layoutManager) { 
-    mp_layoutManager = p_layoutManager;}
+  void setLayout(curses::LayoutManagerBase * p_layoutManager);
   void doLayout() const;
   void create();
   WINDOW * getWindowHandle() const { return handle;}

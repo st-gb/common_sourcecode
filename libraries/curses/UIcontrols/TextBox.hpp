@@ -13,6 +13,7 @@ public:
 //    WINDOW * p_superWindow, 
 //    WINDOWconst std::string & std_strContent, 
 //    int numLines, int numColumns
+      chtype colorPair
     );
   ~TextBox();
   void create();
@@ -20,10 +21,13 @@ public:
     int x, int y);
   void handleEdit(const int currentInput, int & cursor_mode);
   void handleInput();
+  void showText();
+  const std::string & getText() const { return m_content;}
   void SetText(const char []);
   void SetEditable(bool editable) {m_editable = editable; }
 private:
   bool m_editable;
+  chtype m_colorPair;
   bool stop = FALSE, insertMode = TRUE;
   fastestUnsignedDataType cursorPos = 0;
   int numLines, numColumns;

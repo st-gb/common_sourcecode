@@ -65,10 +65,12 @@ namespace Curses
 TextBox::TextBox(
 //  WINDOW * p_superWindow, 
 //  const std::string & std_strContent, 
+  chtype colorPair
   )
 //  : m_p_superWindow(NULL)//p_superWindow)
 //    , p_editWindow(NULL)
    //, m_content(std_strContent)
+  : m_colorPair(colorPair)
 {
 }
 
@@ -125,7 +127,7 @@ void TextBox::handleEdit(const int currentInput, int & cursor_mode)
   const char eraseCharacter = erasechar(); /** curses function */
   const char killCharacter = killchar(); /** curses function */
     switch( currentInput )
-    {      
+    {
     case '\n':
 //    case KEY_UP:
 //    case KEY_DOWN:
@@ -201,6 +203,29 @@ void TextBox::handleEdit(const int currentInput, int & cursor_mode)
 void TextBox::SetText(const char text [])
 {
   m_content = text;
+}
+
+void TextBox::showText()
+{
+  int maxy;
+#ifdef PDCURSES
+  maxy = getmaxy(windowToSetColourTo);
+#else
+  int maxx;
+  getmaxyx(handle, maxy, maxx);
+#endif
+  colorBox(handle, m_colorPair, 1);
+  const char * currentChar = m_content.c_str();
+  const char * const lastChar = m_content.c_str() + m_content.length();
+  int currentXpos = 0, lineNumber = 0;
+  while( currentChar < lastChar && lineNumber < maxy)
+  {
+    mvwaddnstr(handle, lineNumber, 0, currentChar, maxx);/** win,y,x,str,n */
+    currentXpos += maxx;
+    currentChar += maxx;
+    lineNumber++;
+  }
+  wrefresh(handle);
 }
 
 void TextBox::handleInput()

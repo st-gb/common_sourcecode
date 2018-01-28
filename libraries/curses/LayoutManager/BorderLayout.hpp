@@ -16,10 +16,10 @@ namespace curses {
 //    std::vector<curses::WindowHandleWindow *> m_windows;
     typedef std::map<enum area, Curses::WindowHandleWindow *> containerType;
     containerType m_area2WindowContainer;
-    WINDOW * m_windowHandle;
+//    WINDOW * m_windowHandle;
   public:
-    BorderLayout(/*enum area area*/ WINDOW * windowHandle)
-      /*: m_area(area)*/ : m_windowHandle(windowHandle) {}
+    BorderLayout(/*enum area area*/ /*WINDOW * windowHandle*/ )
+      /*: m_area(area)*/ /*: m_windowHandle(windowHandle)*/ {}
     void add(Curses::WindowHandleWindow * p, enum area area)
     {
       m_area2WindowContainer.insert(std::make_pair(area, p) );

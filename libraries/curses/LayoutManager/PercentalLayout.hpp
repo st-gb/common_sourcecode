@@ -19,11 +19,11 @@ namespace curses {
     enum direction { horizontal, vertical};
   private:
     enum direction m_direction;
-    WINDOW * m_windowHandle;
+//    WINDOW * m_windowHandle;
     std::vector<curses::WindowHandleWindowAndPercentage> m_windows;
   public:
-    PercentalLayout(WINDOW * windowHandle, enum direction dir)
-      : m_direction(dir), m_windowHandle(windowHandle) {}
+    PercentalLayout(/*WINDOW * windowHandle,*/ enum direction dir)
+      : m_direction(dir) /*, m_windowHandle(windowHandle)*/ {}
     void add(Curses::WindowHandleWindow * p, float percent)
     {
       m_windows.push_back(WindowHandleWindowAndPercentage(p, percent));
