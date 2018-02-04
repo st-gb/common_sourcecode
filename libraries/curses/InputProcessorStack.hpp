@@ -33,9 +33,11 @@ namespace Curses
        *  accessed from the back (last element). */
     container_type m_inputProcessorStack;
   public:
+    InputProcessorStack() : exit(false) {}
     void add(Curses::Window * w) { m_inputProcessorStack.push_back(w); }
     void RemoveLastElement() { m_inputProcessorStack.pop_back(); }
     void consume(const int ch);
+    bool exit;
   };
 }
 

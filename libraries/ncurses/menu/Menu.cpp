@@ -140,21 +140,16 @@ namespace Curses
     return ret;
   }
 
-  int Menu::InsideMenu(bool ESCandENTERleavesMenu, WINDOW * windowToShowMenuIn)
+  WINDOW * Menu::create(WINDOW * windowToShowMenuIn)
   {
-    m_stayInMenu = true;
-    m_ESCandENTERleavesMenu = ESCandENTERleavesMenu;
-    int ret = -1;
-    s_inputProcessorStack.add(this);
-    
     if( ! windowToShowMenuIn )
       windowToShowMenuIn = stdscr;
-    WINDOW * submenuWin = NULL;
+//    WINDOW * submenuWin = NULL;
     /** from https://de.wikibooks.org/wiki/Ncurses:_Men%C3%BCs */
     if( windowToShowMenuIn ) {      
 //      int n = scale_menu(m_menu, & numRowsNeeded, & numColumnsNeeded);
       //TODO does the window return by "derwin(...)" need to be freed?
-      submenuWin = //derwin(windowToShowMenuIn, 
+      m_subMenuWindow = //derwin(windowToShowMenuIn, 
       /** If window was created with derwin(...) or subwin(...) it isn't cleared 
        *  from screen after wdelete(...). So use newwin(...) instead. */
         //newwin(
@@ -165,11 +160,22 @@ namespace Curses
         0 /*  begin_y relative to the standard screen (whole terminal) */, 
         0 /*  begin_x  relative to the standard screen (whole terminal)*/ );
 //      set_menu_sub (m_menu, submenuWin );
-      set_menu_win (m_menu, /*windowToShowMenuIn*/ submenuWin);
+      set_menu_win (m_menu, /*windowToShowMenuIn*/ m_subMenuWindow);
     }
     post_menu(m_menu);
     //refresh();
-    wrefresh(submenuWin);
+    wrefresh(m_subMenuWindow);
+    return m_subMenuWindow;
+  }
+  
+  int Menu::InsideMenu(bool ESCandENTERleavesMenu, WINDOW * windowToShowMenuIn)
+  {
+    m_ESCandENTERleavesMenu = ESCandENTERleavesMenu;
+    WINDOW * submenuWin = create(windowToShowMenuIn);
+    m_stayInMenu = true;
+    int ret = -1;
+    s_inputProcessorStack.add(this);
+    
 //    if( windowToShowMenuIn ) 
 //      wrefresh(windowToShowMenuIn);
     int ch;
@@ -189,16 +195,16 @@ namespace Curses
           s_inputProcessorStack.consume(ch);
         /** Without refreshing the menu window a changed menu item entry 
          *  selection doesn't become visible. */
-        wrefresh(submenuWin /*windowToShowMenuIn*/);
+        wrefresh(m_subMenuWindow /*windowToShowMenuIn*/);
 //        if(ch == )
       }
     }while( m_stayInMenu );
     unpost_menu(m_menu);
     s_inputProcessorStack.RemoveLastElement();
-    if( submenuWin )
+    if( m_subMenuWindow )
     {
 //      wrefresh(submenuWin);
-      delwin( submenuWin);
+      delwin(m_subMenuWindow);
     }
     /** https://linux.die.net/man/3/touchwin :
         "throw away all optimization information about which parts of the 

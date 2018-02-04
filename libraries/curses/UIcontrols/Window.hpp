@@ -14,14 +14,20 @@ namespace Curses
   class Window
   {
   protected:
+    bool m_isUIcontrol;
+  public:
     /** "static"-> 1 stack for all objects of class "Window" and its 
      *   descendants;not thread-safe: */
     static Curses::InputProcessorStack s_inputProcessorStack;
-  public:
+    Window() : m_isUIcontrol(false) {}
+    Window(bool isUIcontrol) : m_isUIcontrol(isUIcontrol) {}
     enum handleActionRetCodes { inputNotHandled = -1 };
     /** Must be "virtual" in order to enable overriding. */
     virtual int HandleAction(const int ch) { }
     static WINDOW * CreateWindowRelativePos(WINDOW * windowForRelativePos,
       int width, int height, int ypos, int xpos);
+    bool IsUIcontrol() const { return m_isUIcontrol;}
   };
+  
+  void EventLoop();
 }

@@ -24,6 +24,7 @@ namespace curses {
     {
       m_area2WindowContainer.insert(std::make_pair(area, p) );
     }
+    std::vector<Curses::WindowHandleWindow *> getDirectlyContainedWindows() const;
     void layout();
   };
 }

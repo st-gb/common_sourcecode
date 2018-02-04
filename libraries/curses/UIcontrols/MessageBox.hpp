@@ -18,13 +18,14 @@ namespace Curses
   public:
     MessageBox(chtype colorPair, chtype buttonColorPair);
     virtual void ShowMessage(const char message [], WINDOW * windowToShowMessageIn);
-    void CreateCenteredButton(const char label []);
-    void BuildUserInterface(const char message []);
+    void CreateCenteredButton(const char label [], const int numberOfTextLines);
+    int BuildUserInterface(const char message []);
     void Close();
     void Destroy();
     virtual void EventLoop();
     void ShowMessageText(
       const char message [],
-      const std::vector<fastestUnsignedDataType> &);
+      const std::vector<fastestUnsignedDataType> &,
+      const fastestUnsignedDataType windowWidth);
   };
 }

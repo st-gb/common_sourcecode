@@ -1,6 +1,7 @@
 #include "InputProcessorStack.hpp"
 //#include "menu/Menu.hpp"
 #include "UIcontrols/Window.hpp" //class Window
+#include "UIcontrols/UIcontrol.hpp"
 
 namespace Curses
 {
@@ -8,15 +9,23 @@ namespace Curses
     container_type::const_reverse_iterator iter = m_inputProcessorStack.rbegin();
     if( iter != m_inputProcessorStack.rend() )
     {
-      /** Start with the second from last element. */
-      iter ++;
+//      /** Start with the second from last element. */
+//        iter ++;
       /** Traverse the container from last element added in direction to the 
       *  first added element. */
       for( ; iter != m_inputProcessorStack.rend() ; iter++ )
       {
-        Curses::Window * p_win = *iter;
+        Curses::Window * p_cursesWindow = *iter;
+#ifdef _DEBUG
+        if( p_cursesWindow->IsUIcontrol() )
+        {
+          curses::UIcontrol * p_uic = (curses::UIcontrol *) p_cursesWindow;
+          WINDOW * w = p_uic->getWindowHandle();
+        }
+#endif
+        const int handleActionResult = p_cursesWindow->HandleAction(ch);
         /** If event was consumed by window. */
-        if( p_win->HandleAction(ch) > Curses::Window::inputNotHandled )
+        if( handleActionResult > Curses::Window::inputNotHandled )
           break;
       }
     }

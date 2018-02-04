@@ -1,6 +1,7 @@
 #include <curses.h> //WINDOW
 #include <limits.h> //UINT_MAX
 #include <string.h> //strlen(...)
+#include "UIcontrols/drawScrollBar.h"
 
 void outputDirEntriesList(
   unsigned firstIndex, 
@@ -21,38 +22,6 @@ void outputDirEntriesList(
       3, "%s", listBoxItems[currentDirEntryIndex]);
 //  touchwin(inputWindow);
 //  wrefresh(inputWindow);
-}
-
-void drawScrollBar(WINDOW * inputWindow, int numberOfListBoxEntries, 
-    int numberOfLinesForListBoxEntries, int firstListBoxEntryToShow)
-{
-  float p = 1.0f;
-  if( numberOfListBoxEntries > numberOfLinesForListBoxEntries)
-    p = (float) numberOfLinesForListBoxEntries / numberOfListBoxEntries;
-  const int numberOfThumbLines = numberOfLinesForListBoxEntries * p;
-  
-  int lastScrollBarThumbLine;
-  int firstIndex;
-  if( numberOfListBoxEntries - firstListBoxEntryToShow == numberOfLinesForListBoxEntries )
-  {
-    firstIndex = numberOfLinesForListBoxEntries - numberOfThumbLines;
-  }
-  else
-  {
-    const float firstEntryDivByNumEntries = (float) firstListBoxEntryToShow / 
-      numberOfListBoxEntries;
-    firstIndex = (float) (firstEntryDivByNumEntries
-      * numberOfLinesForListBoxEntries);
-  }
-  lastScrollBarThumbLine = numberOfThumbLines + firstIndex + 1;
-  for(int index = firstIndex + 1; index < lastScrollBarThumbLine; index ++)
-  {
-    //https://stackoverflow.com/questions/6617419/add-a-scrollbar-on-ncurses-or-make-it-like-more
-//    mvwprintw(inputWindow, index, 0, "%c", 30);
-//    mvwaddch(inputWindow, index, 0, 30);
-    //http://melvilletheatre.com/articles/ncurses-extended-characters/index.html
-    mvwaddch(inputWindow, index, 1, ACS_CKBOARD);
-  }
 }
 
 //TODO
@@ -135,7 +104,7 @@ unsigned int listBox(
 //    unsigned selectionIndex;
   unsigned firstListBoxEntryToShow = 0;
   drawScrollBar(inputWindow, numberOfListBoxEntries, 
-    numberOfLinesForListBoxEntries, firstListBoxEntryToShow);
+    numberOfLinesForListBoxEntries, firstListBoxEntryToShow, 1);
   while (!stop)
   {
     c = wgetch(inputWindow);
@@ -157,7 +126,7 @@ unsigned int listBox(
         //https://stackoverflow.com/questions/6617419/add-a-scrollbar-on-ncurses-or-make-it-like-more
 //        mvwprintw(, 1, 0, "%c", 0x25B2);
         drawScrollBar(inputWindow, numberOfListBoxEntries, 
-          numberOfLinesForListBoxEntries, firstListBoxEntryToShow);
+          numberOfLinesForListBoxEntries, firstListBoxEntryToShow, 1);
       }
       else
         if( numberOfListBoxEntries > 0) /** Prevent division by 0. */
@@ -187,7 +156,8 @@ unsigned int listBox(
           numberOfListBoxEntries, title, inputWindow);
 //        wrefresh(pBodyWindow);
         mvwprintw(inputWindow, numberOfLinesForListBoxEntries, selectionMarkerYpos, "%c", 'x');
-        drawScrollBar(inputWindow, numberOfListBoxEntries, numberOfLinesForListBoxEntries, firstListBoxEntryToShow);
+        drawScrollBar(inputWindow, numberOfListBoxEntries, 
+          numberOfLinesForListBoxEntries, firstListBoxEntryToShow, 1);
       }
       else
       {

@@ -1,3 +1,4 @@
+#pragma once /** Include guard. */
 #include "LayoutManagerBase.hpp" //Base class
 #include "../UIcontrols/WindowHandleWindow.hpp"
 #include <vector> //class std::vector
@@ -28,6 +29,7 @@ namespace curses {
     {
       m_windows.push_back(WindowHandleWindowAndPercentage(p, percent));
     }
+    std::vector<Curses::WindowHandleWindow *> getDirectlyContainedWindows() const;
     void layout();
   };
 }

@@ -28,11 +28,13 @@ namespace Curses
     std::vector<tagITEM *> m_menuItemVector;
     std::vector<FUNC> m_functionToCallVector;
     std::map<tagITEM *, FUNC> m_menuItemMap;
+    WINDOW * m_subMenuWindow;
    public:
     Menu();
     ~Menu();
     
     void addMenuItem(const char str [], void (*FUNC)(void) = 0 );
+    WINDOW * create(WINDOW * windowToShowMenuIn);
     void createMenu(enum style _style = Vertical);
     int HandleAction(const int ch);
     int InsideMenu(bool = true, struct _win_st * windowToShowMenuIn = 0 );

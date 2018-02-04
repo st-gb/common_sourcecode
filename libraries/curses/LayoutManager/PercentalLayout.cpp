@@ -2,6 +2,22 @@
 
 namespace curses {
 
+std::vector<Curses::WindowHandleWindow *> PercentalLayout::
+  getDirectlyContainedWindows() const
+{
+  std::vector<Curses::WindowHandleWindow *> windows;
+  for( std::vector<curses::WindowHandleWindowAndPercentage>::const_iterator 
+    iter = m_windows.begin() ; iter != m_windows.end(); iter++ )
+  {
+//    if (dynamic_cast<D2*>(x) == nullptr)
+//    if( iter->m_p->IsUIcontrol() )
+    {
+       windows.push_back(iter->m_p);
+    }
+  }
+  return windows;
+}
+
 void PercentalLayout::layout()
 {
   std::vector<curses::WindowHandleWindowAndPercentage>::const_iterator iter = 
@@ -43,4 +59,6 @@ void PercentalLayout::layout()
     windowHandleWindowAndPercentage.m_p->doLayout();
   }
 }
+
+
 }

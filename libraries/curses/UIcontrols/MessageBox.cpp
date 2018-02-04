@@ -49,42 +49,74 @@ namespace Curses
 
   void MessageBox::ShowMessageText(
     const char message [],
-    const std::vector<fastestUnsignedDataType> & lineLengthes)
+    const std::vector<fastestUnsignedDataType> & lineLengthes,
+    const fastestUnsignedDataType windowWidthMinus2)
   {
     m_showWindow = true;
     int currentLineWidth = 0;
     const char * lineBegin = message, * formatString;
     char recipeString[10];
-    for( int i = 0; i < lineLengthes.size(); i++ )
+    int currentLineNumber = 1;
+    for( int currentLineLengthIndex = 0; currentLineLengthIndex < 
+      lineLengthes.size(); currentLineLengthIndex++ )
     {
-      currentLineWidth = lineLengthes.at(i);
+      currentLineWidth = lineLengthes.at(currentLineLengthIndex);
+      if( currentLineWidth > windowWidthMinus2 )
+      {
+        while(currentLineWidth > windowWidthMinus2)
+        {
+          sprintf(recipeString, "%%.%ds", windowWidthMinus2);//-> e.g. "%.20s"
+          mvwprintw(m_p_MessageWindow, currentLineNumber, 1, recipeString, 
+            lineBegin);
+          lineBegin += windowWidthMinus2 + 1;
+          currentLineWidth -= (windowWidthMinus2);
+          currentLineNumber ++;
+        }
+//        sprintf(recipeString, "%%.%ds", windowWidth);//-> e.g. "%.20s"
+//        mvwprintw(m_p_MessageWindow, currentLineNumber, 1, recipeString, 
+//          lineBegin);
+      }
 //      std::ostringstream oss;
 //      oss << "%." << currentLineWidth << "s"; //-> e.g. "%.20s"
 //      formatString = oss.str().c_str();
-      sprintf(recipeString, "%%.%ds", currentLineWidth);//-> e.g. "%.20s"
-      mvwprintw(m_p_MessageWindow, 1 + i , 1, recipeString, lineBegin );
-      lineBegin += currentLineWidth + 1;
+//      else
+//      {
+        sprintf(recipeString, "%%.%ds", currentLineWidth);//-> e.g. "%.20s"
+        mvwprintw(m_p_MessageWindow, currentLineNumber, 1, recipeString, 
+          lineBegin );
+        lineBegin += currentLineWidth + 1;
+        currentLineNumber ++;
+//      }
     }
   }
   
-  void MessageBox::CreateCenteredButton(const char label [])
+  void MessageBox::CreateCenteredButton(const char label [], 
+    const int numberOfTextLines)
   {
     int windowHeight, windowWidth;
     getmaxyx(m_p_MessageWindow, windowHeight, windowWidth);
     int buttonWidth = strlen(label);
-    m_p_buttonWindow = derwin(m_p_MessageWindow, /* height*/ 1 , buttonWidth, windowHeight - 2, 
+    m_p_buttonWindow = derwin(m_p_MessageWindow, /* height*/ 1 , 
+      buttonWidth, windowHeight - 2, 
       (windowWidth - buttonWidth) / 2 );
     colorBox(m_p_buttonWindow, m_buttonColorPair, 0);
     mvwaddstr(m_p_buttonWindow, 0, 0, label);
     wrefresh(m_p_buttonWindow);
   }
   
-  void MessageBox::BuildUserInterface(const char message [])
+  int MessageBox::BuildUserInterface(const char message [])
   {
     int maxLineWidth = 0/*, numLines = 1*/;
     std::vector<fastestUnsignedDataType> lineLengthes;
     DetermineMessageTextWidthAndHeight(message, maxLineWidth, lineLengthes );
+    //TODO: change to actual # of lines. (if a text line does not fit into a 
+    // window line, then there are multiple lines
+    int numberOfTextLines = lineLengthes.size();
     
+    int windowWidth, superordinateWinHeight; 
+    getmaxyx(m_p_windowToShowMessageIn, superordinateWinHeight, windowWidth);
+    if( maxLineWidth + 2 < windowWidth)
+      windowWidth = maxLineWidth + 2;
     int oldYCursorPosOfBodyWindow, oldXcursorPosOfBodyWindow;
     getyx(m_p_windowToShowMessageIn, oldYCursorPosOfBodyWindow, oldXcursorPosOfBodyWindow);
     int yBeginOfBodyWindow, xBeginOfBodyWindow;
@@ -96,18 +128,22 @@ namespace Curses
     m_p_MessageWindow = newwin(
 //      windowToShowMessageIn, 
       windowHeight , 
-      maxLineWidth + 2, 1, 1 );
+      windowWidth, 1, 0 );
     colorBox(m_p_MessageWindow, m_colorPair, 1);
     mvwaddstr(m_p_MessageWindow, 0, 1, "message");
   //  mvwaddstr(p_win, 1, 1, message);
-    ShowMessageText(message, lineLengthes);
+    /*int numberOfTextLines =*/ ShowMessageText(
+      message, 
+      lineLengthes, 
+      windowWidth - 2);
+    return numberOfTextLines;
   }
 
   void MessageBox::ShowMessage(const char message [], WINDOW * p_windowToShowMessageIn)
   {
     m_p_windowToShowMessageIn = p_windowToShowMessageIn;
-    BuildUserInterface(message);
-    CreateCenteredButton("OK");
+    const int numberOfTextLines = BuildUserInterface(message);
+    CreateCenteredButton("OK", numberOfTextLines);
   //  touchwin(s_bodyWindow);
     wrefresh(m_p_MessageWindow);
   }
