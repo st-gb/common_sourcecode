@@ -7,11 +7,11 @@
 #include <deque> //class std::deque
 
 /** Forward declarations (faster than to include the header file) : */
-namespace Ncurses{
+namespace Curses{
   class Window;
 }
 
-namespace Ncurses
+namespace Curses
 {
   /** This class serves the following purpose: 
     * The window that has the current focus should not be responsible to handle
@@ -26,16 +26,18 @@ namespace Ncurses
      *  See https://www.cs.helsinki.fi/u/tpkarkka/alglib/k06/lectures/containers.html
      * "Sequences: User controls the order of elements.
      *   vector, list, deque" */
-    typedef std::deque<Ncurses::Window *> container_type;
+    typedef std::deque<Curses::Window *> container_type;
     private:
 //    std::vector<Ncurses::Window *> m_inputProcessorStack;
       /** Use a double-ended queue (deque) because the container should be
        *  accessed from the back (last element). */
     container_type m_inputProcessorStack;
   public:
-    void add(Ncurses::Window * w) { m_inputProcessorStack.push_back(w); }
+    InputProcessorStack() : exit(false) {}
+    void add(Curses::Window * w) { m_inputProcessorStack.push_back(w); }
     void RemoveLastElement() { m_inputProcessorStack.pop_back(); }
     void consume(const int ch);
+    bool exit;
   };
 }
 

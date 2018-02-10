@@ -113,7 +113,7 @@ void Logger::AddConsoleLogEntryWriter()
   consoleappender->Open(std_strDummyLogFilePath);
   consoleappender->GetFormatter()->SetDefaultTimeFormat();
 //  consoleappender->SetFormatter(p_StdCoutLogWriter);
-  g_logger.AddFormattedLogEntryProcessor( consoleappender);
+  /*g_logger.*/AddFormattedLogEntryProcessor( consoleappender);
 }
 #endif
 

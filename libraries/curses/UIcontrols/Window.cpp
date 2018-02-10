@@ -1,6 +1,6 @@
 #include "Window.hpp"
 
-namespace Ncurses
+namespace Curses
 {
   WINDOW * Window::CreateWindowRelativePos(
     WINDOW * p_windowForRelativePos,
@@ -22,5 +22,14 @@ namespace Ncurses
       yPosRelativeToReferredWindow + upperLeftCorner1stColumn,
       xPosRelativeToReferredWindow + upperLeftCorner1stRow);
   }
-};
-
+   
+  void EventLoop()
+  {
+    do
+    {
+      int key = getch();
+      if( key != ERR )
+        Window::s_inputProcessorStack.consume(key);
+    }while(! Window::s_inputProcessorStack.exit );
+  }
+}

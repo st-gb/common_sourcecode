@@ -7,11 +7,12 @@
 #include <stdlib.h> //malloc(...), free(...)
 #include <map> //class std::map
 #include <libraries/curses/GetChar.hpp> // int GetChar(WINDOW * p_window);
+//#include <eti.h> //E_OK
 
 /** static/class variable definitons : */
-Ncurses::InputProcessorStack Ncurses::Window::s_inputProcessorStack;
+Curses::InputProcessorStack Curses::Window::s_inputProcessorStack;
 
-namespace Ncurses
+namespace Curses
 {
   Menu::Menu()
     : m_ESCandENTERleavesMenu(true), 
@@ -39,6 +40,7 @@ namespace Ncurses
     }
   }
 
+  /** @param func: function to execute when menu item is selected */
   void Menu::addMenuItem(const char str [], FUNC func )
   {
     ITEM * menuItem = new_item(str, "");
@@ -65,6 +67,7 @@ namespace Ncurses
       //see https://de.wikibooks.org/wiki/Ncurses:_Men%C3%BCs
       set_menu_format(m_menu, 1, numMenuItems /* int cols*/ );
     }
+    int n = scale_menu(m_menu, & m_numRowsNeeded, & m_numColumnsNeeded);
   }
 
   int Menu::HandleAction(const int ch)
@@ -81,32 +84,47 @@ namespace Ncurses
         break;
       case KEY_DOWN:
         if( m_alignment == Vertical )
-          menu_driver(m_menu, REQ_DOWN_ITEM);
+        {
+          /** https://linux.die.net/man/3/menu_driver : */
+          int menu_driverReturnCode = menu_driver(m_menu, REQ_DOWN_ITEM);
+#ifdef _DEBUG
+//          menu_driverReturnCode += 0;
+          switch(menu_driverReturnCode)
+          {
+            case E_OK :
+              break;
+          }
+//          int i = menu_driverReturnCode;
+#endif //_DEBUG
+        }
         else
-          ret = Ncurses::Window::inputNotHandled;
+          ret = Curses::Window::inputNotHandled;
         break;
       case KEY_UP:
         if( m_alignment == Vertical )
           menu_driver(m_menu, REQ_UP_ITEM);
         else
-          ret = Ncurses::Window::inputNotHandled;
+          ret = Curses::Window::inputNotHandled;
         break;
       /** For horizontal menus: */
       case KEY_RIGHT:
         if( m_alignment == Horizontal )
           menu_driver(m_menu, REQ_RIGHT_ITEM);
         else
-          ret = Ncurses::Window::inputNotHandled;         
+          ret = Curses::Window::inputNotHandled;         
         break;
       case KEY_LEFT:
         if( m_alignment == Horizontal )
           menu_driver(m_menu, REQ_LEFT_ITEM);
         else
-          ret = Ncurses::Window::inputNotHandled;         
+          ret = Curses::Window::inputNotHandled;         
         break;
       case 0xA: /* Return- bzw. Enter-Taste -> ASCII-Code */
       {
-        ret = item_index(current_item(m_menu) );
+        ITEM * currentMenuItem = current_item(m_menu);
+        /** https://linux.die.net/man/3/item_index : "The function item_index 
+         *  returns the (zero-origin) index of item in the menu's item pointer list." */
+        ret = item_index(currentMenuItem);
         FUNC func = m_functionToCallVector.at(ret);
         (*func)();
         if( m_ESCandENTERleavesMenu )
@@ -115,45 +133,49 @@ namespace Ncurses
         break;
       default:
         consumedInput = false;
-        ret = Ncurses::Window::inputNotHandled;
+        ret = Curses::Window::inputNotHandled;
     }
 //    if( consumedInput )
 //      wrefresh(windowToShowMenuIn);
     return ret;
   }
 
-  int Menu::InsideMenu(bool ESCandENTERleavesMenu, WINDOW * windowToShowMenuIn)
+  WINDOW * Menu::create(WINDOW * windowToShowMenuIn)
   {
-    m_stayInMenu = true;
-    m_ESCandENTERleavesMenu = ESCandENTERleavesMenu;
-    int ret = -1;
-    s_inputProcessorStack.add(this);
-    
     if( ! windowToShowMenuIn )
       windowToShowMenuIn = stdscr;
-    WINDOW * submenuWin = NULL;
+//    WINDOW * submenuWin = NULL;
     /** from https://de.wikibooks.org/wiki/Ncurses:_Men%C3%BCs */
-    if( windowToShowMenuIn ) {
-      
-      int numRowsNeeded, numColumnsNeeded;
-      int n = scale_menu(m_menu, & numRowsNeeded, & numColumnsNeeded);
+    if( windowToShowMenuIn ) {      
+//      int n = scale_menu(m_menu, & numRowsNeeded, & numColumnsNeeded);
       //TODO does the window return by "derwin(...)" need to be freed?
-      submenuWin = //derwin(windowToShowMenuIn, 
+      m_subMenuWindow = //derwin(windowToShowMenuIn, 
       /** If window was created with derwin(...) or subwin(...) it isn't cleared 
        *  from screen after wdelete(...). So use newwin(...) instead. */
         //newwin(
-        Ncurses::Window::CreateWindowRelativePos(
+        Curses::Window::CreateWindowRelativePos(
         windowToShowMenuIn,
-        numRowsNeeded /*# lines*/, 
-        numColumnsNeeded /* # columns */, 
+        m_numRowsNeeded /*# lines*/, 
+        m_numColumnsNeeded /* # columns */, 
         0 /*  begin_y relative to the standard screen (whole terminal) */, 
         0 /*  begin_x  relative to the standard screen (whole terminal)*/ );
 //      set_menu_sub (m_menu, submenuWin );
-      set_menu_win (m_menu, /*windowToShowMenuIn*/ submenuWin);
+      set_menu_win (m_menu, /*windowToShowMenuIn*/ m_subMenuWindow);
     }
     post_menu(m_menu);
     //refresh();
-    wrefresh(submenuWin);
+    wrefresh(m_subMenuWindow);
+    return m_subMenuWindow;
+  }
+  
+  int Menu::InsideMenu(bool ESCandENTERleavesMenu, WINDOW * windowToShowMenuIn)
+  {
+    m_ESCandENTERleavesMenu = ESCandENTERleavesMenu;
+    WINDOW * submenuWin = create(windowToShowMenuIn);
+    m_stayInMenu = true;
+    int ret = -1;
+    s_inputProcessorStack.add(this);
+    
 //    if( windowToShowMenuIn ) 
 //      wrefresh(windowToShowMenuIn);
     int ch;
@@ -168,22 +190,34 @@ namespace Ncurses
       {
         ret = HandleAction(ch);
         /** If not consumed (away) by the handler of this object. */
-        if( ret == Ncurses::Window::inputNotHandled )
+        if( ret == Curses::Window::inputNotHandled )
   //      else
           s_inputProcessorStack.consume(ch);
-        wrefresh(/*windowToShowMenuIn*/ submenuWin);
+        /** Without refreshing the menu window a changed menu item entry 
+         *  selection doesn't become visible. */
+        wrefresh(m_subMenuWindow /*windowToShowMenuIn*/);
 //        if(ch == )
       }
     }while( m_stayInMenu );
     unpost_menu(m_menu);
     s_inputProcessorStack.RemoveLastElement();
-    if( submenuWin )
+    if( m_subMenuWindow )
     {
-      delwin( submenuWin);
+//      wrefresh(submenuWin);
+      delwin(m_subMenuWindow);
     }
-    touchwin(windowToShowMenuIn);
+    /** https://linux.die.net/man/3/touchwin :
+        "throw away all optimization information about which parts of the 
+     *  window have been touched, by pretending that the entire window has been
+     *  drawn on." */
+//    touchwin(windowToShowMenuIn);
+    
+    /** This finally hides menu items from a curses window.
+     * https://linux.die.net/man/3/wrefresh :
+     *  "The routine wrefresh copies the named window to the physical terminal 
+     * screen, taking into account what is already there to do optimizations."*/
     wrefresh(windowToShowMenuIn);
-//    wrefresh(/*windowToShowMenuIn*/ submenuWin);
+//    wrefresh(/*submenuWin*/ windowToShowMenuIn);
     return ret;
   }
 }

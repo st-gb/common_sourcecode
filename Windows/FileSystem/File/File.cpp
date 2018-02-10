@@ -72,11 +72,11 @@ namespace Windows_API
       return fileSize;
     }
 
-    enum I_File::OpenError File::OpenA(const char * const filePath,
+    enum I_File::OpenResult File::OpenA(const char * const filePath,
         enum I_File::OpenMode openMode)
     {
       m_filePathA = filePath;
-      enum I_File::OpenError openError = I_File::not_set;
+      enum I_File::OpenResult openError = I_File::not_set;
       DWORD dwDesiredAccess = 0, dwCreationDisposition = 0;
       switch(openMode)
       {

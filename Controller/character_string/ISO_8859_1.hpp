@@ -63,13 +63,14 @@ namespace ISO_8859_1
         return Oe;
       case UTF8string::Ue :
         return Ue;
-
       case UTF8string::ae :
         return ae;
       case UTF8string::oe :
         return oe;
       case UTF8string::ue :
         return ue;
+      case UTF8string::sz :
+        return sz;
     }
     return 0;
   }
