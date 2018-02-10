@@ -104,7 +104,7 @@ inline void GetLogFilePrefixFromSystemTime(LogFileEntry & logfileentry)
   logfileentry.minute = s_systemtime.wMinute;
   logfileentry.second = s_systemtime.wSecond;
   logfileentry.millisecond = s_systemtime.wMilliseconds;
-  logfileentry.threadID = ::GetCurrentThreadId();
+  logfileentry.threadID = (uint16_t) ::GetCurrentThreadId();
   I_Thread::threadNameMapType::const_iterator c_iter =
     I_Thread::s_threadNumber2Name.find(logfileentry.threadID);
   if( c_iter != I_Thread::s_threadNumber2Name.end() )
@@ -162,7 +162,7 @@ inline void GetLogFilePrefixFromFileTime(LogFileEntry & logfileentry)
   ::GetSystemTimeAsFileTime( & s_filetime );
 
   GetLogFileEntry(s_filetime, logfileentry);
-  logfileentry.threadID = ::GetCurrentThreadId();
+  logfileentry.threadID = (uint16_t) ::GetCurrentThreadId();
 #ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
   logfileentry.p_std_strThreadName = I_Thread::GetThreadName(logfileentry.threadID);
 #endif

@@ -142,7 +142,7 @@
     {
       PossiblyEnterCritSec();
 //      SetToLowestLogLevelOfAll();
-      fastestUnsignedDataType logLevel = p_formattedlogentryprocessor->GetLogLevel();
+      fastestSignedDataType logLevel = p_formattedlogentryprocessor->GetLogLevel();
       /** The lower the level the more messages are not pre-filtered.
        *  -> less performant. */
       if( logLevel <  m_logLevel)

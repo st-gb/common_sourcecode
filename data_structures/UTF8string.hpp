@@ -70,7 +70,7 @@ public:
       unsigned char currentByte;
       unsigned charIndex = 0;
       unsigned numUTF8bytes;
-      char ch;
+      //char ch;
       for( fastestUnsignedDataType byteIndex = 0; byteIndex < sizeInBytes; ++ byteIndex)
       {
         currentByte = pchArray[byteIndex];

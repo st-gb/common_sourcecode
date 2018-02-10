@@ -207,14 +207,14 @@ uint16_t I_LogFormatter::GetNeededArraySizeForTimeString(
     //either:
     // - # of chars of "..." in "%placeholder%"...end"
     // - if no "%" in whole string: # of chars of whole string
-    arraySizeForTimeString += timeFormatString.length() -
+    arraySizeForTimeString += (uint16_t) timeFormatString.length() -
       //# chars right of "%"
       charIndexOfPlaceholderEndChar - 1;
   }
   else //left "%"
 //    if( IndexOfRightPercentSign > IndexOfLeftPercentSign)
       // # of chars of "..." in "%xxx"...end"
-    arraySizeForTimeString += timeFormatString.length() -
+    arraySizeForTimeString += (uint16_t) timeFormatString.length() -
         //# chars right of "%" plus 1 char for "%"
       charIndexOfPlaceholderBeginChar;
   return arraySizeForTimeString;
@@ -309,7 +309,7 @@ void I_LogFormatter::SetTimeFormat(const std::string & TimeFormatString)
 
 void Insert(char * & p_chDestination,
   const char * c_p_chIndexOf1stCharOfTimeFormatString,
-  BYTE numCharsToCopy )
+  fastestUnsignedDataType numCharsToCopy )
 {
   memcpy( p_chDestination,
     c_p_chIndexOf1stCharOfTimeFormatString,
