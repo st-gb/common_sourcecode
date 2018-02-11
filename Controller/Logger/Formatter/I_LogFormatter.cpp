@@ -297,7 +297,7 @@ void I_LogFormatter::SetTimeFormat(const std::string & TimeFormatString)
 {
   if( m_p_chFormattedTimeString )
 //    //points to m_TimeFormatString.c_str()
-    //TODO invalid free here according to valgrind
+    //TODO invalid free here according to valgrind?
     delete [] m_p_chFormattedTimeString;
   m_TimeFormatString = TimeFormatString;
   //  CreateTimeStringArray();
