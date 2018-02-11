@@ -22,7 +22,10 @@ public:
   void setLayout(curses::LayoutManagerBase * p_layoutManager);
   void doLayout() const;
   void create();
+  void create(WINDOW * const p_superWindow, int numLines, int numColumns, 
+    int x, int y);
   WINDOW * getWindowHandle() const { return m_windowHandle;}
+  void GetSize(int & width, int & height) const;
   curses::LayoutManagerBase * getLayoutManager() const{return mp_layoutManager;}
   void RemoveAsKeyListener();
   void SetAsKeyListener();

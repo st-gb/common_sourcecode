@@ -146,6 +146,7 @@ namespace Curses
     CreateCenteredButton("OK", numberOfTextLines);
   //  touchwin(s_bodyWindow);
     wrefresh(m_p_MessageWindow);
+    wgetch(m_p_MessageWindow); /** -> modal */
   }
   
   void MessageBox::EventLoop()

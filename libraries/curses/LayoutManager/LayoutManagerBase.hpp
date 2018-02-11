@@ -1,6 +1,6 @@
 #pragma once /** Include guard. */
 #include <curses.h> //WINDOW
-#include "../UIcontrols/WindowHandleWindow.hpp" //base class WindowHandleWindow
+#include "../windows/WindowHandleWindow.hpp" //base class WindowHandleWindow
 #include "../UIcontrols/UIcontrol.hpp"
 
 //#include "PercentalLayout.hpp"
@@ -26,6 +26,7 @@ namespace curses
     curses::UIcontrol * getNextUIcontrolHavingFocus();
     void setHandle(WINDOW * windowHandle) { //m_windowHandle = windowHandle;
         m_windowHandle = windowHandle; }
+    void SetFocusToNextUIcontrol();
 //    /*curses::UIcontrol*/ Curses::WindowHandleWindow * getUIcontrolHavingFocus() const;
   };
 }

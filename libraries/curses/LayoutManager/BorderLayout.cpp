@@ -1,6 +1,6 @@
 #include "BorderLayout.hpp"
 #include <curses.h> //wresize
-#include "../UIcontrols/WindowHandleWindow.hpp"
+#include "../windows/WindowHandleWindow.hpp"
 
 namespace curses {
   

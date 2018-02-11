@@ -1,4 +1,8 @@
 #include "Window.hpp"
+#include "../EventQueue.hpp" //class EventQueue
+
+Curses::InputProcessorStack Curses::Window::s_inputProcessorStack;
+extern Curses::EventQueue g_eventQueue;
 
 namespace Curses
 {
@@ -30,6 +34,7 @@ namespace Curses
       int key = getch();
       if( key != ERR )
         Window::s_inputProcessorStack.consume(key);
+      g_eventQueue.Process();
     }while(! Window::s_inputProcessorStack.exit );
   }
 }

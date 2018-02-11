@@ -1,6 +1,6 @@
 #include "InputProcessorStack.hpp"
 //#include "menu/Menu.hpp"
-#include "UIcontrols/Window.hpp" //class Window
+#include "windows/Window.hpp" //class Window
 #include "UIcontrols/UIcontrol.hpp"
 
 namespace Curses

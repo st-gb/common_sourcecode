@@ -3,10 +3,10 @@
 #include <string.h> //strlen(...)
 #include "UIcontrols/drawScrollBar.h"
 
-void outputDirEntriesList(
+void outputListBoxItems(
   unsigned firstIndex, 
   const char * const listBoxItems [], 
-  const unsigned numberOfDirectoryEntries,
+  const unsigned numberOfListBoxEntries,
 //  const unsigned numberOfLinesForInputBox,
   const char title [],  
   WINDOW * inputWindow
@@ -15,7 +15,7 @@ void outputDirEntriesList(
   wclear(inputWindow);
   mvwprintw(inputWindow, 0, 0, "%s", title);
   for(unsigned currentDirEntryIndex = firstIndex; 
-    currentDirEntryIndex < numberOfDirectoryEntries;
+    currentDirEntryIndex < numberOfListBoxEntries;
     currentDirEntryIndex++)
     mvwprintw(inputWindow, 
       currentDirEntryIndex - firstIndex + 1, 
@@ -24,33 +24,144 @@ void outputDirEntriesList(
 //  wrefresh(inputWindow);
 }
 
+void showCurrentSelection(
+  WINDOW * inputWindow,
+  int xPos,
+  int yPos,
+  chtype backGroundColorPair, 
+  chtype currentSelectionColorPair,
+  char selectedString []
+  )
+{
+  //mvwprintw(inputWindow, 1, yPos, "%c", 'x');
+  color_set(currentSelectionColorPair, 0);
+  mvwprintw(inputWindow, yPos, xPos, "%s", selectedString);
+  color_set(backGroundColorPair, 0);
+}
+
+void GetNumListBoxEntriesAndMaxLength(
+  const char * const listBoxItems[],
+  int * p_numberOfListBoxEntries,
+  int * p_maxFieldDescInChars
+  )
+{
+  int currentListBoxItemStringLength;
+  for (*p_numberOfListBoxEntries = 0; /** last element has to be NULL */
+    listBoxItems[*p_numberOfListBoxEntries] &&
+    (currentListBoxItemStringLength = strlen(listBoxItems[*p_numberOfListBoxEntries]) ) > 0;
+    *p_numberOfListBoxEntries++)
+  {
+    if( currentListBoxItemStringLength > *p_maxFieldDescInChars)
+      *p_maxFieldDescInChars = currentListBoxItemStringLength;
+  }
+}
+
+void HandleKeyDown(
+  WINDOW * inputWindow,
+  const char * const listBoxItems[],
+  const char title[],
+  int * p_currentListBoxEntryIndex,
+  const int numberOfListBoxEntries,
+  int * p_firstListBoxEntryToShow,
+  const int numberOfLinesForListBoxEntries,
+  int selectionMarkerYpos
+  )
+{
+//      if( currentDirEntryIndex == numberOfDirectoryEntries - 1)
+//        currentDirEntryIndex = 0;
+//      else
+//        ++currentDirEntryIndex;
+  if( *p_currentListBoxEntryIndex + 1 < numberOfListBoxEntries)
+  {
+      *p_currentListBoxEntryIndex++;
+  if( *p_currentListBoxEntryIndex - *p_firstListBoxEntryToShow + 1 > numberOfLinesForListBoxEntries )
+  {
+//        firstDirEntryToShow = currentDirEntryIndex - 
+//          numberOfLinesForDirEntries + 1;
+    *p_firstListBoxEntryToShow++;
+    outputListBoxItems(*p_firstListBoxEntryToShow, listBoxItems, 
+      numberOfListBoxEntries, title, inputWindow);
+//        wrefresh(pBodyWindow);
+    mvwprintw(inputWindow, numberOfLinesForListBoxEntries, selectionMarkerYpos, "%c", 'x');
+    drawScrollBar(inputWindow, numberOfListBoxEntries, 
+      numberOfLinesForListBoxEntries, *p_firstListBoxEntryToShow, 1);
+  }
+  else
+  {
+    const int lineNumber = *p_currentListBoxEntryIndex - *p_firstListBoxEntryToShow;
+    /** Erase previous selection */
+    mvwprintw(inputWindow, lineNumber, selectionMarkerYpos, "%c", ' ');
+    /** Show current selection */
+    mvwprintw(inputWindow, lineNumber + 1, selectionMarkerYpos, "%c", 'x');
+  }
+  }
+//      stop = TRUE;
+//      currentDirEntryIndex = UINT_MAX /*UINT32_MAX*/;
+//      break;
+}
+
+void HandleKeyUp(
+  WINDOW * inputWindow,
+  const char * const listBoxItems[],
+  const char title[],
+  int * p_currentListBoxEntryIndex,
+  const int numberOfListBoxEntries,
+  int * p_firstListBoxEntryToShow,
+  const int numberOfLinesForListBoxEntries,
+  int selectionMarkerYpos
+  )
+{
+//      currentDirEntryIndex = (currentDirEntryIndex + numberOfDirectoryEntries 
+//        - 1) % numberOfDirectoryEntries;
+  if( *p_currentListBoxEntryIndex > 0)
+  {
+    *p_currentListBoxEntryIndex --;
+  if( *p_currentListBoxEntryIndex < *p_firstListBoxEntryToShow )
+  {
+    outputListBoxItems(--*p_firstListBoxEntryToShow, listBoxItems,
+      numberOfListBoxEntries, title, inputWindow);
+//        showCurrentSelection(inputWindow, 1, selectionMarkerYpos, 
+//          backGroundColorPair, currentSelectionColorPair, 
+//          listBoxItems[firstListBoxEntryToShow+selectionMarkerYpos] );
+    mvwprintw(inputWindow, 1, selectionMarkerYpos, "%c", 'x');
+    //https://stackoverflow.com/questions/6617419/add-a-scrollbar-on-ncurses-or-make-it-like-more
+//        mvwprintw(, 1, 0, "%c", 0x25B2);
+    drawScrollBar(inputWindow, numberOfListBoxEntries, 
+      numberOfLinesForListBoxEntries, *p_firstListBoxEntryToShow, 1);
+  }
+  else
+    if( numberOfListBoxEntries > 0) /** Prevent division by 0. */
+    {
+      const int lineNumber = *p_currentListBoxEntryIndex - *p_firstListBoxEntryToShow + 1;
+      /** Erase previous selection */
+      mvwprintw(inputWindow, lineNumber + 1, selectionMarkerYpos, "%c", ' ');
+      mvwprintw(inputWindow, lineNumber, selectionMarkerYpos, "%c", 'x');
+    }
+  }
+}
+
 //TODO
 /** @param listBoxItems: last element must be NULL
  *  @return selected index or UINT_MAX if ESC was pressed */
 unsigned int listBox(
   const char * const listBoxItems[]/*, int field*/, 
   const char title [], 
-  WINDOW * pBodyWindow)
+  WINDOW * pWindowToShowListBoxIn,
+  chtype backGroundColorPair, 
+  chtype currentSelectionColorPair
+  )
 {
   WINDOW * inputWindow;
   int oldYCursorPosOfBodyWindow, oldXcursorPosOfBodyWindow;
   int bodyWindowMaxY, bodyWindowMaxX;
-  int numberOfLinesForInputBox, numberOfColumnsForInputBox, currentListBoxEntryIndex,
-    currentDescStringLength,
-    maxFieldDescInChars = 0;
+  int numberOfLinesForInputBox, numberOfColumnsForInputBox, 
+    currentListBoxEntryIndex, maxFieldDescInChars = 0;
   int numberOfListBoxEntries;
   int c = 0;
   bool stop = FALSE;
 
-  for (numberOfListBoxEntries = 0; /** last element has to be NULL */
-    listBoxItems[numberOfListBoxEntries] &&
-    (currentDescStringLength = strlen(listBoxItems[numberOfListBoxEntries]) ) > 0;
-    numberOfListBoxEntries++)
-  {
-    if( currentDescStringLength > maxFieldDescInChars)
-      maxFieldDescInChars = currentDescStringLength;
-  }
-
+  GetNumListBoxEntriesAndMaxLength(listBoxItems,& numberOfListBoxEntries, 
+    & maxFieldDescInChars);
   const unsigned titleLenghtInChars = strlen(title);
 
   /** numberOfInputWindows ^= number of fields now */
@@ -59,8 +170,8 @@ unsigned int listBox(
       titleLenghtInChars : maxFieldDescInChars /*+ field*/ + 4;
 
   /** Get current cursor x&y position of the body window "curses" function */
-  getyx(pBodyWindow, oldYCursorPosOfBodyWindow, oldXcursorPosOfBodyWindow);
-  getmaxyx(pBodyWindow, bodyWindowMaxY, bodyWindowMaxX); /* "curses" function */
+  getyx(pWindowToShowListBoxIn, oldYCursorPosOfBodyWindow, oldXcursorPosOfBodyWindow);
+  getmaxyx(pWindowToShowListBoxIn, bodyWindowMaxY, bodyWindowMaxX); /* "curses" function */
 
   if( numberOfLinesForInputBox > bodyWindowMaxY - 1)
       numberOfLinesForInputBox = bodyWindowMaxY - 1;
@@ -71,14 +182,14 @@ unsigned int listBox(
   const unsigned verticalCenter = (bodyWindowMaxY - numberOfLinesForInputBox) / 2;
   const unsigned horizontalCenter = (bodyWindowMaxX - numberOfColumnsForInputBox) / 2;
   inputWindow = mvwinputbox(
-    pBodyWindow,
+    pWindowToShowListBoxIn,
     verticalCenter, horizontalCenter,
     numberOfLinesForInputBox, numberOfColumnsForInputBox);
 #elif defined(CURSES)
-//  int res = wmove(pBodyWindow, verticalCenter, horizontalCenter);
+//  int res = wmove(pWindowToShowListBoxIn, verticalCenter, horizontalCenter);
 //  if( res != ERR)
     inputWindow = /*subwin*/derwin(
-      pBodyWindow,
+      pWindowToShowListBoxIn,
       numberOfLinesForInputBox, numberOfColumnsForInputBox,
       0, 0);
 #endif
@@ -92,7 +203,7 @@ unsigned int listBox(
 
   mvwprintw(inputWindow, 0, 0, "%s", title);
 
-  outputDirEntriesList(0, listBoxItems, numberOfListBoxEntries, 
+  outputListBoxItems(0, listBoxItems, numberOfListBoxEntries, 
     title, inputWindow);
 
   const int selectionMarkerYpos = 2;
@@ -113,65 +224,18 @@ unsigned int listBox(
     case ERR: /** Nothing typed. */
       break;
     case KEY_UP:
-//      currentDirEntryIndex = (currentDirEntryIndex + numberOfDirectoryEntries 
-//        - 1) % numberOfDirectoryEntries;
-      if( currentListBoxEntryIndex > 0)
-      {
-        currentListBoxEntryIndex --;
-      if( currentListBoxEntryIndex < firstListBoxEntryToShow )
-      {
-        outputDirEntriesList(--firstListBoxEntryToShow, listBoxItems,
-          numberOfListBoxEntries, title, inputWindow);
-        mvwprintw(inputWindow, 1, selectionMarkerYpos, "%c", 'x');
-        //https://stackoverflow.com/questions/6617419/add-a-scrollbar-on-ncurses-or-make-it-like-more
-//        mvwprintw(, 1, 0, "%c", 0x25B2);
-        drawScrollBar(inputWindow, numberOfListBoxEntries, 
-          numberOfLinesForListBoxEntries, firstListBoxEntryToShow, 1);
-      }
-      else
-        if( numberOfListBoxEntries > 0) /** Prevent division by 0. */
-        {
-          const int lineNumber = currentListBoxEntryIndex - firstListBoxEntryToShow + 1;
-          /** Erase previous selection */
-          mvwprintw(inputWindow, lineNumber + 1, selectionMarkerYpos, "%c", ' ');
-          mvwprintw(inputWindow, lineNumber, selectionMarkerYpos, "%c", 'x');
-        }
-      }
+      HandleKeyUp(inputWindow, listBoxItems, title, 
+        & currentListBoxEntryIndex, numberOfListBoxEntries, 
+        & firstListBoxEntryToShow, numberOfLinesForListBoxEntries, 
+        selectionMarkerYpos);
       break;
     case '\t':
     case KEY_DOWN:
-//      if( currentDirEntryIndex == numberOfDirectoryEntries - 1)
-//        currentDirEntryIndex = 0;
-//      else
-//        ++currentDirEntryIndex;
-      if( currentListBoxEntryIndex + 1 < numberOfListBoxEntries)
-      {
-          currentListBoxEntryIndex++;
-      if( currentListBoxEntryIndex - firstListBoxEntryToShow + 1 > numberOfLinesForListBoxEntries )
-      {
-//        firstDirEntryToShow = currentDirEntryIndex - 
-//          numberOfLinesForDirEntries + 1;
-        firstListBoxEntryToShow++;
-        outputDirEntriesList(firstListBoxEntryToShow, listBoxItems, 
-          numberOfListBoxEntries, title, inputWindow);
-//        wrefresh(pBodyWindow);
-        mvwprintw(inputWindow, numberOfLinesForListBoxEntries, selectionMarkerYpos, "%c", 'x');
-        drawScrollBar(inputWindow, numberOfListBoxEntries, 
-          numberOfLinesForListBoxEntries, firstListBoxEntryToShow, 1);
-      }
-      else
-      {
-          const int lineNumber = currentListBoxEntryIndex - firstListBoxEntryToShow;
-        /** Erase previous selection */
-        mvwprintw(inputWindow, lineNumber, selectionMarkerYpos, "%c", ' ');
-        /** Show current selection */
-        mvwprintw(inputWindow, lineNumber + 1, selectionMarkerYpos, "%c", 'x');
-      }
-      }
+      HandleKeyDown(inputWindow, listBoxItems, title, 
+        & currentListBoxEntryIndex, numberOfListBoxEntries, 
+        & firstListBoxEntryToShow, numberOfLinesForListBoxEntries, 
+        selectionMarkerYpos);
       break;
-//      stop = TRUE;
-//      currentDirEntryIndex = UINT_MAX /*UINT32_MAX*/;
-//      break;
     case '\n':
       stop = TRUE;
       break;
@@ -194,8 +258,8 @@ unsigned int listBox(
   }
   wclear(inputWindow);
   delwin(inputWindow);
-  touchwin(pBodyWindow);
-  wmove(pBodyWindow, oldYCursorPosOfBodyWindow, oldXcursorPosOfBodyWindow);
-  wrefresh(pBodyWindow);
+  touchwin(pWindowToShowListBoxIn);
+  wmove(pWindowToShowListBoxIn, oldYCursorPosOfBodyWindow, oldXcursorPosOfBodyWindow);
+  wrefresh(pWindowToShowListBoxIn);
   return currentListBoxEntryIndex;
 }

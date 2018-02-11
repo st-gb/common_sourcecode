@@ -1,6 +1,6 @@
 #pragma once /** Include guard. */
 #include "LayoutManagerBase.hpp" //Base class
-#include "../UIcontrols/WindowHandleWindow.hpp"
+#include "../windows/WindowHandleWindow.hpp"
 #include <vector> //class std::vector
 
 namespace curses {

@@ -11,11 +11,18 @@
 #include <curses.h> //WINDOW
 #include <FileSystem/path_seperator.h>
 
+#include "FileChooser.hpp"
+
 //void HandleSelection()
 //{
 //}
 
-std::string ChooseFile(const char * const initialFileOrDir, WINDOW * pBodyWindow)
+std::string ChooseFile(
+  const char * const initialFileOrDir, 
+  WINDOW * pWindowToShowFileChooserIn,
+  chtype backGroundColorPair, 
+  chtype currentSelectionColorPair
+  )
 {
   //TODO show all files from from /proc/fs/ntfs ?
 
@@ -55,7 +62,13 @@ std::string ChooseFile(const char * const initialFileOrDir, WINDOW * pBodyWindow
     {
       pchDirEntries[arrayIndex] = citer->c_str();
     }
-    selectedIndex = ::listBox(pchDirEntries, dirToGetContentsFrom.c_str(), pBodyWindow );
+    selectedIndex = ::listBox(
+      pchDirEntries, 
+      dirToGetContentsFrom.c_str(), 
+      pWindowToShowFileChooserIn,
+      backGroundColorPair, 
+      currentSelectionColorPair
+      );
     if( selectedIndex != UINT_MAX )
     {
       

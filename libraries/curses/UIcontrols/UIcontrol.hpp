@@ -1,7 +1,7 @@
 #pragma once /** Include guard. */
 
 //#include "Window.hpp"
-#include "WindowHandleWindow.hpp" //base class WindowHandleWindow
+#include "../windows/WindowHandleWindow.hpp"//base class WindowHandleWindow
 
 namespace curses {
 class UIcontrol

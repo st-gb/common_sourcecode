@@ -1,6 +1,6 @@
 #include "LayoutManagerBase.hpp"
 #include "../UIcontrols/UIcontrol.hpp"
-#include "libraries/curses/UIcontrols/WindowHandleWindow.hpp"
+#include "libraries/curses/windows/WindowHandleWindow.hpp"
 
 namespace curses
 {
@@ -73,5 +73,15 @@ namespace curses
   }
   return NULL;
 }
+
+void LayoutManagerBase::SetFocusToNextUIcontrol()
+{
+  curses::UIcontrol * p_UIcontrol = getNextUIcontrolHavingFocus();
+  if( p_UIcontrol )
+  {
+    p_UIcontrol->SetFocus(true);
+  }
+}
+
 } /** namespace end */
 

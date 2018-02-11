@@ -6,9 +6,10 @@
 #include "../color.h"
 #include <libraries/curses/curs_set_constants.h>
 #include "TextBox.hpp"
-#include <libraries/curses/UIcontrols/Window.hpp>
+#include <libraries/curses/windows/Window.hpp>
 #include "drawScrollBar.h"
 #include <string.h> //strcmp(...)
+#include "CursorPosChangedListener.hpp" //class curses::CurorPosChangedListener
 
 /** Following code is from PDCurses-3.4/demos/tui.c, tui.h */
  
@@ -78,7 +79,9 @@ TextBox::TextBox(
     m_editable(false),
     m_colorPair(colorPair),
     m_lineWidth(0),
-    m_cursorPos(0)
+    m_cursorPos(0),
+    m_1stLineToShow(0),
+    m_numVisibleLinesForText(0)
 {
 }
 
@@ -222,13 +225,30 @@ void TextBox::ShowCursorPos()
   getmaxyx(m_windowHandle, maxy, maxx);
 #endif
   const int lineWidth = m_drawBorder ? maxx - 2 : maxx; 
-  int cursorY = m_cursorPos / lineWidth;
+  int cursorY = (m_cursorPos - m_lineWidth * m_1stLineToShow) / lineWidth;
   int cursorX = m_cursorPos % lineWidth;
   /** https://www.ibm.com/support/knowledgecenter/en/ssw_aix_61/com.ibm.aix.genprogc/control_cursor_wcurses.htm :
    *  "Moves the logical cursor associated with a user-defined window" */
   wmove(m_windowHandle, cursorY + m_drawBorder, cursorX + m_drawBorder);
   /** Finally updated the cursor position visually. */
   wrefresh(m_windowHandle);
+}
+
+void TextBox::AddCursorPosChangedListener(
+  curses::CursorPosChangedListener * p_cursorPosChangedListener)
+{
+  p_cursorPosChangedListener->SetTextBox(this);
+  m_cursorPosChangedListenerContainer.push_back(p_cursorPosChangedListener);
+}
+
+void TextBox::NotifyCursorPosChangedListener()
+{
+  for( CursorPosChangedListenerContainerType::const_iterator cIter = 
+    m_cursorPosChangedListenerContainer.begin(); cIter != 
+    m_cursorPosChangedListenerContainer.end(); cIter++)
+  {
+    (*cIter)->Notify();
+  }
 }
 
 void TextBox::HandleCtrlLeftKey()
@@ -245,6 +265,7 @@ void TextBox::HandleCtrlLeftKey()
       if(spaceCharReached)
       {
         m_cursorPos = currentStringPointer - m_content.c_str();
+        NotifyCursorPosChangedListener();
         ShowCursorPos();
         break;
       }
@@ -265,12 +286,73 @@ void TextBox::HandleCtrlRightKey()
       if(spaceCharReached)
       {
         m_cursorPos = currentStringPointer - m_content.c_str();
+        NotifyCursorPosChangedListener();
         ShowCursorPos();
         break;
       }
   }
 }
 
+void TextBox::HandleKeyUp()
+{
+  if (m_cursorPos >= m_lineWidth)
+  {
+    m_cursorPos -= m_lineWidth;
+    NotifyCursorPosChangedListener();
+    if (m_cursorPos < (m_1stLineToShow * m_lineWidth) )
+    {
+      m_1stLineToShow--;
+      showText();
+    }  
+    ShowCursorPos();
+  }
+}
+    
+void TextBox::HandleKeyDown(const int ch)
+{
+  const int textLength = m_content.length();
+  /** If at least 1 line left after cursor position. */
+  if(m_cursorPos < textLength - m_lineWidth)
+  {
+    m_cursorPos += m_lineWidth;
+    NotifyCursorPosChangedListener();
+    if( m_cursorPos >= ( m_1stLineToShow + m_numVisibleLinesForText) * m_lineWidth )
+    {
+      m_1stLineToShow++;
+      showText();
+    }
+    ShowCursorPos();
+  }
+}
+
+void TextBox::HandleKeyPreviousPage()
+{
+  const int numCharsToSubtract = m_numVisibleLinesForText * m_lineWidth;
+  if (m_cursorPos >= numCharsToSubtract )
+  {
+    m_cursorPos -= numCharsToSubtract;
+    NotifyCursorPosChangedListener();
+    if( m_1stLineToShow >= m_numVisibleLinesForText)
+      m_1stLineToShow -= m_numVisibleLinesForText;
+    else
+      m_1stLineToShow = 0;
+    showText();
+    ShowCursorPos();
+  }
+}
+
+void TextBox::HandleKeyNextPage()
+{
+  const int textLength = m_content.length();
+  if(m_cursorPos < textLength - (m_lineWidth * m_numVisibleLinesForText) )
+  {
+    m_cursorPos += m_lineWidth * m_numVisibleLinesForText;
+    NotifyCursorPosChangedListener();
+    m_1stLineToShow += m_numVisibleLinesForText;
+    showText();
+  }
+}
+    
 int TextBox::HandleAction(const int ch)
 {
   int m_cursor_mode = Curses::Cursor::Terminal_specific_normal_mode;
@@ -286,21 +368,16 @@ int TextBox::HandleAction(const int ch)
     RemoveAsKeyListener();
     break;
   case KEY_UP:
-    if (m_cursorPos >= m_lineWidth)
-    {
-      m_cursorPos -= m_lineWidth;
-      ShowCursorPos();
-    }
+    HandleKeyUp();
     break;
   case KEY_DOWN:
-    {
-      const int textLength = m_content.length();
-      if (m_cursorPos < textLength - m_lineWidth)
-      {
-        m_cursorPos += m_lineWidth;
-        ShowCursorPos();
-      }
-    }
+    HandleKeyDown(ch);
+    break;
+  case KEY_NPAGE:
+    HandleKeyNextPage();
+    break;
+  case KEY_PPAGE:
+    HandleKeyPreviousPage();
     break;
   case KEY_LEFT:
     if (m_cursorPos > 0)
@@ -392,12 +469,11 @@ void TextBox::showText()
   getmaxyx(m_windowHandle, maxy, maxx);
 #endif
 //  bool drawBorder = true;
-  int numVisibleLinesForText = maxy;
+  m_numVisibleLinesForText = maxy;
   m_lineWidth = maxx;
   if(m_drawBorder)
   {
-    colorBox(m_windowHandle, m_colorPair, 1);
-    numVisibleLinesForText -= 2;
+    m_numVisibleLinesForText -= 2;
     m_lineWidth -= 2;
   }
   
@@ -405,20 +481,24 @@ void TextBox::showText()
     getNumberOfLinesNeededForText(maxx - m_drawBorder * 2);
   const fastestUnsignedDataType numLinesForLineWidthMinus1 = 
     getNumberOfLinesNeededForText(maxx - 1 - m_drawBorder * 2);
-  if( numLinesForMaxLineWidth > numVisibleLinesForText)
+  bool shouldDrawScrollBar = false;
+  if( numLinesForMaxLineWidth > m_numVisibleLinesForText)
   {
+    shouldDrawScrollBar = true;
     if( !m_drawBorder)
       m_lineWidth = maxx - 1 /** Space needed for vertical scroll bar. */;
-    drawScrollBar(m_windowHandle, numLinesForLineWidthMinus1, maxy, 0, maxx - 1);
   }
   else
     if( !m_drawBorder )
       m_lineWidth = maxx;
-  const char * currentChar = m_content.c_str();
+  const char * currentChar = m_content.c_str() + (m_1stLineToShow * m_lineWidth);
   const char * const lastChar = m_content.c_str() + m_content.length();
   int currentXpos = 0, lineNumber = 0;
+  
+  if(m_drawBorder)
+    colorBox(m_windowHandle, m_colorPair, 1);
   while( currentChar < lastChar && lineNumber + m_drawBorder <= 
-    numVisibleLinesForText )
+    m_numVisibleLinesForText )
   {
     mvwaddnstr(m_windowHandle, lineNumber + m_drawBorder, m_drawBorder, 
       currentChar, m_lineWidth);/** win,y,x,str,n */
@@ -426,6 +506,8 @@ void TextBox::showText()
     currentChar += m_lineWidth;
     lineNumber++;
   }
+  if(shouldDrawScrollBar)
+    drawScrollBar(m_windowHandle, numLinesForLineWidthMinus1, maxy, 0, maxx - 1);
   wrefresh(m_windowHandle);
 }
 

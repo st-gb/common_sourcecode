@@ -1,6 +1,6 @@
 #pragma once//Include guard
 
-#include "Window.hpp" //class Ncurses::Window
+#include "../windows/Window.hpp" //class Ncurses::Window
 #include <curses.h> //WINDOW
 #include <hardware/CPU/fastest_data_type.h> //fastestUnsignedDataType
 
