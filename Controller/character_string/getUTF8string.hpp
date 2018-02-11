@@ -97,7 +97,7 @@ inline void getUTF8string_inline(
 #endif //#ifdef _DEBUG
       //see http://de.wikipedia.org/wiki/UTF-8
     if( *ci < 127 )
-      std_str += *ci;
+      std_str += (char) *ci;
     //"0000 0080 – 0000 07FF   110xxxxx 10xxxxxx"
     else if( *ci < 0x07FF ) //7FF: 111 1111 1111bin
 //      std_str +=

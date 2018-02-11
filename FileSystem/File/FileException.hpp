@@ -6,14 +6,15 @@
 
 class FileException
 {
+protected:
+	//std::tstring str;
+	//  TCHAR * m_filePath;
+	//TODO why not use a std::wstring here?->deleting the array in the destructor
+	// would be unneccessary
+	wchar_t * m_filePath;
+	//  std::wstring m_filePath;
+	DWORD m_operatingSystemErrorCode;
 public:
-  //std::tstring str;
-//  TCHAR * m_filePath;
-  //TODO why not use a std::wstring here?->deleting the array in the destructor
-  // would be unneccessary
-  wchar_t * m_filePath;
-//  std::wstring m_filePath;
-  DWORD m_operatingSystemErrorCode;
   
   FileException() : m_filePath(0), m_operatingSystemErrorCode(0) { }
   
@@ -30,7 +31,7 @@ public:
   FileException(const char * const chFilePath)
     : m_operatingSystemErrorCode(0)
   {
-    const int stringLength = strlen(chFilePath);
+    const unsigned int stringLength = strlen(chFilePath);
     m_filePath = new wchar_t[stringLength + 1];
 //    _tcscpy(m_filePath, chFilePath);
     for( unsigned int index = 0; index < stringLength; index ++ )

@@ -166,7 +166,7 @@ namespace std
    while( * c_p_wch //++
        )
      std_str.append( 1, //Number of characters to append.
-         * c_p_wch ++
+         (char) * c_p_wch ++
          );
 //   std_str.append( 1, //Number of characters to append.
 //       '\0');
