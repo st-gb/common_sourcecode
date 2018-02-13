@@ -218,10 +218,11 @@ int TextBox::handleEdit(const int currentInput, int & cursor_mode)
 void TextBox::ShowCursorPos()
 {
   int maxy;
-#ifdef PDCURSES
-  maxy = getmaxy(windowToSetColourTo);
-#else
   int maxx;
+#ifdef PDCURSES
+  maxy = getmaxy(m_windowHandle);
+  maxx = getmaxx(m_windowHandle);
+#else
   getmaxyx(m_windowHandle, maxy, maxx);
 #endif
   const int lineWidth = m_drawBorder ? maxx - 2 : maxx; 
@@ -357,7 +358,7 @@ int TextBox::HandleAction(const int ch)
 {
   int m_cursor_mode = Curses::Cursor::Terminal_specific_normal_mode;
   /** see https://stackoverflow.com/questions/9750588/how-to-get-ctrl-shift-or-alt-with-getch-ncurses */
-  NCURSES_CONST char * keyName = keyname(ch);
+  /*NCURSES_CONST*/ char * keyName = keyname(ch);
   switch( ch )
   {
   case ERR :
@@ -462,10 +463,11 @@ void TextBox::displayScrollBar()
 void TextBox::showText()
 {
   int maxy;
-#ifdef PDCURSES
-  maxy = getmaxy(windowToSetColourTo);
-#else
   int maxx;
+#ifdef PDCURSES
+  maxy = getmaxy(m_windowHandle);
+  maxx = getmaxx(m_windowHandle);
+#else
   getmaxyx(m_windowHandle, maxy, maxx);
 #endif
 //  bool drawBorder = true;

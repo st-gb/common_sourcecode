@@ -14,10 +14,11 @@ namespace curses {
   void BorderLayout::layout()
   {
     int maxy;
-#ifdef PDCURSES
-    maxy = getmaxy(windowToSetColourTo);
-#else
     int maxx;
+#ifdef PDCURSES
+    maxy = getmaxy(m_windowHandle);
+    maxx = getmaxx(m_windowHandle);
+#else
     getmaxyx(m_windowHandle, maxy, maxx);
 #endif
     wrefresh(m_windowHandle);

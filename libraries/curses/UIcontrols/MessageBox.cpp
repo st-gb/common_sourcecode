@@ -7,6 +7,9 @@
 #include <libraries/curses/color.h> //colorBox(...)
 #include <string.h> //strlen(...)
 
+/** preprocessor macro "MessageBox" from Windows API */
+#undef MessageBox
+
 namespace Curses
 {
   MessageBox::MessageBox(chtype colorPair, chtype buttonColorPair)

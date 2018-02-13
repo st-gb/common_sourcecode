@@ -3,6 +3,10 @@
 #include <string.h> //strlen(...)
 #include "UIcontrols/drawScrollBar.h"
 
+#ifndef mvwinputbox
+  #define mvwinputbox(w,y,x,l,c) (wmove(w,y,x)==ERR?w:winputbox(w,l,c))
+#endif
+
 void outputListBoxItems(
   unsigned firstIndex, 
   const char * const listBoxItems [], 
@@ -177,22 +181,22 @@ unsigned int listBox(
       numberOfLinesForInputBox = bodyWindowMaxY - 1;
   if( numberOfColumnsForInputBox > bodyWindowMaxX - 1)
       numberOfColumnsForInputBox = bodyWindowMaxX - 1;
-#ifdef PDCURSES
-  /** Place input window in center of body window. */
-  const unsigned verticalCenter = (bodyWindowMaxY - numberOfLinesForInputBox) / 2;
-  const unsigned horizontalCenter = (bodyWindowMaxX - numberOfColumnsForInputBox) / 2;
-  inputWindow = mvwinputbox(
-    pWindowToShowListBoxIn,
-    verticalCenter, horizontalCenter,
-    numberOfLinesForInputBox, numberOfColumnsForInputBox);
-#elif defined(CURSES)
+//#ifdef PDCURSES
+//  /** Place input window in center of body window. */
+//  const unsigned verticalCenter = (bodyWindowMaxY - numberOfLinesForInputBox) / 2;
+//  const unsigned horizontalCenter = (bodyWindowMaxX - numberOfColumnsForInputBox) / 2;
+//  inputWindow = mvwinputbox(
+//    pWindowToShowListBoxIn,
+//    verticalCenter, horizontalCenter,
+//    numberOfLinesForInputBox, numberOfColumnsForInputBox);
+//#elif defined(CURSES)
 //  int res = wmove(pWindowToShowListBoxIn, verticalCenter, horizontalCenter);
 //  if( res != ERR)
     inputWindow = /*subwin*/derwin(
       pWindowToShowListBoxIn,
       numberOfLinesForInputBox, numberOfColumnsForInputBox,
       0, 0);
-#endif
+//#endif
 
   if( ! inputWindow)
     return 0;

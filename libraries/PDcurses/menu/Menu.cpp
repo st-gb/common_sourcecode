@@ -1,47 +1,75 @@
 #include "Menu.hpp" //class Menu
-#include <stdlib.h>
-#include <map> //malloc(...), free(...)
+#include <stdlib.h> //malloc(...), free(...)
+#include <map>
+#include <set> //class std::set
+#include <curses.h> //KEY_DOWN
 
 namespace PDcurses
 {
   Menu::Menu()
-    : m_menu(NULL)
-  {
-    
+    : m_currentMenuItem(0)
+  {    
   }
   
   Menu::~Menu()
   {
-    if( m_menu )
+  }
+
+  /** Checks if an access key together with name exists more than once */
+  int Menu::checkUniqueAcceleratorKey(const char name[])
+  {
+    std::set<char> acceleratorKeys;
+    for(MenuLabelAndFunctionType::const_iterator cIter = 
+      m_menuLabelAndFunction.begin(); cIter != m_menuLabelAndFunction.end(); 
+      cIter ++)
     {
-      /** from https://de.wikibooks.org/wiki/Ncurses:_Men%C3%BCs */
-      const int numMenuItems = m_menuItemVector.size();
-      for(int menuItemIndex = 0; menuItemIndex < numMenuItems ; menuItemIndex++)
+      const std::string & menuLabel = cIter->m_label;
+      const std::string::size_type charIndexOfAmpersand = menuLabel.find('&');
+      if( charIndexOfAmpersand != std::string::npos && 
+          charIndexOfAmpersand < menuLabel.length() )
       {
-        
+        const char acceleratorKey = menuLabel.at(charIndexOfAmpersand);
+        if( acceleratorKeys.find(acceleratorKey) == acceleratorKeys.end() )
+          return -1;
+        acceleratorKeys.insert(acceleratorKey);
       }
     }
+    return 0;
   }
-
-  void Menu::addMenuItem(const char str [], FUNC func )
+  
+  int Menu::addMenuItem(const char name[], FUNC func )
   {
-    ITEM * menuItem = new_item(str, "");
-    m_menuItemVector.push_back(menuItem);
-    m_functionToCallVector.push_back(func);
-    m_menuItemMap.insert(std::make_pair(menuItem, func) );
-  }
-
-  void Menu::createMenu()
-  {
-    const int numMenuItems = m_menuItemVector.size();
-    m_menuItems = (ITEM **) calloc( numMenuItems + 1, sizeof(ITEM *));
-    for(int menuItemIndex = 0; menuItemIndex < numMenuItems ; menuItemIndex++)
+    int i = checkUniqueAcceleratorKey(name);
+    if( i == 0)
     {
-      m_menuItems[menuItemIndex] = m_menuItemVector.at(menuItemIndex);
+      m_menuLabelAndFunction.push_back( MenuLabelAndFunction() );
     }
-    m_menuItems[numMenuItems] = 0; //end marker
-    
-    m_menu = new_menu(m_menuItems);
+  }
+
+//  void Menu::createMenu()
+//  {
+//    const int numMenuItems = m_menuLabelAndFunction.size();
+//  }
+
+  int Menu::HandleAction(int currentAction)
+  {
+    switch(currentAction)
+    {
+      case KEY_DOWN:
+        m_currentMenuItem ++;
+        break;
+      case KEY_UP:
+        m_currentMenuItem --;
+        break;
+      case 0xA: /* Return- bzw. Enter-Taste -> ASCII-Code */
+        //ret = item_index(current_item(m_menu) );
+//        FUNC func = m_functionToCallVector.at(ret);
+//        m_menuLabelAndFunction.
+//        (*func)();
+        break;
+      default:
+        return Curses::Window::inputNotHandled;
+    }
   }
 
   /** Adapt "void doMenu(menu * pMenu)" from  
@@ -49,13 +77,6 @@ namespace PDcurses
   int Menu::InsideMenu(bool ESCandENTERleavesMenu, WINDOW * windowToShowMenuIn)
   {
     int ret = -1;
-    /** from https://de.wikibooks.org/wiki/Ncurses:_Men%C3%BCs */
-    if( windowToShowMenuIn ) {
-      set_menu_win (m_menu, windowToShowMenuIn);
-      set_menu_sub (m_menu, derwin(windowToShowMenuIn, 4 /*# lines*/, 
-        28 /* # columns */, 0 /*  begin_y */, 0 /*  begin_x */ ) );
-    }
-    post_menu(m_menu);
     int ch;
     bool stayInMenu = true;
     do
@@ -71,13 +92,12 @@ namespace PDcurses
             stayInMenu = false;
           break;
         case KEY_DOWN:
-          menu_driver(m_menu, REQ_DOWN_ITEM);
+          m_currentMenuItem ++;
           break;
         case KEY_UP:
-          menu_driver(m_menu, REQ_UP_ITEM);
+          m_currentMenuItem --;
           break;
         case 0xA: /* Return- bzw. Enter-Taste -> ASCII-Code */
-          ret = item_index(current_item(m_menu) );
           FUNC func = m_functionToCallVector.at(ret);
           (*func)();
           if( ESCandENTERleavesMenu )
@@ -86,9 +106,7 @@ namespace PDcurses
   //          exit(0);
       }
     }while( stayInMenu );
-    unpost_menu(m_menu);
     wrefresh(windowToShowMenuIn);
     return ret;
   }
 }
-

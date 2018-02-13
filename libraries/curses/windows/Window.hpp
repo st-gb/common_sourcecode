@@ -4,8 +4,8 @@
 #include <curses.h> //struct WINDOW
 
 //forward declaration
-struct _win_st;
-typedef struct _win_st WINDOW;
+//struct _win_st;
+//typedef struct _win_st WINDOW;
 
 namespace Curses
 {

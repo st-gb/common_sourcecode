@@ -13,7 +13,7 @@ DWORD waitForDialogEnd(void * p_v)
   curses::FileChooserDialog * p_fileChooserDialog = (curses::FileChooserDialog *) p_v;
   if(p_fileChooserDialog)
   {
-    p_fileChooserDialog->m_closeEvent.Wait();
+//    p_fileChooserDialog->m_closeEvent.Wait();
   }
 }
 
@@ -49,7 +49,7 @@ int FileChooserDialog::HandleAction(const int ch)
     switch(ch)
     {
       case 27 :
-        m_closeEvent.Broadcast();
+//        m_closeEvent.Broadcast();
         break;
     }
   }

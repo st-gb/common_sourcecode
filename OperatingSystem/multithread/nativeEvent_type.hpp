@@ -9,5 +9,9 @@
   #include <OperatingSystem/POSIX/multithread/Event.hpp>
   typedef pthread::Condition nativeEvent_type;
 #endif
+#ifdef _WIN32
+  #include <Windows/multithread/Win32EventBasedEvent.hpp>
+  typedef Win32EventBasedEvent nativeEvent_type;
+#endif
 
 #endif /* NATIVEEVENT_TYPE_HPP */

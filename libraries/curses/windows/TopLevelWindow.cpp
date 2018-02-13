@@ -6,7 +6,7 @@ namespace curses {
   {
     int ret = -2;
     /** see https://stackoverflow.com/questions/9750588/how-to-get-ctrl-shift-or-alt-with-getch-ncurses */
-    NCURSES_CONST char * keyName = keyname(ch);
+    /*NCURSES_CONST*/ char * keyName = keyname(ch);
     switch(ch)
     {
       case KEY_RESIZE :

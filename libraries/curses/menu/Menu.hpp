@@ -3,18 +3,15 @@
 #include <vector> //class std::vector
 #include <map> //class std::map
 //#include <libraries/ncurses/InputProcessorStack.hpp>
-//#include <libraries/curses/windows/Window.hpp>
-#include <libraries/curses/menu/Menu.hpp> //base class
+#include <libraries/curses/windows/Window.hpp>
 
 /** Forward declarations (faster than to #include) */
-struct tagITEM;
-struct tagMENU;
 struct _win_st; //WINDOW
 
-namespace ncurses
+namespace Curses
 {
   class Menu
-    : public Curses::Menu
+    : public Curses::Window
   {
   public:
     enum style { Vertical, Horizontal};
@@ -24,21 +21,16 @@ namespace ncurses
     bool m_ESCandENTERleavesMenu;
     bool m_stayInMenu;
     enum style m_alignment;
-    tagITEM ** m_menuItems;
-    tagMENU * m_menu;
-    std::vector<tagITEM *> m_menuItemVector;
-    std::vector<FUNC> m_functionToCallVector;
-    std::map<tagITEM *, FUNC> m_menuItemMap;
     WINDOW * m_subMenuWindow;
    public:
-    Menu();
-    ~Menu();
+//    Menu();
+//    ~Menu();
     
-    int addMenuItem(const char str [], void (*FUNC)(void) = 0 );
-    WINDOW * create(WINDOW * windowToShowMenuIn);
-    void createMenu(enum style _style = Vertical);
-    int HandleAction(const int ch);
-    int InsideMenu(bool = true, WINDOW * windowToShowMenuIn = 0 );
+    virtual int addMenuItem(const char str [], void (*FUNC)(void) = 0 ) {};
+    virtual WINDOW * create(WINDOW * windowToShowMenuIn) {};
+    virtual void createMenu(enum style _style = Vertical) {};
+//    int HandleAction(const int ch);
+//    int InsideMenu(bool = true, WINDOW * windowToShowMenuIn = 0 );
     void SetEnterLeavesMenu(bool b){ m_ESCandENTERleavesMenu = b; }
     int GetNumRowsNeeded() const { return m_numRowsNeeded; }
     int GetNumColumnsNeeded() const { return m_numColumnsNeeded; }
