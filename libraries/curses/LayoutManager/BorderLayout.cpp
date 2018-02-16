@@ -25,7 +25,7 @@ namespace curses {
     containerType::const_iterator topIter = m_area2WindowContainer.find(top);
     if( topIter != m_area2WindowContainer.end() )
     {
-      wresize(topIter->second->getWindowHandle(), 1, maxx);
+      wresize(topIter->second->getWindowHandle(), 1/*lines*/, maxx/*columns*/);
       wrefresh(topIter->second->getWindowHandle());
     }
     containerType::const_iterator centerIter = m_area2WindowContainer.find(center);
@@ -35,9 +35,12 @@ namespace curses {
       if( topIter != m_area2WindowContainer.end() )
         verticalSize --;
       WINDOW * windowHandle = centerIter->second->getWindowHandle();
-      wresize(windowHandle, verticalSize, maxx);
-      mvwin(windowHandle, 1, 0); /** move window */
-      wrefresh(centerIter->second->getWindowHandle());
+      wresize(windowHandle, verticalSize /*lines*/, maxx /*columns*/);
+      if( topIter != m_area2WindowContainer.end() )
+        mvwin(windowHandle, /*upper left y*/1, /*upper left x*/0); /** move window */
+      else
+        mvwin(windowHandle, /*upper left y*/0, /*upper left x*/0); /** move window */        
+      wrefresh(windowHandle);
     }
   }
 }
