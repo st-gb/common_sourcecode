@@ -46,7 +46,7 @@ static void repaintEditbox(WINDOW *win, int curserPos, const char buffer[] )
     wrefresh(win);
 }
 
-namespace Curses
+namespace ncurses
 {
 /*  weditstr()     - edit string 
  * Description:
@@ -161,8 +161,8 @@ int TextBox::handleEdit(const int currentInput, int & cursor_mode)
       defdisp = FALSE;
       insertMode = !insertMode; /**Switch the insert mode*/
       cursor_mode = insertMode ? 
-        Curses::Cursor::Terminal_specific_high_visibility_mode : 
-        Curses::Cursor::Terminal_specific_normal_mode;
+        ncurses::Cursor::Terminal_specific_high_visibility_mode : 
+        ncurses::Cursor::Terminal_specific_normal_mode;
       cursor_mode = curs_set(cursor_mode); /**set the cursor mode*/
       break;
     default:
@@ -356,9 +356,9 @@ void TextBox::HandleKeyNextPage()
     
 int TextBox::HandleAction(const int ch)
 {
-  int m_cursor_mode = Curses::Cursor::Terminal_specific_normal_mode;
+  int m_cursor_mode = ncurses::Cursor::Terminal_specific_normal_mode;
   /** see https://stackoverflow.com/questions/9750588/how-to-get-ctrl-shift-or-alt-with-getch-ncurses */
-  /*NCURSES_CONST*/ char * keyName = keyname(ch);
+  /*NCURSES_CONST*/ const char * keyName = keyname(ch);
   switch( ch )
   {
   case ERR :
@@ -422,7 +422,7 @@ void TextBox::SetFocus(bool focus)
   //  handleInput();
     int cursor_mode = //    insert ? 
   //    Curses::Cursor::Terminal_specific_high_visibility_mode : 
-      Curses::Cursor::Terminal_specific_normal_mode;
+      ncurses::Cursor::Terminal_specific_normal_mode;
     curs_set(cursor_mode); /** Show cursor (if possible) */
     int cursorX=0, cursorY=0;
     if(m_drawBorder)
@@ -518,7 +518,7 @@ void TextBox::handleInput()
   char * tp;
   int cursor_mode = //    insert ? 
 //    Curses::Cursor::Terminal_specific_high_visibility_mode : 
-    Curses::Cursor::Terminal_specific_normal_mode;
+    ncurses::Cursor::Terminal_specific_normal_mode;
   curs_set(cursor_mode); /** Show cursor (if possible) */
 
   int currentInput = 0;
@@ -549,7 +549,7 @@ void TextBox::handleInput()
     if(m_editable)
       handleEdit(currentInput, cursor_mode);
   }
-  curs_set(Curses::Cursor::Invisible); /* set cursor to invisible */
+  curs_set(ncurses::Cursor::Invisible); /* set cursor to invisible */
 //  }
 //  return currentInput;
 }

@@ -4,15 +4,18 @@
 /** ncurses menu functions and structs: unpost_menu(...), free_menu(...) */
 #include <menu.h> 
 #include "Menu.hpp" //C++ ncurses menu wrapper
+#include <libraries/curses/EventQueue.hpp>
 #include <stdlib.h> //malloc(...), free(...)
 #include <map> //class std::map
 #include <libraries/curses/GetChar.hpp> // int GetChar(WINDOW * p_window);
+#include "OperatingSystem/multithread/GetCurrentThreadNumber.hpp"
 //#include <eti.h> //E_OK
 
 /** static/class variable definitons : */
-Curses::InputProcessorStack Curses::Window::s_inputProcessorStack;
+//extern Curses::InputProcessorStack Curses::Window::s_inputProcessorStack;
+extern ncurses::EventQueue g_eventQueue;
 
-namespace Curses
+namespace ncurses
 {
   Menu::Menu()
     : m_ESCandENTERleavesMenu(true), 
@@ -41,7 +44,7 @@ namespace Curses
   }
 
   /** @param func: function to execute when menu item is selected */
-  void Menu::addMenuItem(const char str [], FUNC func )
+  int Menu::addMenuItem(const char str [], FUNC func )
   {
     ITEM * menuItem = new_item(str, "");
     m_menuItemVector.push_back(menuItem);
@@ -70,12 +73,19 @@ namespace Curses
     int n = scale_menu(m_menu, & m_numRowsNeeded, & m_numColumnsNeeded);
   }
 
+//  std::vector<tagITEM *> & Menu::GetMenuItemVector()
+//  {
+//    return m_menuItemVector;
+//  }
+  
   int Menu::HandleAction(const int ch)
   {
 //      if( ch != ERR )
 //        mvprintw(7, 3, "%d %c", ch, ch );
     int ret = -2;
     bool consumedInput = true;
+    /** see https://stackoverflow.com/questions/9750588/how-to-get-ctrl-shift-or-alt-with-getch-ncurses */
+    NCURSES_CONST char * keyName = keyname(ch);
     switch(ch)
     {
       case 27:
@@ -126,13 +136,19 @@ namespace Curses
          *  returns the (zero-origin) index of item in the menu's item pointer list." */
         ret = item_index(currentMenuItem);
         FUNC func = m_functionToCallVector.at(ret);
-        (*func)();
+//        (*func)();
+        //TODO add fuction to call?!
+        g_eventQueue.addEvent(func);
         if( m_ESCandENTERleavesMenu )
           m_stayInMenu = false;
       }
         break;
       default:
         consumedInput = false;
+//        if( keyName[0] == '^') /** Ctrl + key pressed */
+//        {
+//          otherKey = keyName + 1;
+//        }
         ret = Curses::Window::inputNotHandled;
     }
 //    if( consumedInput )
@@ -162,6 +178,8 @@ namespace Curses
 //      set_menu_sub (m_menu, submenuWin );
       set_menu_win (m_menu, /*windowToShowMenuIn*/ m_subMenuWindow);
     }
+    /** https://linux.die.net/man/3/post_menu : 
+     *  "The function post_menu displays a menu to its associated subwindow."*/
     post_menu(m_menu);
     //refresh();
     wrefresh(m_subMenuWindow);
@@ -171,6 +189,9 @@ namespace Curses
   int Menu::InsideMenu(bool ESCandENTERleavesMenu, WINDOW * windowToShowMenuIn)
   {
     m_ESCandENTERleavesMenu = ESCandENTERleavesMenu;
+#ifdef _DEBUG
+    int n = OperatingSystem::GetCurrentThreadNumber();
+#endif
     WINDOW * submenuWin = create(windowToShowMenuIn);
     m_stayInMenu = true;
     int ret = -1;
@@ -182,7 +203,7 @@ namespace Curses
     keypad(windowToShowMenuIn, TRUE);   /* enable cursor keys */
     do
     {
-      ch = Curses::GetChar(windowToShowMenuIn);
+      ch = ncurses::GetChar(windowToShowMenuIn);
       /** https://linux.die.net/man/3/wgetch :
        * "In no-delay mode, if no input is waiting, the value ERR is returned."
        * ERR = no valid input. */

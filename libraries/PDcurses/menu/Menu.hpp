@@ -2,6 +2,7 @@
 
 #include <libraries/curses/menu/Menu.hpp>
 #include <hardware/CPU/fastest_data_type.h>
+#include <string> //class std::string
 
 /** Forward declarations (faster than to #include) */
 struct _win_st; //WINDOW
@@ -12,11 +13,11 @@ namespace PDcurses
   struct MenuLabelAndFunction
   {
     std::string m_label;
-    Curses::Menu::FUNC m_function;
+    curses::Menu::FUNC m_function;
   };
   
   class Menu
-    : public Curses::Menu
+    : public curses::Menu
   {
   public:
     typedef std::vector<MenuLabelAndFunction> MenuLabelAndFunctionType;
@@ -24,14 +25,17 @@ namespace PDcurses
     std::vector<FUNC> m_functionToCallVector;
     MenuLabelAndFunctionType m_menuLabelAndFunction;
     fastestUnsignedDataType m_currentMenuItem;
+    WINDOW * m_windowHandle;
    public:
     Menu();
     ~Menu();
     int addMenuItem(const char str [], void (*FUNC)(void) = NULL );
+    WINDOW * create(WINDOW * windowToShowMenuIn);
     int checkUniqueAcceleratorKey(const char name[]);
 //    void createMenu();
     MenuLabelAndFunctionType & GetMenuLabelAndFunctionVector() { return m_menuLabelAndFunction;}
     int HandleAction(int currentAction);
     int InsideMenu(bool, WINDOW * windowToShowMenuIn = NULL );
+    void show();
   };
 }

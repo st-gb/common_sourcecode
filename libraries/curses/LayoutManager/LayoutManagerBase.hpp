@@ -11,7 +11,7 @@ namespace curses
 //  class WindowHandleWindow;
   
   class LayoutManagerBase
-    : public Curses::WindowHandleWindow
+    : public ncurses::WindowHandleWindow
   {
   protected:
     /** The window handle for the window this layout manager is attached to. */
@@ -19,9 +19,9 @@ namespace curses
   public:
     virtual void layout() = 0;
     /** Let the container be a vector because this is a simple container, */
-    virtual std::vector<Curses::WindowHandleWindow *> 
+    virtual std::vector<ncurses::WindowHandleWindow *> 
         getDirectlyContainedWindows() const = 0;
-    std::vector<Curses::WindowHandleWindow *> getAllContainedWindows() const;
+    std::vector<ncurses::WindowHandleWindow *> getAllContainedWindows() const;
     
     curses::UIcontrol * getNextUIcontrolHavingFocus();
     void setHandle(WINDOW * windowHandle) { //m_windowHandle = windowHandle;

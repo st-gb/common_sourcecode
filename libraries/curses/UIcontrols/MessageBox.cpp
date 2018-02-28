@@ -10,7 +10,7 @@
 /** preprocessor macro "MessageBox" from Windows API */
 #undef MessageBox
 
-namespace Curses
+namespace ncurses
 {
   MessageBox::MessageBox(chtype colorPair, chtype buttonColorPair)
     : m_p_MessageWindow(NULL), 
@@ -50,6 +50,13 @@ namespace Curses
       maxLineWidth = currentLineWidth;
   }
 
+  int MessageBox::HandleAction(const int ch)
+  {
+    if(ch == 0xA /* Return- bzw. Enter-Taste -> ASCII-Code */)
+      return Curses::Window::destroyWindow;
+    return Curses::Window::inputNotHandled;
+  }
+  
   void MessageBox::ShowMessageText(
     const char message [],
     const std::vector<fastestUnsignedDataType> & lineLengthes,
@@ -149,7 +156,8 @@ namespace Curses
     CreateCenteredButton("OK", numberOfTextLines);
   //  touchwin(s_bodyWindow);
     wrefresh(m_p_MessageWindow);
-    wgetch(m_p_MessageWindow); /** -> modal */
+//    wgetch(m_p_MessageWindow); /** -> modal */
+    s_inputProcessorStack.add(this);
   }
   
   void MessageBox::EventLoop()

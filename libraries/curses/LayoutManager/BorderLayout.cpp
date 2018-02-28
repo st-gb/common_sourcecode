@@ -4,11 +4,11 @@
 
 namespace curses {
   
-  std::vector<Curses::WindowHandleWindow *> BorderLayout::
+  std::vector<ncurses::WindowHandleWindow *> BorderLayout::
     getDirectlyContainedWindows() const
   {
     //TODO implement
-    return std::vector<Curses::WindowHandleWindow *>();
+    return std::vector<ncurses::WindowHandleWindow *>();
   }
   
   void BorderLayout::layout()

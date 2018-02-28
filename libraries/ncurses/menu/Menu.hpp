@@ -14,10 +14,9 @@ struct _win_st; //WINDOW
 namespace ncurses
 {
   class Menu
-    : public Curses::Menu
+    : public curses::Menu
   {
   public:
-    enum style { Vertical, Horizontal};
     typedef void (*FUNC)(void);
    private:
     int m_numRowsNeeded, m_numColumnsNeeded;
