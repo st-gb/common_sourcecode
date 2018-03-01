@@ -4,7 +4,7 @@
 
 //for other ideas see http://stackoverflow.com/questions/26175588/how-to-implement-a-simple-event-queue
 
-namespace Curses
+namespace ncurses
 {
 /*template <T>*/ class Node
 {

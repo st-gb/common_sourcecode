@@ -15,6 +15,11 @@ namespace PDcurses
   {
   }
 
+  void Menu::show()
+  {
+    mvwprintw(m_windowHandle, 0, 0, "%s", m_label.c_str() );
+  }
+  
   /** Checks if an access key together with name exists more than once */
   int Menu::checkUniqueAcceleratorKey(const char name[])
   {
@@ -46,10 +51,10 @@ namespace PDcurses
     }
   }
 
-//  void Menu::createMenu()
-//  {
-//    const int numMenuItems = m_menuLabelAndFunction.size();
-//  }
+  WINDOW * Menu::create(WINDOW * windowToShowMenuIn)
+  {
+    m_windowHandle = windowToShowMenuIn;
+  }
 
   int Menu::HandleAction(int currentAction)
   {

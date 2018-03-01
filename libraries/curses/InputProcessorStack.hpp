@@ -11,7 +11,7 @@ namespace Curses{
   class Window;
 }
 
-namespace Curses
+namespace ncurses
 {
   /** This class serves the following purpose: 
     * The window that has the current focus should not be responsible to handle

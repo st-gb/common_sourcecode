@@ -2,9 +2,9 @@
 #include "GetChar.hpp"
 #include <curses.h> //wgetch(...), WINDOW
 
-extern Curses::EventQueue g_eventQueue;
+extern ncurses::EventQueue g_eventQueue;
 
-namespace Curses
+namespace ncurses
 {
   /** In order to enable processing of events from other threads this 
     function must be called from User Interface code. */

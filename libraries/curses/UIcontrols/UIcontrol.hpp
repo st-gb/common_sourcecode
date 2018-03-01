@@ -5,13 +5,13 @@
 
 namespace curses {
 class UIcontrol
-  : public Curses::WindowHandleWindow
+  : public ncurses::WindowHandleWindow
 {
 protected:
   bool m_hasFocus;
 public:
   UIcontrol() 
-    : Curses::WindowHandleWindow(true)
+    : ncurses::WindowHandleWindow(true)
     , m_hasFocus(false) {}
   bool HasFocus() const { return m_hasFocus;}
   virtual void SetFocus(bool focus) { 

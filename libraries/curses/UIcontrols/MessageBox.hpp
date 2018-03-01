@@ -7,7 +7,7 @@
 /** preprocessor macro "MessageBox" from Windows API */
 #undef MessageBox
 
-namespace Curses
+namespace ncurses
 {
   class MessageBox
     : public Curses::Window
@@ -26,6 +26,7 @@ namespace Curses
     void Close();
     void Destroy();
     virtual void EventLoop();
+    int HandleAction(const int ch);
     void ShowMessageText(
       const char message [],
       const std::vector<fastestUnsignedDataType> &,

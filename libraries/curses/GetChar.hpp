@@ -4,7 +4,7 @@
 struct _win_st;
 //typedef struct _win_st WINDOW;
 
-namespace Curses
+namespace ncurses
 {
 //  static eventQueue;
 

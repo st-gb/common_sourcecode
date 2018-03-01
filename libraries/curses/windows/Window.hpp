@@ -18,10 +18,11 @@ namespace Curses
   public:
     /** "static"-> 1 stack for all objects of class "Window" and its 
      *   descendants;not thread-safe: */
-    static Curses::InputProcessorStack s_inputProcessorStack;
+    static ncurses::InputProcessorStack s_inputProcessorStack;
     Window() : m_isUIcontrol(false) {}
     Window(bool isUIcontrol) : m_isUIcontrol(isUIcontrol) {}
-    enum handleActionRetCodes { inputNotHandled = -1 };
+    virtual ~Window() {}
+    enum handleActionRetCodes { destroyWindow = -2, inputNotHandled = -1 };
     /** Must be "virtual" in order to enable overriding. */
     virtual int HandleAction(const int ch) { }
     static WINDOW * CreateWindowRelativePos(WINDOW * windowForRelativePos,

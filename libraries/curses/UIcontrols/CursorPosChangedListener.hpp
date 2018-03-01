@@ -7,17 +7,17 @@
 #define CURSORPOSCHANGEDLISTENER_HPP
 
 /** Fwd. decl. */
-namespace Curses { class TextBox; }
+namespace ncurses { class TextBox; }
 
 namespace curses
 {
 class CursorPosChangedListener {
 protected:
-  Curses::TextBox * m_pTextBox;
+  ncurses::TextBox * m_pTextBox;
 public:
     CursorPosChangedListener();
     virtual ~CursorPosChangedListener();
-    void SetTextBox(Curses::TextBox * pTextBox) { m_pTextBox = pTextBox;}
+    void SetTextBox(ncurses::TextBox * pTextBox) { m_pTextBox = pTextBox;}
     /** Implement functionality in subclasses(!) */
     virtual void Notify() = 0;
 };

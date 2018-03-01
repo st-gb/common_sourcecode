@@ -3,7 +3,7 @@
 #include <curses.h> //WINDOW *
 
 /** Forwar declarations */
-namespace Curses { class WindowHandleWindow; }
+namespace ncurses { class WindowHandleWindow; }
 
 namespace curses {
   class BorderLayout
@@ -14,17 +14,17 @@ namespace curses {
   private:
     enum area m_area;
 //    std::vector<curses::WindowHandleWindow *> m_windows;
-    typedef std::map<enum area, Curses::WindowHandleWindow *> containerType;
+    typedef std::map<enum area, ncurses::WindowHandleWindow *> containerType;
     containerType m_area2WindowContainer;
 //    WINDOW * m_windowHandle;
   public:
     BorderLayout(/*enum area area*/ /*WINDOW * windowHandle*/ )
       /*: m_area(area)*/ /*: m_windowHandle(windowHandle)*/ {}
-    void add(Curses::WindowHandleWindow * p, enum area area)
+    void add(ncurses::WindowHandleWindow * p, enum area area)
     {
       m_area2WindowContainer.insert(std::make_pair(area, p) );
     }
-    std::vector<Curses::WindowHandleWindow *> getDirectlyContainedWindows() const;
+    std::vector<ncurses::WindowHandleWindow *> getDirectlyContainedWindows() const;
     void layout();
   };
 }

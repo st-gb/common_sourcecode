@@ -5,7 +5,7 @@
 
 namespace curses { class LayoutManagerBase; }
 
-namespace Curses {
+namespace ncurses {
 /** Class that encapsulates a curses WINDOW pointer/handle. */
 class WindowHandleWindow
   : /** For ability to process key events */ 
@@ -17,7 +17,7 @@ protected: /** To inherit to subclasses. */
   curses::LayoutManagerBase * mp_layoutManager;
 public:
   WindowHandleWindow() : m_windowHandle(NULL), mp_layoutManager(NULL) { }
-  WindowHandleWindow(bool isUIcontrol) : Window(isUIcontrol), 
+  WindowHandleWindow(bool isUIcontrol) : Curses::Window(isUIcontrol), 
     m_windowHandle(NULL), mp_layoutManager(NULL) { }
   void setLayout(curses::LayoutManagerBase * p_layoutManager);
   void doLayout() const;

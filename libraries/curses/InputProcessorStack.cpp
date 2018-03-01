@@ -3,7 +3,7 @@
 #include "windows/Window.hpp" //class Window
 #include "UIcontrols/UIcontrol.hpp"
 
-namespace Curses
+namespace ncurses
 {
   void InputProcessorStack::consume(const int ch) {
     container_type::const_reverse_iterator iter = m_inputProcessorStack.rbegin();
@@ -27,6 +27,8 @@ namespace Curses
         /** If event was consumed by window. */
         if( handleActionResult > Curses::Window::inputNotHandled )
           break;
+        else if( handleActionResult == Curses::Window::destroyWindow)
+          delete p_cursesWindow;
       }
     }
   }

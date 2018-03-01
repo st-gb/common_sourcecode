@@ -3,7 +3,7 @@
 
 namespace curses {
 class ListBox
-  : public Curses::WindowHandleWindow
+  : public ncurses::WindowHandleWindow
 {
   int m_currentListBoxEntryIndex;
   int m_numberOfListBoxEntries;

@@ -1,7 +1,7 @@
 #include "WindowHandleWindow.hpp"
 #include "../LayoutManager/LayoutManagerBase.hpp"
 
-namespace Curses {
+namespace ncurses {
 
 void WindowHandleWindow::create()
 {
