@@ -4,6 +4,9 @@
 #include <curses.h> //WINDOW
 #include <hardware/CPU/fastest_data_type.h> //fastestUnsignedDataType
 
+/** preprocessor macro "MessageBox" from Windows API */
+#undef MessageBox
+
 namespace Curses
 {
   class MessageBox
