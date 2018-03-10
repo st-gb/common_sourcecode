@@ -17,21 +17,9 @@
 //{
 //}
 
-std::string ChooseFile(
-  const char * const initialFileOrDir, 
-  WINDOW * pWindowToShowFileChooserIn,
-  chtype backGroundColorPair, 
-  chtype currentSelectionColorPair
-  )
+std::string GetDirToGetContentsFrom(const char * const initialFileOrDir)
 {
-  //TODO show all files from from /proc/fs/ntfs ?
-
-//#ifdef __linux__
-//  unsigned numFilesOrDirs;
-//  char * dir = "//";
-//  std::string std_strCurrentWorkingDir;
   std::string dirToGetContentsFrom;
-  const char pathSeperator = PATH_SEPERATOR_CHAR;
   if( FileSystem::IsDirectory(initialFileOrDir ) )
     dirToGetContentsFrom = initialFileOrDir;
   else if(FileSystem::IsRegularFile(initialFileOrDir) )
@@ -46,7 +34,25 @@ std::string ChooseFile(
   }
   if( dirToGetContentsFrom == "")
     OperatingSystem::GetCurrentWorkingDirA_inl(dirToGetContentsFrom);
+  return dirToGetContentsFrom;
+}
+
+std::string ChooseFile(
+  const char * const initialFileOrDir, 
+  WINDOW * pWindowToShowFileChooserIn,
+  chtype backGroundColorPair, 
+  chtype currentSelectionColorPair
+  )
+{
+  //TODO show all files from from /proc/fs/ntfs ?
+
+//#ifdef __linux__
+//  unsigned numFilesOrDirs;
+//  char * dir = "//";
+//  std::string std_strCurrentWorkingDir;
+  std::string dirToGetContentsFrom = GetDirToGetContentsFrom(initialFileOrDir);
   std::string selectedFileOrDir;
+  const char pathSeperator = PATH_SEPERATOR_CHAR;
 //  dirToGetContentsFrom += pathSeperator;
   unsigned selectedIndex;
   do

@@ -30,6 +30,7 @@ public:
   void RemoveAsKeyListener();
   void SetAsKeyListener();
   void SetFocusToNextUIcontrol();
+  void UpdateAffectedWindows(WINDOW * win);
 //  void add(WindowHandleWindow & win, float percent) { m_windows.push_back(&win);}
 };
 }

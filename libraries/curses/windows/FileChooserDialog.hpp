@@ -3,16 +3,20 @@
 #include "TopLevelWindow.hpp" //class TopLevelWindow
 #include <string> //class std::string
 #include <OperatingSystem/multithread/nativeEvent_type.hpp>
+#include "../UIcontrols/ListBox.hpp"
 
 namespace curses {
 class FileChooserDialog
   : public curses::TopLevelWindow
 {
+  curses::ListBox * m_p_listBox;
 public:
   enum mode { save, open};
   FileChooserDialog(chtype backGroundColorPair, chtype currentSelectionColorPair)
     : m_backGroundColorPair(backGroundColorPair), 
-      m_currentSelectionColorPair(currentSelectionColorPair) {}
+      m_currentSelectionColorPair(currentSelectionColorPair),
+      m_p_listBox(0)
+      {}
     
     std::string ChooseFile(
       const char * const initialDir, 

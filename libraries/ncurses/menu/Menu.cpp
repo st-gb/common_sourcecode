@@ -9,6 +9,7 @@
 #include <map> //class std::map
 #include <libraries/curses/GetChar.hpp> // int GetChar(WINDOW * p_window);
 #include "OperatingSystem/multithread/GetCurrentThreadNumber.hpp"
+#include <libraries/curses/windows/WindowHandleWindow.hpp>
 //#include <eti.h> //E_OK
 
 /** static/class variable definitons : */
@@ -17,8 +18,9 @@ extern ncurses::EventQueue g_eventQueue;
 
 namespace ncurses
 {
-  Menu::Menu()
-    : m_ESCandENTERleavesMenu(true), 
+  Menu::Menu(ncurses::WindowHandleWindow * win)
+    : curses::Menu(win),
+      m_ESCandENTERleavesMenu(true), 
       m_stayInMenu(true), 
       m_alignment(Vertical),
       m_menu(NULL)

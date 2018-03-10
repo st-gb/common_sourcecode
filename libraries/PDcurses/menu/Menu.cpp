@@ -6,8 +6,9 @@
 
 namespace PDcurses
 {
-  Menu::Menu()
-    : m_currentMenuItem(0)
+  Menu::Menu(ncurses::WindowHandleWindow * win)
+    : curses::Menu(win),
+      m_currentMenuItem(0)
   {    
   }
   
@@ -42,12 +43,12 @@ namespace PDcurses
     return 0;
   }
   
-  int Menu::addMenuItem(const char name[], FUNC func )
+  int Menu::addMenuItem(const char name[], curses::FUNC func )
   {
     int i = checkUniqueAcceleratorKey(name);
     if( i == 0)
     {
-      m_menuLabelAndFunction.push_back( MenuLabelAndFunction() );
+      m_menuLabelAndFunction.push_back( curses::MenuLabelAndFunction() );
     }
   }
 
@@ -103,7 +104,7 @@ namespace PDcurses
           m_currentMenuItem --;
           break;
         case 0xA: /* Return- bzw. Enter-Taste -> ASCII-Code */
-          FUNC func = m_functionToCallVector.at(ret);
+          curses::FUNC func = m_functionToCallVector.at(ret);
           (*func)();
           if( ESCandENTERleavesMenu )
             stayInMenu = false;

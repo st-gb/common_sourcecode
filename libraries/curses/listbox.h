@@ -34,6 +34,15 @@ void HandleKeyUp(
   int selectionMarkerYpos
   );
 
+void outputListBoxItems(
+  unsigned firstIndex, 
+  const char * const listBoxItems [], 
+  const unsigned numberOfListBoxEntries,
+//  const unsigned numberOfLinesForInputBox,
+  const char title [],  
+  WINDOW * inputWindow
+  );
+
 #ifdef __cplusplus
 }
 #endif //#ifdef __cplusplus__

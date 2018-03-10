@@ -6,6 +6,9 @@
 #include <libraries/curses/windows/Window.hpp>
 #include <string> //class std::string
 //#include "MenuBar.hpp"
+#include "MenuLabelAndFunction.hpp"
+#include <hardware/CPU/fastest_data_type.h>
+#include <libraries/curses/windows/WindowHandleWindow.hpp>
 
 /** Forward declarations (faster than to #include) */
 struct _win_st; //WINDOW
@@ -19,7 +22,6 @@ namespace curses
   {
   public:
     enum style { Vertical, Horizontal};
-    typedef void (*FUNC)(void);
     std::string m_label;
    private:
     int m_numRowsNeeded, m_numColumnsNeeded;
@@ -27,18 +29,30 @@ namespace curses
     bool m_stayInMenu;
     enum style m_alignment;
     WINDOW * m_subMenuWindow;
+    fastestUnsignedDataType m_currentMenuItemSelection;
+    typedef std::vector<curses::MenuLabelAndFunction> MenuItemContainerType;
+    MenuItemContainerType m_menuItemContainer;
+    ncurses::WindowHandleWindow * m_win;
    public:
-    Menu();//{ }
-    Menu(const char * const label) : m_label(label) { }
+    Menu(ncurses::WindowHandleWindow * win);//{ }
+    Menu(const char * const label/*, chtype colorPair*/, ncurses::WindowHandleWindow * win ) 
+      : m_label(label)/*, m_colorPair(colorPair)*/
+        , m_win(win)
+      { }
     virtual ~Menu();// {}
     
-    virtual int addMenuItem(const char str [], void (*FUNC)(void) = 0 ) {};
+    virtual int addMenuItem(const char str [], void (*FUNC)(void) = 0 );
     virtual WINDOW * create(WINDOW * windowToShowMenuIn) {};
     virtual void createMenu(enum style _style = Vertical) {};
-//    int HandleAction(const int ch);
+    char GetHotKey();
+    signed GetHotKeyCharIndex() const;
+    void drawMenuItems();
+    fastestUnsignedDataType getLargestMenuItemStringLength() const;
+    int HandleAction(const int ch);
 //    int InsideMenu(bool = true, WINDOW * windowToShowMenuIn = 0 );
     void SetEnterLeavesMenu(bool b){ m_ESCandENTERleavesMenu = b; }
     int GetNumRowsNeeded() const { return m_numRowsNeeded; }
     int GetNumColumnsNeeded() const { return m_numColumnsNeeded; }
+    void show(WINDOW * p_windowForRelativePos);
   };
 }

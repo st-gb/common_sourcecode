@@ -8,6 +8,25 @@ void WindowHandleWindow::create()
   m_windowHandle = newwin(1, 1, 0, 0);
 }
 
+/** Update all windows that are affected by win (i.e. win lies in these 
+ *  windows)*/
+void WindowHandleWindow::UpdateAffectedWindows(WINDOW * win)
+{
+  if(mp_layoutManager)
+  {
+    std::vector<ncurses::WindowHandleWindow *> allWindows = mp_layoutManager->getAllContainedWindows();
+    for( std::vector<ncurses::WindowHandleWindow *>::const_iterator iter = allWindows.begin(); 
+      iter != allWindows.end() ; iter ++)
+    {
+      WINDOW * p_Window = (*iter)->m_windowHandle;
+      /** https://linux.die.net/man/3/wrefresh */
+      touchwin(p_Window);
+      wrefresh(p_Window);
+//      wnoutrefresh(iter->m_windowHandle)
+    }
+  }
+}
+
 void WindowHandleWindow::create(
   WINDOW * const p_superWindow, 
   int numLines, int numColumns, int x, int y)

@@ -3,31 +3,26 @@
 #include <libraries/curses/menu/Menu.hpp>
 #include <hardware/CPU/fastest_data_type.h>
 #include <string> //class std::string
+#include <libraries/curses/menu/MenuLabelAndFunction.hpp>
 
 /** Forward declarations (faster than to #include) */
 struct _win_st; //WINDOW
 
 namespace PDcurses
 {
-//  typedef void (*FUNC)(void);
-  struct MenuLabelAndFunction
-  {
-    std::string m_label;
-    curses::Menu::FUNC m_function;
-  };
-  
+//  typedef void (*FUNC)(void);  
   class Menu
     : public curses::Menu
   {
   public:
-    typedef std::vector<MenuLabelAndFunction> MenuLabelAndFunctionType;
+    typedef std::vector<curses::MenuLabelAndFunction> MenuLabelAndFunctionType;
    private:
-    std::vector<FUNC> m_functionToCallVector;
+    std::vector<curses::FUNC> m_functionToCallVector;
     MenuLabelAndFunctionType m_menuLabelAndFunction;
     fastestUnsignedDataType m_currentMenuItem;
     WINDOW * m_windowHandle;
    public:
-    Menu();
+    Menu(ncurses::WindowHandleWindow * win);
     ~Menu();
     int addMenuItem(const char str [], void (*FUNC)(void) = NULL );
     WINDOW * create(WINDOW * windowToShowMenuIn);

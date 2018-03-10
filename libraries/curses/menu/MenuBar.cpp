@@ -10,6 +10,7 @@ namespace curses
     m_menus.insert(std::make_pair(0,menu) );
   }
 
+  /** Shows the menu label: shortcut character (underlines if possible) */
   void MenuBar::show()
   {
     int x = 0;
@@ -70,14 +71,16 @@ namespace curses
 //            struct tagITEM * p_menuItem = *cIter;
         curses::Menu & menu = cIter->second;
 //            if( otherKey[0] == p_menuItem->name.str[0] )
-        if( otherKey[0] == menu.m_label[0] )
+        const char hotKey = menu.GetHotKey();
+        if( hotKey != 0 && otherKey[0] == hotKey )
         {
-          
           /** Hide cursor that may exist from a UI control like a text box
            *  and would be viewed at the position of the menu. */
           const int curs_setResult = curs_set(ncurses::Cursor::Invisible);
 //              s_mainMenu.HandleAction('\n');
-          menu.HandleAction(otherKey[0]);
+//          menu.HandleAction(otherKey[0]);
+          menu.show(stdscr);
+          s_inputProcessorStack.add(& menu);
           if( curs_setResult != ERR)
             /** Set to previous cursor mode. */
             curs_set(curs_setResult);
