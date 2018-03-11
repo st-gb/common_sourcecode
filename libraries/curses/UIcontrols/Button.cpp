@@ -10,10 +10,6 @@ namespace curses {
 Button::Button() {
 }
 
-Button::Button(const char * const label) {
-  m_label = label;
-}
-
 Button::~Button() {
 }
 
@@ -36,4 +32,6 @@ void Button::show()
     wrefresh(m_windowHandle);
   }
 }
+
+
 }/** end namespace */

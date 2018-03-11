@@ -17,12 +17,16 @@ namespace curses
         directlyContainedWindows.begin(); iter != directlyContainedWindows.end() ; iter++ )
     {
       p_cursesWindow = *iter;
-      curses::LayoutManagerBase * p_lm = p_cursesWindow->getLayoutManager();
+      curses::LayoutManagerBase * p_layoutManager = (curses::LayoutManagerBase *)
+        dynamic_cast<const curses::LayoutManagerBase * const >(p_cursesWindow);
+      if( ! p_layoutManager )
+        p_layoutManager = p_cursesWindow->getLayoutManager();
       /** recursively add all other windows. */
-      if( p_lm )
+      if( p_layoutManager )
       {
         /** Recursion (calls _this_ function) here.*/
-        std::vector<ncurses::WindowHandleWindow *> currentVec = p_lm->getAllContainedWindows();
+        std::vector<ncurses::WindowHandleWindow *> currentVec = 
+          p_layoutManager->getAllContainedWindows();
         /** from https://stackoverflow.com/questions/2551775/appending-a-vector-to-a-vector */
         overallVec.insert(overallVec.end(), currentVec.begin(), currentVec.end());
       }

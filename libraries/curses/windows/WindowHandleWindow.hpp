@@ -24,6 +24,7 @@ public:
   void create();
   void create(WINDOW * const p_superWindow, int numLines, int numColumns, 
     int x, int y);
+  virtual void GetMinimalSize(int & width, int & height){width = 1; height = 1;}
   WINDOW * getWindowHandle() const { return m_windowHandle;}
   void GetSize(int & width, int & height) const;
   curses::LayoutManagerBase * getLayoutManager() const{return mp_layoutManager;}

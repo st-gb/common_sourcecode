@@ -9,7 +9,7 @@
 #include <string.h> //class std::string
 #include <vector> //strcmp(...)
 #include <curses.h> //WINDOW
-#include <FileSystem/path_seperator.h>
+#include <FileSystem/path_seperator.h>// PATH_SEPERATOR_CHAR
 
 #include "FileChooser.hpp"
 

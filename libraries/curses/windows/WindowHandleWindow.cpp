@@ -62,10 +62,15 @@ void WindowHandleWindow::setLayout(curses::LayoutManagerBase * p_layoutManager)
 /** Can be called after resizing a window. */
 void WindowHandleWindow::doLayout() const
 {
-  if(mp_layoutManager)
-  {
-    mp_layoutManager->layout();
-  }
+  curses::LayoutManagerBase * const p_layoutMan = (curses::LayoutManagerBase *)
+    dynamic_cast<const curses::LayoutManagerBase * const >(this);
+  if( p_layoutMan )
+    p_layoutMan->layout();
+  else
+    if(mp_layoutManager)
+    {
+      mp_layoutManager->layout();
+    }
 }
 
 void WindowHandleWindow::GetSize(int & width, int & height) const

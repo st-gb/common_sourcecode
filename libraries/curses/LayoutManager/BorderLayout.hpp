@@ -25,6 +25,7 @@ namespace curses {
       m_area2WindowContainer.insert(std::make_pair(area, p) );
     }
     std::vector<ncurses::WindowHandleWindow *> getDirectlyContainedWindows() const;
+    void GetMinimalSize(int & width, int & height);
     void layout();
   };
 }

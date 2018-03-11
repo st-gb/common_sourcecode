@@ -17,6 +17,7 @@ namespace curses {
         int i = 2;
         if(mp_layoutManager)
           mp_layoutManager->SetFocusToNextUIcontrol();
+        ret = 0;
       }
         break;
       default:

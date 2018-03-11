@@ -26,12 +26,13 @@ public:
   ~TextBox();
   void AddCursorPosChangedListener(
     curses::CursorPosChangedListener * p_cursorPosChangedListener);
-  void create();
+//  void create();
   void create(WINDOW * const p_superWindow, int numLines, int numColumns, 
     int x, int y);
   void displayScrollBar();
   fastestUnsignedDataType GetCursorPos() const { return m_cursorPos; }
   fastestUnsignedDataType getNumberOfLinesNeededForText(fastestUnsignedDataType lineWidth);
+  void GetMinimalSize(int & width, int & height);
   int handleEdit(const int currentInput, int & cursor_mode);
   void handleInput();
   int HandleAction(const int ch);
@@ -43,8 +44,9 @@ public:
   void HandleKeyNextPage();
   void NotifyCursorPosChangedListener();
   void ShowCursorPos();
-  void showText();
+  void show();
   const std::string & getText() const { return m_content;}
+  void SetDrawBorder(bool drawBorder) { m_drawBorder = drawBorder; }
   void SetFocus(bool focus);
   void SetText(const char []);
   void SetEditable(bool editable) {m_editable = editable; }

@@ -9,28 +9,33 @@ namespace curses
 //  ListBox::ListBox()
 //  {
 //  }
-  
-  void ListBox::create(const char * listBoxItems [], int numberOfListBoxEntries)
+  ListBox::~ListBox()
   {
-//    create();
-    m_windowHandle = //Curses::Window::CreateWindowRelativePos();
-      newwin(0,0,1,1);
-    /** Copy array */
-    m_listBoxItems = new char *[numberOfListBoxEntries];
-    for( int index = 0; index < numberOfListBoxEntries; index++)
-    {
-      const int numChars = strlen(listBoxItems[index]) + 1;
-      char * pch = new char[numChars ];
-      if( pch )
-      {
-        memcpy(pch, listBoxItems[index], numChars);
-        m_listBoxItems[index] = pch;
-      }
-    }
-    m_numberOfListBoxEntries = numberOfListBoxEntries;
+    FreeMemory();
   }
   
-  ListBox::~ListBox()
+//  void ListBox::create(const char * listBoxItems [], int numberOfListBoxEntries)
+//  {
+////    create();
+//    m_windowHandle = //Curses::Window::CreateWindowRelativePos();
+//      newwin(0,0,1,1);
+////    FreeMemory();
+//    /** Copy array */
+//    m_listBoxItems = new char *[numberOfListBoxEntries];
+//    for( int index = 0; index < numberOfListBoxEntries; index++)
+//    {
+//      const int numChars = strlen(listBoxItems[index]) + 1;
+//      char * pch = new char[numChars ];
+//      if( pch )
+//      {
+//        memcpy(pch, listBoxItems[index], numChars);
+//        m_listBoxItems[index] = pch;
+//      }
+//    }
+//    m_numberOfListBoxEntries = numberOfListBoxEntries;
+//  }
+  
+  void ListBox::FreeMemory()
   {
     if( m_listBoxItems)
     {
@@ -39,31 +44,21 @@ namespace curses
         delete [] m_listBoxItems[index];
       }
       delete [] m_listBoxItems;
-//      m_listBoxItems = NULL;
+      /** Set to NULL because this function may be called multiple times. */
+      m_listBoxItems = NULL;
     }
+  }
+  
+  std::string ListBox::GetCurrentSelectionString() const
+  {
+    if(m_currentListBoxEntryIndex < m_numberOfListBoxEntries)
+      return m_listBoxItems[m_currentListBoxEntryIndex];
+    return "";
   }
   
   void ListBox::show()
   {
     wclear(m_windowHandle);
-//    mvwprintw(m_windowHandle, 0, 0, "%s", title);
-    int yPos;
-    for(unsigned currentListEntryIndex = m_firstListBoxEntryToShow; 
-      currentListEntryIndex < m_numberOfListBoxEntries;
-      currentListEntryIndex++)
-    {
-      if(currentListEntryIndex == m_currentListBoxEntryIndex)
-        setcolor(m_windowHandle, m_currentSelectionColorPair);
-      yPos = currentListEntryIndex - m_firstListBoxEntryToShow + 1;
-      mvwprintw(m_windowHandle, 
-        yPos, 
-        1, "%s", m_listBoxItems[currentListEntryIndex]);
-      if(currentListEntryIndex == m_currentListBoxEntryIndex)
-        setcolor(m_windowHandle, m_backGroundColorPair);
-    }
-//    outputListBoxItems(m_firstListBoxEntryToShow, m_listBoxItems,
-//      m_numberOfListBoxEntries, m_title, m_windowHandle);
-//    touchwin(m_windowHandle);
     int maxx;
 #ifdef PDCURSES
     m_numberOfLinesForListBoxEntries = getmaxy(m_windowHandle);
@@ -71,6 +66,27 @@ namespace curses
 #else
     getmaxyx(m_windowHandle, m_numberOfLinesForListBoxEntries, maxx);
 #endif
+//    mvwprintw(m_windowHandle, 0, 0, "%s", title);
+    setcolor(m_windowHandle, m_colorPair);
+    int yPos = 0;
+    for(unsigned currentListEntryIndex = m_firstListBoxEntryToShow; 
+      currentListEntryIndex < m_numberOfListBoxEntries &&
+      yPos < m_numberOfLinesForListBoxEntries;
+      currentListEntryIndex++)
+    {
+      if(currentListEntryIndex == m_currentListBoxEntryIndex)
+        setcolor(m_windowHandle, m_currentSelectionColorPair);
+      yPos = currentListEntryIndex - m_firstListBoxEntryToShow;
+      /*mvwprintw*/mvwaddstr(m_windowHandle, 
+        yPos, 
+        1, /*"%s",*/ 
+        m_listBoxItems[currentListEntryIndex]);
+      if(currentListEntryIndex == m_currentListBoxEntryIndex)
+        setcolor(m_windowHandle, m_colorPair);
+    }
+//    outputListBoxItems(m_firstListBoxEntryToShow, m_listBoxItems,
+//      m_numberOfListBoxEntries, m_title, m_windowHandle);
+//    touchwin(m_windowHandle);
     drawScrollBar(
       m_windowHandle, 
       m_numberOfListBoxEntries, 
@@ -138,6 +154,10 @@ void ListBox::HandleKeyUp()
   {
     switch (ch)
     {
+      case KEY_ENTER:
+      case 0xA:
+        return 0xA;
+        break;
     case ERR: /** Nothing typed. */
       break;
     case KEY_UP:
@@ -154,4 +174,24 @@ void ListBox::HandleKeyUp()
     }
     return 0;
   }
+  
+  void ListBox::SetContent(std::vector<std::string> & content)
+  {
+    FreeMemory();
+    /** Copy array */
+    m_listBoxItems = new char *[content.size()];
+    m_numberOfListBoxEntries = content.size();
+    std::vector<std::string>::const_iterator iter = content.begin();
+    for( int index = 0; index < m_numberOfListBoxEntries; index++, iter ++)
+    {
+      const int numChars = iter->size() + 1;
+      char * pch = new char[numChars];
+      if( pch )
+      {
+        memcpy(pch, iter->c_str(), numChars);
+        m_listBoxItems[index] = pch;
+      }
+    }
+  }
 }
+  

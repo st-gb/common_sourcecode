@@ -134,6 +134,19 @@ TextBox::~TextBox()
   }
 }
 
+void TextBox::GetMinimalSize(int & width, int & height) {
+  if(m_drawBorder)
+  {
+    width = 3; 
+    height = 3;
+  }
+  else
+  {
+    width = 1; 
+    height = 1;
+  }
+}
+
 int TextBox::handleEdit(const int currentInput, int & cursor_mode)
 {
   const char eraseCharacter = erasechar(); /** curses function */
@@ -303,7 +316,7 @@ void TextBox::HandleKeyUp()
     if (m_cursorPos < (m_1stLineToShow * m_lineWidth) )
     {
       m_1stLineToShow--;
-      showText();
+      show();
     }  
     ShowCursorPos();
   }
@@ -320,7 +333,7 @@ void TextBox::HandleKeyDown(const int ch)
     if( m_cursorPos >= ( m_1stLineToShow + m_numVisibleLinesForText) * m_lineWidth )
     {
       m_1stLineToShow++;
-      showText();
+      show();
     }
     ShowCursorPos();
   }
@@ -337,7 +350,7 @@ void TextBox::HandleKeyPreviousPage()
       m_1stLineToShow -= m_numVisibleLinesForText;
     else
       m_1stLineToShow = 0;
-    showText();
+    show();
     ShowCursorPos();
   }
 }
@@ -350,7 +363,7 @@ void TextBox::HandleKeyNextPage()
     m_cursorPos += m_lineWidth * m_numVisibleLinesForText;
     NotifyCursorPosChangedListener();
     m_1stLineToShow += m_numVisibleLinesForText;
-    showText();
+    show();
   }
 }
     
@@ -460,7 +473,7 @@ void TextBox::displayScrollBar()
   
 }
 
-void TextBox::showText()
+void TextBox::show()
 {
   int maxy;
   int maxx;

@@ -5,11 +5,13 @@
 #ifndef BUTTON_HPP
 #define BUTTON_HPP
 
-#include "../windows/WindowHandleWindow.hpp"
+//#include "../windows/WindowHandleWindow.hpp"
+#include "UIcontrol.hpp"
 
 namespace curses {
 class Button
-  : public ncurses::WindowHandleWindow
+  : public //ncurses::WindowHandleWindow
+    curses::UIcontrol
 {
   std::string m_label;
 public:
@@ -19,6 +21,10 @@ public:
   
 //  void create(WINDOW * win);
   void GetMinimalSize(int & width, int & height);
+  void SetColor(chtype color) {}
+  void SetLabel(const char * const label) {
+    m_label = label;
+  }
   void show();
 private:
 

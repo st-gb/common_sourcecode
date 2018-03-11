@@ -28,7 +28,12 @@ namespace ncurses
         if( handleActionResult > Curses::Window::inputNotHandled )
           break;
         else if( handleActionResult == Curses::Window::destroyWindow)
+        {
           delete p_cursesWindow;
+          /** Erase last element. */
+          m_inputProcessorStack.erase(m_inputProcessorStack.end() --);
+          break;
+        }
       }
     }
   }
