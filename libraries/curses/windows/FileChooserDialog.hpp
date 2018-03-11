@@ -3,8 +3,10 @@
 #include "TopLevelWindow.hpp" //class TopLevelWindow
 #include <string> //class std::string
 #include <OperatingSystem/multithread/nativeEvent_type.hpp>
-#include "../UIcontrols/ListBox.hpp"
+#include <OperatingSystem/multithread/nativeThreadType.hpp>
+#include "../UIcontrols/Button.hpp"
 #include "../UIcontrols/Label.hpp"
+#include "../UIcontrols/ListBox.hpp"
 
 namespace curses {
 class FileChooserDialog
@@ -12,7 +14,9 @@ class FileChooserDialog
 {
   curses::ListBox * m_p_listBox;
   curses::Label * m_p_folderLabel;
+  curses::Button * m_p_button;
   std::string m_dirToGetContentsFrom;
+  nativeThread_type m_thread;
 public:
   enum mode { save, open};
   FileChooserDialog(chtype backGroundColorPair, chtype currentSelectionColorPair)

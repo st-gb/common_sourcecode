@@ -3,6 +3,7 @@
 //#include "Window.hpp"
 #include "../windows/WindowHandleWindow.hpp"//base class WindowHandleWindow
 #include <libraries/curses/color.h> //A_ATTR
+#include <set> //class std::set
 
 namespace curses {
 class UIcontrol

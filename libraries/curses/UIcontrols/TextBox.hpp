@@ -61,7 +61,7 @@ private:
   fastestUnsignedDataType m_1stLineToShow;
   fastestUnsignedDataType m_numVisibleLinesForText;
   bool m_drawBorder;
-  chtype m_colorPair;
+//  chtype m_colorPair;
   bool stop = FALSE, insertMode = TRUE;
   fastestUnsignedDataType m_cursorPos;
   int numLines, numColumns;

@@ -85,8 +85,10 @@ namespace curses
             /** Set to previous cursor mode. */
             curs_set(curs_setResult);
           //TODO cursor pos should be like before opening menu.
+          ret = 0;
         }
       }
     }
+    return ret;
   }
 }

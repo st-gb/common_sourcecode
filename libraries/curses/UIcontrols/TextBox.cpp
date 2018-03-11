@@ -77,7 +77,7 @@ TextBox::TextBox(
    //, m_content(std_strContent)
   : m_drawBorder(true),
     m_editable(false),
-    m_colorPair(colorPair),
+//    m_colorPair(colorPair),
     m_lineWidth(0),
     m_cursorPos(0),
     m_1stLineToShow(0),
@@ -161,14 +161,18 @@ int TextBox::handleEdit(const int currentInput, int & cursor_mode)
     case KEY_DC: //Delete Character
       //TODO string length check needed?
       m_content.erase(m_cursorPos, /** Only erase 1 character. */ 1  );
+      show();
       break;
     case KEY_BKSP:
     case KEY_BACKSPACE:
       if( m_cursorPos > 0)
+      {
         m_content.erase( -- m_cursorPos, /** Only erase 1 character. */ 1 );
+        show();
+      }
       break;
-    case '\t':            /* TAB -- because insert
-                              is broken on HPUX */
+//    case '\t':            /* TAB -- because insert
+//                              is broken on HPUX */
     case KEY_IC:          /* enter insert mode */
     case KEY_EIC:         /* exit insert mode */
       defdisp = FALSE;
@@ -188,6 +192,7 @@ int TextBox::handleEdit(const int currentInput, int & cursor_mode)
       {
         m_cursorPos = 0;
         m_content.clear();
+        show();
       }
       else if(currentInput == wordchar() )   /* ^W */
       {
@@ -198,6 +203,7 @@ int TextBox::handleEdit(const int currentInput, int & cursor_mode)
           m_cursorPos --;
         /** Remove all characters between cursorPos and charPosAfterWord */
         m_content.erase(m_cursorPos, charPosAfterWord - m_cursorPos);
+        show();
       }
       else if (isprint(currentInput) ) /** If printable character. */
       {
@@ -205,13 +211,17 @@ int TextBox::handleEdit(const int currentInput, int & cursor_mode)
         {
           m_cursorPos = 0;
           m_content.clear();
+          show();
           defdisp = FALSE;
         }
         if (insertMode == insertChar )
         {
-          if( m_content.length() < numColumns - 1)
+          /** Avoids runtime error: "terminate called after throwing an instance of 
+           *     'std::out_of_range'" what():  basic_string::insert */
+          if( m_cursorPos <= m_content.length() )
           {
             m_content.insert(m_cursorPos ++, 1, (char) currentInput);
+            show();
           }
         }
         else if( m_cursorPos < numColumns - 1)
@@ -220,6 +230,7 @@ int TextBox::handleEdit(const int currentInput, int & cursor_mode)
               m_content += currentInput; //append character.
           else //Overwrite char
             m_content.at(m_cursorPos ++) = currentInput;
+          show();
         }
       }
       else
@@ -326,7 +337,7 @@ void TextBox::HandleKeyDown(const int ch)
 {
   const int textLength = m_content.length();
   /** If at least 1 line left after cursor position. */
-  if(m_cursorPos < textLength - m_lineWidth)
+  if(textLength > m_lineWidth && m_cursorPos < textLength - m_lineWidth)
   {
     m_cursorPos += m_lineWidth;
     NotifyCursorPosChangedListener();
@@ -419,7 +430,7 @@ int TextBox::HandleAction(const int ch)
     else if( strcmp("kRIT5", keyName) == 0 )
       HandleCtrlRightKey();
     else if(m_editable)
-      handleEdit(ch, m_cursor_mode);
+      return handleEdit(ch, m_cursor_mode);
     else
       return Curses::Window::inputNotHandled;
   }
@@ -477,6 +488,9 @@ void TextBox::show()
 {
   int maxy;
   int maxx;
+  /** Erase all content from before. */
+  wclear(m_windowHandle);
+  setcolor(m_windowHandle, m_colorPair);
 #ifdef PDCURSES
   maxy = getmaxy(m_windowHandle);
   maxx = getmaxx(m_windowHandle);
@@ -523,7 +537,8 @@ void TextBox::show()
   }
   if(shouldDrawScrollBar)
     drawScrollBar(m_windowHandle, numLinesForLineWidthMinus1, maxy, 0, maxx - 1);
-  wrefresh(m_windowHandle);
+  ShowCursorPos();
+//  wrefresh(m_windowHandle);
 }
 
 void TextBox::handleInput()

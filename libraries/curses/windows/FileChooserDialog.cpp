@@ -19,7 +19,7 @@ DWORD waitForDialogEnd(void * p_v)
   curses::FileChooserDialog * p_fileChooserDialog = (curses::FileChooserDialog *) p_v;
   if(p_fileChooserDialog)
   {
-//    p_fileChooserDialog->m_closeEvent.Wait();
+    p_fileChooserDialog->m_closeEvent.Wait();
   }
 }
 
@@ -46,15 +46,15 @@ std::string FileChooserDialog::ChooseFile(
   m_p_listBox->create();
   m_p_listBox->SetContent(dirEntries);
 //  create();
-  curses::Button * p_button = new curses::Button();
+  m_p_button = new curses::Button();
   if( mode == FileChooserDialog::save)
   {
-    p_button->SetLabel("save");
-    p_button->SetColor(m_currentSelectionColorPair);
+    m_p_button->SetLabel("save");
+    m_p_button->SetColor(m_currentSelectionColorPair);
   }
   if( mode == FileChooserDialog::open)
   {
-    p_button->SetLabel("open");
+    m_p_button->SetLabel("open");
   }
   curses::BorderLayout * p_buttonAndTextFieldPanel = new curses::BorderLayout();
   p_buttonAndTextFieldPanel->create();
@@ -62,7 +62,7 @@ std::string FileChooserDialog::ChooseFile(
   p_label->SetLabel("file name:");
   p_label->create();
   p_buttonAndTextFieldPanel->add(p_label, curses::BorderLayout::left);
-  p_buttonAndTextFieldPanel->add(p_button, curses::BorderLayout::right);
+  p_buttonAndTextFieldPanel->add(m_p_button, curses::BorderLayout::right);
   
 //  ncurses::TextBox * p_textField = new ncurses::TextBox(BODY_WINDOW_COLOR);
   ncurses::TextBox * p_textBox = new ncurses::TextBox(m_backGroundColorPair);
@@ -81,7 +81,7 @@ std::string FileChooserDialog::ChooseFile(
   p_borderLayout->add(p_buttonAndTextFieldPanel
 //    p_button
     , curses::BorderLayout::bottom);
-  p_button->create();
+  m_p_button->create();
   setLayout(p_borderLayout);
 
 //  return ::ChooseFile(initialDir, pWindowToShowFileChooserIn, 
@@ -90,13 +90,16 @@ std::string FileChooserDialog::ChooseFile(
   m_p_listBox->show();
   m_p_listBox->SetFocus(true);
   m_p_folderLabel->show();
-  p_button->show();
+  m_p_button->show();
   p_label->show();
   p_textBox->show();
   SetAsKeyListener();
 //  Curses::EventLoop();
+  
 //  nativeThread_type thread;
 //  thread.start(waitForDialogEnd, this);
+  m_thread.start(waitForDialogEnd, this);
+  
   //TODO create new thread and wait for end?!
   return "";
 }
@@ -108,6 +111,11 @@ int FileChooserDialog::HandleAction(const int ch)
   {
     switch(ch)
     {
+      case 0xA:
+        if( m_p_button->HasFocus() )
+          m_closeEvent.Broadcast();
+          return Curses::Window::destroyWindow;
+        break;
       case 27 :
 //        m_closeEvent.Broadcast();
         break;
