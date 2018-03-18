@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #include "Window.hpp"
 #include "../EventQueue.hpp" //class EventQueue
 
@@ -23,10 +25,17 @@ namespace Curses
     return newwin(
       heightInLines, /** # of lines */
       widthInColumns /** number of colums */, 
-      yPosRelativeToReferredWindow + upperLeftCorner1stColumn,
-      xPosRelativeToReferredWindow + upperLeftCorner1stRow);
+      yPosRelativeToReferredWindow + upperLeftCorner1stColumn /** begin_y */,
+      xPosRelativeToReferredWindow + upperLeftCorner1stRow /** begin_x */ );
   }
-   
+  
+//  void * Window::operator new(std::size_t size)
+//  {
+//    m_allocatedOnHeap = true;
+//    void * addressOfAllocatedMemory = new uint8_t[size];
+//    return addressOfAllocatedMemory;
+//  }
+  
   void EventLoop()
   {
     do

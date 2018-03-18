@@ -21,6 +21,7 @@ public:
   
 //  void create(WINDOW * win);
   void GetMinimalSize(int & width, int & height);
+  int HandleAction(const int ch);
   void SetColor(chtype color) {}
   void SetLabel(const char * const label) {
     m_label = label;

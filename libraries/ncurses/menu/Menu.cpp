@@ -52,6 +52,7 @@ namespace ncurses
     m_menuItemVector.push_back(menuItem);
     m_functionToCallVector.push_back(func);
     m_menuItemMap.insert(std::make_pair(menuItem, func) );
+    return 0;
   }
 
   void Menu::createMenu(enum style _style)

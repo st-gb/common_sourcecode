@@ -15,16 +15,20 @@ namespace Curses
   {
   protected:
     bool m_isUIcontrol;
+//    bool m_allocatedOnHeap;
   public:
     /** "static"-> 1 stack for all objects of class "Window" and its 
      *   descendants;not thread-safe: */
     static ncurses::InputProcessorStack s_inputProcessorStack;
-    Window() : m_isUIcontrol(false) {}
+    Window() : m_isUIcontrol(false)//, m_allocatedOnHeap(false) 
+      {}
     Window(bool isUIcontrol) : m_isUIcontrol(isUIcontrol) {}
     virtual ~Window() {}
+    
+//    void * operator new(std::size_t size);
     enum handleActionRetCodes { destroyWindow = -2, inputNotHandled = -1 };
     /** Must be "virtual" in order to enable overriding. */
-    virtual int HandleAction(const int ch) { }
+    virtual int HandleAction(const int ch) { return 0; }
     static WINDOW * CreateWindowRelativePos(WINDOW * windowForRelativePos,
       int width, int height, int ypos, int xpos);
     bool IsUIcontrol() const { return m_isUIcontrol;}

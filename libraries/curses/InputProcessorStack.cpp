@@ -32,6 +32,7 @@ namespace ncurses
           delete p_cursesWindow;
           /** Erase last element. */
           m_inputProcessorStack.erase(m_inputProcessorStack.end() --);
+          //TODO update window (hide it visually) programmatically
           break;
         }
       }

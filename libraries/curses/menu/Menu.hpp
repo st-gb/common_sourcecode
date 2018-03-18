@@ -42,7 +42,7 @@ namespace curses
     virtual ~Menu();// {}
     
     virtual int addMenuItem(const char str [], void (*FUNC)(void) = 0 );
-    virtual WINDOW * create(WINDOW * windowToShowMenuIn) {};
+    virtual WINDOW * create(WINDOW * windowToShowMenuIn) { return 0; };
     virtual void createMenu(enum style _style = Vertical) {};
     char GetHotKey();
     signed GetHotKeyCharIndex() const;
