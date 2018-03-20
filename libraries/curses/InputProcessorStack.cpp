@@ -29,13 +29,36 @@ namespace ncurses
           break;
         else if( handleActionResult == Curses::Window::destroyWindow)
         {
+          /** update window (hide it visually) programmatically */
+          ncurses::WindowHandleWindow * p_windowHandleWindow = 
+            (ncurses::WindowHandleWindow *)
+            dynamic_cast<const ncurses::WindowHandleWindow * const >(p_cursesWindow);
+          if(p_windowHandleWindow)
+            UpdateAllWindowsHiddenBy(p_windowHandleWindow);
           delete p_cursesWindow;
           /** Erase last element. */
           m_inputProcessorStack.erase(m_inputProcessorStack.end() --);
-          //TODO update window (hide it visually) programmatically
           break;
         }
       }
     }
+  }
+  
+  void InputProcessorStack::UpdateAllWindowsHiddenBy(
+    const ncurses::WindowHandleWindow * p_cursesWindowHandleWindow)
+  {
+    container_type::const_iterator iter = m_inputProcessorStack.begin();
+    if( iter != m_inputProcessorStack.end() )
+      for( ; iter != m_inputProcessorStack.end() ; iter++ )
+      {
+        if( *iter != p_cursesWindowHandleWindow )
+        {
+          ncurses::WindowHandleWindow * p_windowHandleWindow = 
+            (ncurses::WindowHandleWindow *)
+            dynamic_cast<const ncurses::WindowHandleWindow * const >(*iter);
+          if( p_windowHandleWindow)
+            p_windowHandleWindow->UpdateAffectedWindows(p_cursesWindowHandleWindow->getWindowHandle());
+        }
+      }
   }
 }

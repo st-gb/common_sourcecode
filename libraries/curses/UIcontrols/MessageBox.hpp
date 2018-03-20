@@ -1,6 +1,7 @@
 #pragma once//Include guard
 
-#include "../windows/Window.hpp" //class Ncurses::Window
+//#include "../windows/Window.hpp" //class Ncurses::Window
+#include "../windows/WindowHandleWindow.hpp" //class Ncurses::Window
 #include <curses.h> //WINDOW
 #include <hardware/CPU/fastest_data_type.h> //fastestUnsignedDataType
 
@@ -10,12 +11,12 @@
 namespace ncurses
 {
   class MessageBox
-    : public Curses::Window
+    : public /*Curses::Window*/ ncurses::WindowHandleWindow
   {
   private:
     WINDOW * m_p_buttonWindow;
   protected:
-    WINDOW * m_p_MessageWindow, * m_p_windowToShowMessageIn;
+    WINDOW /* * m_windowHandle,*/ * m_p_windowToShowMessageIn;
     chtype m_colorPair, m_buttonColorPair;
     /*volatile*/ bool m_showWindow;
   public:

@@ -36,14 +36,15 @@ namespace Curses
 //    return addressOfAllocatedMemory;
 //  }
   
-  void EventLoop()
+  void EventLoop(bool processEventQueue)
   {
     do
     {
       int key = getch();
       if( key != ERR )
         Window::s_inputProcessorStack.consume(key);
-      g_eventQueue.Process();
+      if( processEventQueue)
+        g_eventQueue.Process();
     }while(! Window::s_inputProcessorStack.exit );
   }
 }

@@ -13,7 +13,7 @@
 namespace ncurses
 {
   MessageBox::MessageBox(chtype colorPair, chtype buttonColorPair)
-    : m_p_MessageWindow(NULL), 
+    : //m_windowHandle(NULL), 
       m_p_buttonWindow(NULL),
       m_showWindow(true),
       m_colorPair(colorPair), 
@@ -53,7 +53,9 @@ namespace ncurses
   int MessageBox::HandleAction(const int ch)
   {
     if(ch == 0xA /* Return- bzw. Enter-Taste -> ASCII-Code */)
+    {
       return Curses::Window::destroyWindow;
+    }
     return Curses::Window::inputNotHandled;
   }
   
@@ -76,7 +78,7 @@ namespace ncurses
         while(currentLineWidth > windowWidthMinus2)
         {
           sprintf(recipeString, "%%.%ds", windowWidthMinus2);//-> e.g. "%.20s"
-          mvwprintw(m_p_MessageWindow, currentLineNumber, 1, recipeString, 
+          mvwprintw(m_windowHandle, currentLineNumber, 1, recipeString, 
             lineBegin);
           lineBegin += windowWidthMinus2 + 1;
           currentLineWidth -= (windowWidthMinus2);
@@ -92,7 +94,7 @@ namespace ncurses
 //      else
 //      {
         sprintf(recipeString, "%%.%ds", currentLineWidth);//-> e.g. "%.20s"
-        mvwprintw(m_p_MessageWindow, currentLineNumber, 1, recipeString, 
+        mvwprintw(m_windowHandle, currentLineNumber, 1, recipeString, 
           lineBegin );
         lineBegin += currentLineWidth + 1;
         currentLineNumber ++;
@@ -104,9 +106,9 @@ namespace ncurses
     const int numberOfTextLines)
   {
     int windowHeight, windowWidth;
-    getmaxyx(m_p_MessageWindow, windowHeight, windowWidth);
+    getmaxyx(m_windowHandle, windowHeight, windowWidth);
     int buttonWidth = strlen(label);
-    m_p_buttonWindow = derwin(m_p_MessageWindow, /* height*/ 1 , 
+    m_p_buttonWindow = derwin(m_windowHandle, /* height*/ 1 , 
       buttonWidth, windowHeight - 2, 
       (windowWidth - buttonWidth) / 2 );
     colorBox(m_p_buttonWindow, m_buttonColorPair, 0);
@@ -135,12 +137,12 @@ namespace ncurses
       /** box chars + line for the button*/ 3;
     /** If window was created with derwin(...) or subwin(...) it isn't cleared 
      *  from screen after wdelete(...). So use newwin(...) instead. */
-    m_p_MessageWindow = newwin(
+    m_windowHandle = newwin(
 //      windowToShowMessageIn, 
       windowHeight , 
       windowWidth, 1, 0 );
-    colorBox(m_p_MessageWindow, m_colorPair, 1);
-    mvwaddstr(m_p_MessageWindow, 0, 1, "message");
+    colorBox(m_windowHandle, m_colorPair, 1);
+    mvwaddstr(m_windowHandle, 0, 1, "message");
   //  mvwaddstr(p_win, 1, 1, message);
     /*int numberOfTextLines =*/ ShowMessageText(
       message, 
@@ -155,7 +157,7 @@ namespace ncurses
     const int numberOfTextLines = BuildUserInterface(message);
     CreateCenteredButton("OK", numberOfTextLines);
   //  touchwin(s_bodyWindow);
-    wrefresh(m_p_MessageWindow);
+    wrefresh(m_windowHandle);
 //    wgetch(m_p_MessageWindow); /** -> modal */
     s_inputProcessorStack.add(this);
   }
@@ -165,7 +167,7 @@ namespace ncurses
     int ch;
     do
     {
-      ch = wgetch(m_p_MessageWindow);
+      ch = wgetch(m_windowHandle);
 //      hardwareFence();
       /** https://linux.die.net/man/3/wgetch :
        * "In no-delay mode, if no input is waiting, the value ERR is returned."
@@ -184,10 +186,10 @@ namespace ncurses
   
   void MessageBox::Destroy()
   {
-    if(m_p_MessageWindow != NULL && m_p_buttonWindow != NULL)
+    if(m_windowHandle != NULL && m_p_buttonWindow != NULL)
     {
       delwin(m_p_buttonWindow);
-      delwin(m_p_MessageWindow);
+      delwin(m_windowHandle);
       touchwin(m_p_windowToShowMessageIn);
   //    wmove(windowToShowMessageIn, oldYCursorPosOfBodyWindow, oldXcursorPosOfBodyWindow);
       wrefresh(m_p_windowToShowMessageIn);

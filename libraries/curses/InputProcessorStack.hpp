@@ -6,9 +6,14 @@
 #include <vector> //class std::vector
 #include <deque> //class std::deque
 
+//#include "windows/WindowHandleWindow.hpp"
+
 /** Forward declarations (faster than to include the header file) : */
 namespace Curses{
   class Window;
+}
+namespace ncurses {
+  class WindowHandleWindow;
 }
 
 namespace ncurses
@@ -36,6 +41,7 @@ namespace ncurses
     InputProcessorStack() : exit(false) {}
     void add(Curses::Window * w) { m_inputProcessorStack.push_back(w); }
     void RemoveLastElement() { m_inputProcessorStack.pop_back(); }
+    void UpdateAllWindowsHiddenBy(const ncurses::WindowHandleWindow *);
     void consume(const int ch);
     bool exit;
   };

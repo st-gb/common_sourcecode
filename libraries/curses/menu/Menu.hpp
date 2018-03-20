@@ -35,6 +35,7 @@ namespace curses
     ncurses::WindowHandleWindow * m_win;
    public:
     Menu(ncurses::WindowHandleWindow * win);//{ }
+    //TODO: win = main window (toplevel window that contains subwindows)?!
     Menu(const char * const label/*, chtype colorPair*/, ncurses::WindowHandleWindow * win ) 
       : m_label(label)/*, m_colorPair(colorPair)*/
         , m_win(win)

@@ -26,7 +26,7 @@ namespace ncurses
 void EventQueue::Process()
 {
 //  if( in_GUI_thread )
-  {
+  {/** Blocks here if called from a second call before "Leave" is called, */
     m_criticalSection.Enter();
     if( m_first )
     {

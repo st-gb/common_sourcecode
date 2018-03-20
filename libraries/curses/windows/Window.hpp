@@ -34,5 +34,5 @@ namespace Curses
     bool IsUIcontrol() const { return m_isUIcontrol;}
   };
   
-  void EventLoop();
+  void EventLoop(bool processEventQueue);
 }

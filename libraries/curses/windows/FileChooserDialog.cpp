@@ -94,11 +94,15 @@ std::string FileChooserDialog::ChooseFile(
   p_label->show();
   p_textBox->show();
   SetAsKeyListener();
-//  Curses::EventLoop();
+  
+  /** Ensures modality of this dialog. */
+  Curses::EventLoop(false);
+  /** Exits when false -> set to "true" again. */
+  Curses::Window::s_inputProcessorStack.exit = false;
   
 //  nativeThread_type thread;
 //  thread.start(waitForDialogEnd, this);
-  m_thread.start(waitForDialogEnd, this);
+//  m_thread.start(waitForDialogEnd, this);
   
   //TODO create new thread and wait for end?!
   return "";
@@ -113,8 +117,12 @@ int FileChooserDialog::HandleAction(const int ch)
     {
       case 0xA:
         if( m_p_button->HasFocus() )
-          m_closeEvent.Broadcast();
+        {
+//          m_closeEvent.Broadcast();
+          /** This ends the event loop */
+          Curses::Window::s_inputProcessorStack.exit = true;
           return Curses::Window::destroyWindow;
+        }
         break;
       case 27 :
 //        m_closeEvent.Broadcast();
