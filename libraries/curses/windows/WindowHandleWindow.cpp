@@ -80,8 +80,9 @@ void WindowHandleWindow::GetSize(int & width, int & height) const
 
 void WindowHandleWindow::RemoveAsKeyListener()
 {
-  //TODO iterate over container until this object found.
-  s_inputProcessorStack.RemoveLastElement();  
+  //TODO iterate over container until _this_ object found.
+//  s_inputProcessorStack.RemoveLastElement();
+  s_inputProcessorStack.Remove(this);
 }
 
 void WindowHandleWindow::SetAsKeyListener()

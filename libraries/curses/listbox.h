@@ -6,6 +6,7 @@ extern "C" {
 
 unsigned int listBox(
   const char * const listBoxItems [], 
+  int numberOfListBoxEntries,
   const char title [],
   WINDOW *,
   chtype backGroundColorPair, 

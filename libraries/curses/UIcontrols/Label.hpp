@@ -18,6 +18,7 @@ public:
   virtual ~Label();
   
   void SetLabel(const char * const label) { m_label = label; }
+  std::string GetLabel() const { return m_label;}
   void show();
   void GetMinimalSize(int & width, int & height);
 private:

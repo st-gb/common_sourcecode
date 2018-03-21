@@ -45,15 +45,18 @@ void showCurrentSelection(
 
 void GetNumListBoxEntriesAndMaxLength(
   const char * const listBoxItems[],
-  int * p_numberOfListBoxEntries,
+//  int * p_numberOfListBoxEntries,
+  int numberOfListBoxEntries,
   int * p_maxFieldDescInChars
   )
 {
   int currentListBoxItemStringLength;
-  for (*p_numberOfListBoxEntries = 0; /** last element has to be NULL */
-    listBoxItems[*p_numberOfListBoxEntries] &&
-    (currentListBoxItemStringLength = strlen(listBoxItems[*p_numberOfListBoxEntries]) ) > 0;
-    *p_numberOfListBoxEntries++)
+  for (//*p_numberOfListBoxEntries = 0; /** last element has to be NULL */
+    //listBoxItems[*p_numberOfListBoxEntries] &&
+    //(currentListBoxItemStringLength = strlen(listBoxItems[*p_numberOfListBoxEntries]) ) > 0;
+    //*p_numberOfListBoxEntries++
+    ; numberOfListBoxEntries > 0 ; numberOfListBoxEntries --
+    )
   {
     if( currentListBoxItemStringLength > *p_maxFieldDescInChars)
       *p_maxFieldDescInChars = currentListBoxItemStringLength;
@@ -149,6 +152,7 @@ void HandleKeyUp(
  *  @return selected index or UINT_MAX if ESC was pressed */
 unsigned int listBox(
   const char * const listBoxItems[]/*, int field*/, 
+  int numberOfListBoxEntries,
   const char title [], 
   WINDOW * pWindowToShowListBoxIn,
   chtype backGroundColorPair, 
@@ -160,11 +164,14 @@ unsigned int listBox(
   int bodyWindowMaxY, bodyWindowMaxX;
   int numberOfLinesForInputBox, numberOfColumnsForInputBox, 
     currentListBoxEntryIndex, maxFieldDescInChars = 0;
-  int numberOfListBoxEntries;
+//  int numberOfListBoxEntries;
   int c = 0;
   bool stop = FALSE;
 
-  GetNumListBoxEntriesAndMaxLength(listBoxItems,& numberOfListBoxEntries, 
+  GetNumListBoxEntriesAndMaxLength(
+    listBoxItems,
+//    & numberOfListBoxEntries, 
+    numberOfListBoxEntries,
     & maxFieldDescInChars);
   const unsigned titleLenghtInChars = strlen(title);
 

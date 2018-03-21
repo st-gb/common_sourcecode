@@ -437,6 +437,8 @@ int TextBox::HandleAction(const int ch)
   return ch;
 }
 
+
+
 void TextBox::SetFocus(bool focus)
 {
   curses::UIcontrol::SetFocus(focus);
@@ -448,16 +450,18 @@ void TextBox::SetFocus(bool focus)
   //    Curses::Cursor::Terminal_specific_high_visibility_mode : 
       ncurses::Cursor::Terminal_specific_normal_mode;
     curs_set(cursor_mode); /** Show cursor (if possible) */
-    int cursorX=0, cursorY=0;
-    if(m_drawBorder)
-    {
-      cursorX=1;
-      cursorY=1;
-    }
-    /** https://www.ibm.com/support/knowledgecenter/en/ssw_aix_61/com.ibm.aix.genprogc/control_cursor_wcurses.htm :
-     *  "Moves the logical cursor associated with a user-defined window" */
-    wmove(m_windowHandle, cursorY, cursorX);
-    wrefresh(m_windowHandle);
+//    int cursorX=0, cursorY=0;
+//    if(m_drawBorder)
+//    {
+//      cursorX=1;
+//      cursorY=1;
+//    }
+//    GetCursorXYfrom1DimensionalPos(cursorX, cursorY);
+//    /** https://www.ibm.com/support/knowledgecenter/en/ssw_aix_61/com.ibm.aix.genprogc/control_cursor_wcurses.htm :
+//     *  "Moves the logical cursor associated with a user-defined window" */
+//    wmove(m_windowHandle, cursorY, cursorX);
+    ShowCursorPos();
+//    wrefresh(m_windowHandle);
     SetAsKeyListener();
   }
   else

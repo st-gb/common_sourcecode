@@ -35,11 +35,27 @@ namespace ncurses
             dynamic_cast<const ncurses::WindowHandleWindow * const >(p_cursesWindow);
           if(p_windowHandleWindow)
             UpdateAllWindowsHiddenBy(p_windowHandleWindow);
+          Remove(p_cursesWindow);
           delete p_cursesWindow;
-          /** Erase last element. */
-          m_inputProcessorStack.erase(m_inputProcessorStack.end() --);
+//          /** Erase last element. */
+//          m_inputProcessorStack.erase(m_inputProcessorStack.end() --);
           break;
         }
+      }
+    }
+  }
+  
+  void InputProcessorStack::Remove(Curses::Window * win)
+  {
+    /** Although it is more likely for the window to be at the end we must use 
+      * a forward iterator here because erase() only accepts forward iterators.*/
+    for(container_type::iterator iter = 
+      m_inputProcessorStack.begin(); iter != m_inputProcessorStack.end(); iter ++ )
+    {
+      if(*iter == win)
+      {
+        m_inputProcessorStack.erase(iter);
+        break;
       }
     }
   }

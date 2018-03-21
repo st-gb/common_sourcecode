@@ -56,7 +56,7 @@ namespace curses
       else if(p_cursesUIcontrol->HasFocus() )
       {
 //        if( iterOfCurrentFocus == overallVec.end() )
-          iterOfCurrentFocus = iter;
+        iterOfCurrentFocus = iter;
       }
     }
   }
@@ -70,7 +70,9 @@ namespace curses
       if( p_cursesWindow->IsUIcontrol() )
       {
         p_cursesUIcontrol = (curses::UIcontrol *) p_cursesWindow;
-        p_cursesUIcontrol->SetFocus(false);
+        curses::UIcontrol * p_winWithCurrentFocus = (curses::UIcontrol *) 
+          *iterOfCurrentFocus;
+        p_winWithCurrentFocus->SetFocus(false);
         return p_cursesUIcontrol;
       }
     }

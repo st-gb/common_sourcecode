@@ -96,12 +96,15 @@ namespace curses
   {
 //      if( ch != ERR )
 //        mvprintw(7, 3, "%d %c", ch, ch );
-    int ret = -1;
+    int ret = ch;
     bool consumedInput = true;
     /** see https://stackoverflow.com/questions/9750588/how-to-get-ctrl-shift-or-alt-with-getch-ncurses */
     NCURSES_CONST char * keyName = keyname(ch);
     switch(ch)
     {
+      case KEY_RESIZE :
+        ret = inputNotHandled;
+        break;
       case 27:
 //        if( m_ESCandENTERleavesMenu )
 //          m_stayInMenu = false;
@@ -111,7 +114,7 @@ namespace curses
 //        wrefresh(m_subMenuWindow);
 //        touchwin(stdscr);
 //        wrefresh(stdscr);
-        ret = ch;
+//        ret = ch;
         break;
       case KEY_DOWN:
         if( m_alignment == Vertical )
@@ -121,10 +124,10 @@ namespace curses
             m_currentMenuItemSelection ++;
             drawMenuItems();
           }
-          ret = ch;
+//          ret = ch;
         }
-        else
-          ret = Curses::Window::inputNotHandled;
+//        else
+//          ret = Curses::Window::inputNotHandled;
         break;
       case KEY_UP:
         if( m_alignment == Vertical )
@@ -134,10 +137,10 @@ namespace curses
             m_currentMenuItemSelection --;
             drawMenuItems();
           }
-          ret = ch;
         }
-        else
-          ret = Curses::Window::inputNotHandled;
+//        ret = ch;
+//        else
+//          ret = Curses::Window::inputNotHandled;
         break;
       /** For horizontal menus: */
       case KEY_RIGHT:
@@ -146,8 +149,8 @@ namespace curses
           if( m_currentMenuItemSelection < m_menuItemContainer.size() )
             m_currentMenuItemSelection ++;
         }
-        else
-          ret = Curses::Window::inputNotHandled;         
+//        else
+//          ret = Curses::Window::inputNotHandled;         
         break;
       case KEY_LEFT:
         if( m_alignment == Horizontal )
@@ -155,8 +158,8 @@ namespace curses
           if( m_currentMenuItemSelection > 0 )
             m_currentMenuItemSelection --;
         }
-        else
-          ret = Curses::Window::inputNotHandled;         
+//        else
+//          ret = Curses::Window::inputNotHandled;         
         break;
       case 0xA: /* Return- bzw. Enter-Taste -> ASCII-Code */
       {
@@ -176,7 +179,7 @@ namespace curses
 //        {
 //          otherKey = keyName + 1;
 //        }
-        ret = Curses::Window::inputNotHandled;
+//        ret = Curses::Window::inputNotHandled;
     }
 //    if( consumedInput )
 //      wrefresh(windowToShowMenuIn);

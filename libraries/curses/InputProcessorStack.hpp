@@ -40,6 +40,7 @@ namespace ncurses
   public:
     InputProcessorStack() : exit(false) {}
     void add(Curses::Window * w) { m_inputProcessorStack.push_back(w); }
+    void Remove(Curses::Window * win);
     void RemoveLastElement() { m_inputProcessorStack.pop_back(); }
     void UpdateAllWindowsHiddenBy(const ncurses::WindowHandleWindow *);
     void consume(const int ch);

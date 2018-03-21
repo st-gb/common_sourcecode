@@ -70,6 +70,7 @@ std::string ChooseFile(
     }
     selectedIndex = ::listBox(
       pchDirEntries, 
+      dirEntries.size(),
       dirToGetContentsFrom.c_str(), 
       pWindowToShowFileChooserIn,
       backGroundColorPair, 

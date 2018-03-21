@@ -15,6 +15,7 @@ protected:
 public:
   typedef int64_t file_pointer_type;
   enum CloseError {closingFileSucceeded = 0, closingFileFailed, fileNotOpen};
+  //TODO change to successfullyOpened
   enum OpenResult {success = 0, accessDenied, fileNotFound, not_set };
   enum OpenMode { readOnly, writeOnly, readAndWrite };
   enum ReadResult { successfullyRead, readLessThanIntended,

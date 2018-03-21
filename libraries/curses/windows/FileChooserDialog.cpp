@@ -65,12 +65,12 @@ std::string FileChooserDialog::ChooseFile(
   p_buttonAndTextFieldPanel->add(m_p_button, curses::BorderLayout::right);
   
 //  ncurses::TextBox * p_textField = new ncurses::TextBox(BODY_WINDOW_COLOR);
-  ncurses::TextBox * p_textBox = new ncurses::TextBox(m_backGroundColorPair);
-  p_textBox->SetEditable(true);
-  p_textBox->SetDrawBorder(false);
+  ncurses::TextBox * p_fileNameTextBox = new ncurses::TextBox(m_backGroundColorPair);
+  p_fileNameTextBox->SetEditable(true);
+  p_fileNameTextBox->SetDrawBorder(false);
   
-  p_textBox->create(p_buttonAndTextFieldPanel->getWindowHandle(), 10, 10, 0, 0);
-  p_buttonAndTextFieldPanel->add(p_textBox, curses::BorderLayout::center);
+  p_fileNameTextBox->create(p_buttonAndTextFieldPanel->getWindowHandle(), 10, 10, 0, 0);
+  p_buttonAndTextFieldPanel->add(p_fileNameTextBox, curses::BorderLayout::center);
   
   curses::BorderLayout * p_borderLayout = new curses::BorderLayout();
   m_p_folderLabel = new curses::Label();
@@ -92,7 +92,7 @@ std::string FileChooserDialog::ChooseFile(
   m_p_folderLabel->show();
   m_p_button->show();
   p_label->show();
-  p_textBox->show();
+  p_fileNameTextBox->show();
   SetAsKeyListener();
   
   /** Ensures modality of this dialog. */
@@ -105,7 +105,10 @@ std::string FileChooserDialog::ChooseFile(
 //  m_thread.start(waitForDialogEnd, this);
   
   //TODO create new thread and wait for end?!
-  return "";
+  //TODO dialog is deleted by InputProcessorStack::consume(...) if reached here!
+  std::string fileName = p_fileNameTextBox->getText();
+  std::string filePath = m_p_folderLabel->GetLabel() + PATH_SEPERATOR_CHAR + fileName;
+  return filePath;
 }
 
 int FileChooserDialog::HandleAction(const int ch)

@@ -4,7 +4,7 @@
 namespace curses {
   int TopLevelWindow::HandleAction(const int ch)
   {
-    int ret = -2;
+    int ret = Curses::Window::inputNotHandled;
     /** see https://stackoverflow.com/questions/9750588/how-to-get-ctrl-shift-or-alt-with-getch-ncurses */
     /*NCURSES_CONST*/ const char * keyName = keyname(ch);
     switch(ch)
@@ -14,10 +14,12 @@ namespace curses {
         break;
       case '\t':
       {
-        int i = 2;
+//        int i = 2;
         if(mp_layoutManager)
+        {
           mp_layoutManager->SetFocusToNextUIcontrol();
-        ret = 0;
+          ret = 0;
+        }
       }
         break;
       default:
