@@ -473,6 +473,65 @@ void TextBox::SetText(const char text [])
   m_content = text;
 }
 
+fastestUnsignedDataType TextBox::GetCharPosOfBeginOfLine(int lineNumber)
+{
+  fastestUnsignedDataType charPos = 0;
+  if( lineNumber > 0)
+  {
+    const char * beginOfLine = m_content.c_str();
+    const char * const beginOfString = m_content.c_str();
+    const char * p_currentChar = m_content.c_str();
+    int currentCharPos = 0;
+    char currentChar;
+    int currentLineNumber = 0;
+    for( ; /* *p_currentChar*/ (beginOfString + currentCharPos) != '\0';
+         /*p_currentChar++*/ currentCharPos ++ )
+    {
+      currentChar = *(beginOfString + currentCharPos);
+      if( currentChar == '\n' || (beginOfString + currentCharPos - beginOfLine) > m_lineWidth)
+      {
+        beginOfLine = /*p_currentChar*/ beginOfString + currentCharPos + 1;
+        currentLineNumber ++;
+        if( lineNumber == currentLineNumber)
+        {
+          charPos = beginOfLine - beginOfString;
+          break;
+        }
+      }
+    }
+  }
+  return charPos;
+}
+
+void TextBox::ShowWithLineBeginningAtCharPos(fastestUnsignedDataType charPos)
+{
+//  if( m_drawBorder)
+//    m_lineWidth
+//    if( m_wrapLines )
+  const char * beginOfLine = m_content.c_str();
+  const char * const beginOfString = m_content.c_str();
+  const char * p_currentChar = m_content.c_str();
+  int currentCharPos = 0;
+  char currentChar;
+  int currentLineNumber = 0;
+  for( ; /* *p_currentChar*/ (beginOfString + currentCharPos) != '\0';
+       /*p_currentChar++*/ currentCharPos ++ )
+  {
+    currentChar = *(beginOfString + currentCharPos);
+    if( currentChar == '\n' || (beginOfString + currentCharPos - beginOfLine) > m_lineWidth)
+    {
+      beginOfLine = /*p_currentChar*/ beginOfString + currentCharPos + 1;
+      currentLineNumber ++;
+    }
+    if( currentCharPos >= charPos)
+    {
+      m_1stLineToShow = currentLineNumber;
+      break;
+    }
+  }
+  show();
+}
+
 fastestUnsignedDataType TextBox::getNumberOfLinesNeededForText(
   fastestUnsignedDataType lineWidth)
 {
@@ -524,19 +583,39 @@ void TextBox::show()
   else
     if( !m_drawBorder )
       m_lineWidth = maxx;
-  const char * currentChar = m_content.c_str() + (m_1stLineToShow * m_lineWidth);
+  
+  const char * currentChar = m_content.c_str() + //(m_1stLineToShow * m_lineWidth);
+    GetCharPosOfBeginOfLine(m_1stLineToShow);
   const char * const lastChar = m_content.c_str() + m_content.length();
   int currentXpos = 0, lineNumber = 0;
   
   if(m_drawBorder)
     colorBox(m_windowHandle, m_colorPair, 1);
+  int numCharsInCurrentLine;
+  int numCharsToAdvance;
+  int numCharsToPrint;
   while( currentChar < lastChar && lineNumber + m_drawBorder <= 
     m_numVisibleLinesForText )
   {
-    mvwaddnstr(m_windowHandle, lineNumber + m_drawBorder, m_drawBorder, 
-      currentChar, m_lineWidth);/** win,y,x,str,n */
-    currentXpos += m_lineWidth;
-    currentChar += m_lineWidth;
+    numCharsInCurrentLine = strchr(currentChar, '\n') - currentChar;
+    /** "<=" because also advance including the newline if a newline ends at 
+       line end. (else an additional empty line would be displayed afterwards.*/
+    if(numCharsInCurrentLine <= m_lineWidth )
+    {
+      numCharsToAdvance = numCharsInCurrentLine + 1;
+      /** -> do NOT print newline chars! */
+      numCharsToPrint = numCharsInCurrentLine;
+    }
+    else
+    {
+      numCharsToAdvance = m_lineWidth;
+      numCharsToPrint = numCharsToAdvance;
+    }
+    mvwaddnstr(m_windowHandle, lineNumber + m_drawBorder /** y position*/, 
+      m_drawBorder /** x position */, currentChar /** string */, 
+      numCharsToPrint /** max number of chars */);
+//    currentXpos += m_lineWidth;
+    currentChar += numCharsToAdvance;
     lineNumber++;
   }
   if(shouldDrawScrollBar)

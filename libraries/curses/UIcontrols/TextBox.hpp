@@ -30,6 +30,7 @@ public:
   void create(WINDOW * const p_superWindow, int numLines, int numColumns, 
     int x, int y);
   void displayScrollBar();
+  fastestUnsignedDataType GetCharPosOfBeginOfLine(int lineNumber);
   fastestUnsignedDataType GetCursorPos() const { return m_cursorPos; }
   fastestUnsignedDataType getNumberOfLinesNeededForText(fastestUnsignedDataType lineWidth);
   void GetMinimalSize(int & width, int & height);
@@ -50,6 +51,7 @@ public:
   void SetFocus(bool focus);
   void SetText(const char []);
   void SetEditable(bool editable) {m_editable = editable; }
+  void ShowWithLineBeginningAtCharPos(fastestUnsignedDataType);
 protected:
   std::string m_content;
   typedef std::vector<curses::CursorPosChangedListener *> 

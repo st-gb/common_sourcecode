@@ -2,6 +2,7 @@
 #define GETABSOLUTEFILEPATH_HPP
 
 #include <string> //class std::string
+//#include <stdlib.h> //realpath(...)
 
 namespace FileSystem
 {
@@ -10,6 +11,7 @@ namespace FileSystem
 #endif
 #ifdef __linux__
   #define PATH_SEP_CHAR '/'
+  //TODO wrong?! : this include file is scoped under the namespace name
   #include <sys/param.h>
 
   inline void GetAbsolutePathA(const char * const getAbsPathFrom, std::string & absPath)
