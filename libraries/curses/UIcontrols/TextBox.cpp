@@ -81,7 +81,8 @@ TextBox::TextBox(
     m_lineWidth(0),
     m_cursorPos(0),
     m_1stLineToShow(0),
-    m_numVisibleLinesForText(0)
+    m_numVisibleLinesForText(0),
+    m_colorPair(colorPair)
 {
 }
 
@@ -547,6 +548,20 @@ void TextBox::displayScrollBar()
   
 }
 
+void TextBox::HandleCurrentLine(
+//  const std::string & currentLine,
+//  const int lineNumber,
+//  const int numCharsToPrint
+  const HandleCurrentLineParams & handleCurrentLineParams
+  )
+{
+  mvwaddnstr(m_windowHandle,
+    handleCurrentLineParams.windowLineNumber + m_drawBorder /** y position*/, 
+    m_drawBorder /** x position */, 
+    handleCurrentLineParams.p_windowLineBegin /** string */, 
+    handleCurrentLineParams.numCharsToPrint /** max number of chars */);
+}
+
 void TextBox::show()
 {
   int maxy;
@@ -584,39 +599,52 @@ void TextBox::show()
     if( !m_drawBorder )
       m_lineWidth = maxx;
   
-  const char * currentChar = m_content.c_str() + //(m_1stLineToShow * m_lineWidth);
+  HandleCurrentLineParams handleCurrentLineParams;
+  handleCurrentLineParams.p_windowLineBegin = m_content.c_str() + 
+    //(m_1stLineToShow * m_lineWidth);
     GetCharPosOfBeginOfLine(m_1stLineToShow);
+  handleCurrentLineParams.p_textLineBegin = handleCurrentLineParams.p_windowLineBegin;
   const char * const lastChar = m_content.c_str() + m_content.length();
-  int currentXpos = 0, lineNumber = 0;
+  int currentXpos = 0;
+  handleCurrentLineParams.windowLineNumber = 0;
   
   if(m_drawBorder)
     colorBox(m_windowHandle, m_colorPair, 1);
-  int numCharsInCurrentLine;
+  int numCharsInCurrentWindowLine;
   int numCharsToAdvance;
-  int numCharsToPrint;
-  while( currentChar < lastChar && lineNumber + m_drawBorder <= 
+  int numCharsInCurrentTextLine;
+//  std::string currentLine;
+  while( handleCurrentLineParams.p_windowLineBegin < lastChar && 
+    handleCurrentLineParams.windowLineNumber + m_drawBorder <= 
     m_numVisibleLinesForText )
   {
-    numCharsInCurrentLine = strchr(currentChar, '\n') - currentChar;
+    const char * p_textLineEnd = strchr(handleCurrentLineParams.p_windowLineBegin, '\n');
+    handleCurrentLineParams.charIndexOfTextLineEnd = m_content.find('\n', 
+      handleCurrentLineParams.p_windowLineBegin - m_content.c_str() );
+    if( p_textLineEnd != NULL && handleCurrentLineParams.p_windowLineBegin == 
+      handleCurrentLineParams.p_textLineBegin )
+      numCharsInCurrentTextLine = handleCurrentLineParams.p_windowLineBegin - 
+        handleCurrentLineParams.p_textLineBegin;
+    numCharsInCurrentWindowLine = p_textLineEnd - handleCurrentLineParams.p_windowLineBegin;
+//    currentLine = std::string(currentChar, numCharsInCurrentWindowLine);
     /** "<=" because also advance including the newline if a newline ends at 
        line end. (else an additional empty line would be displayed afterwards.*/
-    if(numCharsInCurrentLine <= m_lineWidth )
+    if(numCharsInCurrentWindowLine <= m_lineWidth )
     {
-      numCharsToAdvance = numCharsInCurrentLine + 1;
+      handleCurrentLineParams.p_textLineBegin = p_textLineEnd + 1;
+      numCharsToAdvance = numCharsInCurrentWindowLine + 1;
       /** -> do NOT print newline chars! */
-      numCharsToPrint = numCharsInCurrentLine;
+      handleCurrentLineParams.numCharsToPrint = numCharsInCurrentWindowLine;
     }
     else
     {
       numCharsToAdvance = m_lineWidth;
-      numCharsToPrint = numCharsToAdvance;
+      handleCurrentLineParams.numCharsToPrint = numCharsToAdvance;
     }
-    mvwaddnstr(m_windowHandle, lineNumber + m_drawBorder /** y position*/, 
-      m_drawBorder /** x position */, currentChar /** string */, 
-      numCharsToPrint /** max number of chars */);
+    HandleCurrentLine(handleCurrentLineParams);
 //    currentXpos += m_lineWidth;
-    currentChar += numCharsToAdvance;
-    lineNumber++;
+    handleCurrentLineParams.p_windowLineBegin += numCharsToAdvance;
+    handleCurrentLineParams.windowLineNumber++;
   }
   if(shouldDrawScrollBar)
     drawScrollBar(m_windowHandle, numLinesForLineWidthMinus1, maxy, 0, maxx - 1);

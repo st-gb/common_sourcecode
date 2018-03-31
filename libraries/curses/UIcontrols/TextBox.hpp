@@ -17,6 +17,14 @@ class TextBox
 {
 public:
     enum style { no=1, highlightToken=no*2 };
+  struct HandleCurrentLineParams
+  {
+    const char * p_textLineBegin;  
+    const char * p_windowLineBegin;
+    int windowLineNumber;
+    int numCharsToPrint;
+    int charIndexOfTextLineEnd;
+  };
   TextBox(
 //    WINDOW * p_superWindow, 
 //    WINDOWconst std::string & std_strContent, 
@@ -39,6 +47,12 @@ public:
   int HandleAction(const int ch);
   void HandleCtrlLeftKey();
   void HandleCtrlRightKey();
+  virtual void HandleCurrentLine(
+//    const std::string & currentLine,
+//    const int lineNumber,
+//    const int numCharsToPrint
+    const HandleCurrentLineParams & handleCurrentLineParams
+    );
   void HandleKeyDown(const int ch);
   void HandleKeyUp();
   void HandleKeyPreviousPage();
@@ -53,16 +67,17 @@ public:
   void SetEditable(bool editable) {m_editable = editable; }
   void ShowWithLineBeginningAtCharPos(fastestUnsignedDataType);
 protected:
+  chtype m_colorPair;
   std::string m_content;
   typedef std::vector<curses::CursorPosChangedListener *> 
     CursorPosChangedListenerContainerType;
   CursorPosChangedListenerContainerType m_cursorPosChangedListenerContainer;
+  bool m_drawBorder;
 private:
   bool m_editable;
   int m_lineWidth;
   fastestUnsignedDataType m_1stLineToShow;
   fastestUnsignedDataType m_numVisibleLinesForText;
-  bool m_drawBorder;
 //  chtype m_colorPair;
   bool stop = FALSE, insertMode = TRUE;
   fastestUnsignedDataType m_cursorPos;
