@@ -1,8 +1,8 @@
 #include "EventQueue.hpp"
 
-ncurses::EventQueue g_eventQueue;
+curses::EventQueue g_eventQueue;
 
-namespace ncurses
+namespace curses
 {
 /*template <typename T>*/ void EventQueue::addEvent(//T fp
   Node::FunctionPointer fp

@@ -8,10 +8,10 @@
 /** preprocessor macro "MessageBox" from Windows API */
 #undef MessageBox
 
-namespace ncurses
+namespace curses
 {
   class MessageBox
-    : public /*Curses::Window*/ ncurses::WindowHandleWindow
+    : public /*Curses::Window*/ curses::WindowHandleWindow
   {
   private:
     WINDOW * m_p_buttonWindow;

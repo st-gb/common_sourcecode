@@ -32,11 +32,11 @@ namespace curses
     fastestUnsignedDataType m_currentMenuItemSelection;
     typedef std::vector<curses::MenuLabelAndFunction> MenuItemContainerType;
     MenuItemContainerType m_menuItemContainer;
-    ncurses::WindowHandleWindow * m_win;
+    curses::WindowHandleWindow * m_win;
    public:
-    Menu(ncurses::WindowHandleWindow * win);//{ }
+    Menu(curses::WindowHandleWindow * win);//{ }
     //TODO: win = main window (toplevel window that contains subwindows)?!
-    Menu(const char * const label/*, chtype colorPair*/, ncurses::WindowHandleWindow * win ) 
+    Menu(const char * const label/*, chtype colorPair*/, curses::WindowHandleWindow * win ) 
       : m_label(label)/*, m_colorPair(colorPair)*/
         , m_win(win)
       { }

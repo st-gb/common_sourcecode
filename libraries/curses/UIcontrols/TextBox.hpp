@@ -10,7 +10,7 @@
 /** Fwd. decl. */
 namespace curses { class CursorPosChangedListener; }
 
-namespace ncurses {
+namespace curses {
 class TextBox
   : public //Curses::WindowHandleWindow
       curses::UIcontrol

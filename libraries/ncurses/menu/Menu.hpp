@@ -30,7 +30,7 @@ namespace ncurses
     std::map<tagITEM *, FUNC> m_menuItemMap;
     WINDOW * m_subMenuWindow;
    public:
-    Menu(ncurses::WindowHandleWindow * win);
+    Menu(curses::WindowHandleWindow * win);
     ~Menu();
     
     int addMenuItem(const char str [], void (*FUNC)(void) = 0 );

@@ -65,7 +65,7 @@ std::string FileChooserDialog::ChooseFile(
   p_buttonAndTextFieldPanel->add(m_p_button, curses::BorderLayout::right);
   
 //  ncurses::TextBox * p_textField = new ncurses::TextBox(BODY_WINDOW_COLOR);
-  ncurses::TextBox * p_fileNameTextBox = new ncurses::TextBox(m_backGroundColorPair);
+  curses::TextBox * p_fileNameTextBox = new curses::TextBox(m_backGroundColorPair);
   p_fileNameTextBox->SetEditable(true);
   p_fileNameTextBox->SetDrawBorder(false);
   

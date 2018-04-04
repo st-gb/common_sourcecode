@@ -3,11 +3,11 @@
 #include "ncurses/MainWindow.hpp"
 #include "../color.h"
 
-extern ncurses::EventQueue g_eventQueue;
+extern curses::EventQueue g_eventQueue;
 
 namespace curses
 {
-  Menu::Menu(ncurses::WindowHandleWindow * win)
+  Menu::Menu(curses::WindowHandleWindow * win)
     : m_currentMenuItemSelection(0),
       m_win(win)
   {

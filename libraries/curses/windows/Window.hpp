@@ -19,7 +19,7 @@ namespace Curses
   public:
     /** "static"-> 1 stack for all objects of class "Window" and its 
      *   descendants;not thread-safe: */
-    static ncurses::InputProcessorStack s_inputProcessorStack;
+    static curses::InputProcessorStack s_inputProcessorStack;
     Window() : m_isUIcontrol(false)//, m_allocatedOnHeap(false) 
       {}
     Window(bool isUIcontrol) : m_isUIcontrol(isUIcontrol) {}

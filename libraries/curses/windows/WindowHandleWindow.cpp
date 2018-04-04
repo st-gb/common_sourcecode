@@ -1,7 +1,9 @@
 #include "WindowHandleWindow.hpp"
 #include "../LayoutManager/LayoutManagerBase.hpp"
+#include "../UIcontrols/TextBox.hpp"
+#include "../LayoutManager/BorderLayout.hpp"
 
-namespace ncurses {
+namespace curses {
 
 void WindowHandleWindow::create()
 {
@@ -14,8 +16,8 @@ void WindowHandleWindow::UpdateAffectedWindows(WINDOW * win)
 {
   if(mp_layoutManager)
   {
-    std::vector<ncurses::WindowHandleWindow *> allWindows = mp_layoutManager->getAllContainedWindows();
-    for( std::vector<ncurses::WindowHandleWindow *>::const_iterator iter = allWindows.begin(); 
+    std::vector<curses::WindowHandleWindow *> allWindows = mp_layoutManager->getAllContainedWindows();
+    for( std::vector<curses::WindowHandleWindow *>::const_iterator iter = allWindows.begin(); 
       iter != allWindows.end() ; iter ++)
     {
       WINDOW * p_Window = (*iter)->m_windowHandle;
@@ -88,6 +90,21 @@ void WindowHandleWindow::RemoveAsKeyListener()
 void WindowHandleWindow::SetAsKeyListener()
 {
   s_inputProcessorStack.add(this);
+}
+
+void WindowHandleWindow::OutputText(const char text [], chtype colorPair)
+{
+//  if(mp_layoutManager)
+  curses::BorderLayout * bl = new curses::BorderLayout();
+  bl->create();
+  setLayout(bl);
+  curses::TextBox * tb = new curses::TextBox(colorPair);
+  tb->create(bl->m_windowHandle, 0,0,1,1);
+  tb->SetText(text);
+  bl->add(tb, BorderLayout::center);
+  mp_layoutManager = bl;
+  bl->doLayout();
+  tb->show();
 }
 
 void WindowHandleWindow::SetFocusToNextUIcontrol()

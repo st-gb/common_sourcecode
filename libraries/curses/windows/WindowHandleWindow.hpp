@@ -5,7 +5,7 @@
 
 namespace curses { class LayoutManagerBase; }
 
-namespace ncurses {
+namespace curses {
 /** Class that encapsulates a curses WINDOW pointer/handle. */
 class WindowHandleWindow
   : /** For ability to process key events */ 
@@ -31,6 +31,7 @@ public:
   void RemoveAsKeyListener();
   void SetAsKeyListener();
   void SetFocusToNextUIcontrol();
+  void OutputText(const char text[], chtype colorPair);
   void UpdateAffectedWindows(WINDOW * win);
 //  void add(WindowHandleWindow & win, float percent) { m_windows.push_back(&win);}
 };

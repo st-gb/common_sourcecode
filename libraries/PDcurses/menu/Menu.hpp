@@ -22,7 +22,7 @@ namespace PDcurses
     fastestUnsignedDataType m_currentMenuItem;
     WINDOW * m_windowHandle;
    public:
-    Menu(ncurses::WindowHandleWindow * win);
+    Menu(curses::WindowHandleWindow * win);
     ~Menu();
     int addMenuItem(const char str [], void (*FUNC)(void) = NULL );
     WINDOW * create(WINDOW * windowToShowMenuIn);

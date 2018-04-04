@@ -91,7 +91,7 @@ int editText(WINDOW * p_superWindow, std::string & std_str, int numChars)
 
   int cursor_mode = //    insert ? 
 //    Curses::Cursor::Terminal_specific_high_visibility_mode : 
-    ncurses::Cursor::Terminal_specific_normal_mode;
+    curses::Cursor::Terminal_specific_normal_mode;
   curs_set(cursor_mode); /** Show cursor (if possible) */
 
   const char eraseCharacter = erasechar(); /** curses function */
@@ -141,8 +141,8 @@ int editText(WINDOW * p_superWindow, std::string & std_str, int numChars)
       defdisp = FALSE;
       insertMode = !insertMode; /**Switch the insert mode*/
       cursor_mode = insertMode ? 
-        ncurses::Cursor::Terminal_specific_high_visibility_mode : 
-        ncurses::Cursor::Terminal_specific_normal_mode;
+        curses::Cursor::Terminal_specific_high_visibility_mode : 
+        curses::Cursor::Terminal_specific_normal_mode;
       cursor_mode = curs_set(cursor_mode); /**set the cursor mode*/
       break;
     default:
@@ -191,7 +191,7 @@ int editText(WINDOW * p_superWindow, std::string & std_str, int numChars)
       }
     }
   }
-  curs_set(ncurses::Cursor::Invisible); /* set cursor to invisible */
+  curs_set(curses::Cursor::Invisible); /* set cursor to invisible */
   wattrset( p_editWindow, oldAttribute);
 //  repaintEditbox( p_editWindow, bufferPointer - buffer, buffer);
   delwin( p_editWindow);

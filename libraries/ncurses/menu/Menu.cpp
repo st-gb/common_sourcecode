@@ -14,11 +14,11 @@
 
 /** static/class variable definitons : */
 //extern Curses::InputProcessorStack Curses::Window::s_inputProcessorStack;
-extern ncurses::EventQueue g_eventQueue;
+extern curses::EventQueue g_eventQueue;
 
-namespace ncurses
+namespace curses
 {
-  Menu::Menu(ncurses::WindowHandleWindow * win)
+  Menu::Menu(curses::WindowHandleWindow * win)
     : curses::Menu(win),
       m_ESCandENTERleavesMenu(true), 
       m_stayInMenu(true), 
@@ -206,7 +206,7 @@ namespace ncurses
     keypad(windowToShowMenuIn, TRUE);   /* enable cursor keys */
     do
     {
-      ch = ncurses::GetChar(windowToShowMenuIn);
+      ch = curses::GetChar(windowToShowMenuIn);
       /** https://linux.die.net/man/3/wgetch :
        * "In no-delay mode, if no input is waiting, the value ERR is returned."
        * ERR = no valid input. */

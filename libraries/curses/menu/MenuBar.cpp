@@ -76,7 +76,7 @@ namespace curses
         {
           /** Hide cursor that may exist from a UI control like a text box
            *  and would be viewed at the position of the menu. */
-          const int curs_setResult = curs_set(ncurses::Cursor::Invisible);
+          const int curs_setResult = curs_set(curses::Cursor::Invisible);
 //              s_mainMenu.HandleAction('\n');
 //          menu.HandleAction(otherKey[0]);
           menu.show(stdscr);

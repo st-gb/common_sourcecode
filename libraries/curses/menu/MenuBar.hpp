@@ -10,7 +10,7 @@ namespace curses { class Menu; }
 namespace curses
 {
   class MenuBar
-    : public ncurses::WindowHandleWindow
+    : public curses::WindowHandleWindow
   {
   public:
     typedef std::map<int,curses::Menu> MenuContainerType;

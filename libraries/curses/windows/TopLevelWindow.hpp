@@ -5,7 +5,7 @@
 namespace curses {
 /** Class name and subclass hierarchy is inspired by wxWidgets. */
 class TopLevelWindow
-  : public ncurses::WindowHandleWindow
+  : public curses::WindowHandleWindow
 {
 public:
   int HandleAction(const int ch);

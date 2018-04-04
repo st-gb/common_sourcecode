@@ -6,7 +6,7 @@
 
 namespace PDcurses
 {
-  Menu::Menu(ncurses::WindowHandleWindow * win)
+  Menu::Menu(curses::WindowHandleWindow * win)
     : curses::Menu(win),
       m_currentMenuItem(0)
   {    

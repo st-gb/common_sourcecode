@@ -3,7 +3,7 @@
 #include <curses.h> //curs_set(...)
 //#define 
 
-namespace ncurses
+namespace curses
 {
   class Cursor
   {

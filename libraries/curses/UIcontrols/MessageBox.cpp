@@ -10,7 +10,7 @@
 /** preprocessor macro "MessageBox" from Windows API */
 #undef MessageBox
 
-namespace ncurses
+namespace curses
 {
   MessageBox::MessageBox(chtype colorPair, chtype buttonColorPair)
     : //m_windowHandle(NULL), 

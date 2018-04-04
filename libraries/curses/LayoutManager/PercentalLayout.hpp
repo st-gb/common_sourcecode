@@ -6,9 +6,9 @@
 namespace curses {
   struct WindowHandleWindowAndPercentage
   {
-    ncurses::WindowHandleWindow * m_p;
+    curses::WindowHandleWindow * m_p;
     float m_percent;
-    WindowHandleWindowAndPercentage(ncurses::WindowHandleWindow * p, float percent)
+    WindowHandleWindowAndPercentage(curses::WindowHandleWindow * p, float percent)
       : m_p(p), m_percent(percent) { }
   };
   /** class that stands for percental (%) layout. e.g. for horizontal direction
@@ -25,11 +25,11 @@ namespace curses {
   public:
     PercentalLayout(/*WINDOW * windowHandle,*/ enum direction dir)
       : m_direction(dir) /*, m_windowHandle(windowHandle)*/ {}
-    void add(ncurses::WindowHandleWindow * p, float percent)
+    void add(curses::WindowHandleWindow * p, float percent)
     {
       m_windows.push_back(WindowHandleWindowAndPercentage(p, percent));
     }
-    std::vector<ncurses::WindowHandleWindow *> getDirectlyContainedWindows() const;
+    std::vector<curses::WindowHandleWindow *> getDirectlyContainedWindows() const;
     void layout();
   };
 }

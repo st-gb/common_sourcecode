@@ -3,7 +3,7 @@
 #include "windows/Window.hpp" //class Window
 #include "UIcontrols/UIcontrol.hpp"
 
-namespace ncurses
+namespace curses
 {
   void InputProcessorStack::consume(const int ch) {
     container_type::const_reverse_iterator iter = m_inputProcessorStack.rbegin();
@@ -30,9 +30,9 @@ namespace ncurses
         else if( handleActionResult == Curses::Window::destroyWindow)
         {
           /** update window (hide it visually) programmatically */
-          ncurses::WindowHandleWindow * p_windowHandleWindow = 
-            (ncurses::WindowHandleWindow *)
-            dynamic_cast<const ncurses::WindowHandleWindow * const >(p_cursesWindow);
+          curses::WindowHandleWindow * p_windowHandleWindow = 
+            (curses::WindowHandleWindow *)
+            dynamic_cast<const curses::WindowHandleWindow * const >(p_cursesWindow);
           if(p_windowHandleWindow)
             UpdateAllWindowsHiddenBy(p_windowHandleWindow);
           Remove(p_cursesWindow);
@@ -60,8 +60,21 @@ namespace ncurses
     }
   }
   
+  
+  void InputProcessorStack::RemoveAndDeleteAll()
+  {
+    for(container_type::iterator iter = 
+      m_inputProcessorStack.begin(); iter != m_inputProcessorStack.end(); iter ++ )
+    {
+      Curses::Window * p_cursesWindow = *iter;
+      delete p_cursesWindow;
+    }
+    m_inputProcessorStack.clear();
+    exit = true;
+  }
+  
   void InputProcessorStack::UpdateAllWindowsHiddenBy(
-    const ncurses::WindowHandleWindow * p_cursesWindowHandleWindow)
+    const curses::WindowHandleWindow * p_cursesWindowHandleWindow)
   {
     container_type::const_iterator iter = m_inputProcessorStack.begin();
     if( iter != m_inputProcessorStack.end() )
@@ -69,9 +82,9 @@ namespace ncurses
       {
         if( *iter != p_cursesWindowHandleWindow )
         {
-          ncurses::WindowHandleWindow * p_windowHandleWindow = 
-            (ncurses::WindowHandleWindow *)
-            dynamic_cast<const ncurses::WindowHandleWindow * const >(*iter);
+          curses::WindowHandleWindow * p_windowHandleWindow = 
+            (curses::WindowHandleWindow *)
+            dynamic_cast<const curses::WindowHandleWindow * const >(*iter);
           if( p_windowHandleWindow)
             p_windowHandleWindow->UpdateAffectedWindows(p_cursesWindowHandleWindow->getWindowHandle());
         }

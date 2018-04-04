@@ -2,10 +2,10 @@
 
 namespace curses {
 
-std::vector<ncurses::WindowHandleWindow *> PercentalLayout::
+std::vector<curses::WindowHandleWindow *> PercentalLayout::
   getDirectlyContainedWindows() const
 {
-  std::vector<ncurses::WindowHandleWindow *> windows;
+  std::vector<curses::WindowHandleWindow *> windows;
   for( std::vector<curses::WindowHandleWindowAndPercentage>::const_iterator 
     iter = m_windows.begin() ; iter != m_windows.end(); iter++ )
   {

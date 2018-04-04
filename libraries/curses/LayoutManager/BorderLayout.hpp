@@ -14,17 +14,17 @@ namespace curses {
   private:
     enum area m_area;
 //    std::vector<curses::WindowHandleWindow *> m_windows;
-    typedef std::map<enum area, ncurses::WindowHandleWindow *> containerType;
+    typedef std::map<enum area, curses::WindowHandleWindow *> containerType;
     containerType m_area2WindowContainer;
 //    WINDOW * m_windowHandle;
   public:
     BorderLayout(/*enum area area*/ /*WINDOW * windowHandle*/ )
       /*: m_area(area)*/ /*: m_windowHandle(windowHandle)*/ {}
-    void add(ncurses::WindowHandleWindow * p, enum area area)
+    void add(curses::WindowHandleWindow * p, enum area area)
     {
       m_area2WindowContainer.insert(std::make_pair(area, p) );
     }
-    std::vector<ncurses::WindowHandleWindow *> getDirectlyContainedWindows() const;
+    std::vector<curses::WindowHandleWindow *> getDirectlyContainedWindows() const;
     void GetMinimalSize(int & width, int & height);
     void layout();
   };

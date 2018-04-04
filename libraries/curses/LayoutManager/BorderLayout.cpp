@@ -4,14 +4,14 @@
 
 namespace curses {
   
-  std::vector<ncurses::WindowHandleWindow *> BorderLayout::
+  std::vector<curses::WindowHandleWindow *> BorderLayout::
     getDirectlyContainedWindows() const
   {
-    std::vector<ncurses::WindowHandleWindow *> vec;
+    std::vector<curses::WindowHandleWindow *> vec;
     for( containerType::const_iterator citer = m_area2WindowContainer.begin() ;
         citer != m_area2WindowContainer.end() ; citer ++ )
     {
-      ncurses::WindowHandleWindow * p_window = citer->second;
+      curses::WindowHandleWindow * p_window = citer->second;
       if( p_window != NULL )
         vec.push_back(p_window);
     }
@@ -44,7 +44,7 @@ namespace curses {
     if( centerIter != m_area2WindowContainer.end() )
     {
       int _width, _height;
-      ncurses::WindowHandleWindow * p_win = centerIter->second;
+      curses::WindowHandleWindow * p_win = centerIter->second;
       centerIter->second->GetMinimalSize(_width, _height);
       height += _height;
       width += _width;
@@ -76,7 +76,7 @@ namespace curses {
     containerType::const_iterator topIter = m_area2WindowContainer.find(top);
     if( topIter != m_area2WindowContainer.end() )
     {
-      ncurses::WindowHandleWindow * window = topIter->second;
+      curses::WindowHandleWindow * window = topIter->second;
       WINDOW * windowHandle = window->getWindowHandle();
       wresize(windowHandle, 1/*lines*/, maxx/*columns*/);
       mvwin(windowHandle, /*upper left y*/ currentVerticalPos, /*upper left x*/currentHorizontalPos);
@@ -89,7 +89,7 @@ namespace curses {
     int centerWidth = maxx;
     if( leftIter != m_area2WindowContainer.end() )
     {
-      ncurses::WindowHandleWindow * window = leftIter->second;
+      curses::WindowHandleWindow * window = leftIter->second;
       WINDOW * windowHandle = window->getWindowHandle();
       //TODO add getMinimalSize())'s height to currentVerticalPos
       int minWidth, minHeight;
@@ -104,7 +104,7 @@ namespace curses {
     containerType::const_iterator rightIter = m_area2WindowContainer.find(right);
     if( rightIter != m_area2WindowContainer.end() )
     {
-      ncurses::WindowHandleWindow * window = rightIter->second;
+      curses::WindowHandleWindow * window = rightIter->second;
       WINDOW * windowHandle = window->getWindowHandle();
       //TODO add getMinimalSize())'s height to currentVerticalPos
       int minWidth, minHeight;
@@ -138,7 +138,7 @@ namespace curses {
     }
     if( bottomIter != m_area2WindowContainer.end() )
     {
-      ncurses::WindowHandleWindow * window = bottomIter->second;
+      curses::WindowHandleWindow * window = bottomIter->second;
       int width, height;
       window->GetMinimalSize(width, height);
       WINDOW * windowHandle = window->getWindowHandle();

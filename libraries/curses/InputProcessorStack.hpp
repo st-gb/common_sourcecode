@@ -12,11 +12,11 @@
 namespace Curses{
   class Window;
 }
-namespace ncurses {
+namespace curses {
   class WindowHandleWindow;
 }
 
-namespace ncurses
+namespace curses
 {
   /** This class serves the following purpose: 
     * The window that has the current focus should not be responsible to handle
@@ -42,7 +42,8 @@ namespace ncurses
     void add(Curses::Window * w) { m_inputProcessorStack.push_back(w); }
     void Remove(Curses::Window * win);
     void RemoveLastElement() { m_inputProcessorStack.pop_back(); }
-    void UpdateAllWindowsHiddenBy(const ncurses::WindowHandleWindow *);
+    void UpdateAllWindowsHiddenBy(const curses::WindowHandleWindow *);
+    void RemoveAndDeleteAll();
     void consume(const int ch);
     bool exit;
   };

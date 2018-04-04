@@ -46,7 +46,7 @@ static void repaintEditbox(WINDOW *win, int curserPos, const char buffer[] )
     wrefresh(win);
 }
 
-namespace ncurses
+namespace curses
 {
 /*  weditstr()     - edit string 
  * Description:
@@ -179,8 +179,8 @@ int TextBox::handleEdit(const int currentInput, int & cursor_mode)
       defdisp = FALSE;
       insertMode = !insertMode; /**Switch the insert mode*/
       cursor_mode = insertMode ? 
-        ncurses::Cursor::Terminal_specific_high_visibility_mode : 
-        ncurses::Cursor::Terminal_specific_normal_mode;
+        curses::Cursor::Terminal_specific_high_visibility_mode : 
+        curses::Cursor::Terminal_specific_normal_mode;
       cursor_mode = curs_set(cursor_mode); /**set the cursor mode*/
       break;
     default:
@@ -381,7 +381,7 @@ void TextBox::HandleKeyNextPage()
     
 int TextBox::HandleAction(const int ch)
 {
-  int m_cursor_mode = ncurses::Cursor::Terminal_specific_normal_mode;
+  int m_cursor_mode = curses::Cursor::Terminal_specific_normal_mode;
   /** see https://stackoverflow.com/questions/9750588/how-to-get-ctrl-shift-or-alt-with-getch-ncurses */
   /*NCURSES_CONST*/ const char * keyName = keyname(ch);
   switch( ch )
@@ -449,7 +449,7 @@ void TextBox::SetFocus(bool focus)
   //  handleInput();
     int cursor_mode = //    insert ? 
   //    Curses::Cursor::Terminal_specific_high_visibility_mode : 
-      ncurses::Cursor::Terminal_specific_normal_mode;
+      curses::Cursor::Terminal_specific_normal_mode;
     curs_set(cursor_mode); /** Show cursor (if possible) */
 //    int cursorX=0, cursorY=0;
 //    if(m_drawBorder)
@@ -518,6 +518,7 @@ void TextBox::ShowWithLineBeginningAtCharPos(fastestUnsignedDataType charPos)
   for( ; /* *p_currentChar*/ (beginOfString + currentCharPos) != '\0';
        /*p_currentChar++*/ currentCharPos ++ )
   {
+    //TODO SIGSEGV here when at end of text
     currentChar = *(beginOfString + currentCharPos);
     if( currentChar == '\n' || (beginOfString + currentCharPos - beginOfLine) > m_lineWidth)
     {
@@ -619,13 +620,19 @@ void TextBox::show()
     m_numVisibleLinesForText )
   {
     const char * p_textLineEnd = strchr(handleCurrentLineParams.p_windowLineBegin, '\n');
-    handleCurrentLineParams.charIndexOfTextLineEnd = m_content.find('\n', 
-      handleCurrentLineParams.p_windowLineBegin - m_content.c_str() );
+    /** No newline found. */
+    if( p_textLineEnd == NULL )
+      p_textLineEnd = m_content.c_str() + m_content.size();
+    handleCurrentLineParams.charIndexOfTextLineEnd = //m_content.find('\n', 
+      //handleCurrentLineParams.p_windowLineBegin - m_content.c_str() );
+      p_textLineEnd - m_content.c_str();
     if( p_textLineEnd != NULL && handleCurrentLineParams.p_windowLineBegin == 
       handleCurrentLineParams.p_textLineBegin )
-      numCharsInCurrentTextLine = handleCurrentLineParams.p_windowLineBegin - 
+      numCharsInCurrentTextLine = p_textLineEnd - 
         handleCurrentLineParams.p_textLineBegin;
+    
     numCharsInCurrentWindowLine = p_textLineEnd - handleCurrentLineParams.p_windowLineBegin;
+    
 //    currentLine = std::string(currentChar, numCharsInCurrentWindowLine);
     /** "<=" because also advance including the newline if a newline ends at 
        line end. (else an additional empty line would be displayed afterwards.*/
@@ -657,7 +664,7 @@ void TextBox::handleInput()
   char * tp;
   int cursor_mode = //    insert ? 
 //    Curses::Cursor::Terminal_specific_high_visibility_mode : 
-    ncurses::Cursor::Terminal_specific_normal_mode;
+    curses::Cursor::Terminal_specific_normal_mode;
   curs_set(cursor_mode); /** Show cursor (if possible) */
 
   int currentInput = 0;
@@ -688,7 +695,7 @@ void TextBox::handleInput()
     if(m_editable)
       handleEdit(currentInput, cursor_mode);
   }
-  curs_set(ncurses::Cursor::Invisible); /* set cursor to invisible */
+  curs_set(curses::Cursor::Invisible); /* set cursor to invisible */
 //  }
 //  return currentInput;
 }

@@ -3,8 +3,8 @@
 #include "Window.hpp"
 #include "../EventQueue.hpp" //class EventQueue
 
-ncurses::InputProcessorStack Curses::Window::s_inputProcessorStack;
-extern ncurses::EventQueue g_eventQueue;
+curses::InputProcessorStack Curses::Window::s_inputProcessorStack;
+extern curses::EventQueue g_eventQueue;
 
 namespace Curses
 {

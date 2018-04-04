@@ -7,7 +7,7 @@
 
 namespace curses {
 class UIcontrol
-  : public ncurses::WindowHandleWindow
+  : public curses::WindowHandleWindow
 {
 protected:
   bool m_hasFocus;
@@ -20,7 +20,7 @@ protected:
   static std::set<int> s_colorPairIndices;
 public:
   UIcontrol() 
-    : ncurses::WindowHandleWindow(true)
+    : curses::WindowHandleWindow(true)
     , m_hasFocus(false)
 //    , m_deactivateColorPair()
     {}
