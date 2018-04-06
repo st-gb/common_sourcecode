@@ -22,7 +22,7 @@ void MarkableTextBox::HandleCurrentLine(
     handleCurrentLineParams.p_windowLineBegin - m_content.c_str();
   int currentCharPos = charIndexOfWindowLineBegin;
   int numCharsToPrint;
-  int currentX = m_drawBorder;
+  int currentX = 0;
   chtype currentColor;
   bool insideMark = false;
   int numRemainingCharsToPrintForWindowLine = handleCurrentLineParams.numCharsToPrint;
@@ -43,7 +43,8 @@ void MarkableTextBox::HandleCurrentLine(
 //        break;
     }
     if( mark.begin >= currentCharPos && 
-      markEnd <= charIndexOfWindowLineBegin + numRemainingCharsToPrintForWindowLine)
+        /*markEnd <=*/ mark.begin < charIndexOfWindowLineBegin + 
+        numRemainingCharsToPrintForWindowLine)
     {
       markPositionAfterCurrentCharPos = markPositionsIter;
 //      setcolor(m_windowHandle, m_colorPair);
@@ -61,8 +62,8 @@ void MarkableTextBox::HandleCurrentLine(
     if( numCharsToPrint > numRemainingCharsToPrintForWindowLine)
       numCharsToPrint = numRemainingCharsToPrintForWindowLine;
     mvwaddnstr(m_windowHandle,
-      handleCurrentLineParams.windowLineNumber /** y position*/, 
-      currentX /** x position */, 
+      handleCurrentLineParams.windowLineNumber + m_drawBorder /** y position*/, 
+      currentX + m_drawBorder /** x position */, 
       m_content.c_str() + charIndexOfWindowLineBegin /** string */, 
       numCharsToPrint /** max number of chars */);
     currentX += numCharsToPrint;
@@ -86,8 +87,10 @@ void MarkableTextBox::HandleCurrentLine(
           markPositionAfterCurrentCharPos ++)
   {
     const Mark & mark = *markPositionAfterCurrentCharPos;
-    if( mark.begin > charIndexOfWindowLineBegin && mark.begin <= 
-      charIndexOfWindowLineBegin + numRemainingCharsToPrintForWindowLine)
+    /** If mark lies in current line. */
+    if( mark.begin >= charIndexOfWindowLineBegin + currentX && mark.begin < 
+        charIndexOfWindowLineBegin + /*numRemainingCharsToPrintForWindowLine*/
+        handleCurrentLineParams.numCharsToPrint )
     {
 //      markPositionAfterCurrentCharPos = markPositionsIter;
       setcolor(m_windowHandle, m_colorPair);
@@ -98,7 +101,7 @@ void MarkableTextBox::HandleCurrentLine(
 
     mvwaddnstr(m_windowHandle,
       handleCurrentLineParams.windowLineNumber + m_drawBorder /** y position*/, 
-      currentX /** x position */, 
+      currentX + m_drawBorder /** x position */, 
       m_content.c_str() + charIndexOfWindowLineBegin + currentX /** string */, 
       numCharsToPrint /** max number of chars */);
     currentX += numCharsToPrint;
@@ -112,12 +115,14 @@ void MarkableTextBox::HandleCurrentLine(
         setcolor(m_windowHandle, m_markColorPair);
         mvwaddnstr(m_windowHandle,
           handleCurrentLineParams.windowLineNumber + m_drawBorder /** y position*/, 
-          currentX /** x position */, 
+          currentX + m_drawBorder /** x position */, 
           m_content.c_str() + charIndexOfWindowLineBegin + currentX /** string */, 
           numCharsToPrint /** max number of chars */);
         currentX += numCharsToPrint;
         numRemainingCharsToPrintForWindowLine -= numCharsToPrint;
     }
+    else
+        break;
 //    if( mark.getMarkEnd() )
   }
   /** Either no mark in curren window line. */
@@ -125,8 +130,8 @@ void MarkableTextBox::HandleCurrentLine(
   {
     setcolor(m_windowHandle, m_colorPair);
     mvwaddnstr(m_windowHandle,
-      m_drawBorder + handleCurrentLineParams.windowLineNumber /** y position*/, 
-      currentX /** x position */, 
+      handleCurrentLineParams.windowLineNumber + m_drawBorder /** y position*/, 
+      currentX + m_drawBorder /** x position */, 
       m_content.c_str() + charIndexOfWindowLineBegin + currentX /** string */, 
       numRemainingCharsToPrintForWindowLine /** max number of chars */);
   }
