@@ -82,7 +82,9 @@ TextBox::TextBox(
     m_cursorPos(0),
     m_1stLineToShow(0),
     m_numVisibleLinesForText(0),
-    m_colorPair(colorPair)
+    m_colorPair(colorPair),
+    m_cursorLineBeginCharIndex(0),
+    m_1stLineToShowBeginCharIndex(0)
 {
 }
 
@@ -250,9 +252,50 @@ void TextBox::ShowCursorPos()
 #else
   getmaxyx(m_windowHandle, maxy, maxx);
 #endif
-  const int lineWidth = m_drawBorder ? maxx - 2 : maxx; 
-  int cursorY = (m_cursorPos - m_lineWidth * m_1stLineToShow) / lineWidth;
-  int cursorX = m_cursorPos % lineWidth;
+//  const int lineWidth = m_drawBorder ? maxx - 2 : maxx; 
+  //TODO this works only if there is no newline in the text
+//  int cursorY = (m_cursorPos - m_lineWidth * m_1stLineToShow) / lineWidth;  
+//  int cursorX = m_cursorPos % lineWidth;
+ 
+  const char * beginOfString = m_content.c_str();
+#ifdef _DEBUG
+  const int textSize = m_content.size();
+#endif
+  char currentChar;
+  int beginOfLineCharIndex = 0;
+  int currentCharPos = 0;
+  int cursorX, cursorY = 0;
+  int lineNumber = 0;
+  int previousChar = -1;
+//  int lastAutomaticLineBreakCharIndex = -1;
+  for( ; currentCharPos < textSize; currentCharPos ++ )
+  {
+    //TODO SIGSEGV here when at end of text
+    currentChar = *(beginOfString + currentCharPos);
+    if(/*beginOfString + currentCharPos - beginOfLine*/
+        (currentCharPos - beginOfLineCharIndex ) == m_lineWidth)
+    {
+//      beginOfLine = /*p_currentChar*/ beginOfString + currentCharPos + 1;
+      beginOfLineCharIndex = currentCharPos;
+//      lastAutomaticLineBreakCharIndex = currentCharPos;
+      lineNumber ++;
+    }
+    else
+      //!---TODO
+      if( previousChar == '\n' /*&& lastAutomaticLineBreakCharIndex*/ )
+      {
+        beginOfLineCharIndex = currentCharPos /*+ 1*/;
+        lineNumber ++;
+      }
+    previousChar = currentChar;
+    if( m_cursorPos == currentCharPos)
+    {
+      cursorX = currentCharPos - beginOfLineCharIndex;
+      cursorY = lineNumber - m_1stLineToShow;
+      break;
+    }
+  }
+  
   /** https://www.ibm.com/support/knowledgecenter/en/ssw_aix_61/com.ibm.aix.genprogc/control_cursor_wcurses.htm :
    *  "Moves the logical cursor associated with a user-defined window" */
   wmove(m_windowHandle, cursorY + m_drawBorder, cursorX + m_drawBorder);
@@ -319,36 +362,219 @@ void TextBox::HandleCtrlRightKey()
   }
 }
 
+//@return: number of characters to subtract from line width 
+//       this value is for "key up", but not for "key left".
+int TextBox::GetBeginOfWindowLine(int currentCharPos, 
+  int & numCharsToSubtractFromLineWidth )
+{
+//  int numCharsToSubtractFromLineWidth = 0;
+  int newCursorLineBeginCharIndex = 0;
+//    bool cursorPosChanged = false;
+    const int newCurrentCursorLineEndCharIndex = currentCharPos;
+    int beginOfNewCurrentLine = -1;
+    for(; currentCharPos > -1 ; currentCharPos --)
+    {
+//      if( numNewLinesToLookFor == 1)
+//      {
+        if( m_content[currentCharPos] == '\n')
+          beginOfNewCurrentLine = currentCharPos + 1;
+        if( currentCharPos == 0)
+          beginOfNewCurrentLine = currentCharPos;
+          if( beginOfNewCurrentLine > -1 )
+          {
+//            const int beginOfNewCurrentLine = currentCharPos + 1;
+            const int numCharsInNewCurrentLine = newCurrentCursorLineEndCharIndex - 
+              beginOfNewCurrentLine + 1;
+            int numCharsInNewCurrentCursorLine;
+            /** void % by 0 error */
+            if( numCharsInNewCurrentLine > 0)
+              /** The remainder of modulo ist the # chas in previous window line */
+              numCharsInNewCurrentCursorLine = m_lineWidth % 
+                numCharsInNewCurrentLine;
+            else
+              numCharsInNewCurrentCursorLine = 0;
+            const int cursorXpos = m_cursorPos - m_cursorLineBeginCharIndex;
+//            lineBeginCharIndex = currentCharPos + 1;
+            if( numCharsInNewCurrentCursorLine < cursorXpos)
+            {
+                newCursorLineBeginCharIndex -= (numCharsInNewCurrentLine 
+                  /** newline char*/ + 1);
+                numCharsToSubtractFromLineWidth = (numCharsInNewCurrentCursorLine
+                  /** newline char*/ + 1 );
+//                cursorPosChanged = true;
+                break;
+            }
+            else
+            {
+                newCursorLineBeginCharIndex -= m_lineWidth;
+//                m_cursorPos -= (m_lineWidth - cursorXpos);
+                numCharsToSubtractFromLineWidth = cursorXpos;
+//                cursorPosChanged = true;
+                break;
+            }
+//            numLines ++;
+//            if( numLines == m_numVisibleLinesForText )
+//              return currentCharPos /*- m_1stLineToShowBeginCharIndex*/;
+         }
+      }
+//      else
+//        numNewLinesToLookFor--;
+//    }
+//  return /*cursorPosChanged*/ numCharsToSubtractFromLineWidth;
+  return newCursorLineBeginCharIndex;
+}
+
 void TextBox::HandleKeyUp()
 {
-  if (m_cursorPos >= m_lineWidth)
+  bool cursorPosChanged = false;
+  int cursorX = m_cursorLineBeginCharIndex - m_cursorPos;
+  if(m_cursorLineBeginCharIndex > 0)
   {
-    m_cursorPos -= m_lineWidth;
+//    int numNewLinesToLookFor;
+    int currentCharPos = m_cursorLineBeginCharIndex - 1;
+    /** New window line was causes by a newline character (and not by an
+     *  automatic line break). */
+    if( m_content[currentCharPos] == '\n')
+    {
+//       numNewLinesToLookFor = 2;
+      int numCharsToSubtractFromLineWidth;
+      /*cursorPosChanged*/ 
+      m_cursorLineBeginCharIndex = GetBeginOfWindowLine(
+        currentCharPos - 1, numCharsToSubtractFromLineWidth);
+      m_cursorPos -= m_lineWidth - numCharsToSubtractFromLineWidth;
+    }
+    else
+    {
+       if( m_cursorLineBeginCharIndex >= m_lineWidth )
+       {
+        m_cursorLineBeginCharIndex -= m_lineWidth;
+        m_cursorPos -= (m_lineWidth - cursorX);
+ //       numNewLinesToLookFor = 1;
+        cursorPosChanged = true;
+       }
+    }
+  }
+  if (cursorPosChanged)
+  {
     NotifyCursorPosChangedListener();
-    if (m_cursorPos < (m_1stLineToShow * m_lineWidth) )
+    if (m_cursorPos < m_1stLineToShowBeginCharIndex )
     {
       m_1stLineToShow--;
-      show();
-    }  
-    ShowCursorPos();
-  }
-}
-    
-void TextBox::HandleKeyDown(const int ch)
-{
-  const int textLength = m_content.length();
-  /** If at least 1 line left after cursor position. */
-  if(textLength > m_lineWidth && m_cursorPos < textLength - m_lineWidth)
-  {
-    m_cursorPos += m_lineWidth;
-    NotifyCursorPosChangedListener();
-    if( m_cursorPos >= ( m_1stLineToShow + m_numVisibleLinesForText) * m_lineWidth )
-    {
-      m_1stLineToShow++;
       show();
     }
     ShowCursorPos();
   }
+}
+ 
+int TextBox::GetLastVisibleWindowLineEndCharIndex()
+{
+    int numLines = 0;
+    int lineBeginCharIndex = m_1stLineToShowBeginCharIndex;
+    for(int currentCharPos = m_1stLineToShowBeginCharIndex; 
+        currentCharPos < m_content.size() ; currentCharPos ++)
+    {
+      if( m_content[currentCharPos] == '\n' || 
+          currentCharPos - lineBeginCharIndex > m_lineWidth )
+      {
+          lineBeginCharIndex = currentCharPos + 1;
+          numLines ++;
+          if( numLines == m_numVisibleLinesForText )
+            return currentCharPos /*- m_1stLineToShowBeginCharIndex*/;
+      }
+    }
+    return -1;
+}
+
+void TextBox::HandleKeyDown(const int ch)
+{
+  const int textLength = m_content.length();
+//  char p_currentChar = m_content.c_str() + m_cursorPos;
+  /** If at least 1 line left after cursor position. */
+//  if(textLength > m_lineWidth && m_cursorPos < textLength - m_lineWidth)
+  int currentCharPos = m_cursorPos;
+  int previousCursorPos = m_cursorPos;
+//  int lineBegin = 
+  int currentX = -1;
+  int currentXpos = m_cursorPos - m_cursorLineBeginCharIndex;
+  bool newCursorPosSet = false;
+//  m_cursorLineBeginCharIndex = 0;
+  bool lineEndForCurrentCursorPosFound = false;
+  for( ; currentCharPos < m_content.size() ; currentCharPos ++)
+  {
+//    m_cursorPos += m_lineWidth;
+    if( m_content[currentCharPos] == '\n')
+      if( lineEndForCurrentCursorPosFound)
+      {
+        //TODO does not work for "\n\n" ?!
+        //TODO last char fits exactly into window line and newline char directly afterwards
+        /** New cursor pos points to the index of the newline char. */
+        m_cursorPos = currentCharPos;
+        newCursorPosSet = true;
+        break;
+      }
+      else
+      {
+        m_cursorLineBeginCharIndex = currentCharPos + 1;
+        lineEndForCurrentCursorPosFound = true;
+      }
+    if(currentCharPos - m_cursorLineBeginCharIndex == m_lineWidth )
+    {
+      if( lineEndForCurrentCursorPosFound)
+        ;
+      else
+      {
+        lineEndForCurrentCursorPosFound = true;
+        m_cursorLineBeginCharIndex = currentCharPos;
+      }
+    }
+    if( lineEndForCurrentCursorPosFound && 
+       currentCharPos == m_cursorLineBeginCharIndex + currentXpos )
+    {
+      m_cursorPos = currentCharPos;
+      newCursorPosSet = true;
+      break;
+    }
+//    if( currentCharPos == m_cursorPos )
+//    {
+//      currentX = currentCharPos - m_cursorLineBeginCharIndex;        
+//    }
+  }
+//  if( currentX > -1 )
+//  {
+//    for( ; currentCharPos < m_content.size() ; currentCharPos ++)
+//    {
+//  //    m_cursorPos += m_lineWidth;
+////      if( m_content[currentCharPos] == '\n' || 
+////        m_cursorLineBeginCharIndex - currentCharPos > m_lineWidth )
+////      {
+////        m_cursorPos = currentCharPos;
+////        newCursorPosSet = true;
+////        break;
+////      }
+//      if( currentCharPos - m_cursorLineBeginCharIndex == currentX )
+//      {
+//        m_cursorPos = currentCharPos;
+//        newCursorPosSet = true;
+//        break;
+//      }
+//    }
+    if( newCursorPosSet)
+    {
+        NotifyCursorPosChangedListener();
+        const int lastVisibleWindowLineEndCharIndex = 
+          GetLastVisibleWindowLineEndCharIndex();        
+        //TODO check the following line
+        if( lastVisibleWindowLineEndCharIndex > -1 && 
+            previousCursorPos <= lastVisibleWindowLineEndCharIndex &&
+            m_cursorPos > lastVisibleWindowLineEndCharIndex )
+        {
+          //TODO also calculate new m_1stLineToShowBeginCharIndex!
+          m_1stLineToShow++;
+          show();
+        }
+        ShowCursorPos();
+    }
+//  }
 }
 
 void TextBox::HandleKeyPreviousPage()
@@ -378,7 +604,46 @@ void TextBox::HandleKeyNextPage()
     show();
   }
 }
-    
+
+void TextBox::HandleLeftArrowKey()
+{
+  if (m_cursorPos > 0)
+  {
+    int numCharsToSubtractFromLineWidth;
+    /*cursorPosChanged =*/
+//    if( m_content[m_cursorPos] == '\n')
+//      m_cursorLineBeginCharIndex = GetBeginOfWindowLine(m_cursorPos, 
+//        numCharsToSubtractFromLineWidth);
+    if( m_cursorPos == m_cursorLineBeginCharIndex)
+      m_cursorLineBeginCharIndex = GetBeginOfWindowLine(m_cursorPos, 
+        numCharsToSubtractFromLineWidth);      
+    m_cursorPos--;
+    ShowCursorPos();
+  }
+}
+
+
+void TextBox::HandleRightArrowKey()
+{
+//  defdisp = FALSE;
+  const int textLength = m_content.length();
+  if( m_cursorPos < textLength )
+  {
+    if( m_content[m_cursorPos] == '\n' )
+    {
+      m_cursorLineBeginCharIndex = m_cursorPos + 1;
+//      m_cursorXpos = 0;
+    }
+    m_cursorPos ++;
+    if(m_cursorPos - m_cursorLineBeginCharIndex == m_lineWidth )
+    {
+      m_cursorLineBeginCharIndex = m_cursorPos;
+//      m_cursorXpos = 0;
+    }
+    ShowCursorPos();
+  }
+}
+
 int TextBox::HandleAction(const int ch)
 {
   int m_cursor_mode = curses::Cursor::Terminal_specific_normal_mode;
@@ -391,6 +656,7 @@ int TextBox::HandleAction(const int ch)
   case KEY_ESC :
     //std_str = originalString; /* restore original */
 //    stop = TRUE;
+      //TODO really remove as key listener? why? (give examples))
     RemoveAsKeyListener();
     break;
   case KEY_UP:
@@ -406,22 +672,10 @@ int TextBox::HandleAction(const int ch)
     HandleKeyPreviousPage();
     break;
   case KEY_LEFT:
-    if (m_cursorPos > 0)
-    {
-      m_cursorPos--;
-      ShowCursorPos();
-    }
+    HandleLeftArrowKey();
     break;
   case KEY_RIGHT:
-    defdisp = FALSE;
-    {
-      const int textLength = m_content.length();
-      if( m_cursorPos < textLength )
-      {
-        m_cursorPos ++;
-        ShowCursorPos();
-      }
-    }
+    HandleRightArrowKey();
     break;
   default :
     /** Ctrl+right_key */
@@ -504,43 +758,74 @@ fastestUnsignedDataType TextBox::GetCharPosOfBeginOfLine(int lineNumber)
   return charPos;
 }
 
+/** */
 void TextBox::ShowWithLineBeginningAtCharPos(fastestUnsignedDataType charPos)
 {
 //  if( m_drawBorder)
 //    m_lineWidth
 //    if( m_wrapLines )
-  const char * beginOfLine = m_content.c_str();
+//  const char * beginOfLine = m_content.c_str();
   const char * const beginOfString = m_content.c_str();
   const char * p_currentChar = m_content.c_str();
   int currentCharPos = 0;
   char currentChar;
+//  int beginOfLineCharIndex = 0;
   int currentLineNumber = 0;
-  for( ; /* *p_currentChar*/ (beginOfString + currentCharPos) != '\0';
+  for( ; /* *p_currentChar*/ currentCharPos < m_content.size();
        /*p_currentChar++*/ currentCharPos ++ )
   {
     //TODO SIGSEGV here when at end of text
     currentChar = *(beginOfString + currentCharPos);
-    if( currentChar == '\n' || (beginOfString + currentCharPos - beginOfLine) > m_lineWidth)
+    if( currentChar == '\n' || (/*beginOfString + currentCharPos - beginOfLine*/
+        currentCharPos - m_cursorLineBeginCharIndex ) > m_lineWidth)
     {
-      beginOfLine = /*p_currentChar*/ beginOfString + currentCharPos + 1;
+//      beginOfLine = /*p_currentChar*/ beginOfString + currentCharPos + 1;
+      m_cursorLineBeginCharIndex = currentCharPos + 1;
+      m_cursorPos = currentCharPos + 1;
       currentLineNumber ++;
     }
     if( currentCharPos >= charPos)
     {
       m_1stLineToShow = currentLineNumber;
+      m_1stLineToShowBeginCharIndex = m_cursorLineBeginCharIndex;
+#ifdef _DEBUG
+      const char * p_beginOfLine = m_content.c_str() + m_cursorLineBeginCharIndex;
+#endif
       break;
     }
   }
   show();
 }
 
+/** this method only needs to be called if either the text changes or the 
+ *  window size changes, */
 fastestUnsignedDataType TextBox::getNumberOfLinesNeededForText(
   fastestUnsignedDataType lineWidth)
 {
   const int numTextChars = m_content.length();
-  fastestUnsignedDataType numLines = numTextChars / lineWidth;
-  if( numTextChars % lineWidth > 0)
-    numLines++;
+//  fastestUnsignedDataType numLines = numTextChars / lineWidth;
+//  if( numTextChars % lineWidth > 0)
+//    numLines++;
+  fastestUnsignedDataType numLines = 0;
+  const char * const beginOfString = m_content.c_str();
+  const char * p_currentChar = m_content.c_str();
+  int currentCharPos = 0;
+  char currentChar;
+  int beginOfLineCharIndex = 0;
+  for( ; /* *p_currentChar*/ currentCharPos < numTextChars;
+       /*p_currentChar++*/ currentCharPos ++ )
+  {
+    currentChar = *(beginOfString + currentCharPos);
+    if( currentChar == '\n' || (/*beginOfString + currentCharPos - beginOfLine*/
+        currentCharPos - beginOfLineCharIndex ) > m_lineWidth)
+    {
+//      beginOfLine = /*p_currentChar*/ beginOfString + currentCharPos + 1;
+      beginOfLineCharIndex = currentCharPos + 1;
+      numLines ++;
+    }
+  }
+  if( currentCharPos - beginOfLineCharIndex > 0 )
+    numLines ++;
   return numLines;
 }
 

@@ -38,10 +38,12 @@ public:
   void create(WINDOW * const p_superWindow, int numLines, int numColumns, 
     int x, int y);
   void displayScrollBar();
+  int GetBeginOfWindowLine(int currentCharPos, int &);
   fastestUnsignedDataType GetCharPosOfBeginOfLine(int lineNumber);
   fastestUnsignedDataType GetCursorPos() const { return m_cursorPos; }
   fastestUnsignedDataType getNumberOfLinesNeededForText(fastestUnsignedDataType lineWidth);
   void GetMinimalSize(int & width, int & height);
+  int GetLastVisibleWindowLineEndCharIndex();
   int handleEdit(const int currentInput, int & cursor_mode);
   void handleInput();
   int HandleAction(const int ch);
@@ -55,6 +57,8 @@ public:
     );
   void HandleKeyDown(const int ch);
   void HandleKeyUp();
+  void HandleLeftArrowKey();
+  void HandleRightArrowKey();
   void HandleKeyPreviousPage();
   void HandleKeyNextPage();
   void NotifyCursorPosChangedListener();
@@ -68,6 +72,9 @@ public:
   void ShowWithLineBeginningAtCharPos(fastestUnsignedDataType);
 protected:
   chtype m_colorPair;
+  /** char index of the line that contains the cursor. */
+  int m_cursorLineBeginCharIndex;
+  int m_1stLineToShowBeginCharIndex;
   std::string m_content;
   typedef std::vector<curses::CursorPosChangedListener *> 
     CursorPosChangedListenerContainerType;
