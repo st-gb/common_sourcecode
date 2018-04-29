@@ -131,7 +131,7 @@ TextBox::~TextBox()
   {
     wattrset( /*p_editWindow*/ m_windowHandle, m_oldAttribute);
   //  repaintEditbox( p_editWindow, bufferPointer - buffer, buffer);
-    delwin( /*p_editWindow*/ m_windowHandle);
+//    delwin( /*p_editWindow*/ m_windowHandle);
     touchwin(m_p_superWindow);
     wrefresh(m_p_superWindow);
   }

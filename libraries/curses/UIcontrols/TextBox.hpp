@@ -37,6 +37,7 @@ public:
 //  void create();
   void create(WINDOW * const p_superWindow, int numLines, int numColumns, 
     int x, int y);
+  using WindowHandleWindow::create;
   void displayScrollBar();
   int GetBeginOfWindowLine(int currentCharPos, int &);
   fastestUnsignedDataType GetCharPosOfBeginOfLine(int lineNumber);
@@ -44,6 +45,8 @@ public:
   fastestUnsignedDataType getNumberOfLinesNeededForText(fastestUnsignedDataType lineWidth);
   void GetMinimalSize(int & width, int & height);
   int GetLastVisibleWindowLineEndCharIndex();
+  
+  /** Input character handling. */
   int handleEdit(const int currentInput, int & cursor_mode);
   void handleInput();
   int HandleAction(const int ch);
@@ -61,6 +64,7 @@ public:
   void HandleRightArrowKey();
   void HandleKeyPreviousPage();
   void HandleKeyNextPage();
+  
   void NotifyCursorPosChangedListener();
   void ShowCursorPos();
   void show();

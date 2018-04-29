@@ -40,6 +40,7 @@ namespace Curses
   {
     do
     {
+      //TODO sometimes makes all windows black if called
       int key = getch();
       if( key != ERR )
         Window::s_inputProcessorStack.consume(key);
