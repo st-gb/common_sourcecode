@@ -31,6 +31,9 @@ namespace Curses
     virtual int HandleAction(const int ch) { return 0; }
     static WINDOW * CreateWindowRelativePos(WINDOW * windowForRelativePos,
       int width, int height, int ypos, int xpos);
+    /** Declared in this class because also non-handle window classes should
+        be usable in layout managers as "spacers". */
+    virtual void GetMinimalSize(int & width, int & height){width = 1; height = 1;}
     bool IsUIcontrol() const { return m_isUIcontrol;}
   };
   

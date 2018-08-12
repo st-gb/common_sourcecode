@@ -20,6 +20,7 @@ namespace curses
     m_last = new Node(fp);
     m_first = m_last;
   }
+  m_numberOfItems ++;
   m_criticalSection.Leave();
 }
 
@@ -43,6 +44,7 @@ void EventQueue::Process()
         m_first = second;
       }
     }
+    m_numberOfItems --;
     m_criticalSection.Leave();
   }
 }

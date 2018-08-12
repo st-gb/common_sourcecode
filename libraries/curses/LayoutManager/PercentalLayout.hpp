@@ -29,7 +29,7 @@ namespace curses {
     {
       m_windows.push_back(WindowHandleWindowAndPercentage(p, percent));
     }
-    std::vector<curses::WindowHandleWindow *> getDirectlyContainedWindows() const;
+    windowsContainerType getDirectlyContainedWindows() const;
     void layout();
   };
 }

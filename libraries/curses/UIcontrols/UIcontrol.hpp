@@ -37,7 +37,9 @@ public:
 //    s_deactivateColorPair;
   }
   bool HasFocus() const { return m_hasFocus;}
+  /** E.g. shows the cursor for controls containing text. */
   virtual void SetFocus(bool focus);
+  /** Shows the control (does the output via curses routines) */
   virtual void show() = 0;
 };
 }

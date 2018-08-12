@@ -50,12 +50,12 @@ std::string FileChooserDialog::ChooseFile(
   if( mode == FileChooserDialog::save)
   {
     m_p_button->SetLabel("save");
-    m_p_button->SetColor(m_currentSelectionColorPair);
   }
   if( mode == FileChooserDialog::open)
   {
     m_p_button->SetLabel("open");
   }
+  m_p_button->SetColor(m_currentSelectionColorPair);
   curses::BorderLayout * p_buttonAndTextFieldPanel = new curses::BorderLayout();
   p_buttonAndTextFieldPanel->create();
   curses::Label * p_label = new curses::Label();
@@ -106,7 +106,11 @@ std::string FileChooserDialog::ChooseFile(
   
   //TODO create new thread and wait for end?!
   //TODO dialog is deleted by InputProcessorStack::consume(...) if reached here!
-  std::string fileName = p_fileNameTextBox->getText();
+  std::string fileName;
+  if( mode == FileChooserDialog::open )
+    fileName = m_p_listBox->GetCurrentSelectionString();
+  else
+    fileName = p_fileNameTextBox->getText();
   std::string filePath = m_p_folderLabel->GetLabel() + PATH_SEPERATOR_CHAR + fileName;
   return filePath;
 }

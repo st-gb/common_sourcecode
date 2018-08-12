@@ -25,8 +25,9 @@ public:
   Node/*<T>*/ * m_first;
   Node/*<T>*/ * m_last;
   nativeCriticalSection_type m_criticalSection;
+  unsigned m_numberOfItems;
 public:
-  EventQueue() : m_first(NULL), m_last(NULL) { }
+  EventQueue() : m_first(NULL), m_last(NULL), m_numberOfItems(0) { }
 
   /*template <typename T>*/ void addEvent/*<T>*/ (//T t 
     Node::FunctionPointer fp );

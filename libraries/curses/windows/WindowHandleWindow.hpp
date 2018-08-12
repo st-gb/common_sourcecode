@@ -19,12 +19,19 @@ public:
   WindowHandleWindow() : m_windowHandle(NULL), mp_layoutManager(NULL) { }
   WindowHandleWindow(bool isUIcontrol) : Curses::Window(isUIcontrol), 
     m_windowHandle(NULL), mp_layoutManager(NULL) { }
+  ~WindowHandleWindow() { 
+    if(m_windowHandle)
+    {
+      delwin(m_windowHandle);
+      m_windowHandle = NULL;
+    }
+  }
   void setLayout(curses::LayoutManagerBase * p_layoutManager);
   void doLayout() const;
   void create();
   void create(WINDOW * const p_superWindow, int numLines, int numColumns, 
     int x, int y);
-  virtual void GetMinimalSize(int & width, int & height){width = 1; height = 1;}
+  void destroyAllContainedWindows();
   WINDOW * getWindowHandle() const { return m_windowHandle;}
   void GetSize(int & width, int & height) const;
   curses::LayoutManagerBase * getLayoutManager() const{return mp_layoutManager;}
