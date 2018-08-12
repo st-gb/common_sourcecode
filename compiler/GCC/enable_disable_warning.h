@@ -17,7 +17,8 @@
   # if ((__GNUC__ * 100) + __GNUC_MINOR__) >= 406 //GNUC > 4.06
   #  define GCC_DIAG_OFF(x) \
        GCC_DIAG_PRAGMA(push) \
-       GCC_DIAG_PRAGMA(ignored GCC_DIAG_JOINSTR(-W,x))
+       //GCC_DIAG_PRAGMA(ignored GCC_DIAG_JOINSTR(-W,x))
+       GCC_DIAG_PRAGMA(ignored x)
   #  define GCC_DIAG_ON(x) GCC_DIAG_PRAGMA(pop)
   # else
   #  define GCC_DIAG_OFF(x) GCC_DIAG_PRAGMA(ignored GCC_DIAG_JOINSTR(-W,x))

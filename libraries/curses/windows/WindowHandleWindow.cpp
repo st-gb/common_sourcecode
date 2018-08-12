@@ -55,8 +55,17 @@ void WindowHandleWindow::create(
     return;
 }
 
+//TODO remove all windows if not as member (check is where address lies )
+//RemoveAndDeleteAllWindows
+//{
+//  
+//}
+
 void WindowHandleWindow::setLayout(curses::LayoutManagerBase * p_layoutManager)
-{ 
+{
+  //TODO before remove all windows?
+//  if(mp_layoutManager)
+//    RemoveAndDeleteAllWindows();
   mp_layoutManager = p_layoutManager;
   mp_layoutManager->setHandle(m_windowHandle);
 }
