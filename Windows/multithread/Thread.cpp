@@ -39,7 +39,7 @@ namespace Windows_API
       ::CloseHandle(m_handleThread ) ;
   }
 
-  BYTE Thread::start(
+  fastestUnsignedDataType Thread::start(
     pfnThreadFunc pfn_threadfunc,
     void * p_v, /*BYTE*/
     enum I_Thread::priority prio )

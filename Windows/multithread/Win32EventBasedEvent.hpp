@@ -66,12 +66,12 @@
       ::ResetEvent(m_handleEvent) ;
     }
 
-//    void Wait()
-//    {
-//      ::WaitForSingleObject(
-//        m_handleEvent, // event handle
-//        INFINITE);    // infinite wait
-//    }
+    void Wait()
+    {
+      ::WaitForSingleObject(
+        m_handleEvent, // event handle
+        INFINITE);    // infinite wait
+    }
   };
 
 #endif /* WIN32EVENTBASEDEVENT_HPP_ */

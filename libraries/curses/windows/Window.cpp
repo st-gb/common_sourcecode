@@ -41,6 +41,7 @@ namespace Curses
     do
     {
       //TODO sometimes makes all windows black if called
+      // see https://stackoverflow.com/questions/19748685/curses-library-why-does-getch-clear-my-screen
       int key = getch();
       if( key != ERR )
         Window::s_inputProcessorStack.consume(key);

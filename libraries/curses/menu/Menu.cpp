@@ -3,6 +3,10 @@
 #include "ncurses/MainWindow.hpp"
 #include "../color.h"
 
+#ifndef NCURSES_CONST
+  #define NCURSES_CONST const
+#endif
+
 extern curses::EventQueue g_eventQueue;
 
 namespace curses
