@@ -28,7 +28,16 @@ public:
         "appropriate system utilities/ applications such as Microsoft's "
         "\"dependancy walker\" or \"FileAlyzer\"\n" ;
       break ;
+    case ERROR_PROC_NOT_FOUND:
+      strSol += "-If a DLL is compiled with a different version of a compiler
+ 	    " version than the executable that loads it and if this DLL has "
+		"dependencies to other DLLs like [...]stdc++[...], [...]gcc_s[...] "
+		"DLLs and these DLLs are available from another compiler version then"
+        " this may be the cause.\n"
+		"So ensure that the DLLs needed by a DLL are appropriate."
+      break;
     }
+#endif
 #endif //#ifdef _WIN32
     return strSol ;
   }

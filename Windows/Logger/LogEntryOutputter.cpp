@@ -218,8 +218,8 @@ namespace Windows_API
   //TODO throw LogFileAccessException on error
   void LogEntryOutputter::TruncateOutputSizeToZero()
   {
-    LARGE_INTEGER liOfs={0};
-    LARGE_INTEGER liNew={0};
+    LARGE_INTEGER liOfs={0, 0};
+    LARGE_INTEGER liNew={0, 0};
     //http://msdn.microsoft.com/en-us/library/windows/desktop/aa364957%28v=vs.85%29.aspx
     //"If the function succeeds, the return value is nonzero."
     ::SetFilePointerEx(m_hFile, liOfs, &liNew, FILE_BEGIN);

@@ -43,7 +43,7 @@ extern "C" {
   typedef unsigned long int DWORD ;
   #define WINAPI __stdcall
   WINBASEAPI void WINAPI Sleep(DWORD);
-  #include <fastest_data_type.h> //
+  #include <hardware/CPU/fastest_data_type.h> //typedef fastestUnsignedDataType
 #endif //#ifdef _WIN32
 
 #ifdef  __cplusplus
