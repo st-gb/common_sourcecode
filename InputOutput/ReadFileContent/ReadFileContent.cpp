@@ -23,8 +23,8 @@ BYTE ReadFileContent( const char * strFilePath, ByteArray & byteArray )
   std::ifstream stdifstream ;
   stdifstream.open( strFilePath
     , //std::ifstream::in
-    // std::ios_base::in
-    std::_S_in
+    std::ios_base::in ///works with clang
+    // std::_S_in
     );
   if( stdifstream.is_open() )
   {
@@ -68,8 +68,8 @@ void ReadPropertiesFile(const std::string & r_stdstrFilePath,
   std::ifstream stdifstream ;
   stdifstream.open( r_stdstrFilePath.c_str()
     , //std::ifstream::in
-    // std::ios_base::in
-    std::_S_in
+    std::ios_base::in ///works with clang compiler
+    // std::_S_in
     );
   if( stdifstream.is_open() )
   {

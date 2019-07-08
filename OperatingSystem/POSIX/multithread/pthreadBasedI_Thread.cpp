@@ -5,6 +5,7 @@
 #include <pthread.h> //int pthread_create(...)
 #include <OperatingSystem/GetErrorMessageFromErrorCode.h>
 #include <OperatingSystem/GetErrorMessageFromLastErrorCode.hpp>
+#include <OperatingSystem/multithread/GetCurrentThreadNumber.hpp>
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 
 #pragma message "link with -pthread."

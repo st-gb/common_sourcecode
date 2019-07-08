@@ -301,6 +301,7 @@ void TextBox::ShowCursorPos()
   wmove(m_windowHandle, cursorY + m_drawBorder, cursorX + m_drawBorder);
   /** Finally updated the cursor position visually. */
   wrefresh(m_windowHandle);
+  touchwin(m_windowHandle);
 }
 
 void TextBox::AddCursorPosChangedListener(
@@ -736,11 +737,12 @@ fastestUnsignedDataType TextBox::GetCharPosOfBeginOfLine(int lineNumber)
     const char * beginOfLine = m_content.c_str();
     const char * const beginOfString = m_content.c_str();
     const char * p_currentChar = m_content.c_str();
+    const unsigned numChars = m_content.size();
     int currentCharPos = 0;
     char currentChar;
     int currentLineNumber = 0;
-    for( ; /* *p_currentChar*/ (beginOfString + currentCharPos) != '\0';
-         /*p_currentChar++*/ currentCharPos ++ )
+    for( ; /* *p_currentChar*/ // *(beginOfString + currentCharPos) != '\0'
+      currentCharPos < numChars; /*p_currentChar++*/ currentCharPos ++ )
     {
       currentChar = *(beginOfString + currentCharPos);
       if( currentChar == '\n' || (beginOfString + currentCharPos - beginOfLine) > m_lineWidth)

@@ -7,10 +7,9 @@
 class UTF8string
 {
 public:
-  UTF8string(const unsigned char * const pchArray, const unsigned sizeInBytes)
-  {
-    
-  }
+//  UTF8string(const unsigned char * const pchArray, const unsigned sizeInBytes)
+//  {
+//  }
   
   /** see http://www.utf8-zeichentabelle.de/unicode-utf8-table.pl?number=1024&htmlent=1 
    *  The 2nd (and last) byte of a 2-byte UTF-8 sequence. */

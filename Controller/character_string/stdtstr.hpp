@@ -117,8 +117,8 @@ namespace std
    std::string stdstr( cr_wstr.begin(), cr_wstr.end() ) ;
    return stdstr ;
  }
- inline TCHAR ** GetTCHARarray_Inline(const char ** const ar_cp_ch,
-     WORD wNumberOfStrings)
+ inline TCHAR ** GetTCHARarray_Inline(const char ** const ar_cp_ch /* ,
+    WORD wNumberOfStrings */ )
   {
      return (TCHAR **) ar_cp_ch;
   }

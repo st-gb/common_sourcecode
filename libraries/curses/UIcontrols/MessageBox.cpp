@@ -264,8 +264,9 @@ namespace curses
     DrawBorderAndTitle();
     p_borderLayout->showAllContainedWindows();
     
-  //  touchwin(s_bodyWindow);
-//    wrefresh(m_windowHandle);
+//    touchwin(p_windowToShowMessageIn);
+//    wrefresh(p_windowToShowMessageIn);
+    wrefresh(m_windowHandle);
 //    wgetch(m_p_MessageWindow); /** -> modal */
     s_inputProcessorStack.add(this);
     /** Ensures modality of this dialog. */

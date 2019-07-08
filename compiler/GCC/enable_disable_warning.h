@@ -1,12 +1,11 @@
-/*
- * enable_disable_write_strings_warning.h
- *
+/** enable_disable_write_strings_warning.h
  *  Created on: 20.06.2013
- *      Author: Stefan
- */
+ *      Author: Stefan  */
 
 #ifndef ENABLE_DISABLE_WARNING_H_
 #define ENABLE_DISABLE_WARNING_H_
+
+//https://gcc.gnu.org/onlinedocs/gcc/Diagnostic-Pragmas.html
 
   /** from http://dbp-consulting.com/tutorials/SuppressingGCCWarnings.html */
   #if ((__GNUC__ * 100) + __GNUC_MINOR__) >= 402
@@ -17,8 +16,13 @@
   # if ((__GNUC__ * 100) + __GNUC_MINOR__) >= 406 //GNUC > 4.06
   #  define GCC_DIAG_OFF(x) \
        GCC_DIAG_PRAGMA(push) \
-       //GCC_DIAG_PRAGMA(ignored GCC_DIAG_JOINSTR(-W,x))
-       GCC_DIAG_PRAGMA(ignored x)
+        \
+       /*#pragma message "ff"*/ \
+ /**TODO Gives GCC error "pasting "W" and "-" does not give a valid preprocessing 
+   token"*/ \
+       GCC_DIAG_PRAGMA(ignored GCC_DIAG_JOINSTR(-W,x))
+/*       GCC_DIAG_PRAGMA(ignored bla)*/ 
+       /*GCC_DIAG_PRAGMA(ignored x)*/
   #  define GCC_DIAG_ON(x) GCC_DIAG_PRAGMA(pop)
   # else
   #  define GCC_DIAG_OFF(x) GCC_DIAG_PRAGMA(ignored GCC_DIAG_JOINSTR(-W,x))
