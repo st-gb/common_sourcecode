@@ -1,9 +1,6 @@
-/*
- * pthreadBasedI_Thread.hpp
- *
+/* pthreadBasedI_Thread.hpp
  *  Created on: Oct 12, 2010
- *      Author: sgebauer
- */
+ *  Author: sgebauer */
 
 #ifndef PTHREADBASEDI_THREAD_HPP_
 #define PTHREADBASEDI_THREAD_HPP_
@@ -18,11 +15,21 @@
 namespace POSIX
 {
 
-  class pthreadBasedI_Thread
-    : public I_Thread
-  {
+class pthreadBasedI_Thread
+  : public I_Thread
+{
     I_Thread::thread_type m_i_thread_thread_type ;
     pthread_t m_pthread_t ;
+  /** The following variables because of 
+   *  http://man7.org/linux/man-pages/man3/pthread_join.3.html :
+   * "Joining with a thread that has previously been joined results in
+   *   undefined behavior."
+   * The "pthread_join" function can only be called once else the thread 
+   * function return value is wrong. So store the return value here once it 
+   * was retrieved. */
+  int * m_threadRetCode;
+  bool notJoinedYet = true;
+  
     unsigned successfullyCreated;
   public:
     pthreadBasedI_Thread(I_Thread::thread_type = I_Thread::joinable );
@@ -39,12 +46,16 @@ namespace POSIX
       /*BYTE*/ I_Thread::priority priority = default_priority) ;
 //    BYTE start(DWORD (*)(void*), void*, I_Thread::priority)
     //inline
-      void * WaitForTermination() ;
+      void * WaitForTermination();
+  int GetTermCode()/*const*/;
     int GetThreadPriority();
     void * GetThreadHandle() {return (void *) & m_pthread_t;}
     //TODO implement IsRunning
     bool IsRunning();
-  };
+  /** Needed for setting the exit code in Linux. Must be a static (class)
+   * function in order to be callable by a global thread function. */
+  static void SetExitCode(void * result){ pthread_exit(result); }
+};///end class
 
 }
 

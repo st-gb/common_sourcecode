@@ -3,6 +3,7 @@
  *      Author: sgebauer  */
 #include "pthreadBasedI_Thread.hpp"
 #include <pthread.h> //int pthread_create(...)
+#include <compiler/GCC/enable_disable_warning.h>///GCC_DIAG_OFF(...)
 #include <OperatingSystem/GetErrorMessageFromErrorCode.h>
 #include <OperatingSystem/GetErrorMessageFromLastErrorCode.hpp>
 #include <OperatingSystem/multithread/GetCurrentThreadNumber.hpp>
@@ -23,9 +24,22 @@ namespace POSIX
     m_i_thread_thread_type = i_thread_thread_type ;
   }
 
-  pthreadBasedI_Thread::~pthreadBasedI_Thread()
-  {
-    // TODO Auto-generated destructor stub
+pthreadBasedI_Thread::~pthreadBasedI_Thread()
+{
+  if( m_i_thread_thread_type == I_Thread::joinable && successfullyCreated &&
+     notJoinedYet)
+    /** http://man7.org/linux/man-pages/man3/pthread_create.3.html , "NOTES" 
+     * section:
+    * "Only when a terminated joinable thread has been joined are the last of 
+    * its resources released back to the system." */
+    pthread_join(
+      m_pthread_t ,
+      /** http://man7.org/linux/man-pages/man3/pthread_join.3.html, 
+       * "DESCRIPTION" section :
+       * "If retval is not NULL, then pthread_join() copies the exit status of
+      * the target thread"*/
+      NULL
+      );
   }
 
   int pthreadBasedI_Thread::GetThreadPriority()
@@ -57,12 +71,22 @@ namespace POSIX
     return 0;
   }
 
-  bool pthreadBasedI_Thread::IsRunning()
-  {
-    return successfullyCreated &&
-      //From http://stackoverflow.com/questions/2156353/how-do-you-query-a-pthread-to-see-if-it-is-still-running
-      pthread_kill(m_pthread_t, 0) != ESRCH;
-  }
+bool pthreadBasedI_Thread::IsRunning()
+{
+  return successfullyCreated &&
+    ///From
+    ///http://stackoverflow.com/questions/2156353/how-do-you-query-a-pthread-to-see-if-it-is-still-running
+    pthread_kill(m_pthread_t,
+      /** http://man7.org/linux/man-pages/man3/pthread_kill.3.html : 
+       * "If sig is 0, then no signal is sent, but error checking is still
+       * performed." */
+      0) != 
+      /** http://man7.org/linux/man-pages/man3/pthread_kill.3.html : 
+       * "POSIX.1-2008 recommends that if an implementation detects the use of
+       * a thread ID after the end of its lifetime, pthread_kill() should
+       * return the error ESRCH." */
+      ESRCH;
+}
 
   fastestUnsignedDataType pthreadBasedI_Thread::start(
     pfnThreadFunc pfn_threadfunc,
@@ -85,7 +109,7 @@ namespace POSIX
           /* void *(*__start_routine) (void *),*/
           ( pthread_start_func_type ) pfn_threadfunc ,
           p_vThreadFunctionArgument /** void *__restrict __arg */
-          ) ;
+          );
 //    else
 //    {
 //      pthread_attr_t pthread_attr_t_ ;
@@ -136,30 +160,114 @@ namespace POSIX
     return nRetVal ;
   }
 
-  void * pthreadBasedI_Thread::WaitForTermination()
+//TODO better return a value like from enum thread_start?
+void * pthreadBasedI_Thread::WaitForTermination()
+{
+  const DWORD currentThreadNumber = OperatingSystem::GetCurrentThreadNumber();
+  ///Only log in debug versions to avoid unnessary output.
+  LOGN_DEBUG("thread ID:" << /*m_pthread_t*/ currentThreadNumber)
+  if( successfullyCreated && notJoinedYet)
   {
-    const DWORD currentThreadNumber = OperatingSystem::GetCurrentThreadNumber();
-    LOGN("pthreadBasedI_Thread::WaitForTermination()--thread ID:"
-      << /*m_pthread_t*/ currentThreadNumber )
-    if( successfullyCreated )
+    /** http://man7.org/linux/man-pages/man3/pthread_join.3.html, "NOTES" :
+     * "Failure to join with a thread that is joinable (i.e., one that is not
+     * detached), produces a "zombie thread".
+     * Prevent this by setting this flag. */
+    notJoinedYet = false;
+    int * threadRetCode;
+    ///http://www.informit.com/articles/article.aspx?p=2085690&seqNum=5
+    /** http://www.kernel.org/doc/man-pages/online/pages/man3/pthread_join.3.html:
+    * "The pthread_join() function waits for the thread specified by thread to
+    * terminate."
+    * "On success, pthread_join() returns 0; on error, it returns an error
+    * number." */
+    const int nReturn = pthread_join(
+      m_pthread_t ,
+    /** http://man7.org/linux/man-pages/man3/pthread_join.3.html
+      * "If retval is not NULL, then pthread_join() copies the exit status of 
+      * the target thread" */
+        /*NULL*/ (void**)&threadRetCode
+        ) ;
+    if( nReturn )
+      ///Only log in debug versions to avoid unnessary output.
+      LOGN_DEBUG("pthread_join failed:" << OperatingSystem::
+        GetErrorMessageFromErrorCodeA( nReturn ) )
+    else
     {
-      /** http://www.kernel.org/doc/man-pages/online/pages/man3/pthread_join.3.html:
+      ///Only log in debug versions to avoid unnessary output.
+      LOGN_DEBUG("pthread_join successful return value:" << nReturn << " "
+        << (long long) threadRetCode)
+      m_threadRetCode = threadRetCode;
+      //LOGN_DEBUG("pthread_join succeeded")
+    }
+    return (void *) nReturn;
+  }
+  return (void *) -1;
+}
+
+//TODO return the thread function termination code as call-by-reference and the
+// whether succeeded as (enum) return value?
+int pthreadBasedI_Thread::GetTermCode()//const
+{
+  //GCC_DIAG_OFF(-fno-permissive)
+  //#pragma GCC diagnostic ignored "-fpermissive"
+  // "void *" can't be directly casted to "int"
+  // https://en.cppreference.com/w/cpp/language/reinterpret_cast
+//  const int termCode = //static_cast
+//    //dynamic_cast
+//    reinterpret_cast<
+//    //https://bytes.com/topic/c/answers/482159-cast-void-int
+//    long long>(WaitForTermination() );
+ 
+  if(successfullyCreated)
+  {
+    if(notJoinedYet)
+    {
+     if(/** If finished--prevent waiting for thread end via "pthread_join"*/
+       ! IsRunning() )
+     {
+      int * threadRetCode;
+      ///http://www.informit.com/articles/article.aspx?p=2085690&seqNum=5
+
+      /** http://man7.org/linux/man-pages/man3/pthread_join.3.html , sections
+      * "DESCRIPTION", RETURN VALUE" :
       * "The pthread_join() function waits for the thread specified by thread to
       * terminate."
       * "On success, pthread_join() returns 0; on error, it returns an error
       * number." */
-      int nReturn = pthread_join(
-        m_pthread_t ,
-        //"If retval is not NULL, then pthread_join() copies the exit status of the
-        //target thread"
-        NULL
-        ) ;
-      if( nReturn )
-        LOGN("pthread_join failed:" << OperatingSystem::GetErrorMessageFromErrorCodeA( nReturn ) )
-      else
-        LOGN("pthread_join succeeded")
-      return (void *) nReturn ;
+      const int nReturn = 
+        /** The thread return code can only be determined by calling 
+         * "pthread_join".*/
+        pthread_join(
+          m_pthread_t ,
+          /** http://man7.org/linux/man-pages/man3/pthread_join.3.html , section
+           * "DESCRIPTION" :
+           * "If retval is not NULL, then pthread_join() copies the exit status
+           *  of the target thread" */
+          /*NULL*/ (void**)& threadRetCode
+          );
+      /** http://man7.org/linux/man-pages/man3/pthread_join.3.html, "NOTES" :
+       * "Failure to join with a thread that is joinable (i.e., one that is not
+       * detached), produces a "zombie thread".
+       * Prevent this by setting this flag. */
+      notJoinedYet = false;
+      LOGN_DEBUG("pthread_join return value:" << nReturn << " " << (long long)
+        m_threadRetCode)
+      if( nReturn == 0)///successfully joined.
+      {
+        m_threadRetCode = threadRetCode;
+        /** Casting to "long" to avoids g++ 7.3.0 error "error: cast from 
+         * ‘int*’ to ‘int’ loses precision [-fpermissive]" */
+        return (long)m_threadRetCode;
+      }
+      /** http://man7.org/linux/man-pages/man3/pthread_join.3.html:
+       * errno "ESRCH" if thread is already finished. */
+      if( nReturn == ESRCH )//TODO return threadRetCode or m_threadRetCode?
+        return (long long) threadRetCode;
+     }
     }
-    return (void *) false;
+    else///Already joined--i.e. finished yet?
+      return (long long) m_threadRetCode;
   }
+  return -1;
 }
+}///End namepace
