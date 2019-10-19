@@ -41,7 +41,8 @@ void Trie::FreeMemory()
     ar_p_by1LevelAbove = NULL ;
     ar_p_byCurrent = m_ar_p_byRoot ;
     //This loop deleted 1 element at the leaf.
-    for( WORD wIndex = 0 ; wIndex < DIFFERENT_VALUES_PER_LEVEL ; ++ wIndex )
+    for(//TODO change data type to fastestUnsignedDataType?
+      WORD wIndex = 0 ; wIndex < DIFFERENT_VALUES_PER_LEVEL ; ++ wIndex )
     {
       if( //Array element not NULL <=> character at/ for position "wIndex" is
           //assigned.
@@ -171,7 +172,8 @@ bool Trie::insert( //void
   unsigned char ** ar_p_byCurrent = m_ar_p_byRoot ;
   unsigned char ** p_p_ch ;
   BYTE byValue ;
-  for( WORD wIndex = 0 ; wIndex < wBytesize ; ++ wIndex )
+  for(//TODO change data type to fastestUnsignedDataType?
+    WORD wIndex = 0 ; wIndex < wBytesize ; ++ wIndex )
   {
     byValue = p_vBegin[wIndex] ;
     DEBUGN("address of level: " << ar_p_byCurrent
@@ -237,14 +239,17 @@ void Trie::OutputDeletedByteArray_inline( std::vector<unsigned char> &
   css::basic_stringstream<LOGGING_CHARACTER_TYPE> stdostringstream ;
 //    stdostringstream << "data structure: deleted: " ;
   wSize = stdvec_by.size() ;
-  for( WORD wIndex = 0 ; wIndex < wSize ; ++ wIndex )
+  for(//TODO change data type to fastestUnsignedDataType?
+     WORD wIndex = 0 ; wIndex < wSize ; ++ wIndex )
   {
     ch = stdvec_by.at( wIndex ) ;
 //      DEBUG
     //DEBUG_COUT
 //        ( "\"" << ch << "\"/" << (WORD) ch << " " )
 //      std::cout <<  "\"" << ch << "\"/" << (WORD) ch << " " ;
-    stdostringstream << "\"" << ch << "\"/" << (WORD) ch << " " ;
+    stdostringstream << "\"" << ch << "\"/" << 
+      //TODO change data type to fastestUnsignedDataType?
+      (WORD) ch << " " ;
   }
 //    DEBUG
   //DEBUG_COUT

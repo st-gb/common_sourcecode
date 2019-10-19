@@ -34,6 +34,7 @@ class Trie
   unsigned char ** ar_p_byCurrent ;
   unsigned short m_wBitsPerLevel ;
   unsigned short wSize ;
+  //TODO change data type to fastestUnsignedDataType?
   WORD wIndex ;
 public:
   DWORD m_dwNumberOfNodes ;
@@ -53,7 +54,7 @@ public:
     unsigned char * p_vBegin, unsigned short wBytesize) ;
 
   inline bool IsTrieLeaf(unsigned char ** ar_p_byCurrent)
-  {
+  { //TODO change data type to fastestUnsignedDataType?
     for( WORD byIndex = 0 ; byIndex < DIFFERENT_VALUES_PER_LEVEL ; ++ byIndex )
       //not NULL->assigned->not a leaf
       if( ar_p_byCurrent[ byIndex ] )

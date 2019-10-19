@@ -1,12 +1,12 @@
 set(MINI_XML_LIB_SRC_FILE_PATHS
-  ${MINI_XML_SOURCE_DIR}/mxml-attr.c
-  ${MINI_XML_SOURCE_DIR}/mxml-entity.c
-  ${MINI_XML_SOURCE_DIR}/mxml-file.c
-  ${MINI_XML_SOURCE_DIR}/mxml-get.c
-  ${MINI_XML_SOURCE_DIR}/mxml-index.c
-  ${MINI_XML_SOURCE_DIR}/mxml-node.c
-  ${MINI_XML_SOURCE_DIR}/mxml-private.c
-  ${MINI_XML_SOURCE_DIR}/mxml-search.c
-  ${MINI_XML_SOURCE_DIR}/mxml-set.c
-  ${MINI_XML_SOURCE_DIR}/mxml-string.c
+  ${MINI_XML_SRC_DIR}/mxml-attr.c
+  ${MINI_XML_SRC_DIR}/mxml-entity.c
+  ${MINI_XML_SRC_DIR}/mxml-file.c
+  ${MINI_XML_SRC_DIR}/mxml-get.c
+  ${MINI_XML_SRC_DIR}/mxml-index.c
+  ${MINI_XML_SRC_DIR}/mxml-node.c
+  ${MINI_XML_SRC_DIR}/mxml-private.c
+  ${MINI_XML_SRC_DIR}/mxml-search.c
+  ${MINI_XML_SRC_DIR}/mxml-set.c
+  ${MINI_XML_SRC_DIR}/mxml-string.c
 )

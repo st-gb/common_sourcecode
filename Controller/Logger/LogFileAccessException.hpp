@@ -47,6 +47,11 @@ public:
     m_action = action;
     m_operatingSystemErrorCode = operatingSystemErrorCode;
 //    m_filePath = /*(wchar_t *)*/ GetStdWstring( std::string(logFilePath) );
+    //TODO use variable
+    const std::string std_strAbsoluteLogFilePath = FileSystem::
+    ///Taking the absolute file path is neccessary because the current working
+    /// directory may change later.
+      GetAbsolutePathA(logFilePath );
   }
 
   /** Get errror message as 1-byte / ASCII string. */
@@ -66,7 +71,10 @@ public:
       break;
    }
     const std::string std_strFilePath = ::GetStdString_Inline(m_filePath);
-    const std::string std_strAbsoluteLogFilePath = FileSystem::GetAbsolutePathA(std_strFilePath.c_str() );
+    ///Taking the absolute file path is neccessary because the current working
+    /// directory may change later.
+    const std::string std_strAbsoluteLogFilePath = FileSystem::
+      GetAbsolutePathA(std_strFilePath.c_str() );
 
     std_strErrorMessage += " log file \"" + std_strAbsoluteLogFilePath + "\" failed:";
     const std::string std_strErrorMessageFromErrorCode =

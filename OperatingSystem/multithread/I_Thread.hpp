@@ -108,7 +108,8 @@ public:
       /*BYTE*/ enum priority prio,
       const char * const threadName);
   /** Blocking/ synchronous wait from thread that calls this function until the
-   * thread is terminated */
+   * thread is terminated
+   * \return value=waiting succeeded? */
   virtual void * WaitForTermination() const { return 0 ; }
 //  virtual ~I_Thread() {} ;
 } ;

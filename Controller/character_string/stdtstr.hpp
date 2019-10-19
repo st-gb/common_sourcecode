@@ -56,11 +56,13 @@ namespace std
 
  inline wchar_t ** //GetTCHARarray_Inline
    Get_wchar_t_Array_Inline(const char ** const ar_cp_ch,
+   //TODO change to fastestUnsignedDataType?
    WORD wNumberOfStrings)
  {
    wchar_t ** ar_p_tch = new wchar_t * [wNumberOfStrings];
    wchar_t * p_tchCurrentString;
 //   char * p_chCurrentString;
+   //TODO change to fastestUnsignedDataType?
    WORD wStringLength;
    if( ar_p_tch)
    {
@@ -102,6 +104,7 @@ namespace std
    return wstr ;
  }
  inline TCHAR ** GetTCHARarray_Inline(const char ** const ar_cp_ch,
+   //TODO change to fastestUnsignedDataType?
      WORD wNumberOfStrings)
   {
      return (TCHAR **) Get_wchar_t_Array_Inline(ar_cp_ch, wNumberOfStrings);
@@ -128,6 +131,7 @@ namespace std
  {
    if (p_ptstrArgument)
    {
+     //TODO change to fastestUnsignedDataType?
      WORD wNumberOfStrings = dwArgCount;
 //     LOGN("Freeing memory for array of copied or converted program arguments")
      for ( //e.g. for 2 elements: max. index is 1

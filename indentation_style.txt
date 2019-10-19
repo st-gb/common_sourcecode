@@ -1,0 +1,7 @@
+
+-2 space characters for indentation:
+ instead of tabulator character always the same width (with fixed size fonts)
+-no indentation for namespaces because:
+ -adding or removing an additional namespace would change the indentation of
+  the source code inside what produces unneccessary version changes
+-function definitions/implementations are not indented (start at colum 0) 
