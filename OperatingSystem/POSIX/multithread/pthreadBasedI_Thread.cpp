@@ -73,19 +73,28 @@ pthreadBasedI_Thread::~pthreadBasedI_Thread()
 
 bool pthreadBasedI_Thread::IsRunning()
 {
-  return successfullyCreated &&
-    ///From
-    ///http://stackoverflow.com/questions/2156353/how-do-you-query-a-pthread-to-see-if-it-is-still-running
-    pthread_kill(m_pthread_t,
-      /** http://man7.org/linux/man-pages/man3/pthread_kill.3.html : 
-       * "If sig is 0, then no signal is sent, but error checking is still
-       * performed." */
-      0) != 
-      /** http://man7.org/linux/man-pages/man3/pthread_kill.3.html : 
+  bool isRunning = false;
+  if(successfullyCreated)///Prevent using m_pthread_t if thread not created
+  {
+    const int pthread_killRetVal =
+      ///From
+      ///http://stackoverflow.com/questions/2156353/how-do-you-query-a-pthread-to-see-if-it-is-still-running
+      pthread_kill(m_pthread_t,
+        /** http://man7.org/linux/man-pages/man3/pthread_kill.3.html : 
+         * "If sig is 0, then no signal is sent, but error checking is still
+         * performed." */
+        0);
+    isRunning = pthread_killRetVal !=
+      /** http://man7.org/linux/man-pages/man3/pthread_kill.3.html :
        * "POSIX.1-2008 recommends that if an implementation detects the use of
        * a thread ID after the end of its lifetime, pthread_kill() should
        * return the error ESRCH." */
-      ESRCH;
+      ESRCH && pthread_killRetVal !=
+      /** In Android emulator (x86) value was EINVAL after end of thread
+       * function/after setting thread exit code*/
+      EINVAL;
+  }
+  return isRunning;
 }
 
   fastestUnsignedDataType pthreadBasedI_Thread::start(

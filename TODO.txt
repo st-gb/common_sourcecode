@@ -1,0 +1,3 @@
+instead of preprocessor macro:
+scope all (OS-)specific stuff and make typedef like:
+"typedef OperatingSystem Linux" ?
