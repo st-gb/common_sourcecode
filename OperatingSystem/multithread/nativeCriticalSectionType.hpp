@@ -2,7 +2,7 @@
 #define NATIVE_CRITICAL_SECTION_TYPE_HPP_
 
 #ifdef _WIN32 /** pre-defined macro, also for 64 bit Windows */
-  #include <Windows/multithread/CriticalSection.hpp>
+  #include <OperatingSystem/Windows/multithread/CriticalSection.hpp>
   typedef OperatingSystem::Windows::CriticalSection nativeCriticalSection_type;
 #endif
 

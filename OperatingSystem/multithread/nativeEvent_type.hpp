@@ -10,7 +10,7 @@
   typedef pthread::Condition nativeEvent_type;
 #endif
 #ifdef _WIN32
-  #include <Windows/multithread/Win32EventBasedEvent.hpp>
+  #include <OperatingSystem/Windows/multithread/Win32EventBasedEvent.hpp>
   typedef Win32EventBasedEvent nativeEvent_type;
 #endif
 

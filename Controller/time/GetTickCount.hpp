@@ -27,7 +27,7 @@ typedef uint64_t TimeCountInNanosec_type;
   using namespace Linux;
 #endif
 #ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
-  #include <Windows/time/GetTimeCount.hpp>
+  #include <OperatingSystem/Windows/time/GetTimeCount.hpp>
   #ifndef OPERATING_SYSTEM_NAME
     #define OPERATING_SYSTEM_NAME Windows
   #endif

@@ -30,7 +30,7 @@
 #endif
 #ifdef _WIN32
   //#define Windows OperatingSystem
-  #include <Windows/FileSystem/GetCurrentDirectory/GetCurrentDirectory.hpp>
+  #include <OperatingSystem/Windows/FileSystem/GetCurrentDirectory/GetCurrentDirectory.hpp>
 
 #endif
 

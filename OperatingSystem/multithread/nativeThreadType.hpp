@@ -9,7 +9,7 @@
 #define NATIVE_THREAD_TYPE_HPP_
 
 #ifdef _WIN32 //pre-defined macro, also for 64 bit Windows
-	#include <Windows/multithread/Thread.hpp>
+	#include <OperatingSystem/Windows/multithread/Thread.hpp>
 	typedef Windows_API::Thread nativeThread_type;
 #endif
 

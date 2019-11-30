@@ -18,7 +18,7 @@
 //#endif
 
 #ifdef _WIN32
-  #include <Windows/NumberOfLogicalCPUcores/GetNumberOfLogicalCPUs.h>
+  #include <OperatingSystem/Windows/NumberOfLogicalCPUcores/GetNumberOfLogicalCPUs.h>
   //For writing "GetNumberOfLogicalCPUcores()" instead of
   //"Windows::GetNumberOfLogicalCPUcores()"
   using namespace Windows;

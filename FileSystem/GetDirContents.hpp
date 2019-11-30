@@ -2,5 +2,5 @@
   #include <OperatingSystem/POSIX/FileSystem/GetDirContents.hpp>
 #endif
 #ifdef _WIN32
-  #include <Windows/FileSystem/GetDirContents.hpp>
+  #include <OperatingSystem/Windows/FileSystem/GetDirContents.hpp>
 #endif

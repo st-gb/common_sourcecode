@@ -12,7 +12,7 @@
  *      Author: Stefan
  */
 
-#include <Windows/multithread/Thread.hpp>
+#include <OperatingSystem/Windows/multithread/Thread.hpp>
 #include <windows.h> //::CreateThread(...)
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 

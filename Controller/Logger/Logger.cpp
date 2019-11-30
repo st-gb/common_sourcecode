@@ -19,7 +19,7 @@
 #if defined(_WIN32) && !defined(USE_STD_OFSTREAM_WRITER)
   /** Use Windows API logger under Windows because this enables retrieving an
    *   system error code for failure in contrast to std::ofstream logger */
-  #include <Windows/Logger/LogEntryOutputter.hpp>
+  #include <OperatingSystem/Windows/Logger/LogEntryOutputter.hpp>
   typedef Windows_API::LogEntryOutputter LogEntryOutputter_type;
 #else
   #include "OutputHandler/StdOfStreamLogWriter.hpp"

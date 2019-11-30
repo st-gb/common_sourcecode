@@ -8,14 +8,14 @@
 #include <windows.h> //BOOL
 #include <winsvc.h> //LPHANDLER_FUNCTION_EX
 //For THREAD_FUNCTION_CALLING_CONVENTION.
-#include <Controller/multithread/thread_function_calling_convention.h>
+#include <OperatingSystem/multithread/thread_function_calling_convention.h>
 //#include <specstrings.h> // "__in" etc.
 
 ////for ::GetErrorMessageFromErrorCodeA(DWORD)
 //#include <Controller/GetErrorMessageFromLastErrorCode.hpp>
 //For ::GetLastErrorMessageString(DWORD ,std::wstring)
-#include <Windows/ErrorCode/ErrorCodeFromGetLastErrorToString.h>
-#include <fastest_data_type.h> //typedef fastestUnsignedDataType
+#include <OperatingSystem/Windows/ErrorCode/ErrorCodeFromGetLastErrorToString.h>
+#include <hardware/CPU/fastest_data_type.h> //typedef fastestUnsignedDataType
 
 typedef unsigned long DWORD;
 

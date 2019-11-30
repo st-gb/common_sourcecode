@@ -4,7 +4,7 @@
   #include "../POSIX/suspendExecution.hpp"
 #endif
 #ifdef _WIN32 /** Microsoft Windows */
-  #include "../../Windows/time/suspendExecution.hpp"
+  #include "../Windows/time/suspendExecution.hpp"
 #endif
 
 /*namespace OperatingSystem {
