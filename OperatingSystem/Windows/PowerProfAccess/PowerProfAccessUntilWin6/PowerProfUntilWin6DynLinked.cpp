@@ -8,7 +8,7 @@
 #include <tchar.h> //for "_T(...)"
 #include <string> //std::string
 //::LocalLanguageMessageFromErrorCodeA(...)
-#include <Windows/ErrorCode/LocalLanguageMessageFromErrorCode.h>
+#include <OperatingSystem/Windows/ErrorCode/LocalLanguageMessageFromErrorCode.h>
 //#include <Powrprof.h> //for static linking 
 
  char * PowerProfUntilWin6DynLinked::s_ar_ar_chDynamicThrottle [] = {

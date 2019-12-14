@@ -3,7 +3,7 @@
 #include <Controller/IDynFreqScalingAccess.hpp>
 #include <Controller/character_string/stdtstr.hpp> //for std::tstring
 //#include <Windows/PowerProfDynLinked.hpp>
-#include <Windows/PowerProfAccess/I_PowerProfDynLinked.hpp>
+#include "../I_PowerProfDynLinked.hpp"
 #include <Windows.h> //for ULONG in Powerprof.h WINAPI, ::Sleep(...)
 //PGLOBAL_POWER_POLICY, PMACHINE_PROCESSOR_POWER_POLICY, PPOWER_POLICY
 #include <Powrprof.h> 

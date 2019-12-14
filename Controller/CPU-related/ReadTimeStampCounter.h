@@ -12,6 +12,7 @@
 #include <preprocessor_macros/logging_preprocessor_macros.h> //DEBUGN(...)
 #include <winnt.h> //for ULONGLONG
 #include <windef.h> //for DWORD
+#include <stdint.h>///uint32_t
 #include <inttypes.h> //uint64_t under Linux
 
 //From CrystalCPUID:
@@ -46,8 +47,12 @@
 * CPU/ CPU core 1 may have TSC freq of 1200 MHz.
 * If not using affinity mask TSC may be read on CPU0 and afterwards on CPU1.*/
 
-/** for MicroSoft Visual C++ : ReadTimeStampCounter() already defined in winnt.h */
-#ifndef _MSC_VER /** MicroSoft Compiler */
+//#ifdef _MSC_VER /** MicroSoft Compiler */
+#ifdef _WIN32 /** Microsoft WINdows (also 64 bit) */
+/** For MicroSoft Visual C++ /MinGW: ReadTimeStampCounter() already defined in 
+ * <winnt.h> */
+  #undef ReadTimeStampCounter
+#endif
   /** @param lowmostBits : "uint32_t" because this matches the size of the EAX 
    *   CPU register */
   inline //ULONGLONG
@@ -90,7 +95,7 @@
     __asm__ volatile("rdtsc" : "=a" (a), "=d" (d));
     return ((unsigned long long)a) | (((unsigned long long)d) << 32) ;
   }
-#endif
+//#endif
 
 /** @param lowmostBits : "uint32_t" because this matches the size of the EAX 
    *   CPU register */

@@ -49,7 +49,7 @@
 //class IDynFreqScalingAccess ;
 #include <Controller/IDynFreqScalingAccess.hpp>
 //#include <Windows/PowerProfDynLinked.hpp>
-#include <Windows/PowerProfAccess/I_PowerProfDynLinked.hpp>
+#include "../I_PowerProfDynLinked.hpp"
 
 class DLLfunctionPointerNotAssignedException
 {

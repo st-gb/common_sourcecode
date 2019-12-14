@@ -1,6 +1,6 @@
 #include <string> //class std::string
 #include <windef.h> //DWORD
-#include <Windows/ErrorCode/LocalLanguageMessageFromErrorCode.h>
+#include "LocalLanguageMessageFromErrorCode.h"
 
 namespace OperatingSystem/*Windows_API*/
 {
@@ -8,4 +8,7 @@ namespace OperatingSystem/*Windows_API*/
     {
       return ::LocalLanguageMessageAndErrorCodeA( dwErrorCode ) ;
     }
+  //std::wstring GetErrorMessageFromErrorCodeW(DWORD dwErrorCode){
+  //    return ::LocalLanguageMessageAndErrorCodeW( dwErrorCode ) ;
+  //  }
 }

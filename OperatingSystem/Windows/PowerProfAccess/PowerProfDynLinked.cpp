@@ -7,11 +7,9 @@
 //#include <iostream>
 #include "PowerProfDynLinked.hpp"
 //::GetWindowsVersion(...)
-#include <Windows/GetWindowsVersion/GetWindowsVersion.h>
-#include <Windows/PowerProfAccess/PowerProfAccessFromWin6/\
-PowerProfFromWin6DynLinked.hpp>
-#include <Windows/PowerProfAccess/PowerProfAccessUntilWin6/\
-PowerProfUntilWin6DynLinked.hpp>
+#include "../GetWindowsVersion/GetWindowsVersion.h"
+#include "PowerProfAccessFromWin6/PowerProfFromWin6DynLinked.hpp"
+#include "PowerProfAccessUntilWin6/PowerProfUntilWin6DynLinked.hpp"
 #include <Controller/character_string/stdtstr.hpp> //class tstring
 
 PowerProfDynLinked::PowerProfDynLinked(

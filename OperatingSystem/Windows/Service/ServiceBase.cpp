@@ -11,7 +11,7 @@
 #include <iostream> //std::cout
 #include <winsvc.h> //SERVICE_TABLE_ENTRY
 #include <sstream> //for class std::stringstream
-#include <Windows/ErrorCode/LocalLanguageMessageFromErrorCode.h>
+#include <OperatingSystem/Windows/ErrorCode/LocalLanguageMessageFromErrorCode.h>
 //#include <Windows/Process/GetParentProcessID/GetParentProcessID.h>
 //#include <Windows/Process/GetProcessFileName/GetProcessFileName.h>
 #include <Controller/character_string/stdtstr.hpp> //GetStdString_Inline(...)

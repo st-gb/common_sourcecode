@@ -2,7 +2,7 @@
  *  Created on: Oct 26, 2010
  *      Author: Stefan */
 
-#include <Windows/ErrorCode/LocalLanguageMessageFromErrorCode.h>
+#include "LocalLanguageMessageFromErrorCode.h"
 #include <windows.h> //WINBASEAPI DWORD WINAPI GetLastError(void);
 
 namespace OperatingSystem //Windows_API/**/

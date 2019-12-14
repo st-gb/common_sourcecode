@@ -15,7 +15,7 @@
 //for convertToStdString(...)
 #include <Controller/character_string/stdstring_format.hpp>
 //#include <Windows/ErrorCodeFromGetLastErrorToString.h>
-#include <Windows/ErrorCode/LocalLanguageMessageFromErrorCode.h>
+#include <OperatingSystem/Windows/ErrorCode/LocalLanguageMessageFromErrorCode.h>
 #include <winerror.h> //for ERROR_GEN_FAILURE
 
 //Gets the description for PCconfig , IO , MSR etc. access

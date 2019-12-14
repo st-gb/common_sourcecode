@@ -25,7 +25,7 @@ namespace Windows_API
     if( b )
 	{
       TimeCountInMilliSeconds *=
-        //to microseconds : 1 s = 1000 ms 
+        /// to milliseconds : 1 s = 1000 ms
         1000.0f;
 		return TimeCountInMilliSeconds;
 	}

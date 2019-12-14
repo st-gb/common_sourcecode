@@ -123,7 +123,7 @@
       return WaitForSingleObjectResultToI_ConditionState(dw);
     }
 
-    I_Condition::state WaitTimeOut(DWORD dwMilliSecondsToWait)
+    I_Condition::state WaitTimeOut(fastestUnsignedDataType dwMilliSecondsToWait)
     {
       DWORD dwResult =
         //http://msdn.microsoft.com/en-us/library/windows/desktop/ms687032%28v=vs.85%29.aspx
