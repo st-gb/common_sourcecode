@@ -30,17 +30,28 @@ namespace FileSystem
 #endif //#ifdef _WIN32
 
 #ifdef __linux__
+//TODO move to OperatingSystem/Unix/FileSystem/IsRelPath.hpp?
+// because paths in Unix start at "/" :
+//  https://de.wikipedia.org/wiki/Unix#Aufbau_und_Merkmale
 #include <stddef.h> //NULL
 
 namespace FileSystem
 {
   /** Must be declared "inline", else multiple definitions of this function
-   *  are possible -> error when linking. */
-  inline bool IsRelativePathA(const char * const path)
+   *  may exist -> error when linking. */
+  inline bool IsRelativePathA(const char path [])
   {
-    if( path != NULL && path[0] == '/' )
-      return false;
-    return true;
+    ///Only return true if path is <> NULL and does not start with "/"
+    if( path != NULL && path[0] != '/' )
+      return true;
+    return false;
+  }
+  
+  inline bool IsRelativePathW(const wchar_t path [])
+  {
+    if( path != NULL && path[0] != L'/' )
+      return true;
+    return false;
   }
   inline bool IsRelativePathW(const wchar_t path [])
   {

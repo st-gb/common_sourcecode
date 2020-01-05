@@ -1,0 +1,5 @@
+location justification:
+Command line arguments belong to to an operating system process.
+So the class "CommandLineArgs" is situated here.
+Could also use this class for non-process arguments?
+->Then put to folder /CmdLineArgs
