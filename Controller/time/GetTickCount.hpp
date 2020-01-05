@@ -14,7 +14,7 @@
 #define GETTICKCOUNT_HPP_
 
 #include <stdint.h> //uint64_t
-#include <inttypes.h> //uint64_t
+//#include <inttypes.h> //uint64_t
 typedef uint64_t TimeCountInNanosec_type;
 
 //namespace OperatingSystem

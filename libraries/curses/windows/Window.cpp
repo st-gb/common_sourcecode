@@ -43,7 +43,7 @@ namespace Curses
       //TODO sometimes makes all windows black if called
       // see https://stackoverflow.com/questions/19748685/curses-library-why-does-getch-clear-my-screen
       int key = getch();
-      if( key != ERR )
+      if( key != ERR )///"ERR" if no key was pressed
         Window::s_inputProcessorStack.consume(key);
       if( processEventQueue)
         g_eventQueue.Process();

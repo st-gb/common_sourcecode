@@ -57,6 +57,9 @@ Logger::~Logger()
   std::vector<FormattedLogEntryProcessor *>::reverse_iterator
     rev_iterFormattedLogEntryProcessors =
     m_formattedLogEntryProcessors.rbegin();
+#ifdef _DEBUG
+  const int numFormattedLogEntryProcs = m_formattedLogEntryProcessors.size();
+#endif
   while( rev_iterFormattedLogEntryProcessors !=
       m_formattedLogEntryProcessors.rend() )
   {

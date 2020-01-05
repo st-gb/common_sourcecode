@@ -8,6 +8,7 @@
 #include <stdlib.h> //free(...)
 #include <unistd.h> //getcwd(...)
 #include <string> //class std::string
+#include <errno.h>///errno
 
 namespace /*Linux_*/ OperatingSystem
 {
@@ -27,7 +28,7 @@ inline void GetCurrentWorkingDirA_inl(std::string & r_stdstr )
 //#endif
 //  int errCode = errno;
   /** Set to 0 to ensure an error code came from the call to "getcwd" and not
-   * from a previous function/system call. */.
+   * from a previous function/system call. */
   errno = 0;
   /** http://pubs.opengroup.org/onlinepubs/009695399/functions/getcwd.html */
   /** "Get the pathname of the current working directory,

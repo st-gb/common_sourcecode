@@ -10,5 +10,8 @@ if("${CMAKE_GENERATOR}" STREQUAL "MinGW Makefiles")#MINGW)#WIN32)
   message("result of \"where sh.exe\": ${where_sh.exe}")
   message("PATH may have been set by an Integrated Development Environment ")
   message("(IDE) when this script is processed from with an IDE.")
+  
+  message("you may add \'-DCMAKE_SH=\"CMAKE_SH-NOTFOUND\"\' as parameter for CMake")
+  #message("or SET(CMAKE_SH=\"CMAKE_SH-NOTFOUND\ in CMake script")
   #message("PATH: $ENV{PATH}")
 endif()
