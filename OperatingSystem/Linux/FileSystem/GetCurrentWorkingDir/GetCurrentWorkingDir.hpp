@@ -8,6 +8,7 @@
 #include <stdlib.h> //free(...)
 #include <unistd.h> //getcwd(...)
 #include <string> //class std::string
+#include <errno.h>///errno
 
 namespace /*Linux_*/ OperatingSystem
 {

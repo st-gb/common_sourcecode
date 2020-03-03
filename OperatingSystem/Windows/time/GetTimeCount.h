@@ -1,6 +1,7 @@
 #pragma once
 
-#include <windows.h> // QueryPerformanceCounter ()
+#include <windows.h>///includes <profileapi.h> for QueryPerformanceCounter(...)
+#include <winnt.h>///LARGE_INTEGER
 
   inline long double GetTimeCountInSeconds(//LARGE_INTEGER *lpPerformanceCount
     )

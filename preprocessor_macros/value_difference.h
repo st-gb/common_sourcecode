@@ -18,8 +18,9 @@
 
 #include <limits.h> //for ULONG_MAX
 
-#ifndef _MSC_VER //MS compiler has _UI64_MAX defined, but not g++
-  #define _UI64_MAX ULONG_LONG_MAX
+//#ifndef _MSC_VER //MS compiler has _UI64_MAX defined, but not Linux g++?
+#ifndef _WIN32
+  #define _UI64_MAX ULONG_LONG_MAX ///MinGW: defined in <limits.h>
 #endif
 
 #define ULONGLONG_VALUE_DIFF(current,prev) \

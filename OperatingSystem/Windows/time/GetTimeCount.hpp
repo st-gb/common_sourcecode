@@ -1,10 +1,10 @@
 #pragma once
 
+#include "GetTimeCount.h"
 #include <windows.h> // GetTickCount()
 #include <stdint.h> // uint64_t
 #include <preprocessor_macros/logging_preprocessor_macros.h>
 #include <iomanip> //std::setprecision(...)
-#include "GetTimeCount.h"
 
 #ifdef __cplusplus
 namespace Windows_API

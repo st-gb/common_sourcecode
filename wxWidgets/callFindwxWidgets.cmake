@@ -107,6 +107,12 @@ if(wxWidgets_FOUND)
   #"The following are set after the configuration is done for both windows and
   # unix style:"
   message("wxWidgets FOUND")
+  #Usually "UsewxWidgets.cmake": 
+  # -calls include_directories(...) with wxWidgets_INCLUDE_DIRS
+  # -calls link_directories(...) with wxWidgets_LIBRARY_DIRS
+  # -adds wxWidgets_DEFINITIONS to "COMPILE_DEFINITIONS"
+  # -adds wxWidgets_DEFINITIONS_DEBUG to "COMPILE_DEFINITIONS_DEBUG"
+  # -adds wxWidgets_CXX_FLAGS to CMAKE_CXX_FLAGS
   include(${wxWidgets_USE_FILE}) #calls/includes CMake script
 else()
   message( warning "wxWidgets not FOUND->maybe problem in findwxWidgets.cmake")

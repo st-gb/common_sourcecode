@@ -58,12 +58,12 @@ void EventLoop(bool processEventQueue)
     // see https://stackoverflow.com/questions/19748685/curses-library-why-does-getch-clear-my-screen
     /// "getch() does an implicit refresh()"
       key = getch();
-      if( key != ERR )
-        ///Can't do a "if(p_last) p_last->HandleAction(...)" instead because
-        /// top level windows should also be able to receive keys.
-        Window::s_inputProcessorStack.consume(key);
-      if( processEventQueue)
-        g_eventQueue.Process();
+    if( key != ERR )///"ERR" if no key was pressed
+      ///Can't do a "if(p_last) p_last->HandleAction(...)" instead because
+      /// top level windows should also be able to receive keys.
+      Window::s_inputProcessorStack.consume(key);
+    if( processEventQueue)
+      g_eventQueue.Process();
   }while(! Window::s_inputProcessorStack.exit );
 }
 }
