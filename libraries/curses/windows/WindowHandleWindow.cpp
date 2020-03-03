@@ -112,6 +112,7 @@ void WindowHandleWindow::RemoveAsKeyListener()
   s_inputProcessorStack.Remove(this);
 }
 
+///Only with a curses WINDOW handle it is possible to do a curses wgetch(...)
 void WindowHandleWindow::SetAsKeyListener()
 {
   s_inputProcessorStack.add(this);

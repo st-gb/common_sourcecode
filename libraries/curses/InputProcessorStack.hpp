@@ -1,4 +1,4 @@
-#pragma once //Include guard, more resource-saving than a #ifdef ... include guard
+#pragma once///Include guard, more resource-saving than a #ifdef ...
 
 #ifndef LIBARIES_NCURSES_INPUTPROCESSORSTACK_HPP
 #define LIBARIES_NCURSES_INPUTPROCESSORSTACK_HPP
@@ -40,6 +40,8 @@ namespace curses
   public:
     InputProcessorStack() : exit(false) {}
     void add(Curses::Window * w) { m_inputProcessorStack.push_back(w); }
+    Curses::Window * getLast() { return m_inputProcessorStack.back(); }
+    Curses::Window * getForemostWinHandleWin();
     void Remove(Curses::Window * win);
     void RemoveLastElement() { m_inputProcessorStack.pop_back(); }
     void UpdateAllWindowsHiddenBy(const curses::WindowHandleWindow *);

@@ -44,6 +44,19 @@ namespace curses
       }
     }
   }
+
+Curses::Window * InputProcessorStack::getForemostWinHandleWin()
+{
+  container_type::reverse_iterator r_iter = m_inputProcessorStack.rbegin();
+  for(;r_iter != m_inputProcessorStack.rend() ; r_iter++) {
+    //if( typeid( **r_iter) == typeid(curses::WindowHandleWindow *) )
+    const curses::WindowHandleWindow * const p_windowHandleWindow = 
+      dynamic_cast<const curses::WindowHandleWindow * const >(*r_iter);
+    if( p_windowHandleWindow)///If casting succeeded<=>if WindowHandleWindow
+      return *r_iter;
+  }
+  return NULL;
+}
   
   void InputProcessorStack::Remove(Curses::Window * win)
   {

@@ -8,6 +8,7 @@
 /** preprocessor macro "MessageBox" from Windows API */
 #undef MessageBox
 
+//Should be in folder "windows"
 namespace curses
 {
   /** Forward declaration. */

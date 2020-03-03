@@ -80,7 +80,7 @@ namespace curses
 //              s_mainMenu.HandleAction('\n');
 //          menu.HandleAction(otherKey[0]);
           menu.show(stdscr);
-          s_inputProcessorStack.add(& menu);
+          s_inputProcessorStack.add(& menu);///For processing submenus??
           if( curs_setResult != ERR)
             /** Set to previous cursor mode. */
             curs_set(curs_setResult);

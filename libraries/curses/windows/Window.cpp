@@ -1,12 +1,14 @@
 #include <stdint.h>
 
 #include "Window.hpp"
-#include "../EventQueue.hpp" //class EventQueue
+#include "../EventQueue.hpp"///class EventQueue
+#include "WindowHandleWindow.hpp"///class WindowHandleWindow
+//#include <typeinfo>///typeid
 
 curses::InputProcessorStack Curses::Window::s_inputProcessorStack;
 extern curses::EventQueue g_eventQueue;
 
-namespace Curses
+namespace Curses//TODO make lower case? (because of proper name "curses")
 {
   WINDOW * Window::CreateWindowRelativePos(
     WINDOW * p_windowForRelativePos,
@@ -36,17 +38,32 @@ namespace Curses
 //    return addressOfAllocatedMemory;
 //  }
   
-  void EventLoop(bool processEventQueue)
+void EventLoop(bool processEventQueue)
+{
+  do
   {
-    do
+    Curses::Window * p_foremostWinHandleWin = Window::s_inputProcessorStack.
+      getForemostWinHandleWin();
+    int key;
+    ///https://en.wikibooks.org/wiki/C%2B%2B_Programming/Programming_Languages/C%2B%2B/Code/Keywords/typeid
+    if( /*typeid(p_last) == typeid(curses::WindowHandleWindow)*/ 
+      p_foremostWinHandleWin )
     {
-      //TODO sometimes makes all windows black if called
-      // see https://stackoverflow.com/questions/19748685/curses-library-why-does-getch-clear-my-screen
-      int key = getch();
+      key = wgetch( ((curses::WindowHandleWindow *)p_foremostWinHandleWin)->
+        getWindowHandle() );
+    }
+    else
+    //Sometimes (ncurses 5--6.1-1ubuntu1.18.04) makes all windows black if
+    /// called.
+    // see https://stackoverflow.com/questions/19748685/curses-library-why-does-getch-clear-my-screen
+    /// "getch() does an implicit refresh()"
+      key = getch();
       if( key != ERR )
+        ///Can't do a "if(p_last) p_last->HandleAction(...)" instead because
+        /// top level windows should also be able to receive keys.
         Window::s_inputProcessorStack.consume(key);
       if( processEventQueue)
         g_eventQueue.Process();
-    }while(! Window::s_inputProcessorStack.exit );
-  }
+  }while(! Window::s_inputProcessorStack.exit );
+}
 }
