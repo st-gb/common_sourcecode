@@ -1,4 +1,4 @@
-/** This program should test whether a setsocketopt(...) on client aide can be
+/** This program should test whether a setsocketopt(...) on client side can be
 * used to set the  client connect() timeout. */
 #include "../initSrv.h"///enum InitSrvRslt, getErrorMsg(...)
 #include "../prepAccept.h"///prepAccept(...)
@@ -6,7 +6,7 @@
 #include <iostream>///std::cerr, std::cout
 #include <netinet/in.h>///struct sockaddr_in
 #include <arpa/inet.h>///inet_ntoa(...)
-#include "cxxopts/handleCmdLineOpts.hpp"///HandleCmdLineOpts(...)
+#include "../cxxopts/handleCmdLineOpts.hpp"///HandleCmdLineOpts(...)
 
 //void setPortNo(const char [] val){  }
 //CommandLineOption<funcType> cmdLineOpts [] = {"port" , setPortNo};
@@ -35,7 +35,7 @@ inline void acceptLoop(const int portNo, const int srvSocketFileDesc)
 int main(int argCount, char * args[])
 {
   int retVal = 0;
-  const int portNo = HandleCmdLineOpts(argCount, args);
+  const int portNo = cxxopts::clientAndServer::HandleCmdLineOpts(argCount,args);
 
   struct sockaddr_in srvAddr;
   int srvSocketFileDesc;

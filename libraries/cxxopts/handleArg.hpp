@@ -1,5 +1,7 @@
 #pragma once///Include guard.
 
+#include <cxxopts.hpp>//cxxopts::ParseResult
+
 namespace cxxopts{
 template <typename argType> void handleArg(
   cxxopts::ParseResult & cmdLineOptsParseRslt, 
@@ -10,10 +12,10 @@ template <typename argType> void handleArg(
   if(numArgsWithName > 0)
   {
     argVal = cmdLineOptsParseRslt[argName].as<argType>();
-    std::cout << "Should use " << argName << " " << argVal << std::endl;
+    //std::cout << "Should use " << argName << " " << argVal << std::endl;
   }
-  else
-    std::cout << argName << " not set. Using default:" << argVal << std::endl;
+  //else
+  //  std::cout << argName << " not set. Using default:" << argVal << std::endl;
   }catch(cxxopts::OptionException & e){}
 }
 }

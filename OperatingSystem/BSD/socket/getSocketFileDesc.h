@@ -2,7 +2,11 @@
 
 #include <sys/socket.h>///socket(...)
 
-namespace OperatingSystem{ namespace BSD{ namespace sockets{
+#ifdef __cplusplus
+namespace OperatingSystem{namespace BSD{namespace sockets{
+#else
+static///Neded for C
+#endif
 ///Used by client and server for socket creation.
 ///Make inline because only 1 function call inside->no size benefit.
 inline int GetSocketFileDesc(const int protoFam, const int type,
@@ -23,4 +27,7 @@ inline int GetSocketFileDesc(const int protoFam, const int type,
     proto);
   return socketFileDesc;
 }
+
+#ifdef __cplusplus
 }}}///end namespaces
+#endif

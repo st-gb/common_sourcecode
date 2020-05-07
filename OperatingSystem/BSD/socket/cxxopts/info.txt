@@ -1,0 +1,1 @@
+files can be used for socket applications.

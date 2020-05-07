@@ -96,7 +96,9 @@ enum GetSocketTimeoutRslt GetSocketTimeoutInS(const int socketFileDesc,
     if( ( rcvSocketTimeout.tv_sec < sendSocketTimeout.tv_sec ||
        (rcvSocketTimeout.tv_sec == sendSocketTimeout.tv_sec &&
        rcvSocketTimeout.tv_usec < sendSocketTimeout.tv_usec) ) &&
-       ///If sec and usec are 0 then indefinite.
+    /** https://linux.die.net/man/7/socket :"If the timeout is set to zero (the
+      * default) then the operation will never timeout."*/
+       ///Linux Mint:If sec and usec are 0 then timeout after ca. 90 s.
        rcvSocketTimeout.tv_sec != 0 && rcvSocketTimeout.tv_usec != 0)
     {
       *p_timeoutInS = rcvSocketTimeout.tv_sec;
