@@ -1,5 +1,8 @@
 set(g_lvl 4)#Set this to the desired log level
 
+#see https://stackoverflow.com/questions/5248749/passing-a-list-to-a-cmake-macro :
+#Quote the list variable when calling this functions else only the 1st element
+#is handled.
 function(show1ItmPerLne lvl msg lst)
  if(DEFINED DEBUG_showMsg)
   message("whole list: ${lst}")

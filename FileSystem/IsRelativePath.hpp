@@ -53,12 +53,6 @@ namespace FileSystem
       return true;
     return false;
   }
-  inline bool IsRelativePathW(const wchar_t path [])
-  {
-    if( path != NULL && path[0] == L'/' )
-      return false;
-    return true;
-  }
 }
 #endif
 

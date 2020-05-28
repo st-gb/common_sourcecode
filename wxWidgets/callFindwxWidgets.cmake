@@ -41,6 +41,8 @@
 #  CACHE PATH "wxWidgets_LIB_DIR FORCE")
 
 #TODO make as function with parameter "wxLibs"?! (e.g. set to "core base adv")?
+#https://stackoverflow.com/questions/5248749/passing-a-list-to-a-cmake-macro :
+#Must double quote (") actual variable for wxLibs to have multiple elements
 #function(callFindwxWidgets wxLibs)
   #message(STATUS "wxLibs: ${wxLibs} ${${wxLibs}}")
   if(UNIX)
@@ -75,6 +77,7 @@
   
   #SET(wxWidgets_USE_LIBS core base adv)
 	
+  message("wxWidgets_USE_LIBS: ${wxWidgets_USE_LIBS}")
   message("Before find_package(wxWidgets)")
   #Calls/includes "findwxWidgets.cmake".
   #TODO make usable with wxLibs
@@ -84,6 +87,7 @@
   message("After find_package(wxWidgets")
   
  if(debugCallFindwxWidgets)#only output if certain debug level?
+  message("wxWidgets_USE_LIBS: ${wxWidgets_USE_LIBS}")
   #https://cmake.org/cmake/help/v3.0/module/FindwxWidgets.html :
   #"The following are set after the configuration is done for both windows and
   # unix style:"
@@ -94,12 +98,15 @@
   #showMsg(5, "wxWidgets_LIBRARIES: ${wxWidgets_LIBRARIES}")
   #Output "wxWidgets_LIBRARIES" in CMakeLists.txt before 
   # "target_link_libraries(${EXE_NAME} ${wxWidgets_LIBRARIES})"
-  # show1ItmPerLne(5 "wxWidgets_LIBRARIES:" "${wxWidgets_LIBRARIES}")
+  
+  include(${CMAKE_CURRENT_LIST_DIR}/../CMake/ShowMsg_CompLvl.cmake)
+  #include(${COMMON_SOURCECODE_ROOT_PATH}/CMake/ShowMsg_CompLvl.cmake)
+  show1ItmPerLne(5 "wxWidgets_LIBRARIES:" "${wxWidgets_LIBRARIES}")
   message("wxWidgets_LIBRARY_DIRS: ${wxWidgets_LIBRARY_DIRS}")
   message("wxWidgets_DEFINITIONS: ${wxWidgets_DEFINITIONS}")
   message("wxWidgets_DEFINITIONS_DEBUG: ${wxWidgets_DEFINITIONS_DEBUG}")
   message("wxWidgets_CXX_FLAGS: ${wxWidgets_CXX_FLAGS}")
-  message("wxWidgets_USE_FILE: ${wxWidgets_USE_FILE}") 
+  message("wxWidgets_USE_FILE: ${wxWidgets_USE_FILE}")
  endif()
   
 if(wxWidgets_FOUND)

@@ -18,6 +18,7 @@ I_Thread::cs_type I_Thread::s_critical_section_type;
 void I_Thread::SetCurrentThreadName(const char * const name)
 {
   DWORD currentThreadNumber = OperatingSystem::GetCurrentThreadNumber();
+  //TODO idea use lock-free Compare-And-Swap operation (pointer to string)
   //Enter the critical section to guard against concurrent changing or reading 
   //from the thread name container.
   s_critical_section_type.Enter();

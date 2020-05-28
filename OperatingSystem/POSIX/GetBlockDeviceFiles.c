@@ -12,7 +12,7 @@
 #include <stdlib.h> //malloc(...)
 //#include <sys/types.h>
 
-#define DEVICE_FILE_PATH_LEN 100
+#define DEVICE_FILE_PATH_LEN 261///256+ /dev/
 
 /** for getting just block device files without /dev/ram an so on:
  * cat /proc/partitions
