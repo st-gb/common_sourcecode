@@ -1,7 +1,7 @@
 #pragma once
 
 //#include <stdio.h>///FILE
-#include <iostream>///std:::ostringstream
+#include <fstream>///std:::ifstream
 
 #ifdef __cplusplus
 namespace dataCarrier{
