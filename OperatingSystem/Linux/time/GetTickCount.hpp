@@ -81,14 +81,16 @@ namespace Linux
 //    static uint64_t ui64TimeCountInSeconds;
 //    int ret = GetTimeCountInNanoSeconds(ui64TimeCountInSeconds);
 
-    //from http://linux.die.net/man/3/clock_gettime:
-    //CLOCK_REALTIME: System-wide realtime clock. Setting this clock requires
-    // appropriate privileges.
-    //CLOCK_MONOTONIC: Clock that cannot be set and represents monotonic time
-    // since some unspecified starting point.
     struct timespec tp;
     //Link to "librt" for "clock_gettime"
-    int ret = clock_gettime(CLOCK_MONOTONIC //clockid_t clock_id
+    int ret = clock_gettime(
+    /** from http://linux.die.net/man/3/clock_gettime:
+      "CLOCK_REALTIME: System-wide realtime clock. Setting this clock requires
+      appropriate privileges.
+      CLOCK_MONOTONIC: Clock that cannot be set and represents monotonic time
+      since some unspecified starting point."
+      Should have the same value as "cat /proc/uptime" */
+      CLOCK_MONOTONIC //clockid_t clock_id
       , & tp //struct timespec *tp
       );
     TimeCountInSeconds = tp.tv_sec + (double) tp.tv_nsec / 1000000000.0;
@@ -100,7 +102,7 @@ namespace Linux
 //    DEBUGN("inline DWORD GetTickCount() begin")
     //Static:don't create on stack each time (global variable with local scope)
 //    static DWORD dwReturnValue ;
-    static timeval timevalCurrentTime ;
+    static struct timeval timevalCurrentTime ;
     //TODO
     //from http://en.wikipedia.org/wiki/System_time#Operating_systems:
     //see http://www.opengroup.org/onlinepubs/9699919799/functions/gettimeofday.html:

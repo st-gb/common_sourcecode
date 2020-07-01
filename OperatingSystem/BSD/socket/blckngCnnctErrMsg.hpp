@@ -8,6 +8,7 @@ namespace OperatingSystem{namespace BSD{namespace sockets{
 /** Errors specific to blocking connect(...), i.e. no 
  * "fcntl(socketFileDesc, F_SETFL, flags | O_NONBLOCK);" before connect(...) */
 namespace BlockingCnnctError{///Error when calling a blocking connect(...), i.e.
+//TODO errCode is specific to Unix
 inline std::string GetPossibleCause_inl(const int errCode,const int port)
 {
   std::ostringstream oss;

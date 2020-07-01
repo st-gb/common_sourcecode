@@ -3,6 +3,10 @@
 #include <windows.h>///includes <profileapi.h> for QueryPerformanceCounter(...)
 #include <winnt.h>///LARGE_INTEGER
 
+///GetTickCount(...): 
+///https://en.wikipedia.org/wiki/Tick_(disambiguation)
+///"Tick, atomic unit used to define system time in computing"
+
   inline long double GetTimeCountInSeconds(//LARGE_INTEGER *lpPerformanceCount
     )
   {

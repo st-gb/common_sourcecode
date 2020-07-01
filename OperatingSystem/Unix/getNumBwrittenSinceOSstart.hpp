@@ -1,4 +1,5 @@
-#pragma once
+#pragma once///Include guard
+/// specific to Linux/Unix
 
 //#include <stdio.h>///FILE
 #include <fstream>///std:::ifstream
@@ -39,6 +40,14 @@ uint64_t getNumBwrittenSinceOSstart(const char devName[])///E.g. "sda"
     is.close();
   }
   return numBwrittenSinceOSstart;
+}
+
+///\brief stdstrDataCarrierPath : e.g. "/dev/sda"
+uint64_t getNumBwrittenSinceOSstart(const std::string & stdstrDataCarrierPath)
+{
+  std::string dvcName = stdstrDataCarrierPath.substr(stdstrDataCarrierPath.
+    rfind("/")+1 );
+  getNumBwrittenSinceOSstart(dvcName.c_str());
 }
 #ifdef __cplusplus
 }
