@@ -47,7 +47,7 @@ uint64_t getNumBwrittenSinceOSstart(const std::string & stdstrDataCarrierPath)
 {
   std::string dvcName = stdstrDataCarrierPath.substr(stdstrDataCarrierPath.
     rfind("/")+1 );
-  getNumBwrittenSinceOSstart(dvcName.c_str());
+  return getNumBwrittenSinceOSstart(dvcName.c_str());
 }
 #ifdef __cplusplus
 }
