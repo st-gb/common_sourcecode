@@ -1,5 +1,5 @@
 #pragma once
 
 #ifdef __linux__
-  #include <OperatingSystem/Unix/getNumBwrittenSinceOSstart.hpp>
+  #include <OperatingSystem/Unix/hardware/dataCarrier/getNumBwrittenSinceOSstart.hpp>
 #endif
