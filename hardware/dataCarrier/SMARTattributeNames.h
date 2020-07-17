@@ -11,23 +11,54 @@ namespace SMARTattributeNames
 extern "C" {
 #endif
 
-//TODO move to common_sourcecode
 /** See https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes */
 enum SMARTattributeNames 
 {
-  /**https://de.wikipedia.org/wiki/Self-Monitoring,_Analysis_and_Reporting_Technology#.C3.9Cbliche_Parameter :
-   "Laufleistung in Stunden oder Sekunden (inklusive Standby)
-   Deutet auf Abnutzung hin, sagt aber nichts über Nutzungsumstände in dieser Zeit aus.
-   Bei einigen Modellen von Maxtor, z. B. bei der Maxtor DiamondMax 10 6L250S0 
-   * sind das Minuten." */
+  /**https://de.wikipedia.org/wiki/Self-Monitoring,_Analysis_and_Reporting_Technology#%C3%9Cbliche_Parameter
+   * : "Nicht korrigierbare Fehler beim Lesen von der Festplatte, führt zum 
+   * erneuten Einlesen. Deutet auf Problem mit der Plattenoberfläche hin."*/
+  ReadErrorRate = 1,
+  /**https://de.wikipedia.org/wiki/Self-Monitoring,_Analysis_and_Reporting_Technology#%C3%9Cbliche_Parameter
+   * : "Anzahl der verbrauchten Reservesektoren."*/
+  ReallocSectorsCnt = 5,
+  /**https://de.wikipedia.org/wiki/Self-Monitoring,_Analysis_and_Reporting_Technology#.C3.9Cbliche_Parameter
+   * : "-Laufleistung in Stunden oder Sekunden (inklusive Standby)
+   * -Deutet auf Abnutzung hin, sagt aber nichts über Nutzungsumstände in dieser
+   *   Zeit aus.
+   * -Bei einigen Modellen von Maxtor, z. B. bei der Maxtor DiamondMax 10 6L250S0 
+   *  sind das Minuten." */
   PowerOnTime = 9,
+  PwrCycleCnt = 12,
+  /** https://media.kingston.com/support/downloads/MKP_306_SMART_attribute.pdf
+   * Unit can be determined by comparing to data written by OS?/
+   * by getting the block numbers used when written (see "blktrace"--columns
+   *  "start block" & "number of blocks" when write events) 
+   *  https://git.kernel.dk/?p=blktrace.git;a=blob;f=blkparse_fmt.c;h=df2f6ce2148a473e20f5cd9afd381f0021bfd42d;hb=HEAD :
+   *  is in "char *act" of "process_default" called from process_fmt 
+     handle_notify 
+    https://docs.huihoo.com/doxygen/linux/kernel/3.7/uapi_2linux_2blktrace__api_8h_source.html 
+   https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwiGlt3f-c_qAhWPYsAKHZvXC7AQFjAFegQIBxAB&url=https%3A%2F%2Fcodesearch.isocpp.org%2Factcd19%2Fmain%2Fb%2Fblktrace%2Fblktrace_1.2.0-5%2Fblkiomon.c&usg=AOvVaw1nOLy95Q6Y-ixpgB8Krv1o */
   GiB_Erased = 100,
+  SSDprogFailCnt = 171,
+  SSDeraseFailCnt = 172,
+  PwrLossProtectionFailure = 175,
+  EraseFailCnt = 176,
+  EndToEndError = 184,
+  ReportedUncorrError = 187,
+  CmdTimeout = 188,
   TempDiffOrAirflowTemp=190,
   DevTemp = 194,
   HW_ECC_Recovered = 195,
+  ReallocEvtCnt = 196,
+  CurrPendSecCnt = 197,
+  UncorrSecCnt = 198,
+  UDMA_CRCerrorCnt = 199,
+  /** https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes
+   * "A recording of shock encountered during write operations."*/
+  ShockDuringWrite = 212,
   AvgEraseCntAndMaxEraseCnt = 234,
   /**https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes :
-    * "Time spent during the positioning of the drive heads. Some Fujitsu 
+   * "Time spent during the positioning of the drive heads. Some Fujitsu 
    *  drives report the count of link resets during a data transfer. */
   HeadFlyingHours = 240,
   /**https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes :

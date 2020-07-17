@@ -6,7 +6,9 @@
 #ifdef __cplusplus
 namespace dataCarrier{
 #endif
-///\param devName must be without "/dev/"
+/** Under Linux it seems to be cached: if in cache ("top" system binary:
+ *  "buff(er)/cache") the number of bytes read is not increased?!
+ * \param devName must be without "/dev/"*/
 uint64_t getNumB_readSinceOSstart(const char devName[])///E.g. "sda"
 {
   uint64_t numB_readSinceOSstart = 0;
