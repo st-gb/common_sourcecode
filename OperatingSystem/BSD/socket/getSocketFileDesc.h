@@ -1,6 +1,6 @@
 #pragma once///Include guard.
 
-#include <sys/socket.h>///socket(...)
+#include "socket.h"///socket(...)
 
 #ifdef __cplusplus
 namespace OperatingSystem{namespace BSD{namespace sockets{

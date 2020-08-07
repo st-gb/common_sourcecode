@@ -1,5 +1,6 @@
 #include <unistd.h>///socklen_t
-#include <sys/socket.h>///SOL_SOCKET,setsockopt(...),getsockopt(...)
+
+#include "socket.h"///SOL_SOCKET,setsockopt(...),getsockopt(...)
 #include "socketTimeout.h"///enum GetSocketTimeoutRslt
 
 #ifdef __cplusplus///enable both C and C++ 
@@ -27,7 +28,7 @@ int setSocketTimeout(
     * default) then the operation will never timeout."*/
     /** Linux:setting timeout to 1 microsecond let the value get 4000 
     * microseconds (got via getsocketopt(...))".*/
-    (void *) p_tvSocketTimeout,
+    /*(void *)*/ (const char *) p_tvSocketTimeout,
     /** https://linux.die.net/man/2/getsockopt : "The arguments optval and 
      * optlen are used to access option values for setsockopt()." */
     optionLen);
@@ -56,7 +57,7 @@ int getSocketTimeout(
     * Specify the receiving or sending timeouts until reporting an error. 
     * The argument is a struct timeval. [...] If the timeout is set to zero (the
     * default) then the operation will never timeout."*/
-    (void *) p_tvSocketTimeout,
+    /*(void *)*/ (char*) p_tvSocketTimeout,
     /** https://linux.die.net/man/2/getsockopt : 
      * "For getsockopt(), optlen is a value-result argument, initially 
      * containing the size of the buffer pointed to by optval, and modified on 

@@ -1,4 +1,5 @@
-#include <netinet/in.h>///struct sockaddr_in
+#include "sockaddr_in.h"///struct sockaddr_in
+
 #include <strings.h>///bzero(...), bcopy(...)
 
 #include "prepCnnctToSrv.h"///enum CnnctToSrvRslt
@@ -32,10 +33,11 @@ enum PrepCnnctToSrvRslt prepCnnctToSrv(
   if( ! p_serverHostDataBaseEntry )
     return getHostByNameFailed;
 
-  bzero( (char *) p_srvAddr, sizeof(*p_srvAddr) );
+  memset( (char *) p_srvAddr, 0, sizeof(*p_srvAddr) );
   p_srvAddr->sin_family = protoFam;
-  bcopy( (char *) p_serverHostDataBaseEntry->h_addr,
+  memcpy(
     (char *) & p_srvAddr->sin_addr.s_addr,
+    (char *) p_serverHostDataBaseEntry->h_addr,
     p_serverHostDataBaseEntry->h_length);
   p_srvAddr->sin_port = htons(portNumber);
   return prepCnnctToSrvSucceeded;
