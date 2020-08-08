@@ -26,9 +26,15 @@ enum PrepCnnctToSrvRslt prepCnnctToSrv(
   struct hostent * p_serverHostDataBaseEntry;
   
   *p_socketFileDesc = GetSocketFileDesc(protoFam, SOCK_STREAM, 0);
-  if(*p_socketFileDesc < 0)
+  if(*p_socketFileDesc < 0){
+#ifdef __linux__
+    int lastOSerror = errno;
+#endif
+#ifdef _WIN32
+    int lastWSAerror = WSAGetLastError();
+#endif
     return getSocketFileDescFailed;
-  
+  }
   p_serverHostDataBaseEntry = GetHostDataBaseEntry(hostName);
   if( ! p_serverHostDataBaseEntry )
     return getHostByNameFailed;

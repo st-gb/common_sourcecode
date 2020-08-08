@@ -5,7 +5,7 @@
 #ifdef __cplusplus
 namespace OperatingSystem{namespace BSD{namespace sockets{
 #else
-static///Neded for C
+static///Needed for C
 #endif
 ///Used by client and server for socket creation.
 ///Make inline because only 1 function call inside->no size benefit.
