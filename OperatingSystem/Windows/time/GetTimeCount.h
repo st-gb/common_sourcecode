@@ -7,10 +7,11 @@
 ///https://en.wikipedia.org/wiki/Tick_(disambiguation)
 ///"Tick, atomic unit used to define system time in computing"
 
-  inline long double GetTimeCountInSeconds(//LARGE_INTEGER *lpPerformanceCount
-    )
-  {
-    long double timeCountInSeconds;
+inline TimeCountInSecType GetTimeCountInSeconds(
+  //LARGE_INTEGER *lpPerformanceCount
+  )
+{
+  TimeCountInSecType timeCountInSeconds;
     LARGE_INTEGER PerformanceCounterValueInCounts;
     if( 
       /** http://msdn.microsoft.com/en-us/library/ms644904 

@@ -20,6 +20,8 @@ enum PrepCnnctToSrvRslt{prepCnnctToSrvSucceeded = 0,
   getHostByNameFailed///gethostbyname(...) returned NULL
   };
 
+extern const char * const enErrorMsgs [getHostByNameFailed + 1];
+
 enum PrepCnnctToSrvRslt prepCnnctToSrv(
   const char host [],///e.g."localhost"
   const int portNumber,

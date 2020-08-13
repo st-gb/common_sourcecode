@@ -1,15 +1,20 @@
 #pragma once///Include guard
 
+/* Include this file in order to get OS-independent the socket(...)
+ * declaration.*/
+
+#ifdef __cplusplus
+namespace OperatingSystem{namespace BSD{namespace sockets{
+#endif
+enum errorCodes{connRefused, inProgress, timedOut};
+#ifdef __cplusplus
+}}}
+#endif
+
 #ifdef __linux___
-  #include <sys/socket.h>///socket(...)
-  inline void InitSocket(){}
+  #include <OperatingSystem/POSIX/BSD_sockets/sockets.h>
 #endif
 #ifdef _WIN32
-///http://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-socket
-///https://stackoverflow.com/questions/3531474/socklen-t-undeclared-when-compiling-c-code
-  #include <winsock2.h>///socket(...), socklen_t
-//  #include <Ws2ipdef.h>
-  #include <ws2tcpip.h>///socklen_t
   #include <OperatingSystem/Windows/BSD_sockets/sockets.h>///InitSocket(...)
 #endif
 
@@ -18,6 +23,7 @@
 
 #ifdef __cplusplus
 namespace OperatingSystem{namespace BSD{namespace sockets{
+
 ///To enable both Windows and non-Windows version of recv(...).
 template <typename bufferType>
 #else

@@ -11,6 +11,11 @@ using namespace OperatingSystem::BSD::sockets;
 namespace OperatingSystem{namespace BSD{namespace sockets{
 #endif
 
+const char * const enErrorMsgs [] = {
+  "",
+  "creating socket file descriptor failed",
+  "getting host by name failed"};
+
 /** Intension: should be usable by a minimal test program and other clients.
 * It is separated from the connect to enable either an nonblocking 
 * (via connect(...), select(...)" or a blocking connect (via "connect(...)" 
