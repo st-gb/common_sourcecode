@@ -4,6 +4,7 @@
  * http://linux.die.net/man/3/errno */
 
 #include <sys/socket.h>///socket(...)
+#include <errno.h>///errno
 
 #ifdef __cplusplus
 namespace OperatingSystem{namespace BSD{namespace sockets{

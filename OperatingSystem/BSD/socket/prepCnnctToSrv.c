@@ -1,6 +1,7 @@
 #include "sockaddr_in.h"///struct sockaddr_in
 
-#include <strings.h>///bzero(...), bcopy(...)
+///Use "memset" and "memcpy" as "bzero" and "bcopy" are unavailable in MinGW.
+#include <string.h>///memset(...), memcpy(...)
 
 #include "prepCnnctToSrv.h"///enum CnnctToSrvRslt
 #include "getSocketFileDesc.h"///GetSocketFileDesc(...)

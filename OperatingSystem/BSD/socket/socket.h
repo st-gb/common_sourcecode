@@ -11,7 +11,7 @@ enum errorCodes{connRefused, inProgress, timedOut};
 }}}
 #endif
 
-#ifdef __linux___
+#ifdef __linux__
   #include <OperatingSystem/POSIX/BSD_sockets/sockets.h>
 #endif
 #ifdef _WIN32
