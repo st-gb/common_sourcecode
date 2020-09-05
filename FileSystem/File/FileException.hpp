@@ -15,6 +15,12 @@ protected:
 	//  std::wstring m_filePath;
 	DWORD m_operatingSystemErrorCode;
 public:
+  void cpyWchars(const wchar_t chFilePath []){
+    const int stringLength = wcslen(chFilePath);
+    m_filePath = new wchar_t[stringLength 
+      /** Plus 1 character for string terminating '0' char.*/ + 1];
+    wcscpy(m_filePath, chFilePath);
+  }
   
   FileException() : m_filePath(0), m_operatingSystemErrorCode(0) { }
   
@@ -22,10 +28,7 @@ public:
     : m_operatingSystemErrorCode(0)
 //    , m_filePath(chFilePath)
   {
-    const int stringLength = wcslen(chFilePath);
-    m_filePath = new wchar_t[stringLength 
-      /** Plus 1 character for string terminating '0' char.*/ + 1 ];
-    wcscpy(m_filePath, chFilePath);
+    cpyWchars(chFilePath);
   }
   
   FileException(const char * const chFilePath)
@@ -41,11 +44,22 @@ public:
     m_filePath[stringLength] = L'\0';
     //str = ch;
   }
-  
+
+  ///Also called when doing a "throw" with an object of this class.
+  FileException(const FileException & fe)
+  {
+    cpyWchars(fe.m_filePath);
+    m_operatingSystemErrorCode = fe.m_operatingSystemErrorCode;
+  }
+
+  /** Called when created on stack a´when leaving block or at end of catch(...)
+   *  with a FileException-based class.*/
   ~FileException()
   {
-    if( m_filePath)
+    if( m_filePath){
       delete [] m_filePath;
+      m_filePath = NULL;
+    }
   }
 
   //TODO?

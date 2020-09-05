@@ -3,33 +3,23 @@
 
 #include <string> //class std::string
 //#include <stdlib.h> //realpath(...)
+#include <FileSystem/path_seperator.h>///PATH_SEPERATOR_CHAR
 
-namespace FileSystem
-{
 #ifdef _WIN32
-  #define PATH_SEP_CHAR '\\'
+  ///FileSystem::GetAbsolutePathA(...)
+  #include <OperatingSystem/Windows/FileSystem/GetAbsolutePath.hpp>
 #endif
 #ifdef __linux__
-  #define PATH_SEP_CHAR '/'
-  //TODO wrong?! : this include file is scoped under the namespace name
-  #include <sys/param.h>
-
-  inline void GetAbsolutePathA(const char * const getAbsPathFrom, std::string & absPath)
-  {
-    //from http://stackoverflow.com/questions/2341808/how-to-get-the-absolute-path-for-a-given-relative-path-programmatically-in-linux
-    char resolved_path[PATH_MAX];
-    realpath(getAbsPathFrom, resolved_path);
-    absPath = resolved_path;
-  }
-
+  ///FileSystem::GetAbsolutePathA(...)
+  #include <OperatingSystem/POSIX/FileSystem/GetAbsolutePath.hpp>
 #endif
-
-
+namespace FileSystem
+{
 inline std::string GetAbsoluteFilePath(
   const std::string & rootPath, 
   const std::string & filePath)
 {
-  const int lastPathSepChar = filePath.rfind(PATH_SEP_CHAR);
+  const int lastPathSepChar = filePath.rfind(PATH_SEPERATOR_CHAR);
   std::string absoluteFilePath;
   if( lastPathSepChar != std::string::npos )
   {
@@ -51,7 +41,7 @@ inline std::wstring GetAbsoluteFilePath(
   const std::wstring & rootPath, 
   const std::wstring & filePath)
 {
-  const int lastPathSepChar = filePath.rfind(PATH_SEP_CHAR);
+  const int lastPathSepChar = filePath.rfind(PATH_SEPERATOR_CHAR);
   std::wstring absoluteFilePath;
   if( lastPathSepChar != std::string::npos )
   {

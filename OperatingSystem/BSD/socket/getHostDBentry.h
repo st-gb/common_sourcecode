@@ -1,10 +1,11 @@
 #pragma once///Include guard
-#include <netdb.h>///gethostbyname(...)
+
+#include "gethostbyname.h"///gethostbyname(...)
 
 #ifdef __cplusplus
 namespace OperatingSystem{namespace BSD{namespace sockets{
 #else
-static///Neded for C
+static///Needed for C
 #endif
 inline struct hostent * GetHostDataBaseEntry(const char hostName [])
 {

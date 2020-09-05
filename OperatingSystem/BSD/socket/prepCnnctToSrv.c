@@ -1,5 +1,7 @@
-#include <netinet/in.h>///struct sockaddr_in
-#include <strings.h>///bzero(...), bcopy(...)
+#include "sockaddr_in.h"///struct sockaddr_in
+
+///Use "memset" and "memcpy" as "bzero" and "bcopy" are unavailable in MinGW.
+#include <string.h>///memset(...), memcpy(...)
 
 #include "prepCnnctToSrv.h"///enum CnnctToSrvRslt
 #include "getSocketFileDesc.h"///GetSocketFileDesc(...)
@@ -9,6 +11,11 @@
 using namespace OperatingSystem::BSD::sockets;
 namespace OperatingSystem{namespace BSD{namespace sockets{
 #endif
+
+const char * const enErrorMsgs [] = {
+  "",
+  "creating socket file descriptor failed",
+  "getting host by name failed"};
 
 /** Intension: should be usable by a minimal test program and other clients.
 * It is separated from the connect to enable either an nonblocking 
@@ -25,17 +32,24 @@ enum PrepCnnctToSrvRslt prepCnnctToSrv(
   struct hostent * p_serverHostDataBaseEntry;
   
   *p_socketFileDesc = GetSocketFileDesc(protoFam, SOCK_STREAM, 0);
-  if(*p_socketFileDesc < 0)
+  if(*p_socketFileDesc < 0){
+#ifdef __linux__
+    int lastOSerror = errno;
+#endif
+#ifdef _WIN32
+    int lastWSAerror = WSAGetLastError();
+#endif
     return getSocketFileDescFailed;
-  
+  }
   p_serverHostDataBaseEntry = GetHostDataBaseEntry(hostName);
   if( ! p_serverHostDataBaseEntry )
     return getHostByNameFailed;
 
-  bzero( (char *) p_srvAddr, sizeof(*p_srvAddr) );
+  memset( (char *) p_srvAddr, 0, sizeof(*p_srvAddr) );
   p_srvAddr->sin_family = protoFam;
-  bcopy( (char *) p_serverHostDataBaseEntry->h_addr,
+  memcpy(
     (char *) & p_srvAddr->sin_addr.s_addr,
+    (char *) p_serverHostDataBaseEntry->h_addr,
     p_serverHostDataBaseEntry->h_length);
   p_srvAddr->sin_port = htons(portNumber);
   return prepCnnctToSrvSucceeded;

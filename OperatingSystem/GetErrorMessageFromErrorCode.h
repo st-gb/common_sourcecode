@@ -6,6 +6,7 @@
 #define GETERRORMESSAGEFROMERRORCODEA_H
 
 #include <string>
+#include <preprocessor_macros/Windows_compatible_typedefs.h>///DWORD
 
 namespace OperatingSystem
 {

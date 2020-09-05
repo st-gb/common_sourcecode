@@ -10,13 +10,14 @@
 namespace Windows_API
 {
 #endif //#ifdef __cplusplus
-  inline bool GetTimeCountInSeconds(long double & timeCountInSeconds)
-  {
-    timeCountInSeconds = ::GetTimeCountInSeconds();
+template<typename secType> inline bool GetTimeCountInSeconds(
+  secType & timeCountInSeconds)
+{
+  timeCountInSeconds = ::GetTimeCountInSeconds();
 	if( timeCountInSeconds > 0.0 )
 		return 1;
 	return 0;
-  }
+}
   
   inline DWORD GetTimeCountInMilliSeconds()
   {

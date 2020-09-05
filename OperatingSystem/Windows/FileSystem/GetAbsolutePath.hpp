@@ -1,6 +1,7 @@
 #pragma once
 
-#include<string>///class std::string
+#include <string>///class std::string
+#include <windows.h>///GetFullPathNameA(...)
 
 namespace FileSystem {
 inline std::string GetAbsolutePathA(const char path []) {
@@ -14,5 +15,16 @@ inline std::string GetAbsolutePathA(const char path []) {
 	return std::string(absPath);
   }
   return "";
+}
+inline void GetAbsolutePathA(const char getAbsPathFrom [], std::string & stdstrAbsPath){
+  char absPath[MAX_PATH];
+  ///https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfullpathnamea
+  ::GetFullPathNameA(
+    getAbsPathFrom,///LPCSTR lpFileName,
+    MAX_PATH,///DWORD  nBufferLength,
+    absPath,///LPSTR  lpBuffer,
+    NULL///LPSTR *lpFilePart
+	);
+  stdstrAbsPath = absPath;
 }
 }
