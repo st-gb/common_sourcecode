@@ -14,8 +14,15 @@ inline struct hostent * GetHostDataBaseEntry(const char hostName [])
    * variable holds an error number. When non-NULL, the return value may point
    * at static data, see the notes below. " */
   struct hostent * p_hostDataBaseEntry = gethostbyname(hostName);
+//#ifdef _DEBUG
 //  if (p_hostDataBaseEntry == NULL) {
-    //TODO check h_errno
+#ifdef _WIN32
+ ///https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-gethostbyname
+    const int lastWinSocketAPIerror = ::WSAGetLastError();
+#endif
+#ifdef __linux__
+//    h_errno;///Does Windows also have h_errno?
+#endif
 //    LOGN_ERROR("host " << hostName << " not in database;error code:" << h_errno)
 //  }
   return p_hostDataBaseEntry;
