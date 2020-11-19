@@ -23,15 +23,17 @@ enum errorCodes{connRefused, inProgress, timedOut};
 
 #ifdef __cplusplus
 namespace OperatingSystem{namespace BSD{namespace sockets{
-
-///To enable both Windows and non-Windows version of recv(...).
-template <typename bufferType>
 #else
  #ifdef _WIN32
   typedef char * bufferType;
  #else
   typedef void * bufferType;
  #endif
+#endif
+
+#ifdef __cplusplus
+///To enable both Windows and non-Windows version of recv(...).
+template <typename bufferType>
 #endif
 inline
 int readFromSocket(const int socketFileDesc, bufferType buffer,
@@ -67,6 +69,23 @@ int readFromSocket(const int socketFileDesc, bufferType buffer,
       ,0/**flags*/
 #endif
       );
+}
+
+#ifdef __cplusplus
+///To enable both Windows and non-Windows version of recv(...).
+template <typename bufferType>
+#endif
+inline
+int readFromSocket2(const int socketFileDesc, bufferType buffer,
+  const int numBytesToRead, unsigned * p_numBytesRead)
+{
+  const int i = readFromSocket(socketFileDesc, buffer,
+    numBytesToRead);
+  if(i > - 1)
+    * p_numBytesRead = i;
+  else
+    * p_numBytesRead = 0;
+  return i;
 }
 
 #ifdef __cplusplus
