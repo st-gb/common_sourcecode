@@ -61,7 +61,7 @@ void DropUser()
     if ( pw )
     {
       syslog( LOG_NOTICE, "setting user to " RUN_AS_USER );
-      setuid( pw->pw_uid );
+      const int rslt = setuid( pw->pw_uid );
     }
   }
 }
