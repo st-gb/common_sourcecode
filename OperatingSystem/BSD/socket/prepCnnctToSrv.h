@@ -1,9 +1,10 @@
-/** File:   connToSrv.h
- * Author: sg
+/** Author: Stefan Gebauer, M.Sc. Comp.Sc.
  * Created on 5. April 2020, 02:02 */
 #pragma once///Include guard
 #ifndef PREPCNNCTOSRV_H
 #define PREPCNNCTOSRV_H
+
+#include "gethostbyname.h"///enum gethostbynameBeyondLast
 
 ///Forward declaration
 struct sockaddr_in;
@@ -17,7 +18,8 @@ extern "C"{
 
 enum PrepCnnctToSrvRslt{prepCnnctToSrvSucceeded = 0, 
   getSocketFileDescFailed,///calling connect() returned -1
-  getHostByNameFailed///gethostbyname(...) returned NULL
+  getHostByNameFailed,///gethostbyname(...) returned NULL
+  beyondLast = getHostByNameFailed + gethostbynameBeyondLast
   };
 
 extern const char * const enErrorMsgs [getHostByNameFailed + 1];
