@@ -85,15 +85,20 @@ namespace Windows_API
     LOGN_DEBUG( "begin" )
     PossiblyCloseThreadHandle();
   }
-  void * Thread::WaitForTermination() const
-  {
-    DWORD dwExitCode ;
-    LOGN_DEBUG( "before WaitForSingleObject" )
-    //Waits for the end of the thread determined by the handle.
-    ::WaitForSingleObject(m_handleThread, INFINITE) ;
-    ::GetExitCodeThread(m_handleThread, & dwExitCode ) ;
-    return (void *) dwExitCode ;
-  }
+  
+void * Thread::WaitForTermination() const
+{
+  DWORD dwExitCode;
+  //LOGN_DEBUG("before WaitForSingleObject")
+///https://docs.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitforsingleobject
+  DWORD dw =
+    ///Waits for the end of the thread determined by the handle.
+    ::WaitForSingleObject(m_handleThread, INFINITE);
+  if(dw == WAIT_FAILED)
+    dw = ::GetLastError();
+  ::GetExitCodeThread(m_handleThread, & dwExitCode);
+  return (void *) dwExitCode;
+}
 
   /** @brief Waits for each loop iteration max. @param milliseconds milliseconds
    *  for this thread to end.

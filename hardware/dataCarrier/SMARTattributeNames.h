@@ -60,7 +60,7 @@ enum SMARTattributeNames
   /** https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes :
    * "The count of errors resulting from externally induced shock and
    *  vibration." */
-  G_senseErrorRate = 191,
+  G_senseErrorCnt = 191,
   DevTemp = 194,
   HW_ECC_Recovered = 195,
   ReallocEvtCnt = 196,
