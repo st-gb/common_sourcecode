@@ -25,18 +25,19 @@ inline /*struct hostent **/ enum gethostbynameRslt GetHostDataBaseEntry(
  ///https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-gethostbyname
     const int lastWinSocketAPIerror = WSAGetLastError();
 #endif
-#ifdef __linux__
+//#ifdef __linux__
   if(! *p_hostDataBaseEntry)
     ///https://linux.die.net/man/3/h_errno
     switch(h_errno)///Does Windows also have h_errno?
     {
       case HOST_NOT_FOUND :
+      case NO_DATA:///When host was not in DB under MS Windows.
         return gethostbynameUnknownHost;
       default:
         return gethostbynameOtherError;
     }
 //  else
-#endif
+//#endif
 //    LOGN_ERROR("host " << hostName << " not in database;error code:" << h_errno)
 //  }
   return /*p_hostDataBaseEntry*/gethostbynameSucceeded;
