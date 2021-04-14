@@ -18,6 +18,11 @@ enum SMARTattributeNames
    * : "Nicht korrigierbare Fehler beim Lesen von der Festplatte, führt zum 
    * erneuten Einlesen. Deutet auf Problem mit der Plattenoberfläche hin."*/
   ReadErrorRate = 1,
+  /**https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes
+   * "Average time of spindle spin up (from zero RPM to fully operational
+   * [milliseconds])." */ 
+  SpinUpTime = 3,
+  StrtStpCnt = 4,
   /**https://de.wikipedia.org/wiki/Self-Monitoring,_Analysis_and_Reporting_Technology#%C3%9Cbliche_Parameter
    * : "Anzahl der verbrauchten Reservesektoren."*/
   ReallocSectorsCnt = 5,
@@ -31,6 +36,12 @@ enum SMARTattributeNames
   /** https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes :
    *  "Count of retry of spin start attempts." */
   SpinUpRetryCnt = 10,
+  /** https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes :
+   * "This attribute indicates the count that recalibration was requested (under
+   * the condition that the first attempt was unsuccessful). An increase of this
+   * attribute value is a sign of problems in the hard disk mechanical
+   * subsystem." */
+  RecalibRetriesOrCalibrRetryCnt = 11, 
   PwrCycleCnt = 12,
   /** https://media.kingston.com/support/downloads/MKP_306_SMART_attribute.pdf
    * Unit can be determined by comparing to data written by OS?/
@@ -60,13 +71,20 @@ enum SMARTattributeNames
   /** https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes :
    * "The count of errors resulting from externally induced shock and
    *  vibration." */
-  G_senseErrorRate = 191,
+  G_senseErrorCnt = 191,
   DevTemp = 194,
   HW_ECC_Recovered = 195,
   ReallocEvtCnt = 196,
   CurrPendSecCnt = 197,
   UncorrSecCnt = 198,
   UDMA_CRCerrorCnt = 199,
+  /** https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes
+   * "The count of errors found when writing a sector. The higher the value, the
+   *  worse the disk's mechanical condition is." */ 
+  MultiZoneErrorRate = 200,
+  /** https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes : 
+   *  "Count indicates the number of uncorrectable software read errors." */
+  SoftReadErrorRateOrTACnterDetected = 201,
   /** https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes
    * "A recording of shock encountered during write operations."*/
   ShockDuringWrite = 212,

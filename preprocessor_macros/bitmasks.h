@@ -5,12 +5,9 @@
  * Trilobyte Software Engineering GmbH, Berlin, Germany for free if you are not
  * making profit with it or its adaption. Else you may contact Trilobyte SE.
  */
-/*
- * bitmasks.h
- *
+/** bitmasks.h
  *  Created on: Aug 19, 2010
- *      Author: Stefan
- */
+ *  Author: Stefan Gebauer, M.Sc. Comp.Sc. */
 
 #ifndef BITMASKS_H_
 #define BITMASKS_H_
@@ -26,5 +23,8 @@
 #define BITMASK_FOR_LOWMOST_9BIT 511 //=11111111bin
 #define BITMASK_FOR_LOWMOST_10BIT 1023 //=11 1111 1111 bin
 #define BIMASK_FOR_12BITS 4095 //=111111111111bin
+
+#define bitMaskForLowmostBits(numBits)\
+  ( (1 << numBits) - 1)
 
 #endif /* BITMASKS_H_ */
