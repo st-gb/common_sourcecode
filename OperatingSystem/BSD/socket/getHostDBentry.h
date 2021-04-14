@@ -1,5 +1,8 @@
 #pragma once///Include guard
 
+/**Don't use sculp ("::") operator for function names here because this file may
+ * be included from a C file compiled by a C compiler. C does not know "::". */
+
 #include "gethostbyname.h"///gethostbyname(...), gethostbynameUnknownHost etc.
 
 #ifdef __cplusplus
@@ -20,20 +23,21 @@ inline /*struct hostent **/ enum gethostbynameRslt GetHostDataBaseEntry(
 //  if (p_hostDataBaseEntry == NULL) {
 #ifdef _WIN32
  ///https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-gethostbyname
-    const int lastWinSocketAPIerror = ::WSAGetLastError();
+    const int lastWinSocketAPIerror = WSAGetLastError();
 #endif
-#ifdef __linux__
+//#ifdef __linux__
   if(! *p_hostDataBaseEntry)
     ///https://linux.die.net/man/3/h_errno
     switch(h_errno)///Does Windows also have h_errno?
     {
       case HOST_NOT_FOUND :
+      case NO_DATA:///When host was not in DB under MS Windows.
         return gethostbynameUnknownHost;
       default:
         return gethostbynameOtherError;
     }
 //  else
-#endif
+//#endif
 //    LOGN_ERROR("host " << hostName << " not in database;error code:" << h_errno)
 //  }
   return /*p_hostDataBaseEntry*/gethostbynameSucceeded;

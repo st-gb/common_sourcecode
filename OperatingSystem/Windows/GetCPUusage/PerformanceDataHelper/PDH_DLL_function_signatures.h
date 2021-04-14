@@ -1,15 +1,21 @@
-/*
- * PDH_DLL_function_signatures.h
- *
+/** PDH_DLL_function_signatures.h
  *  Created on: Apr 30, 2010
- *      Author: Stefan
- */
+ *  Author: Stefan Gebauer, M.Sc. Comp.Sc.*/
 
 #ifndef PDH_DLL_FUNCTION_SIGNATURES_H_
 #define PDH_DLL_FUNCTION_SIGNATURES_H_
 
-#include <Pdh.h> //HCOUNTER, HQUERY
+#include <specstrings.h> //for __out_ecount_opt etc. in Pdh.h
+#if __GNUC__ > 5 ///Pdh.h not in early MingGW GCC versions?
+  #include <pdh.h>///HCOUNTER, HQUERY
+#endif
 
+#ifdef __MINGW32__
+ ///Defined in 32 bit MinGW (GCC) v. 5, but not in 64 bit MinGW (GCC) v.5
+ #ifndef __out_ecount_opt
+  #define __out_ecount_opt SAL__out_ecount_opt
+ #endif
+#endif
 //from pdh.h:
 //PDH_FUNCTION -> "PDH_STATUS ( __stdcall * ... )"
 
@@ -19,6 +25,12 @@ typedef PDH_STATUS ( __stdcall * PdhAddCounterW_type) (
     __in  DWORD_PTR      dwUserData,
     __out PDH_HCOUNTER * phCounter
 );
+typedef PDH_STATUS ( __stdcall * PdhAddEnglishCounterW_type) (
+  __in  PDH_HQUERY hQuery,
+  __in  LPCWSTR szFullCounterPath,
+  __in  DWORD_PTR dwUserData,
+  __out PDH_HCOUNTER * phCounter
+  );
 typedef PDH_STATUS ( __stdcall * PdhCloseQuery_type) (
     __inout PDH_HQUERY hQuery
 );
