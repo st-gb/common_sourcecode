@@ -1,7 +1,10 @@
 #pragma once///Include guard.
 
-///enum OperatingSystem::BSD::sockets::errorCodes()
+/** Stefan Gebauer's common_sourcecode repository header files: */
+///enum OperatingSystem::BSD::sockets::errorCodes
 #include <OperatingSystem/BSD/socket/socket.h>
+
+/** Standard C(++) header files: */
 #include <sstream>///class std::ostringstream
 
 namespace OperatingSystem{namespace BSD{namespace sockets{

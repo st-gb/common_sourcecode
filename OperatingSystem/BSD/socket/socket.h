@@ -6,7 +6,8 @@
 #ifdef __cplusplus
 namespace OperatingSystem{namespace BSD{namespace sockets{
 #endif
-enum errorCodes{connRefused, inProgress, timedOut};
+enum errorCodes{connRefused, inProgress, timedOut,
+ /** As return value if no other value fits. */ other};
 #ifdef __cplusplus
 }}}
 #endif
