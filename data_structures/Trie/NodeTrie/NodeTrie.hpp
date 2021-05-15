@@ -93,32 +93,38 @@ template<typename member_type>
       
 //      typedef 
 //
-      NodeTrieNode<member_type> * traverseDirectingLeaves(
-        NodeTrieIterator<member_type> & nodeTrieIterator,
-        NodeTrieNode<member_type> * p_nodetrienodeCurrent) const
+  /** \brief tries to get trie node with attached data with a longer path. */
+  NodeTrieNode<member_type> * traverseDirectingLeaves(
+    NodeTrieIterator<member_type> & nodeTrieIterator,
+    NodeTrieNode<member_type> * p_nodetrienodeCurrent) const
+  {
+    for(fastestUnsignedDataType arrayIndex = 0;
+      arrayIndex < m_wNumberOfNodesPerHierarchyLevel;
+      ++ arrayIndex)
+    {
+      /** non-null <=> Is a path within the trie. */
+      if(p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[arrayIndex])
       {
-        for(fastestUnsignedDataType arrayIndex = 0;
-            arrayIndex < m_wNumberOfNodesPerHierarchyLevel; 
-            ++ arrayIndex)
+        /**The trie path is widened because going downwards. So add node to the
+         * current path. */
+        nodeTrieIterator.addVisitedNode(
+          TrieNodeArrayAndArrayIndex<member_type>(p_nodetrienodeCurrent, arrayIndex) );
+        p_nodetrienodeCurrent = p_nodetrienodeCurrent->
+          m_arp_nodetrienode1LowerLevel[arrayIndex];
+        ///Trie node with attached data found.
+        if(p_nodetrienodeCurrent->m_member != m_defaultValue)
         {
-          if(p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[arrayIndex])
-          {
-            nodeTrieIterator.addVisitedNode(
-              TrieNodeArrayAndArrayIndex<member_type>(p_nodetrienodeCurrent, arrayIndex) );
-            p_nodetrienodeCurrent = p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[arrayIndex];
-            if( p_nodetrienodeCurrent->m_member != m_defaultValue )
-            {
-//              nodeTrieIterator.SetInfoNode();
-              return p_nodetrienodeCurrent;
-            }
-//            p_nodetrienodeSuperordinate = p_nodetrienodeCurrent;
-            arrayIndex = 0;
-            continue;
-          }
+//          nodeTrieIterator.SetInfoNode();
+          return p_nodetrienodeCurrent;
         }
-        return NULL;
+//        p_nodetrienodeSuperordinate = p_nodetrienodeCurrent;
+        arrayIndex = 0;
+        continue;
       }
-      
+    }
+    return NULL;
+  }
+  
       iterator end()
       {
         return NodeTrieIterator<member_type>(/*m_nodetrienodeRoot*/*this, NULL, NULL);
@@ -141,82 +147,136 @@ template<typename member_type>
         }
         return /*NodeTrieIterator<member_type>(*this, NULL, NULL)*/ end();
       }
-      
-      NodeTrieNode<member_type> * GetNextNodeAtHigherArrayIndex(
-        TrieNodeArrayAndArrayIndex<member_type> & trieNodeArrayAndArrayIndex,
-        NodeTrieIterator<member_type> * p_nodeTrieIterator) const
+  
+  /** \brief Starts at array index 0 and returns the first node of the hierarchy 
+   * or NULL if none exists (->the trie paths ends) */
+  NodeTrieNode<member_type> * Get1stNodeInHierarchyLevel(
+    NodeTrieNode<member_type> * p_nodetrienodeCurrent,
+    NodeTrieIterator<member_type> * p_nodeTrieIterator)
+    const
+  {
+    for( fastestUnsignedDataType arrayIndex = 0;
+      arrayIndex < m_wNumberOfNodesPerHierarchyLevel; arrayIndex ++)
+    {
+      if(p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[arrayIndex])
       {
-        NodeTrieNode<member_type> * p_nodetrienodeCurrent = trieNodeArrayAndArrayIndex.p_NodeTrie;
+        p_nodeTrieIterator->addVisitedNode(
+          TrieNodeArrayAndArrayIndex<member_type>(p_nodetrienodeCurrent,
+          arrayIndex) );
+        p_nodetrienodeCurrent = p_nodetrienodeCurrent->
+          m_arp_nodetrienode1LowerLevel[arrayIndex];
+        return p_nodetrienodeCurrent;
+      }
+    }
+    return NULL;
+  }
+  
+  ///\return if node being a trie path found
+  NodeTrieNode<member_type> * GetNextNodeAtHigherArrayIndex(
+    TrieNodeArrayAndArrayIndex<member_type> & trieNodeArrayAndArrayIndex,
+    NodeTrieIterator<member_type> * p_nodeTrieIterator) const
+  {
+    NodeTrieNode<member_type> * p_nodetrienodeCurrent =
+      trieNodeArrayAndArrayIndex.p_NodeTrie;
 
-        for(fastestUnsignedDataType arrayIndex = trieNodeArrayAndArrayIndex.arrayIndex + 1; 
-            arrayIndex < m_wNumberOfNodesPerHierarchyLevel; arrayIndex ++)
-        {
-          if( p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[arrayIndex])
-          {
-            p_nodeTrieIterator->addVisitedNode(
-              TrieNodeArrayAndArrayIndex<member_type>(p_nodetrienodeCurrent, arrayIndex) );
-            p_nodetrienodeCurrent = p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[arrayIndex];
-            return p_nodetrienodeCurrent;
-          }
-        }
-        return NULL;
-      }
-      
-      NodeTrieNode<member_type> * GetNextInfoNodeAtHigherArrayIndex(
-        NodeTrieIterator<member_type> & nodeTrieIterator,
-        TrieNodeArrayAndArrayIndex<member_type> & trieNodeArrayAndArrayIndex) const
+    for(fastestUnsignedDataType arrayIndex =
+      /** If e.g. trie with path as log level words "debug" and "warning" and
+       * "debug" was an information node before, then increment array index to
+       * try with "debuh". */
+      trieNodeArrayAndArrayIndex.arrayIndex + 1;
+      arrayIndex < m_wNumberOfNodesPerHierarchyLevel; arrayIndex ++)
+    {
+      if( p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[arrayIndex])
       {
-        do
-        {
-          trieNodeArrayAndArrayIndex = nodeTrieIterator.visitedNodes.top();
-          /** Go 1 level directing root. */
-          nodeTrieIterator.visitedNodes.pop();
+        p_nodeTrieIterator->addVisitedNode(
+          TrieNodeArrayAndArrayIndex<member_type>(p_nodetrienodeCurrent, arrayIndex) );
+        p_nodetrienodeCurrent = p_nodetrienodeCurrent->m_arp_nodetrienode1LowerLevel[arrayIndex];
+        return p_nodetrienodeCurrent;
+      }
+    }
+    return NULL;
+  }
+  
+  /** If e.g. trie with path as log level words "debug" and  "warning" and
+   *  "debug" was an information node before, the try to get to "warning". */
+  NodeTrieNode<member_type> * GetNextInfoNodeAtHigherArrayIndex(
+    NodeTrieIterator<member_type> & nodeTrieIterator,
+    TrieNodeArrayAndArrayIndex<member_type> & trieNodeArrayAndArrayIndex) const
+  {
+    do
+    {
+      trieNodeArrayAndArrayIndex = nodeTrieIterator.visitedNodes./*top()*/
+        back();
+      /** Go 1 level directing root. */
+      nodeTrieIterator.visitedNodes./*pop()*/pop_back();
 
-          NodeTrieNode<member_type> * p_nodetrienodeCurrent = 
-            GetNextNodeAtHigherArrayIndex(
-            trieNodeArrayAndArrayIndex, & nodeTrieIterator);
-          if( p_nodetrienodeCurrent != NULL)
-          {
-            if( p_nodetrienodeCurrent->m_member != m_defaultValue )
-            {
-  //              nodeTrieIterator.SetInfoNode();
-              return p_nodetrienodeCurrent;
-            }
-          }
-        }
-        while( ! nodeTrieIterator.visitedNodes.empty() );
-        return NULL;
-      }
+      NodeTrieNode<member_type> * p_nodetrienodeCurrent = 
+        GetNextNodeAtHigherArrayIndex(
+        trieNodeArrayAndArrayIndex, & nodeTrieIterator);
       
-      iterator GetNextInfoNode(//std::stack</*NodeTrieNode<member_type> * */ 
-//        TrieNodeArrayAndArrayIndex<member_type> > & visitedNodes
-        NodeTrieIterator<member_type> * p_nodeTrieIterator) const
+//      if(p_nodetrienodeCurrent){
+//        p_nodetrienodeCurrent = traverseDirectingLeaves(nodeTrieIterator,
+//          p_nodetrienodeCurrent);///Info node found.
+//        if(p_nodetrienodeCurrent)
+//          return p_nodetrienodeCurrent;
+//        return NULL;
+//      }
+      
+      while(p_nodetrienodeCurrent)
       {
-        while( ! p_nodeTrieIterator->visitedNodes.empty() )
+//      if( p_nodetrienodeCurrent != NULL)///trie path found
+      {
+        if(p_nodetrienodeCurrent->m_member != m_defaultValue)///Info node found.
         {
-          TrieNodeArrayAndArrayIndex<member_type> trieNodeArrayAndArrayIndex = 
-            p_nodeTrieIterator->visitedNodes.top();
-          NodeTrieNode<member_type> * p_nodetrienodeCurrent = trieNodeArrayAndArrayIndex.GetPointer();
-          
-          /** Go to leaf direction. */
-          NodeTrieNode<member_type> * traverseDirectingLeavesResult = 
-            traverseDirectingLeaves(* p_nodeTrieIterator, p_nodetrienodeCurrent);
-          if( traverseDirectingLeavesResult == NULL)
-          {
-            p_nodetrienodeCurrent = GetNextInfoNodeAtHigherArrayIndex(
-              *p_nodeTrieIterator, trieNodeArrayAndArrayIndex);
-            if(p_nodetrienodeCurrent) /** Next info node found. */
-              return * p_nodeTrieIterator;
-            /** Go to leaf direction. */
-//            traverseDirectingLeavesResult = 
-//              traverseDirectingLeaves(* p_nodeTrieIterator, p_nodetrienodeCurrent);
-          }
-          else /** Next info node found */
-            return * p_nodeTrieIterator;
+//              nodeTrieIterator.SetInfoNode();
+          return p_nodetrienodeCurrent;
         }
-        /** No info node found->return an interator representing "end()" */
-        return NodeTrieIterator<member_type>(/*m_nodetrienodeRoot*/ *this, NULL, NULL);
+//        else//TODO if node member of a path found then go directing leaves
+//          NodeTrieNode<member_type> * traverseDirectingLeavesResult = 
+//            traverseDirectingLeaves(* p_nodeTrieIterator, p_nodetrienodeCurrent);
+//        return * p_nodeTrieIterator;
       }
+      p_nodetrienodeCurrent = Get1stNodeInHierarchyLevel(
+        p_nodetrienodeCurrent, & nodeTrieIterator);
+      }///<=> trie path ended.
+    }
+    while( ! nodeTrieIterator.visitedNodes.empty() );
+    return NULL;
+  }
+  
+  /** \brief Gets the next trie node that is containing attached data. */
+  iterator GetNextInfoNode(//std::stack</*NodeTrieNode<member_type> * */ 
+//    TrieNodeArrayAndArrayIndex<member_type> > & visitedNodes
+    iterator * p_nodeTrieIterator) const
+  {
+    TrieNodeArrayAndArrayIndex<member_type> trieNodeArrayAndArrayIndex = 
+      p_nodeTrieIterator->visitedNodes./*top*/back();
+    while( ! p_nodeTrieIterator->visitedNodes.empty() )
+    {
+      NodeTrieNode<member_type> * p_nodetrienodeCurrent =
+        trieNodeArrayAndArrayIndex.GetPointer();
+
+      /** Go to leaf direction. */
+      NodeTrieNode<member_type> * traverseDirectingLeavesResult = 
+        traverseDirectingLeaves(* p_nodeTrieIterator, p_nodetrienodeCurrent);
+      /** <=> No info trie node with "p_nodeTrieIterator->visitedNodes" as
+       *  prefix found. */
+      if(traverseDirectingLeavesResult == NULL)
+      {
+        p_nodetrienodeCurrent = GetNextInfoNodeAtHigherArrayIndex(
+          *p_nodeTrieIterator, trieNodeArrayAndArrayIndex);
+        if(p_nodetrienodeCurrent) /** Next info node found. */
+          return * p_nodeTrieIterator;
+        /** Go to leaf direction. */
+//        traverseDirectingLeavesResult = 
+//          traverseDirectingLeaves(* p_nodeTrieIterator, p_nodetrienodeCurrent);
+      }
+      else /** Next info node found */
+        return * p_nodeTrieIterator;
+    }
+    /** No info node found->return an interator representing "end()" */
+    return NodeTrieIterator<member_type>(/*m_nodetrienodeRoot*/ *this, NULL, NULL);
+  }
       
       unsigned long getNumberOfNodes() const
       {

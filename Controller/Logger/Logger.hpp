@@ -395,10 +395,12 @@
       }
       PossiblyLeaveCritSec();
     }
-    void SetLogLevel(const std::string & c_r_std_strLogLevel)
-    {
-      m_logLevel = LogLevel::GetAsNumber(c_r_std_strLogLevel);
-    }
+  void SetLogLevel(const std::string & c_r_std_strLogLevel){
+    m_logLevel = LogLevel::GetAsNumber(c_r_std_strLogLevel);
+  }
+  void SetLogLevel(const MessageType & messageType){
+    m_logLevel = messageType;
+  }
     /** @brief Truncate output size of all formatted log entry processors to 0.
      * name [...]"OutputSize"[...] and not [...]"FileSize" because not only
      * files may be an output target. */

@@ -1,5 +1,5 @@
-/** File:   NodeTrieIterator.hpp
- * Author: sg
+/** File: NodeTrieIterator.hpp
+ * Author: Stefan Gebauer, M.Sc. Comp.Sc.
  * Created on 16. November 2017, 16:42   */
 
 #ifndef NODETRIEITERATOR_HPP
@@ -8,7 +8,8 @@
 #include "NodeTrieNode.hpp"
 //from https://codereview.stackexchange.com/questions/74609/custom-iterator-for-a-linked-list-class
 #include <iterator> /** Base class std::iterator */
-#include <stack> //class std::stack
+//#include <stack>///class std::stack
+#include <vector>///class std::vector
 
 template  <typename member_type>
 class TrieNodeArrayAndArrayIndex
@@ -48,7 +49,9 @@ class NodeTrieIterator
   NodeTrieNode<member_type> * superordinateNodeTrie;
 
   public :
-    std::stack</*NodeTrieNode<member_type> * */ TrieNodeArrayAndArrayIndex<member_type> > visitedNodes;
+    typedef std::/*stack*/vector</*NodeTrieNode<member_type> * */
+      TrieNodeArrayAndArrayIndex<member_type> > visitedNodesType;
+    visitedNodesType visitedNodes;
     NodeTrieIterator(
       const NodeTrie<member_type> & nodeTrie,
 //      NodeTrieNode<member_type> & nodetrienodeRoot, 
@@ -64,7 +67,8 @@ class NodeTrieIterator
     void addVisitedNode(/* NodeTrieNode<member_type> * p_nodetrienodeRoot*/ 
       TrieNodeArrayAndArrayIndex<member_type> trieNodeArrayAndArrayIndex)
     {
-      visitedNodes.push(/*p_nodetrienodeRoot*/ trieNodeArrayAndArrayIndex);
+      visitedNodes./*push*/push_back(/*p_nodetrienodeRoot*/
+        trieNodeArrayAndArrayIndex);
     }
     /** https://stackoverflow.com/questions/9386266/overloading-the-operator-to-increment-an-iterator */
     NodeTrieIterator<member_type> operator++(int) /** post-increment */
@@ -88,7 +92,8 @@ class NodeTrieIterator
 //      if(stack)
 //      return /*itr*/->m_member;
       const TrieNodeArrayAndArrayIndex<member_type> & trieNodeArrayAndArrayIndex
-        = visitedNodes.top();
+        = visitedNodes./*top()*/back();///last element
+      ///Returns the information attached to an info node.
       return trieNodeArrayAndArrayIndex.GetMember();//p_NodeTrie->m_member;
     }
 };

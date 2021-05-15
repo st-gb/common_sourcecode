@@ -13,7 +13,15 @@ uint64_t getNumBwrittenSinceOSstart(const char devName[])///E.g. "sda"
 //  FILE * p_file = fopen("/proc/diskstats","r");///"iostat /dev/sd?"
   std::ifstream is("/proc/diskstats");
   if(/*p_file*/is.is_open() ){
-    int dummy;
+    /** Must use data type with high capacity to ensure correct read if number
+     * is large?
+     * Using "int" data type lead to wrong values like "0" for # bytes written
+     * since OS start although the real value was around 667509360 kB.
+     * This may be due to the 3rd value after "sda" was too large
+     * (~"3459346078") for a _signed_ int
+     * Alternative: read as std::string for the unneccesary (until column 10)
+     *  space-separated values.*/
+    uint64_t dummy;
 //    char dvcName[80];
     std::string devNameFromFile;
 //    std::string stdstrNumBwrittenSinceOSstart;
