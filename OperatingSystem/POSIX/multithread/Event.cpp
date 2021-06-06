@@ -1,4 +1,4 @@
-/** File:   Event.cpp
+/** File: Event.cpp
  * Author: Stefan Gebauer, M. Sc. Comp.Sc.
  * Created on 3. Mai 2017, 21:26 */
 
