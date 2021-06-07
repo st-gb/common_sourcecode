@@ -40,6 +40,9 @@ typedef unsigned short WORD;
 //string end.
 
 //template <typename NodeTrieNode>
+/** Uses a template instead of "void *" for information on nodes so e.g. a 
+ *  member function pointer (needs more than "sizeof(void *)" bytes?!) may be
+ *  stored there. */
 template<typename member_type>
   class NodeTrie
   {
