@@ -66,7 +66,14 @@ enum SMARTattributeNames
   /** https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes :
    * "Value is equal to (100-temp. °C), [...]
    * However, some older drives may instead report raw Temperature
-   * (identical to 0xC2) or Temperature minus 50 here." */
+   * (identical to 0xC2) or Temperature minus 50 here."
+   * model:ST9500420AS firmware:0003SDM1 (serial:5VJ1WXTF) :10 CF 2F 2A 00 2F h:
+   * -GSmartControl v.0.8.7:47d(2Fh)°C current,42d(2Ah)°C min.,47d(2Fh)°C max.
+   * -values are in °C
+   * -min.(3rd lowmost byte) and max. (4th lowmost byte) values are since
+   *  startup/resume from standby/increase of PwrCycleCnt / StrtStpCnt because
+   *  max. value (4th lowmost byte) increases since startup and min. value
+   * (3rd lowmost byte) was lower after resume from standby. */
   TempDiffOrAirflowTemp=190,
   /** https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes :
    * "The count of errors resulting from externally induced shock and
@@ -116,6 +123,11 @@ enum SMARTattributeNames
    * S.M.A.R.T. value at "t2" - S.M.A.R.T. value at "t1"=S.M.A.R.T. value diff
    *  unit ~= "# B written since OS start diff" / "S.M.A.R.T. value diff" */
   TotalDataWritten = 241,///"Data" because unit is not always "LBA"
+  /** model:ST9500420AS firmware:0003SDM1 serial #:5VJ1WXTF counted backwards :
+   * GSmartControl v.0.8.7 :
+   * -1471557884 at 9183 "Power_On_Hours" (S.M.A.R.T. ID 9)
+   * -1006509816 at 9186 "Power_On_Hours" (S.M.A.R.T. ID 9)
+   * (value overflow->negative interpreted as postive value? or other error?) */
   TotalDataRead = 242,///"Data" because unit is not always "LBAs"
   /** https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes :
    * "Count of "Free Fall Events" detected." */
