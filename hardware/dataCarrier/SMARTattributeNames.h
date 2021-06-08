@@ -109,6 +109,10 @@ enum SMARTattributeNames
    *  -model:SAMSUNG HA200JC firmware:WS100-33 (serial:S091J10Y727530) has no
    *   min./max. values (3rd-6th byte is 0) */
   DevTemp = 194,
+  /** model:SAMSUNG HA200JC firmware:WS100-33 (serial:S091J10Y727530):
+   *  After startup/1 power cycle count (S.M.A.R.T. ID 12) ? this value is 0.
+   *  After reset/ start/stop Count (S.M.A.R.T. ID 4) increase it is the same
+   *  value as before reset? */
   HW_ECC_Recovered = 195,
   ReallocEvtCnt = 196,
   CurrPendSecCnt = 197,

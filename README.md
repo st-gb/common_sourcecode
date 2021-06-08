@@ -1,9 +1,18 @@
+[comment]: # Line breaks are often after "(" for a link as this is the (only)
+[comment]: # possibility to break the line at 80 characters and avoid spaces in
+[comment]: # links.
+
 this file is based on
 https://gist.github.com/PurpleBooth/109311bb0361f32d87a2#file-readme-template-md
 
 # common_sourcecode: sourcecode for multiple projects
 
-Cross-platform (Windows/Linux/Android/POSIX) C++98/03 (kind of) library.
+Cross-platform ([Windows](https://en.wikipedia.org/wiki/Microsoft_Windows
+)/[Linux](http://en.wikipedia.org/wiki/Linux)/[Android](
+http://en.wikipedia.org/wiki/Android_(operating_system))/[POSIX](
+http://en.wikipedia.org/wiki/POSIX)) 
+[C++98](http://en.wikipedia.org/wiki/C%2B%2B#Standardization)/[C++03](
+http://en.wikipedia.org/wiki/C%2B%2B03) (kind of) library.
 
 Some paths to source and header files don't seem be senseful and so may need to
 change.
@@ -18,12 +27,13 @@ the highest level code (Apr 2021) is:
 
 * multithread-safe logger (/Controller/Logger)
   - able store file formats:
-    * log4j
-    * HTML
+    * [Log4j](http://en.wikipedia.org/wiki/Log4j#TTCC)
+    * [HTML](http://en.wikipedia.org/wiki/HTML)
     * txt
   - able to output the following attributes in log entries:
     * function name where the log output happens. Therefore it uses GCC's
-      "\__PRETTY_FUNCTION__"
+      "[\_\_PRETTY_FUNCTION\_\_](
+https://gcc.gnu.org/onlinedocs/gcc/Function-Names.html)"
     * thread name (must be set via I_Thread::SetThreadName(...) from
       "OperatingSystem/multithread/I\_Thread.hpp" from the thread whose name is
       to set before)
@@ -48,7 +58,10 @@ the highest level code (Apr 2021) is:
   - /OperatingSystem/BSD/socket
   - /OperatingSystem/Windows/BSD_sockets
   - /OperatingSystem/POSIX/BSD_sockets
-* multithreading and synchronization
+* [multithreading](
+  https://en.wikipedia.org/wiki/Thread_\(computing\)#Multithreading) and
+  thread [synchronization](
+  https://en.wikipedia.org/wiki/Thread_\(computing\)#Threads_and_data_synchronization)
   - /OperatingSystem/mutithread
   - /OperatingSystem/POSIX/mutithread
   - /OperatingSystem/Windows/mutithread
@@ -87,7 +100,7 @@ You may use the code free of charge
 - to study the implementation and quality (of one of the authour's software
   products) so bugs can be reported.
 - in a non-commercial product if it is not in competition with an author's
-  software product.
+  software product (repositories from http://github.com/st-gb).
   
   If in doubt which applications this affects then ask the author.
 
