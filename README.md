@@ -1,3 +1,6 @@
+
+[comment]: # https://stackoverflow.com/questions/4823468/comments-in-markdown
+[comment]: # "With an empty line before the comment."
 [comment]: # Line breaks are often after "(" for a link as this is the (only)
 [comment]: # possibility to break the line at 80 characters and avoid spaces in
 [comment]: # links.
