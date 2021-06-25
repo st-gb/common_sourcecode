@@ -3,6 +3,12 @@
 /* Include this file in order to get OS-independent the socket(...)
  * declaration.*/
 
+///Standard C(++) header files:
+#include <inttypes.h>///uint8_t
+
+///Files from Stefan Gebauer's "common_sourcecode" repository:
+#include <hardware/CPU/fastest_data_type.h>///typedef fastestUnsignedDataType
+
 #ifdef __cplusplus
 namespace OperatingSystem{namespace BSD{namespace sockets{
 #endif
@@ -78,14 +84,25 @@ template <typename bufferType>
 #endif
 inline
 int readFromSocket2(const int socketFileDesc, bufferType buffer,
-  const int numBytesToRead, unsigned * p_numBytesRead)
+  const int numBytesToRead, unsigned * p_numBytesRead, int * const p_readErrno)
 {
-  const int i = readFromSocket(socketFileDesc, buffer,
-    numBytesToRead);
-  if(i > - 1)
-    * p_numBytesRead = i;
-  else
-    * p_numBytesRead = 0;
+  fastestUnsignedDataType currNumB_read = 0;
+  int i;
+  do{///Read multiple times because the (internal) buffer used by "read(...)"
+    /// may store less bytes than the ones that have been sent.
+    i = readFromSocket(socketFileDesc, ( (uint8_t *) buffer) + currNumB_read,
+      numBytesToRead);
+  
+    if(i > - 1)
+      currNumB_read += i;
+    else{
+      * p_numBytesRead = 0;
+      * p_readErrno = errno;
+      return i;
+    }
+  }while(currNumB_read < numBytesToRead);
+  * p_numBytesRead = currNumB_read;
+  * p_readErrno = errno;
   return i;
 }
 
