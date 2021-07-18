@@ -1,41 +1,33 @@
-/*
- * GetCurrentReferenceClock.hpp
- *
+/** GetCurrentReferenceClock.hpp
  *  Created on: Jun 4, 2010
- *      Author: Stefan
- */
-//This file is intellectual property of Trilobyte SE GmbH, Berlin, Germany.
-//Copyright 2010 by Trilobyte SE GmbH, Berlin, Germany.
-//It must not be used commercially without the permission of Trilobyte
-//SE GmbH, Berlin, Germany.
-//It may be used for educational / academic purposes for free.
-//If you use (parts) of this sourcecode then this license text must be contained.
+ *  Author: Stefan Gebauer, M. Sc. Comp. Sc. (TU Berlin)
+ * This file is specific to the x86 instruction set because of "rdtsc"? */
 #ifndef GETCURRENTREFERENCECLOCK_HPP_
 #define GETCURRENTREFERENCECLOCK_HPP_
 
 //#include <Controller/time/GetTimeAsMillisecondsValue.h>
-#include <Controller/time/GetTickCount.hpp> //DWORD ::GetTickCount()
+#include <Controller/time/GetTickCount.hpp>///DWORD ::GetTickCount()
 //#include <Controller/CPU-related/GetCPUclockAndMultiplier.hpp>
-#include <hardware/CPU/fastest_data_type.h> //fastestUnsignedDataType
+#include <hardware/CPU/fastest_data_type.h>///fastestUnsignedDataType
 
-#include <preprocessor_macros/value_difference.h> //ULONG_VALUE_DIFF
-#include "ReadTimeStampCounter.h" //ReadTSCinOrder(...)
-#include <preprocessor_macros/logging_preprocessor_macros.h> //DEBUGN(...)
-#include <preprocessor_macros/show_via_GUI.h> //SHOW_VIA_GUI(...)
+#include <preprocessor_macros/value_difference.h>///ULONG_VALUE_DIFF
+#include "ReadTimeStampCounter.h"///ReadTSCinOrder(...)
+#include <preprocessor_macros/logging_preprocessor_macros.h>///DEBUGN(...)
+#include <preprocessor_macros/show_via_GUI.h>///SHOW_VIA_GUI(...)
 #include <tchar.h>
-#include <inttypes.h> //uint64_t under Linux
+#include <inttypes.h>///uint64_t under Linux
 //http://en.wikipedia.org/wiki/C_data_types
-#include <float.h> //LDBL_MAX
+#include <float.h>///LDBL_MAX
 
 //inline void GetCurrentReferenceClock(float fDivisor) ;
 
 inline DWORD GetTimeCountInMilliseconds()
 {
   return
-    //Cites from:
-    //http://msdn.microsoft.com/en-us/library/ms724408%28VS.85%29.aspx:
-    //"The return value is the number of milliseconds that have elapsed since
-    // the system was started."
+    /** Cites from:
+     *  http://msdn.microsoft.com/en-us/library/ms724408%28VS.85%29.aspx:
+     * "The return value is the number of milliseconds that have elapsed since
+     *  the system was started."*/
 //    ::GetTickCount() ;
     OperatingSystem::GetTimeCountInMilliSeconds();
 }
@@ -46,10 +38,10 @@ inline DWORD GetTickCountDiffInMilliseconds(
   )
 {
   return
-    //Use this macro in order to take a value wrap into account:
-    //http://msdn.microsoft.com/en-us/library/ms724408%28VS.85%29.aspx:
-    // "[...]the time will wrap around to zero if the system is run
-    //  continuously for 49.7 days"
+    /** Use this macro in order to take a value wrap into account:
+     * http://msdn.microsoft.com/en-us/library/ms724408%28VS.85%29.aspx:
+     * "[...]the time will wrap around to zero if the system is run
+     *  continuously for 49.7 days" */
     ULONG_VALUE_DIFF( s_dwTickCountInMilliseconds,
       s_dwPreviousTickCountInMilliseconds) ;
 }
@@ -94,9 +86,9 @@ inline void CalculateReferenceClockInMHzFromDiffs(
     << fTimeStampsPerNanoSecond << "=" << s_ullTimeStampCounterDiff << "/"
     << s_TimeCountDiffInNanoSeconds)
 
-  //TSC_diff/ms -> f[MHz] :   f=1/s   TSC_diff/ms = TSC_diff/0.0001s ->
-  // TSC_diff * 1000 / 0.0001 * 1000.0 s = TSC_diff * 1000/s = TSC_diff * 1000 Hz
-  // -> MHz: "f / 1000 000"
+  /** TSC_diff/ms -> f[MHz] :   f=1/s   TSC_diff/ms = TSC_diff/0.0001s ->
+   * TSC_diff * 1000 / 0.0001 * 1000.0 s = TSC_diff * 1000/s = TSC_diff * 1000 Hz
+   * -> MHz: "f / 1000 000" */
   r_fReferenceClockInMHz = //(float) s_ullTimeStampCounterDiff / fDivisor /
   //      //Get ratio of time span in which the TSC diff was measured and
   //      ( (float) s_dwTickCountDiffInMilliseconds / 1000.0f )
@@ -141,11 +133,11 @@ typedef unsigned (* ReadTSCtype)(uint64_t &);
 //  GetCurrentReferenceClock(ReadTSCinOrder);
 //}
 
-//inline: do not compile as function, but expand code for every call (->faster)
-//_Define_ the function in this _header_ file. It cannot be inline if declared
-// in a header file and implemented in a source file if used in another file.
-/** @param fDivisor: divide TSC diff by this divisor to get ref. clock 
-*/
+/** "inline": do not compile as function, but expand code for every call
+ *  (->faster). _Define_ the function in this _header_ file.
+ *  It cannot be inline if declared in a header file and implemented in a source
+ *  file if used in another file.
+  @param fDivisor: divide TSC diff by this divisor to get the reference clock */
 inline
   void
   //float
