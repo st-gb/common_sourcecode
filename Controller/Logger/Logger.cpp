@@ -121,7 +121,11 @@ void Logger::AddConsoleLogEntryWriter()
 #endif
 
 /** Do not call this method thread-unsafe -> enter a critical section before
- * calling it */
+ * calling it 
+ * \param prettyFunctionFormattedFunctionName : expected to be in GCC's
+ *  __PRETTY_FUNCTION__ format. Simply pass this __PRETTY_FUNCTION__ here.
+ * See https://gcc.gnu.org/onlinedocs/gcc/Function-Names.html :
+ *  >return type< [namespace names::]>function name<(>parameter type<) */
 DWORD Logger::Log(//ostream & ostr
   const std::string & r_stdstrMessage,
   enum LogLevel::MessageType messageType /*= LogLevel::info*/,

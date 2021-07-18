@@ -27,10 +27,11 @@ enum InitSrvRslt initSrv(
   srvAddr.sin_addr.s_addr = INADDR_ANY;///Accept any incoming messages
   srvAddr.sin_port = htons(port);
 
-  socketFileDesc = GetSocketFileDesc(protoFam,
-    /**http://man7.org/linux/man-pages/man2/socket.2.html : "Provides sequenced,
-    * "reliable, two-way, connection-based byte streams."*/SOCK_STREAM/**TCP*/,
+  socketFileDesc = GetSocketFileDesc(
+    protoFam,
+    type,
     0/**protocol*/);
+
   if(socketFileDesc == -1)
     retCode = createSocketFailed;
   else{
@@ -38,8 +39,8 @@ enum InitSrvRslt initSrv(
   * http://stackoverflow.com/questions/10619952/how-to-completely-destroy-a-socket-connection-in-c
   *  : Avoid bind problems (errno = EADDRINUSE) */
 //  int true_ = 1;
-  ///https://linux.die.net/man/2/setsockopt :
-  ///"On error, -1 is returned, and errno is set appropriately." 
+  /** https://linux.die.net/man/2/setsockopt :
+   * "On error, -1 is returned, and errno is set appropriately." */ 
 //  setsockopt(socketFileDesc, SOL_SOCKET, SO_REUSEADDR, & true_,sizeof(true_));
   
   /** http://man7.org/linux/man-pages/man2/bind.2.html :

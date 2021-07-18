@@ -4,7 +4,20 @@
 namespace OperatingSystem{namespace BSD{namespace sockets{
 #endif
 
-inline bool NonBlckingIsCnnctd(const int socketFileDescriptor,
+///Detect if connected by calling "connect(...)" a 2nd time.
+inline bool isCnnctdViaConnect(const int socketFileDescr,
+  const struct sockaddr & serv_addr, socklen_t size)
+{
+  const int rslt = connect(socketFileDescr, & serv_addr, size);
+  if(rslt == 0 && errno == EISCONN)
+    return true;
+  return false;
+}
+
+inline bool NonBlckingIsCnnctd(
+  const int socketFileDescriptor,
+  struct sockaddr & serv_addr,
+  int srvAddrNumBytes,
   int & getpeernameErrNo)
 {
   struct sockaddr clntAddr;

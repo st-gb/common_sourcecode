@@ -53,10 +53,38 @@ enum SMARTattributeNames
     https://docs.huihoo.com/doxygen/linux/kernel/3.7/uapi_2linux_2blktrace__api_8h_source.html 
    https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwiGlt3f-c_qAhWPYsAKHZvXC7AQFjAFegQIBxAB&url=https%3A%2F%2Fcodesearch.isocpp.org%2Factcd19%2Fmain%2Fb%2Fblktrace%2Fblktrace_1.2.0-5%2Fblkiomon.c&usg=AOvVaw1nOLy95Q6Y-ixpgB8Krv1o */
   GiB_Erased = 100,
+  /** https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes
+   *  e.g. version from 06:41, 22 May 2021‎ :
+   *  "The total number of flash program operation failures since the drive was
+   *   deployed.[36] Identical to attribute 181."
+   *  (if manufacturer is "Kingston") */
   SSDprogFailCnt = 171,
+  /** https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes
+   *  e.g. version from 06:41, 22 May 2021‎ :
+   *  "Counts the number of flash erase failures. This attribute returns the
+   *   total number of Flash erase operation failures since the drive was
+   *   deployed. This attribute is identical to attribute 182."
+   *   (if manufacturer is "Kingston") */
   SSDeraseFailCnt = 172,
   PwrLossProtectionFailure = 175,
-  EraseFailCnt = 176,
+  /** https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes
+   *  e.g. version from 06:41, 22 May 2021‎ :
+   *  "S.M.A.R.T. parameter indicates a number of flash erase command failures.
+   *  [38]" */
+  EraseCmdFailCnt = 176,
+  /** https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes
+   *  e.g. version from 06:41, 22 May 2021‎ :
+   *  Either:
+   *  -"Total number of Flash program operation failures since the drive was
+   *    deployed."
+   *  -"Number of user data accesses (both reads and writes) where LBAs are not
+   *    4 KiB aligned (LBA % 8 != 0) or where size is not modulus 4 KiB (block
+   *    count != 8), assuming logical block size (LBS) = 512 B" */
+  PrgramFailCntTotalORnon4KAlignedAccssCnt = 181,
+  /** https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes
+   *  e.g. version from 06:41, 22 May 2021‎ :
+   *  ""Pre-Fail" Attribute used at least in Samsung devices." */
+  EraseFailCnt = 182,
   EndToEndError = 184,
   ReportedUncorrError = 187,
   CmdTimeout = 188,
@@ -66,13 +94,32 @@ enum SMARTattributeNames
   /** https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes :
    * "Value is equal to (100-temp. °C), [...]
    * However, some older drives may instead report raw Temperature
-   * (identical to 0xC2) or Temperature minus 50 here." */
+   * (identical to 0xC2) or Temperature minus 50 here."
+   * model:ST9500420AS firmware:0003SDM1 (serial:5VJ1WXTF) :10 CF 2F 2A 00 2F h:
+   * -GSmartControl v.0.8.7:47d(2Fh)°C current,42d(2Ah)°C min.,47d(2Fh)°C max.
+   * -values are in °C
+   * -min.(3rd lowmost byte) and max. (4th lowmost byte) values are since
+   *  startup/resume from standby/increase of PwrCycleCnt / StrtStpCnt because
+   *  max. value (4th lowmost byte) increases since startup and min. value
+   * (3rd lowmost byte) was lower after resume from standby. */
   TempDiffOrAirflowTemp=190,
   /** https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes :
    * "The count of errors resulting from externally induced shock and
    *  vibration." */
   G_senseErrorCnt = 191,
+  /** https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes
+   *  e.g. version from 06:41, 22 May 2021‎ :
+   *  "Indicates the device temperature, if the appropriate sensor is fitted.
+   *  Lowest byte of the raw value contains the exact temperature value (Celsius
+   *  degrees).[60]" 
+   *  Bytes higher than 2nd byte may be min./max.value while the drive is on. :
+   *  -model:SAMSUNG HA200JC firmware:WS100-33 (serial:S091J10Y727530) has no
+   *   min./max. values (3rd-6th byte is 0) */
   DevTemp = 194,
+  /** model:SAMSUNG HA200JC firmware:WS100-33 (serial:S091J10Y727530):
+   *  After startup/1 power cycle count (S.M.A.R.T. ID 12) ? this value is 0.
+   *  After reset/ start/stop Count (S.M.A.R.T. ID 4) increase it is the same
+   *  value as before reset? */
   HW_ECC_Recovered = 195,
   ReallocEvtCnt = 196,
   CurrPendSecCnt = 197,
@@ -116,6 +163,11 @@ enum SMARTattributeNames
    * S.M.A.R.T. value at "t2" - S.M.A.R.T. value at "t1"=S.M.A.R.T. value diff
    *  unit ~= "# B written since OS start diff" / "S.M.A.R.T. value diff" */
   TotalDataWritten = 241,///"Data" because unit is not always "LBA"
+  /** model:ST9500420AS firmware:0003SDM1 serial #:5VJ1WXTF counted backwards :
+   * GSmartControl v.0.8.7 :
+   * -1471557884 at 9183 "Power_On_Hours" (S.M.A.R.T. ID 9)
+   * -1006509816 at 9186 "Power_On_Hours" (S.M.A.R.T. ID 9)
+   * (value overflow->negative interpreted as postive value? or other error?) */
   TotalDataRead = 242,///"Data" because unit is not always "LBAs"
   /** https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes :
    * "Count of "Free Fall Events" detected." */

@@ -1,6 +1,6 @@
-/** File:   Event.hpp
+/** File: Event.hpp
  * Author: Stefan Gebauer, M.Sc. Comp.Sc.
- * Created on 3. Mai 2017, 21:26  */
+ * Created on 3. Mai 2017, 21:26 */
 
 #ifndef EVENT_HPP
 #define EVENT_HPP

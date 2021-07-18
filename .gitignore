@@ -5,3 +5,6 @@
 **/cmake_install.cmake
 **/Makefile
 **/compile_commands.json
+
+#Hide FUSE (NTFS file system) (intermediate) files in Linux
+\.fuse_hidden*
