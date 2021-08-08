@@ -21,7 +21,7 @@ inline /*struct hostent **/ enum gethostbynameRslt GetHostDataBaseEntry(
   /*struct hostent **/ *p_hostDataBaseEntry = gethostbyname(hostName);
 //#ifdef _DEBUG
 //  if (p_hostDataBaseEntry == NULL) {
-#ifdef _WIN32
+#ifdef _WIN32///If compiled under (also 64 bit) Microsoft Windows
  ///https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-gethostbyname
     const int lastWinSocketAPIerror = WSAGetLastError();
 #endif
@@ -31,7 +31,7 @@ inline /*struct hostent **/ enum gethostbynameRslt GetHostDataBaseEntry(
     switch(h_errno)///Does Windows also have h_errno?
     {
       case HOST_NOT_FOUND :
-      case NO_DATA:///When host was not in DB under MS Windows.
+      case NO_DATA: ///When host was not in database under Microsoft Windows.
         return gethostbynameUnknownHost;
       default:
         return gethostbynameOtherError;
