@@ -13,7 +13,7 @@ https://gist.github.com/PurpleBooth/109311bb0361f32d87a2#file-readme-template-md
 Cross-platform ([Windows](https://en.wikipedia.org/wiki/Microsoft_Windows
 )/[Linux](http://en.wikipedia.org/wiki/Linux)/[Android](
 http://en.wikipedia.org/wiki/Android_(operating_system))/[POSIX](
-http://en.wikipedia.org/wiki/POSIX)) 
+http://en.wikipedia.org/wiki/POSIX))
 [C++98](http://en.wikipedia.org/wiki/C%2B%2B#Standardization)/[C++03](
 http://en.wikipedia.org/wiki/C%2B%2B03) (kind of) library.
 
@@ -22,7 +22,7 @@ change.
 
 ## Highest Quality Source Code
 
-Not all of the source code is on a high standard (from point of view of a 
+Not all of the source code is on a high standard (from point of view of a
 quality-aware long-year software engineer with an Master of Science in Computer
 Science).
 
@@ -50,14 +50,15 @@ https://gcc.gnu.org/onlinedocs/gcc/Function-Names.html)"
 * [iterable](http://en.wikipedia.org/wiki/Iterator)
   [trie](http://en.wikipedia.org/wiki/Trie) data structure with template as
   member
- 
+
   (/data_structures/Trie)
 
   Uses a template instead of "void \*" for information on nodes so e.g. a member
   function pointer (needs more than "sizeof(void *)" bytes?!) may be stored
   there.
-* [BSD sockets](http://en.wikipedia.org/wiki/Berkeley_sockets) : ease of use of/
-  unified (cross-OS) access to its functions:
+* [BSD sockets](http://en.wikipedia.org/wiki/Berkeley_sockets) :\
+  [ease of use of/unified (cross-Operating System) access to its functions](
+  OperatingSystem/BSD/socket/functionality.md) (state: 08 Aug 2021) :
   - /OperatingSystem/BSD/socket
   - /OperatingSystem/Windows/BSD_sockets
   - /OperatingSystem/POSIX/BSD_sockets
@@ -104,7 +105,7 @@ You may use the code free of charge
   products) so bugs can be reported.
 - in a non-commercial product if it is not in competition with an author's
   software product (repositories from http://github.com/st-gb).
-  
+
   If in doubt which applications this affects then ask the author.
 
 It is appreciated to reference the author (e.g. in the "about" dialog or

@@ -11,7 +11,8 @@ namespace OperatingSystem{namespace BSD{namespace sockets{
 #endif
 
 inline void CloseSocket(){
-///https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-wsacleanup
+/**http://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-wsacleanup
+ * "The WSACleanup function terminates use of the Winsock 2 DLL (Ws2_32.dll)" */
   int ret = WSACleanup();
 }
 
@@ -34,7 +35,8 @@ inline enum errorCodes
 }
 
 inline void InitSocket(){///Without initializing a WSA error occurred
-///https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-wsastartup
+/**http://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-wsastartup
+ * "The WSAStartup function initiates use of the Winsock DLL by a process." */
   WORD wVersionRequested;
   WSADATA wsaData;
   int err;
