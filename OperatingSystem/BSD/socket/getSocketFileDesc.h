@@ -1,5 +1,7 @@
 #pragma once///Include guard.
 
+/**https://pubs.opengroup.org/onlinepubs/009604499/functions/socket.html :
+ * includes <sys/socket.h> */
 #include "socket.h"///socket(...)
 
 #ifdef __cplusplus

@@ -1,9 +1,7 @@
-/*
- * ReadTimeStampCounter.h
- *
+/** ReadTimeStampCounter.h
  *  Created on: Jun 13, 2010
- *      Author: Stefan
- */
+ *  Author: Stefan Gebauer, M. Sc. Comp. Sc. (TU Berlin)
+ *  This file/the instructions in function here are x86-specific?! */
 
 #ifndef READTIMESTAMPCOUNTER_H_
 #define READTIMESTAMPCOUNTER_H_
@@ -200,6 +198,6 @@ namespace NS_SetThreadAffinityMask
     DEBUGN(/*"inline ULONGLONG ReadTSCinOrder( DWORD dwThreadAffinityMask ) "*/"end")
     return ull ;
   }
-}
+}///end namepace
 
 #endif /* READTIMESTAMPCOUNTER_H_ */

@@ -12,14 +12,17 @@
 //
 //                           Copyright 2002-2005 hiyohiyo, All rights reserved.
 /*---------------------------------------------------------------------------*/
+/** This file is specific to the Windows Operating System because of Windows
+ *  API functions. */
 
 #include <windows.h>
 #include <windef.h>
 #include <Controller/CPU-related/ReadTimeStampCounter.h>
-#include <fastest_unsigned_data_type.h>
+#include <hardare/CPU/fastest_unsigned_data_type.h>///fastestUnsignedDataType
 
 //static float error;
-//Ensure no other process etc. was executed between QueryPeformanceCounter and rdtsc.
+//Ensure no other process etc. was executed between QueryPeformanceCounter and
+// rdtsc.
 //  -0.0001 s are needed when outputting into log files?
 //  -else 0.00001 s?
 #define MIN_TIME_SPAN_IN_S 0.0001f
@@ -30,23 +33,23 @@ namespace CPU
   {
     //TODO use "::Sleep(0)" under Windows to let another process get CPU time
     //  so that less CPU time is wasted.
-    inline void GetClockWithLoad()
-    {
-      //http://msdn.microsoft.com/en-us/library/windows/desktop/ms686298%28v=vs.85%29.aspx
-      //"A value of zero causes the thread to relinquish the remainder of its
-      //time slice to any other thread that is ready to run. If there are no
-      //other threads ready to run, the function returns immediately, and the
-      //thread continues execution.
-      //Windows XP:  A value of zero causes the thread to relinquish the
-      //remainder of its time slice to any other thread of equal priority that
-      //is ready to run. If there are no other threads of equal priority ready
-      //to run, the function returns immediately, and the thread continues
-      //execution. This behavior changed starting with Windows Server 2003."
+inline void GetClockWithLoad()
+{
+/** http://msdn.microsoft.com/en-us/library/windows/desktop/ms686298%28v=vs.85%29.aspx
+* "A value of zero causes the thread to relinquish the remainder of its
+* time slice to any other thread that is ready to run. If there are no
+* other threads ready to run, the function returns immediately, and the
+* thread continues execution.
+* Windows XP:  A value of zero causes the thread to relinquish the
+* remainder of its time slice to any other thread of equal priority that
+* is ready to run. If there are no other threads of equal priority ready
+* to run, the function returns immediately, and the thread continues
+* execution. This behavior changed starting with Windows Server 2003."*/
 
-      //->under WinXP only when there is a thread with _equal_ priority the
-      //rest of CPU time is given to ob.
-    }
-  }
+/** ->under WinXP only when there is a thread with _equal_ priority the
+* rest of CPU time is given to ob.*/
+}
+}///end namespace
   /** @brief gets CPU core via busy waiting (-> no non-C0/ sleep/ halt states
    *   where the TSC may not increment (e.g. Intel Pentium M stepping 10,
    *   Intel Core 2 Celeron 900)

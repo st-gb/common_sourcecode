@@ -73,6 +73,11 @@ int getSocketTimeout(
   return returnValue;
 }
 
+inline void assign(double * p_timeoutInS, struct timeval * p_socketTimeout){
+  * p_timeoutInS = p_socketTimeout->tv_sec;
+  * p_timeoutInS += (double) p_socketTimeout->tv_usec/1000000.0;
+}
+
 enum GetSocketTimeoutRslt GetSocketTimeoutInS(const int socketFileDesc, 
   double * p_timeoutInS )
 {
@@ -81,7 +86,7 @@ enum GetSocketTimeoutRslt GetSocketTimeoutInS(const int socketFileDesc,
   struct timeval sendSocketTimeout;
   const int rcvToutRetVal = getSocketTimeout(socketFileDesc, & rcvSocketTimeout, 
     SO_RCVTIMEO);
-  const int sndToutRetVal = getSocketTimeout(socketFileDesc,&sendSocketTimeout,
+  const int sndToutRetVal = getSocketTimeout(socketFileDesc, &sendSocketTimeout,
     SO_SNDTIMEO);
   
   if(rcvToutRetVal == -1){
@@ -93,7 +98,8 @@ enum GetSocketTimeoutRslt GetSocketTimeoutInS(const int socketFileDesc,
   else
     if(sndToutRetVal == -1)
       getSocketTimeoutRslt = getSndTimeoutError;
-  if(getRcvAndSndTimeoutError != success)
+  if(getSocketTimeoutRslt == success){
+	///If *receive* timeout time < *send* timeout time.
     if( ( rcvSocketTimeout.tv_sec < sendSocketTimeout.tv_sec ||
        (rcvSocketTimeout.tv_sec == sendSocketTimeout.tv_sec &&
        rcvSocketTimeout.tv_usec < sendSocketTimeout.tv_usec) ) &&
@@ -105,10 +111,10 @@ enum GetSocketTimeoutRslt GetSocketTimeoutInS(const int socketFileDesc,
       *p_timeoutInS = rcvSocketTimeout.tv_sec;
       *p_timeoutInS += (double) rcvSocketTimeout.tv_usec/1000000.0;
     }
-    else{
-      *p_timeoutInS = sendSocketTimeout.tv_sec;
-      *p_timeoutInS += (double) sendSocketTimeout.tv_usec/1000000.0;
-    }
+  }else if(getSocketTimeoutRslt == getRcvTimeoutError)
+    assign(p_timeoutInS, &sendSocketTimeout);
+  }else if(getSocketTimeoutRslt == getSndTimeoutError)
+    assign(p_timeoutInS, &rcvSocketTimeout);
   return getSocketTimeoutRslt;
 }
 #ifdef __cplusplus///enable both C and C++ 

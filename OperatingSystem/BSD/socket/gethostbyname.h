@@ -1,6 +1,8 @@
 #pragma once///Include guard
 
 #ifdef __linux__
+/**http://pubs.opengroup.org/onlinepubs/009695399/functions/gethostbyname.html
+ * : includes <netdb.h> */
   #include <netdb.h>///gethostbyname(...)
 #endif
 #ifdef _WIN32

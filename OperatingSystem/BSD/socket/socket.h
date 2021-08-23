@@ -25,7 +25,8 @@ enum errorCodes{connRefused, inProgress, timedOut,
   #include <OperatingSystem/Windows/BSD_sockets/sockets.h>///InitSocket(...)
 #endif
 
-///For Windows only "recv(...)" works (-1 as return value for "read(...)" )
+/** For Microsoft Windows only "recv(...)" works (-1 as return value for
+ *  "read(...)" ) */
 #define use_recv
 
 #ifdef __cplusplus
