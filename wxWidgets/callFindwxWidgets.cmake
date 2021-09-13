@@ -63,7 +63,8 @@
 
   #SET(wxWidgets_INCLUDE_DIRS "wxWidgets/include")
 
-  message(wxWidgets_ROOT_DIR: ${wxWidgets_ROOT_DIR})
+  message("wxWidgets_ROOT_DIR (path containing static/dynamic library files in"
+    "its subpath \"/lib/gcc_dll\"): ${wxWidgets_ROOT_DIR}")
   message(wxWidgets_LIB_DIR: ${wxWidgets_LIB_DIR})
   
 #see https://cmake.org/cmake/help/v3.0/module/FindwxWidgets.html

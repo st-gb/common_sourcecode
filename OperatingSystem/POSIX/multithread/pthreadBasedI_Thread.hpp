@@ -32,7 +32,7 @@ class pthreadBasedI_Thread
   
     unsigned successfullyCreated;
   public:
-    pthreadBasedI_Thread(I_Thread::thread_type = I_Thread::joinable );
+    pthreadBasedI_Thread(I_Thread::thread_type = I_Thread::joinable);
     virtual
     ~pthreadBasedI_Thread();
 //    unsigned GetThreadID() { pthread_getthreadid_np() }

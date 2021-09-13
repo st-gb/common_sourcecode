@@ -1,9 +1,6 @@
-/*
- * HideMinGWconsoleWindow.h
- *
+/** HideMinGWconsoleWindow.h
  *  Created on: Sep 8, 2010
- *      Author: Stefan
- */
+ *  Author: Stefan Gebauer, M.Sc. Comp.Sc. */
 
 #ifndef HIDEMINGWCONSOLEWINDOW_H_
 #define HIDEMINGWCONSOLEWINDOW_H_
