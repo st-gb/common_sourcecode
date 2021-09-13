@@ -39,12 +39,13 @@ int main(int argCount, char * args[])
 
   struct sockaddr_in srvAddr;
   int srvSocketFileDesc;
-  enum InitSrvRslt initSrvRslt = prepAccept(portNo, srvAddr, 5, AF_INET,
-    srvSocketFileDesc);
+  enum InitSrvRslt initSrvRslt = OperatingSystem::BSD::sockets::prepAccept(
+    portNo, srvAddr, 5, AF_INET, srvSocketFileDesc);
   if( initSrvRslt != listenSucceeded)
   {
     std::string errMsg = OperatingSystem::BSD::sockets::getErrorMsg(initSrvRslt);
-    std::cerr << errMsg << std::endl;
+    std::cerr << "ERROR with socket port:" << portNo << ":" << errMsg <<
+      std::endl;
     retVal = 1;
   }
   else

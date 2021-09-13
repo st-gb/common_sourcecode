@@ -3,8 +3,9 @@
 #include<cxxopts.hpp>///https://github.com/jarro2783/cxxopts/blob/master/INSTALL
 
 namespace cxxopts{
+/** @return character string for error */
 template <typename argType> std::string /*void*/ handleArg(
-  cxxopts::ParseResult & cmdLineOptsParseRslt, 
+  cxxopts::ParseResult & cmdLineOptsParseRslt,
   const char argName [], argType & argVal)
 {
   std::string stdstr;
