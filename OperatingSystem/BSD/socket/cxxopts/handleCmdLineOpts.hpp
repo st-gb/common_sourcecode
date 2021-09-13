@@ -7,6 +7,7 @@
 
 ///Used by both the client and server. The common between them is the port.
 namespace cxxopts{namespace clientAndServer{
+
 cxxopts::ParseResult procCmdLineArgs(int argCount, char * args[],
   cxxopts::Options & cmdLineOpts, int & port)
 {

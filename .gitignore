@@ -8,3 +8,9 @@
 
 #Hide FUSE (NTFS file system) (intermediate) files in Linux
 \.fuse_hidden*
+
+#Executable file (extension)
+*.elf
+*.exe
+#Default GCC executable file name: http://en.wikipedia.org/wiki/A.out
+a.out

@@ -48,7 +48,8 @@ enum InitSrvRslt initSrv(
   /** https://linux.die.net/man/2/setsockopt :
    * "On error, -1 is returned, and errno is set appropriately." */ 
 //  setsockopt(socketFileDesc, SOL_SOCKET, SO_REUSEADDR, & true_,sizeof(true_));
-  
+//  errno = 0;///setsockopt(...) error should not matter/influence.
+
   /** http://man7.org/linux/man-pages/man2/bind.2.html :
   * "bind() assigns the address specified by addr to the socket referred to by
   *  the file descriptor sockfd."

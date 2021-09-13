@@ -1,5 +1,7 @@
 #This script helps to debug calling "find_package(wxWidgets ...)"
 
+include(${cmnSrcDir}/CMake/SGR_terminalColours.cmake)#SGR_Cyan,SGR_ColourReset
+
 #For "FindwxWidgets.cmake" these variables may be set 
 # (see top of "FindwxWidgets.cmake" or 
 #  https://cmake.org/cmake/help/v3.0/module/FindwxWidgets.html):
@@ -80,6 +82,10 @@
 	
   message("wxWidgets_USE_LIBS: ${wxWidgets_USE_LIBS}")
   message("Before find_package(wxWidgets)")
+  if(UNIX)
+    message("${SGR_Cyan}NOTE: needs package \"libwxbase<<version>>dev\" installed"
+      "${SGR_ColourReset}")
+  endif()
   #Calls/includes "findwxWidgets.cmake".
   #TODO make usable with wxLibs
   #find_package(wxWidgets COMPONENTS ${${wxLibs}} REQUIRED)

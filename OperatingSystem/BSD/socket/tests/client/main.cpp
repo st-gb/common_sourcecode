@@ -26,8 +26,11 @@ int main(int argCount, char * args[])
     if(retVal == -1)
     {
       int cnnctErrCode = errno;
+      const enum errorCodes BSDsockErr = OperatingSystem::BSD::sockets::
+        GetLastError();
       std::cout << "Connecting failed. Error code:" << cnnctErrCode <<std::endl;
-      std::cout<< BlockingCnnctError::GetPossibleCause_inl(cnnctErrCode, port);
+      std::cout<< OperatingSystem::BSD::sockets::BlockingCnnctError::
+        GetPossibleCause_inl(BSDsockErr, port);
     }
     else
       std::cout << "Successfully connected to server." << std::endl;
