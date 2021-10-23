@@ -41,9 +41,10 @@ enum PrepCnnctToSrvRslt prepCnnctToSrv(
 #endif
     return getSocketFileDescFailed;
   }
-  p_serverHostDataBaseEntry = GetHostDataBaseEntry(hostName);
+  enum gethostbynameRslt gethostbynameRslt = GetHostDataBaseEntry(hostName,
+    & p_serverHostDataBaseEntry);
   if( ! p_serverHostDataBaseEntry )
-    return getHostByNameFailed;
+    return /*getHostByNameFailed*/ getHostByNameFailed + gethostbynameRslt;
 
   memset( (char *) p_srvAddr, 0, sizeof(*p_srvAddr) );
   p_srvAddr->sin_family = protoFam;

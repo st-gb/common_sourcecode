@@ -1,9 +1,6 @@
-/*
- * FormattedLogEntryProcessor.cpp
- *
+/** FormattedLogEntryProcessor.cpp
  *  Created on: 07.02.2013
- *      Author: Stefan
- */
+ *  Author: Stefan Gebauer, M.Sc. Comp.Sc.*/
 
 #include "FormattedLogEntryProcessor.hpp"
 #include "../Formatter/HTMLlogFormatter.hpp" //class HTMLlogFormatter::HTMLlogFormatter(...)

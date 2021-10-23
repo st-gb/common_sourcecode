@@ -1,5 +1,6 @@
 
-#include <windef.h> //BYTE
+#include <windows.h>///HANDLE
+//#include <windef.h> //BYTE
 #include <specstrings.h> //for __out_ecount_opt etc. in Pdh.h
 
 #ifndef _MSC_VER
@@ -14,6 +15,12 @@
 //#include <Pdh.h> //HCOUNTER, HQUERY
 
 /** From sourceforge.net/apps/trac/mingw-w64/browser/experimental/headers_additions_test/include/pdh.h?rev=5328, begin */
+
+#if __GNUC__ > 5
+  #include <pdh.h>///Not included in versions < ca. GCC 7
+#endif
+
+#ifndef _PDH_H_///If not pdh.h already included
 typedef HANDLE PDH_HCOUNTER;
 typedef HANDLE PDH_HQUERY;
 
@@ -22,6 +29,7 @@ typedef PDH_HQUERY HQUERY;
 
 #define PDH_FUNCTION PDH_STATUS WINAPI
 typedef LONG PDH_STATUS;
+
 //typedef PDH_STATUS (WINAPI *CounterPathCallBack)(DWORD_PTR);
 typedef struct _PDH_FMT_COUNTERVALUE {
   DWORD CStatus;
@@ -34,6 +42,8 @@ typedef struct _PDH_FMT_COUNTERVALUE {
   };
 } PDH_FMT_COUNTERVALUE,*PPDH_FMT_COUNTERVALUE;
 #define PDH_FMT_DOUBLE ((DWORD) 0x00000200)
+#endif
+
 /** From sourceforge.net/apps/trac/mingw-w64/browser/experimental/headers_additions_test/include/pdh.h?rev=5328, END */
 
 //#include <global.h> //for DEBUGN(...)
@@ -47,11 +57,12 @@ typedef struct _PDH_FMT_COUNTERVALUE {
   #include "PDH_DLL_function_signatures.h"
 #endif //#ifdef COMPILE_RUNTIME_DYN_LINKED
 
-#ifndef _MSC_VER //MinGW does not have a PDH_MORE_DATA #define
+#if ! defined(_MSC_VER)//MinGW does not have a PDH_MORE_DATA #define
+ #ifndef _PDH_MSG_H_///If not pdh.h already included
   //from http://msdn.microsoft.com/en-us/library/aa373046%28v=VS.85%29.aspx:
   #define PDH_MORE_DATA 0x800007D2
   #define PDH_INSUFFICIENT_BUFFER 0xC0000BC2
-
+ #endif
   //from Windows Platform SDK version 6.1's "pdh.h":
   #define PDH_MAX_COUNTER_NAME    1024  // Maximum counter name length.
 #endif
@@ -85,6 +96,7 @@ class PDH_CPUcoreUsageGetter
   PDH_CPUcoreUsageGetterPerCoreAtts * m_ar_pdh_cpu_core_usage_getter_per_core_atts ;
 #ifdef COMPILE_RUNTIME_DYN_LINKED
   PdhAddCounterW_type m_pfnPdhAddCounterW ;
+  PdhAddEnglishCounterW_type m_pfnPdhAddEnglishCounterW;
   PdhCloseQuery_type m_pfnPdhCloseQuery ;
   PdhCollectQueryData_type m_pfnPdhCollectQueryData ;
   PdhEnumObjectsW_type m_pfnPdhEnumObjectsW ;
@@ -117,6 +129,12 @@ public:
       __in  DWORD_PTR      dwUserData,
       __out PDH_HCOUNTER * phCounter
   );
+  PDH_FUNCTION PdhAddEnglishCounterW(
+    __in  PDH_HQUERY hQuery,
+    __in  LPCWSTR szFullCounterPath,
+    __in  DWORD_PTR dwUserData,
+    __out PDH_HCOUNTER * phCounter
+    );
   PDH_FUNCTION
   PdhCloseQuery(
       __inout PDH_HQUERY hQuery

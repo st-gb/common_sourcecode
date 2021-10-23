@@ -1,14 +1,35 @@
-/*
- * PDH_CPUcoreUsageGetter.cpp
- *
+/** PDH_CPUcoreUsageGetter.cpp
  *  Created on: Apr 26, 2010
- *      Author: Stefan
- */
-#include "StdAfx.h"
+ *  Author: Stefan Gebauer, M.Sc. Comp.Sc. */
 
+//#include "StdAfx.h"
+//#include <iosfwd>
+
+///C(++) standard header files:
 #include <string> //std::wstring
 #include <stdlib.h> //_itow(...)
+#include <sstream>///std::osstringstream
+#include <wchar.h>///wcscmp(...)
+
+///MS Windows API header files:
 #include <windows.h> //FormatMessageW(...)
+#include <winperf.h>///PERF_DETAIL_NOVICE
+#include <pdhmsg.h>///PDH error codes
+
+///Stefan Gebauer's common_sourcecode repository files:
+#include <compiler/GCC/avoid_write_strings_warning.h>///CAST_TO_WCHAR_POINTER
+#include <hardware/CPU/fastest_data_type.h>///fastestUnsignedDataType
+///class CPUcoreUsageException
+#include <OperatingSystem/CPUcoreUsageException.hpp>
+///isWindowsXP(), atLeastWinVista()
+#include <OperatingSystem/Windows/GetWindowsVersion/GetWindowsVersion.h>
+#include <preprocessor_macros/logging_preprocessor_macros.h>
+#ifdef _DEBUG
+  #include <Windows/Process/GetCurrentProcessExeFileNameWithoutDirs/GetCurrentProcessExeFileNameWithoutDirs.hpp>
+#endif
+/** This file includes "pdh.h" from Microsoft. Include it AFTER including the
+ * g++ include, else build errors with istream/ string. */
+#include "PDH_CPUcoreUsageGetter.hpp"
 
 //#ifndef _MSC_VER
 //  #include <Windows_compatible_typedefs.h>
@@ -21,16 +42,6 @@
 //TODO the _DEBUG define is not visible here although it was declared as an
 //argument for the compiler
 //#define _DEBUG
-
-//#include <global.h> //for DEBUGN(...)
-#include <preprocessor_macros/logging_preprocessor_macros.h>
-#ifdef _DEBUG
-  #include <Windows/Process/GetCurrentProcessExeFileNameWithoutDirs/GetCurrentProcessExeFileNameWithoutDirs.hpp>
-#endif
-
-//This file includes "pdh.h" from Microsoft. Include it AFTER including the
-//g++ include, else build errors with istream/ string.
-#include "PDH_CPUcoreUsageGetter.hpp"
 
 //from http://msdn.microsoft.com/en-us/library/aa373046%28v=VS.85%29.aspx:
 BYTE PDH_CPUcoreUsageGetter::GetPDHerrorCodeString(
@@ -152,6 +163,16 @@ void PDH_CPUcoreUsageGetter::AssignDLLfunctionPointers()
     throw //std::exception() ;
     ExceptionWithStdString(stdstrFuncName) ;
 
+  if(atLeastWinVista() ){
+    stdstrFuncName = "PdhAddEnglishCounterW" ;
+    m_pfnPdhAddEnglishCounterW = (PdhAddEnglishCounterW_type)
+      ::GetProcAddress(m_hinstancePDH_DLL, stdstrFuncName.c_str() );
+    if( m_pfnPdhAddEnglishCounterW == NULL )
+      throw ExceptionWithStdString(stdstrFuncName) ;
+  }
+  else
+    m_pfnPdhAddEnglishCounterW = NULL;
+
   stdstrFuncName = "PdhCloseQuery" ;
   m_pfnPdhCloseQuery = (PdhCloseQuery_type)
     ::GetProcAddress( m_hinstancePDH_DLL, stdstrFuncName.c_str() );
@@ -200,13 +221,23 @@ void PDH_CPUcoreUsageGetter::AssignDLLfunctionPointers()
 
 LPWSTR PDH_CPUcoreUsageGetter::GetPerfnameByIndex(WORD wIndex )
 {
-  DWORD dwNameBufferSize =
-    //http://msdn.microsoft.com/en-us/library/aa372648%28VS.85%29.aspx:
-    //"Windows XP:  You must specify a buffer and buffer size."
-    //1 ;
-    PDH_MAX_COUNTER_NAME ;
-  LPWSTR lpwstrCounterName //= NULL ;
-    = new WCHAR [ dwNameBufferSize ] ;
+  DWORD dwNameBufferSize;
+  LPWSTR lpwstrCounterName;
+//  if(isWindowsXP() ){
+    /** http://msdn.microsoft.com/en-us/library/aa372648%28VS.85%29.aspx:
+     * "Windows XP:  You must specify a buffer and buffer size." */
+    dwNameBufferSize = PDH_MAX_COUNTER_NAME + 1;
+    lpwstrCounterName = new WCHAR [ dwNameBufferSize ] ;
+//  }
+  //else{
+    /** https://docs.microsoft.com/en-us/windows/win32/api/pdh/nf-pdh-pdhlookupperfnamebyindexw
+     * "You should call this function twice, the first time to get the required
+     * buffer size (set szNameBuffer to NULL and pcchNameBufferSize to 0), and
+     * the second time to get the data." */
+//    dwNameBufferSize = 0;
+//    lpwstrCounterName = NULL;    
+//  }
+  
 //  WCHAR lpwstrCounterName [1] ;
   //  LPTSTR szNameBuffer ;
   //http://msdn.microsoft.com/en-us/library/aa372648(v=VS.85).aspx:
@@ -235,10 +266,10 @@ LPWSTR PDH_CPUcoreUsageGetter::GetPerfnameByIndex(WORD wIndex )
       DEBUGN("PdhLookupPerfNameByIndexW succeeded for index " << wIndex )
       break ;
     case PDH_MORE_DATA:
-      //http://msdn.microsoft.com/en-us/library/aa372648%28VS.85%29.aspx
-      //paragraph "Remarks" -> "Windows XP":
-      //"If the buffer is too small, the function returns PDH_INSUFFICIENT_BUFFER
-      //instead of PDH_MORE_DATA"
+      /**http://msdn.microsoft.com/en-us/library/aa372648%28VS.85%29.aspx :
+       * paragraph "Remarks" -> "Windows XP":
+       * "If the buffer is too small, the function returns 
+       * PDH_INSUFFICIENT_BUFFER instead of PDH_MORE_DATA" */
     case PDH_INSUFFICIENT_BUFFER:
     {
       //Release dynamically (on heap) created memory.
@@ -284,6 +315,18 @@ LPWSTR PDH_CPUcoreUsageGetter::GetPerfnameByIndex(WORD wIndex )
           wstr.c_str() )
     }
   }
+  /** Happened in Win 7 64 bit that ERROR_SUCCESS from PdhLookupPerfNameByIndexW
+   * but counter name was empty (there was no such name in registry path
+   * HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Perflib\009
+   * ) */
+  if( wcscmp(lpwstrCounterName, L"") == 0){
+    delete [] lpwstrCounterName;
+    std::wostringstream woss;
+    woss << L"After calling \"PdhLookupPerfNameByIndexW\" with index " << wIndex
+      << L": counter name is empty";
+//    std::wstring wstr= GetStdWstring(woss.str().c_str() );
+    throw CPUcoreUsageException(woss.str().c_str() );
+  }
 //  //Release dynamically (on heap) created memory.
 //  delete [] lpwstrCounterName ;
   return lpwstrCounterName ;
@@ -326,8 +369,10 @@ void PDH_CPUcoreUsageGetter::GetPercentProcessorTimeName()
   //see also http://support.microsoft.com/kb/287159
 }
 
+#ifndef PERF_DETAIL_NOVICE
 //TODO check if this is right
-#define PERF_DETAIL_NOVICE 0
+//#define PERF_DETAIL_NOVICE 0
+#endif
 
 void PDH_CPUcoreUsageGetter::GetCounterObjects()
 {
@@ -529,6 +574,19 @@ float PDH_CPUcoreUsageGetter::
         dwUserData ,
         phCounter ) ;
   }
+  PDH_FUNCTION PDH_CPUcoreUsageGetter::PdhAddEnglishCounterW(
+    __in  PDH_HQUERY hQuery,
+    __in  LPCWSTR szFullCounterPath,
+    __in  DWORD_PTR dwUserData,
+    __out PDH_HCOUNTER * phCounter
+    )
+  {
+    return (*m_pfnPdhAddEnglishCounterW)(
+      hQuery,
+      szFullCounterPath,
+      dwUserData,
+      phCounter);
+  }
   PDH_FUNCTION
   PDH_CPUcoreUsageGetter::PdhCloseQuery(
       __inout PDH_HQUERY hQuery
@@ -632,9 +690,36 @@ void PDH_CPUcoreUsageGetter::InitPDH_Names()
   }
 }
 
+inline void constructPerfCnterName(
+  const fastestUnsignedDataType CPUcoreID,
+  LPWSTR lpwstrProcessorPerfObjectName,
+  LPWSTR lpwstrPercentProcessorTimeCounterName,
+  std::wstring & stdwstr)
+{
+  LPWSTR lpwstrCPUcoreNumber;
+  wchar_t ar_wch[20];
+  lpwstrCPUcoreNumber = _itow(CPUcoreID, ar_wch, 10);
+//    DEBUGWN( L"core number as string:" << m_lpwstrCPUcoreNumber )
+  //TODO German version starts with "Prozessor"?
+  if(lpwstrProcessorPerfObjectName )
+    stdwstr = L"\\" + std::wstring(lpwstrProcessorPerfObjectName) + L"("
+      /** In performance monitor ("perfmon.exe") for Windows 7 and core 3 it is:
+       *  "Processor Information(0,3)\% Processor Time", previously it was
+       *  "Processor(3)\% Processor Time" */
+      L"0,";
+//    else
+//      stdwstr = std::wstring( L"\\Processor(" ) ;
+  stdwstr += lpwstrCPUcoreNumber + std::wstring(L")\\") ;
+  stdwstr += lpwstrPercentProcessorTimeCounterName;
+}
+
 void PDH_CPUcoreUsageGetter::StartPerfCounting( )
 {
-  InitPDH_Names() ;
+  bool useLocalLanguageNames = false;
+//  if(! atLeastWinVista() )
+//    useLocalNames = false;
+  if(useLocalLanguageNames)
+    InitPDH_Names();
 
   PDH_STATUS pdh_status ;
   //std::wstring stdwstr(L"\\Processor(0)\\") ;
@@ -644,18 +729,10 @@ void PDH_CPUcoreUsageGetter::StartPerfCounting( )
 //    L"\\Processor(\\") ;
 //  DEBUGWN("percent processor time name:" <<
 //      m_lpwstrPercentProcessorTimeCounterName )
-  for( WORD wCPUcoreID = 0 ; wCPUcoreID < m_wNumLogicalCPUcores ; ++ wCPUcoreID )
+  for(fastestUnsignedDataType CPUcoreID = 0 ; CPUcoreID < m_wNumLogicalCPUcores;
+    ++ CPUcoreID)
   {
-    m_lpwstrCPUcoreNumber = _itow( wCPUcoreID, m_ar_wch, 10 );
-//    DEBUGWN( L"core number as string:" << m_lpwstrCPUcoreNumber )
-    //TODO German version starts with "Prozessor"?
-    std::wstring stdwstr ;
-    if( m_lpwstrProcessorPerfObjectName )
-      stdwstr = L"\\" + std::wstring( m_lpwstrProcessorPerfObjectName) + L"(" ;
-//    else
-//      stdwstr = std::wstring( L"\\Processor(" ) ;
-    stdwstr += m_lpwstrCPUcoreNumber + std::wstring(L")\\") ;
-    stdwstr += m_lpwstrPercentProcessorTimeCounterName ;
+    std::wstring stdwstrPerfCntrName;
     DEBUGWN_WSPRINTF(L"full query:%ls" , stdwstr.c_str() )
     //http://msdn.microsoft.com/en-us/library/aa372652%28v=VS.85%29.aspx:
     //"If the function succeeds, it returns ERROR_SUCCESS."
@@ -665,39 +742,79 @@ void PDH_CPUcoreUsageGetter::StartPerfCounting( )
       //"User-defined value to associate with this query. To retrieve the user 
       //data later, call PdhGetCounterInfo and access the dwQueryUserData 
       //member of PDH_COUNTER_INFO."
-      //0, 
-      wCPUcoreID ,
+      //0,
+      CPUcoreID,
       //"Handle to the query."
       //& hQuery
-      & m_ar_pdh_cpu_core_usage_getter_per_core_atts[wCPUcoreID].hQuery
+      & m_ar_pdh_cpu_core_usage_getter_per_core_atts[CPUcoreID].hQuery
       );
     if( pdh_status == ERROR_SUCCESS )
       DEBUGN("PdhOpenQuery succeeded")
     else
       DEBUGN("PdhOpenQuery failed")
-    pdh_status = PdhAddCounterW( 
-      //hQuery,
-      m_ar_pdh_cpu_core_usage_getter_per_core_atts[wCPUcoreID].hQuery ,
-      //http://technet.microsoft.com/en-us/library/cc784617%28WS.10%29.aspx:
-      //"An instance called _Total instance is available on most objects and
-      //represents the sum of the values for all instances of the object for a
-      //specific counter."
-      //L"\\Processor(_Total)\\% Processor Time" ,
-      //L"\\Processor(0)\\% Processor Time" ,
-      stdwstr.c_str() ,
-      //"User-defined value. This value becomes part of the counter information. 
-      //To retrieve this value later, call the PdhGetCounterInfo function and 
-      //access the dwUserData member of the PDH_COUNTER_INFO structure."
-      //0,
-      wCPUcoreID ,
-      //& hCounter 
-      & m_ar_pdh_cpu_core_usage_getter_per_core_atts[wCPUcoreID].hCounter
-      );
-    if( pdh_status == ERROR_SUCCESS )
+
+    if(/*! atLeastWinVista()*/ //false 
+       useLocalLanguageNames)
     {
-      DEBUGN("PdhAddCounterW succeeded")
+      constructPerfCnterName(
+        CPUcoreID,
+        m_lpwstrProcessorPerfObjectName,
+        m_lpwstrPercentProcessorTimeCounterName,
+        stdwstrPerfCntrName);
+      delete [] m_lpwstrPercentProcessorTimeCounterName;
+      m_lpwstrPercentProcessorTimeCounterName = NULL;
+      pdh_status = PdhAddCounterW( 
+        m_ar_pdh_cpu_core_usage_getter_per_core_atts[CPUcoreID].hQuery ,
+        //http://technet.microsoft.com/en-us/library/cc784617%28WS.10%29.aspx:
+        //"An instance called _Total instance is available on most objects and
+        //represents the sum of the values for all instances of the object for a
+        //specific counter."
+        //L"\\Processor(_Total)\\% Processor Time" ,
+        //L"\\Processor(0)\\% Processor Time" ,
+        stdwstrPerfCntrName.c_str() ,
+        /** "User-defined value. This value becomes part of the counter
+         * information. To retrieve this value later, call the PdhGetCounterInfo
+         * function and access the dwUserData member of the PDH_COUNTER_INFO
+         * structure." */
+        CPUcoreID,//0,
+        & m_ar_pdh_cpu_core_usage_getter_per_core_atts[CPUcoreID].hCounter
+        );
+      if(pdh_status != ERROR_SUCCESS){
+        std::wstring wstrPDHerror;
+        GetPDHerrorCodeString(pdh_status, wstrPDHerror);
+        std::wstring msg = L"error calling PdhAddCounterW with parameter "
+          L"\"" + stdwstrPerfCntrName + L"\":" + wstrPDHerror;
+        throw CPUcoreUsageException(msg.c_str() );
+      }
     }
-    else
-      DEBUGN("PdhAddCounterW failed")
+    else{
+      constructPerfCnterName(
+        CPUcoreID,
+        /** In performance monitor ("perfmon.exe") for Windows 7 it is:
+         *  "Processor Information(0,3)\% Processor Time" */
+        CAST_TO_WCHAR_POINTER /*L"Processor"*/ L"Processor Information",
+        CAST_TO_WCHAR_POINTER L"% Processor Time",
+        stdwstrPerfCntrName);///0x3e508 L"\\\\Processor(0)\\\\% Processor Time"
+      ///For testing (1st CPU core):
+      //stdwstrPerfCntrName = L"\\Processor Information(0,0)\\% Processor Time";
+      pdh_status =
+        ///"Minimum supported client Windows Vista"
+        PdhAddEnglishCounterW(
+        m_ar_pdh_cpu_core_usage_getter_per_core_atts[CPUcoreID].hQuery,
+        stdwstrPerfCntrName.c_str(),
+        CPUcoreID,
+        & m_ar_pdh_cpu_core_usage_getter_per_core_atts[CPUcoreID].hCounter);
+      if(pdh_status != ERROR_SUCCESS){
+        std::wstring wstrPDHerror;
+        GetPDHerrorCodeString(pdh_status, wstrPDHerror);
+        std::wstring msg = L"error calling PdhAddEglishCounterW with parameter "
+          L"\"" + stdwstrPerfCntrName + L"\":" + wstrPDHerror;
+        throw CPUcoreUsageException(msg.c_str() );
+      }
+    }
+    if(pdh_status == ERROR_SUCCESS )
+    {
+      DEBUGN("PdhAdd(English)CounterW succeeded")
+    }
   }
 }

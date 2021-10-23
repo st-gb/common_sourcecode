@@ -1,8 +1,9 @@
-/** File:   Event.cpp
- * Author: sg
+/** File: Event.cpp
+ * Author: Stefan Gebauer, M. Sc. Comp.Sc.
  * Created on 3. Mai 2017, 21:26 */
 
 #include "Event.hpp"
+#include <errno.h>///ETIMEDOUT
 
 namespace pthread
 {
@@ -38,6 +39,43 @@ I_Condition::state Condition::Broadcast()
   const int unlockResult = pthread_mutex_unlock(& m_mutex);
   return lockResult == broadcastResult == unlockResult == 0 ? success :
     other_error;
+}
+
+I_Condition::state Condition::WaitForSignalOrTimeoutInMs(const
+  fastestUnsignedDataType ms)
+{
+  timespec ts;
+  __syscall_slong_t remainingNs = ms % 1000 * 1000000/** To nanoseconds*/;
+  clock_gettime(CLOCK_REALTIME, &ts);
+//  timespec ts{ms/1000, remainingNs};
+  ts.tv_sec += ms/1000;
+  ts.tv_nsec += remainingNs;
+  
+  const int lockResult =
+    /** https://linux.die.net/man/3/pthread_cond_timedwait :
+     * "They shall be called with mutex locked by the calling thread or
+     *  undefined behavior results." */
+    pthread_mutex_lock(& m_mutex);
+  const int retVal =
+    /** https://linux.die.net/man/3/pthread_cond_timedwait :
+     * "These functions atomically release mutex and cause the calling thread to
+     * block on the condition variable cond; atomically here means "atomically
+     * with respect to access by another thread to the mutex and then the
+     * condition variable"." */
+    pthread_cond_timedwait(&m_condition, &m_mutex,
+      /// "system time equals or exceeds abstime."
+      &ts);
+  const int unlockResult = pthread_mutex_unlock(& m_mutex);//TODO:neccessary?
+  if(retVal == 0)
+    return I_Condition::success;
+  else
+  switch(retVal){
+    /** https://linux.die.net/man/3/pthread_cond_timedwait :
+     *"The time specified by abstime to pthread_cond_timedwait() has passed." */
+   case ETIMEDOUT:
+    return I_Condition::timed_out;
+  }
+  return I_Condition::other_error;
 }
 
 I_Condition::state Condition::Wait()

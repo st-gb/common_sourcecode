@@ -1,4 +1,6 @@
 #include "initSrv.h"///enum InitSrvRslt
+/** https://pubs.opengroup.org/onlinepubs/009695399/functions/listen.html :
+  * includes <sys/socket.h> */
 #include <sys/socket.h>///listen(...)
 
 namespace OperatingSystem{ namespace BSD { namespace sockets{

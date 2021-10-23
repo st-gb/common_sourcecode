@@ -4,6 +4,8 @@
 # ~"libwxgtk3.0-dev" (name depending on wxWidgets version etc.).
 #Install in Debian-based Linux via: "sudo apt-get install >>package name<<".
 
+include(${cmnSrcDir}/CMake/SGR_terminalColours.cmake)#SGR_Cyan,SGR_ColourReset
+
 #For "FindwxWidgets.cmake" these variables may be set 
 # (see top of "FindwxWidgets.cmake" or 
 #  https://cmake.org/cmake/help/v3.0/module/FindwxWidgets.html):
@@ -67,7 +69,8 @@
 
   #SET(wxWidgets_INCLUDE_DIRS "wxWidgets/include")
 
-  message(wxWidgets_ROOT_DIR: ${wxWidgets_ROOT_DIR})
+  message("wxWidgets_ROOT_DIR (path containing static/dynamic library files in"
+    "its subpath \"/lib/gcc_dll\"): ${wxWidgets_ROOT_DIR}")
   message(wxWidgets_LIB_DIR: ${wxWidgets_LIB_DIR})
   
 #see https://cmake.org/cmake/help/v3.0/module/FindwxWidgets.html
@@ -83,6 +86,10 @@
 	
   message("wxWidgets_USE_LIBS: ${wxWidgets_USE_LIBS}")
   message("Before find_package(wxWidgets)")
+  if(UNIX)
+    message("${SGR_Cyan}NOTE: needs package \"libwxbase<<version>>dev\" installed"
+      "${SGR_ColourReset}")
+  endif()
   #Calls/includes "findwxWidgets.cmake".
   #TODO make usable with wxLibs
   #find_package(wxWidgets COMPONENTS ${${wxLibs}} REQUIRED)

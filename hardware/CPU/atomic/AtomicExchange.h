@@ -4,15 +4,31 @@
   #include <windows.h> //InterlockedExchange
 #endif
 
+/** Compare-And-Swap operations have max. pointer size (aligned at multiple of
+ * this size?).
+ * https://en.wikipedia.org/wiki/C_data_types :
+ * int has at least 2 or 4 byte, long
+ * "The type int should be the integer type that the target processor is most
+ *  efficiently working with." */
+typedef long AtomicExchType;
+
 /** Writes value @param val into address of @param Target as 1 atomic operation. 
     -> thread-safe */
-inline long AtomicExchange(long * Target, long val)
+inline long AtomicExchange(
+  /** https://gcc.gnu.org/onlinedocs/gcc-4.1.1/gcc/Atomic-Builtins.html :
+   * "The definition given in the Intel documentation allows only for the use of
+   * the types int, long, long long as well as their unsigned counterparts. GCC
+   * will allow any integral scalar or pointer type that is 1, 2, 4 or 8 bytes
+   * in length." */
+  long * Target, long val)
 {
 #ifdef _WIN32
   /** http://msdn.microsoft.com/en-us/library/windows/desktop/ms683590%28v=vs.85%29.aspx
    * "The function returns the initial value of the Target parameter." 
    * "This function generates a full memory barrier (or fence) to ensure that 
-   *  memory operations are completed in order." */
+   *  memory operations are completed in order." 
+   *  https://docs.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-interlockedexchange
+   *  : "LONG" data type */
   return InterlockedExchange(Target, val);
 #else
 #ifdef __GNUC__
