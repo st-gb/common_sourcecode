@@ -1,4 +1,8 @@
-#This script helps to debug calling "find_package(wxWidgets ...)"
+#This CMake script helps to debug calling the file system CMake script file
+# "FindwxWidgets.cmake" via the CMake command "find_package(wxWidgets ...)".
+#Under Linux "FindwxWidgets.cmake" is included in Operating System package
+# ~"libwxgtk3.0-dev" (name depending on wxWidgets version etc.).
+#Install in Debian-based Linux via: "sudo apt-get install >>package name<<".
 
 #For "FindwxWidgets.cmake" these variables may be set 
 # (see top of "FindwxWidgets.cmake" or 
