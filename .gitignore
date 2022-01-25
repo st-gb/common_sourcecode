@@ -1,6 +1,17 @@
 *.*~
-**/CMakeFiles
+
+#IDE project files:
+#===================
+#NetBeans IDE project files:
 **/nbproject
+
+#MicroSoft Visual Studio project files:
+*.sln
+*.vcxproj
+*.vcxproj.filters
+
+#Intermediate CMake files:
+**/CMakeFiles
 **/CMakeCache.txt
 **/cmake_install.cmake
 **/Makefile

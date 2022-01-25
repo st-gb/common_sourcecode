@@ -1,23 +1,39 @@
 #pragma once///Include guard.
+
+///Stefan Gebauer's "common_sourcecode" repository files:
 #include "../handleCmdLineOpts.hpp"///procCmdLineArgs(...),initCmdLineOpts(...)
+#include <libraries/cxxopts/addOptions.hpp>///cxxopts::addOptions(...)
 
 namespace client{
-void procCmdLineArgs(const int argCount, char * args[],
-  cxxopts::Options & cmdLineOpts, int & port, std::string & host)
+int procCmdLineArgs(
+  const int argCount,
+  char * cmdLneArgs[],
+  cxxopts::Options & cmdLineOpts,
+  cxxopts::clientAndServer::portDataType & port,
+  std::string & host,
+  std::string & errorMsg)
 {
-  try{
-    cxxopts::ParseResult cmdLineOptsParseRslt = cxxopts::clientAndServer::
-      procCmdLineArgs(argCount, args,cmdLineOpts, port);
-    handleArg(cmdLineOptsParseRslt, "host", host);
-  }catch(cxxopts::OptionException & e){std::cerr << e.what() << std::endl;}
+  ///Parses command line arguments and tries to get port number option value.
+  cxxopts::ParseResult cmdLineOptsParseRslt = cxxopts::clientAndServer::
+    procCmdLineArgs(argCount, cmdLneArgs,
+      cmdLineOpts, port, errorMsg);
+  if(errorMsg == "")
+    errorMsg = cxxopts::handleArg(cmdLineOptsParseRslt, "host", host);
+  return errorMsg == "";
 }
 
-inline int HandleCmdLineOpts(const int argCount, char * args[], int & port,
-  std::string & host){
-  cxxopts::Options cmdLineOpts(args[0]);
-  cxxopts::clientAndServer::initCmdLineOpts(cmdLineOpts);
-  cmdLineOpts.add_options()
-    ("h,host", "host to connect to", cxxopts::value<std::string>());
-  procCmdLineArgs(argCount, args, cmdLineOpts, port, host);
+inline int HandleCmdLineOpts(
+  const int cmdLneArgCnt,
+  char * cmdLneArgs[],
+  int & port,
+  std::string & host,
+  std::string & errorMsg)
+{
+  cxxopts::Options cmdLineOpts(cmdLneArgs[0]);
+  ///Adds port number as command line argument.
+  cxxopts::clientAndServer::initCmdLineOpts(cmdLineOpts, "connect");
+  cxxopts::addOptions<std::string>(cmdLineOpts, "h,host", "host to connect to");
+  return procCmdLineArgs(cmdLneArgCnt, cmdLneArgs, cmdLineOpts, port, host,
+    errorMsg);
 }
-}
+}///End namespace

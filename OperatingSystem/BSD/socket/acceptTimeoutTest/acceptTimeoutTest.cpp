@@ -3,9 +3,15 @@
 #include "../initSrv.h"///enum InitSrvRslt, getErrorMsg(...)
 #include "../prepAccept.h"///prepAccept(...)
 #include "../getSocketFileDesc.h"///getSocketFileDesc(...)
+/**For isblank(int) to be in namespace "std" in file <c++/cctype> (at least
+ * in MinGW). This is needed for cxxopts.hpp. <c++/cctype> is  indirectly 
+ * included by <iostream> */
+#define _GLIBCXX_USE_C99_CTYPE_TR1
 #include <iostream>///std::cerr, std::cout
 #include <netinet/in.h>///struct sockaddr_in
 #include <arpa/inet.h>///inet_ntoa(...)
+
+///Stefan Gebauer's "common_sourcecode" repository files:
 #include "../cxxopts/handleCmdLineOpts.hpp"///HandleCmdLineOpts(...)
 
 //void setPortNo(const char [] val){  }
@@ -25,18 +31,29 @@ inline void acceptLoop(const int portNo, const int srvSocketFileDesc)
     ///another thread)
     const int clientSocketFileDesc = accept(
       srvSocketFileDesc, 
-      (struct sockaddr *) & clientAddr, 
+      (struct sockaddr *) & clientAddr,
       & sizeOfClientAddrInB);
-    std::cout << "Client connected: port:" << clientAddr.sin_port << 
+    std::cout << "Client connected: port:" << clientAddr.sin_port <<
       " IP addr:" << inet_ntoa(clientAddr.sin_addr) << std::endl;
   }while(1);
 }
 
-int main(int argCount, char * args[])
-{
-  int retVal = 0;
-  const int portNo = cxxopts::clientAndServer::HandleCmdLineOpts(argCount,args);
+namespace progError{
+  enum progError{noError = 0, cmdLneArgsError, listenToSocketFailed};
+}
 
+int main(int cmdLneArgCnt, char * cmdLneArgs[])
+{
+  int retVal = progError::noError;
+  std::string errorMsg;
+  const int portNo = cxxopts::server::HandleCmdLineOpts(cmdLneArgCnt,
+    cmdLneArgs,errorMsg);
+
+  if(!errorMsg.empty() ){
+    std::cerr << "Error processing command line arguments:" << errorMsg <<
+      std::endl;
+    return progError::cmdLneArgsError;
+  }
   struct sockaddr_in srvAddr;
   int srvSocketFileDesc;
   enum InitSrvRslt initSrvRslt = OperatingSystem::BSD::sockets::prepAccept(
@@ -46,7 +63,7 @@ int main(int argCount, char * args[])
     std::string errMsg = OperatingSystem::BSD::sockets::getErrorMsg(initSrvRslt);
     std::cerr << "ERROR with socket port:" << portNo << ":" << errMsg <<
       std::endl;
-    retVal = 1;
+    retVal = progError::listenToSocketFailed;
   }
   else
     acceptLoop(portNo, srvSocketFileDesc);

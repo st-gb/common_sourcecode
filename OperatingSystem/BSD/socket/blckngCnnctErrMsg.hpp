@@ -20,6 +20,8 @@ inline std::string GetPossibleCause_inl(const enum errorCodes errCode,
    *-"errno" was EINPROGRESS even when the host name did not exist.
    *-"errno" was EINPROGRESS when the send timed out (set via
    *    setsockopt(socketFileDesc, SOL_SOCKET, SO_SNDTIMEO,...) )
+   *-"errno" was EINPROGRESS when "service" parameter for getaddrinfo(...) was
+   *  NULL
    *-"errno" was ETIMEDOUT when timeout via getsockopt(...) was 0 s 0 micros and
    *   not connected within ca. 90 s 
    * "errno" was ECONNREFUSED when no server listening */
