@@ -3,16 +3,19 @@
 #include "../initSrv.h"///enum InitSrvRslt, getErrorMsg(...)
 #include "../prepAccept.h"///prepAccept(...)
 #include "../getSocketFileDesc.h"///getSocketFileDesc(...)
-/**For isblank(int) to be in namespace "std" in file <c++/cctype> (at least
- * in MinGW). This is needed for cxxopts.hpp. <c++/cctype> is  indirectly 
- * included by <iostream> */
+///Standard C(++) header files:
+/**For function "isblank(int)" to be in namespace "std" in file <c++/cctype>
+ * (at least in "MinGW" compiler suite). <c++/cctype> is indirectly included by
+ * <iostream>. This is needed for <cxxopts.hpp> from Lightweight C++ command
+ * line option parser.*/
 #define _GLIBCXX_USE_C99_CTYPE_TR1
 #include <iostream>///std::cerr, std::cout
 #include <netinet/in.h>///struct sockaddr_in
 #include <arpa/inet.h>///inet_ntoa(...)
 
-///Stefan Gebauer's "common_sourcecode" repository files:
-#include "../cxxopts/handleCmdLineOpts.hpp"///HandleCmdLineOpts(...)
+///Stefan Gebauer's(TU Berlin mat.#361095) "common_sourcecode" repository files:
+///cxxopts::server::HandleCmdLineOpts(...)
+#include <OperatingSystem/BSD/socket/cxxopts/server/handleCmdLneOpts.hpp>
 
 //void setPortNo(const char [] val){  }
 //CommandLineOption<funcType> cmdLineOpts [] = {"port" , setPortNo};
@@ -25,14 +28,18 @@ inline void acceptLoop(const int portNo, const int srvSocketFileDesc)
   do
   {
     struct sockaddr_in clientAddr;
-    socklen_t sizeOfClientAddrInB = sizeof(clientAddr);
+    const int sizeOfClientAddrInB = sizeof(clientAddr);
     std::cout << "Accepting on port " << portNo << "\n";
-    ///accept(...) is blocking, can be cancelled with "shutdown(...)" (from
-    ///another thread)
+/** accept(...) is usually blocking (can be canceled with shutdown(...)/
+ *   close(...) from another thread?):
+ * http://pubs.opengroup.org/onlinepubs/009696699/functions/accept.html : "If
+ *  the listen queue is empty of connection requests and O_NONBLOCK is not set
+ *  on the file descriptor for the socket, accept() shall block until a
+ *  connection is present."*/
     const int clientSocketFileDesc = accept(
       srvSocketFileDesc, 
       (struct sockaddr *) & clientAddr,
-      & sizeOfClientAddrInB);
+      (int *) & sizeOfClientAddrInB/** int* */);
     std::cout << "Client connected: port:" << clientAddr.sin_port <<
       " IP addr:" << inet_ntoa(clientAddr.sin_addr) << std::endl;
   }while(1);
