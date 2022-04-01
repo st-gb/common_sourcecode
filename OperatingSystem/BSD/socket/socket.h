@@ -1,13 +1,22 @@
-#pragma once///Include guard
+#pragma once///Include guard,see http://en.wikipedia.org/wiki/Include_guard
+///TU_Bln361095MicroSoftWindows
+#include <OperatingSystem/Windows/MicroSoftWindows.h>
 
 /* Include this file in order to get OS-independent the socket(...)
  * declaration.*/
 
-///Standard C(++) header files:
-#include <inttypes.h>///uint8_t
+#ifdef __cplusplus
 
-///Files from Stefan Gebauer's "common_sourcecode" repository:
-#include <hardware/CPU/fastest_data_type.h>///typedef fastestUnsignedDataType
+/**Bln=Berlin
+ * skt=socket: http://www.allacronyms.com/socket/abbreviated
+ * Nm=name: http://www.abbreviations.com/abbreviation/name
+ * Spc=space: http://www.abbreviations.com/abbreviation/Space*/
+#define TU_Bln361095BSDsktNmSpc /*TU_Berlin361095::*/OperatingSystem::BSD::\
+sockets::
+/**Bgn=begin: http://www.allacronyms.com/begin/abbreviated */
+#define TU_Bln361095BSDsktNmSpcBgn /*namespace TU_Berlin361095{*/namespace\
+ OperatingSystem{namespace BSD{namespace sockets{
+#define TU_Bln361095BSDsktNmSpcEnd /*}*/}}}
 
 #ifdef __cplusplus
 namespace OperatingSystem{namespace BSD{namespace sockets{
@@ -17,96 +26,28 @@ enum errorCodes{connRefused, inProgress, timedOut,
 #ifdef __cplusplus
 }}}
 #endif
+#define TU_Bln361095BSDsktUse(suffix) TU_Bln361095BSDsktNmSpc suffix
+/**Def=definition: http://www.abbreviations.com/abbreviation/definition 
+ * Definition should be in namespace via TU_Bln361095BSDsktNmSpcBgn before.*/
+#define TU_Bln361095BSDsktDef(suffix) suffix
 
+#else///#ifdef __cplusplus
+/**http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html#Concatenation : "The ‘##’
+ * preprocessing operator performs token pasting. When a macro is expanded, the
+ * two tokens on either side of each ‘##’ operator are combined into a single
+ * token, which then replaces the ‘##’ and the two original tokens in the macro
+ * expansion."*/
+/**"C" language has no namespaces->Replace with empty character string.*/
+#define TU_Bln361095BSDsktNmSpc 
+#define TU_Bln361095BSDsktNmSpcBgn
+#define TU_Bln361095BSDsktNmSpcEnd
+#define TU_Bln361095BSDsktDef(suffix) TU_Bln361095BSDsktPrfx(suffix)
+#define TU_Bln361095BSDsktUse(suffix) TU_Bln361095BSDsktPrfx(suffix)
+#endif///#ifdef __cplusplus
 #ifdef __linux__
   #include <OperatingSystem/POSIX/BSD_sockets/sockets.h>
 #endif
-#ifdef _WIN32
+#ifdef TU_Bln361095MicroSoftWindows
   #include <OperatingSystem/Windows/BSD_sockets/sockets.h>///InitSocket(...)
 #endif
 
-/** For Microsoft Windows only "recv(...)" works (-1 as return value for
- *  "read(...)" ) */
-#define use_recv
-
-#ifdef __cplusplus
-namespace OperatingSystem{namespace BSD{namespace sockets{
-#else
- #ifdef _WIN32
-  typedef char * bufferType;
- #else
-  typedef void * bufferType;
- #endif
-#endif
-
-#ifdef __cplusplus
-///To enable both Windows and non-Windows version of recv(...).
-template <typename bufferType>
-#endif
-inline
-int readFromSocket(const int socketFileDesc, bufferType buffer,
-  const int numBytesToRead)
-{
-  return
-#ifdef use_recv
-  /** http://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-recv
-   * "If no error occurs, recv returns the number of bytes received and the
-   * buffer pointed to by the buf parameter will contain this data received. If
-   * the connection has been gracefully closed, the return value is zero.
-   * Otherwise, a value of SOCKET_ERROR is returned, and a specific error code
-   * can be retrieved by calling WSAGetLastError."*/
-   /** http://man7.org/linux/man-pages/man2/recv.2.html :
-    * recv(int sockfd, void *buf, size_t len, int flags); */
-    recv
-#else
-    /** https://linux.die.net/man/3/read : "Upon successful completion, read()
-     *  and pread() shall return a non-negative integer indicating the number 
-     *  of bytes actually read. Otherwise, the functions shall return -1 and 
-     *  set errno to indicate the error."*/
-    read
-#endif
-      (socketFileDesc, 
-#ifdef use_recv
- #ifdef _WIN32
-      (char*)
- #endif
-#endif
-        buffer, 
-      numBytesToRead
-#ifdef use_recv
-      ,0/**flags*/
-#endif
-      );
-}
-
-#ifdef __cplusplus
-///To enable both Windows and non-Windows version of recv(...).
-template <typename bufferType>
-#endif
-inline
-int readFromSocket2(const int socketFileDesc, bufferType buffer,
-  const int numBytesToRead, unsigned * p_numBytesRead, int * const p_readErrno)
-{
-  fastestUnsignedDataType currNumB_read = 0;
-  int i;
-  do{///Read multiple times because the (internal) buffer used by "read(...)"
-    /// may store less bytes than the ones that have been sent.
-    i = readFromSocket(socketFileDesc, ( (uint8_t *) buffer) + currNumB_read,
-      numBytesToRead);
-  
-    if(i > - 1)
-      currNumB_read += i;
-    else{
-      * p_numBytesRead = 0;
-      * p_readErrno = errno;
-      return i;
-    }
-  }while(currNumB_read < numBytesToRead);
-  * p_numBytesRead = currNumB_read;
-  * p_readErrno = errno;
-  return i;
-}
-
-#ifdef __cplusplus
-}}}///end namespaces
-#endif
