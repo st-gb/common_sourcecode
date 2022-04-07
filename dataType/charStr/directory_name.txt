@@ -1,0 +1,3 @@
+Directory name "charStr" to keep it short for including from other files etc.
+char=character: http://www.abbreviations.com/abbreviation/character
+str=string: http://www.abbreviations.com/abbreviation/string

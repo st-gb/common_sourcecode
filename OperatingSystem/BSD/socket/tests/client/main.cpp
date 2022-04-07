@@ -3,9 +3,16 @@
 #include "../../blckngCnnctErrMsg.hpp"
 #include <netinet/in.h>///struct sockaddr_in
 #include <arpa/inet.h>///inet_ntoa(...)
+///Stefan Gebauer's(TU Berlin mat.#361095) "common_sourcecode" repository files:
 #include "../../cxxopts/client/handleCmdLineArgs.hpp"
 
+/**Use C functions like "printf" to enable both C and C++ builds.*/
+
 using namespace OperatingSystem::BSD::sockets;
+/**Name it "progError" because the most values are errors? So the value names
+ * can be shorter? Or name it "exitCode" because so it is clear that it is a
+ * return code?*/
+#define progExitCode(suffix) progExitCode##suffix
 
 int main(int argCount, char * args[])
 {
@@ -18,6 +25,9 @@ int main(int argCount, char * args[])
   PrepCnnctToSrvRslt prepCnnctToSrvRslt = prepCnnctToSrv(host.c_str(), port,
     &srvAddr, AF_INET, &socketFileDesc);
   if(prepCnnctToSrvRslt == prepCnnctToSrvSucceeded)
+  /**Enclose in double ticks (") because the address string may be something
+   * like "::" (IPv6 address).*/
+  printf("Connecting to IP address:\"%s\"", srvAddrStr);
   {
     std::cout << "Connecting to " << inet_ntoa(srvAddr.sin_addr) << " port:" 
       << port << std::endl;
