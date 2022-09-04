@@ -1,6 +1,15 @@
-#pragma once///Include guard,see http://en.wikipedia.org/wiki/Include_guard
+///(c)from 2022 Stefan Gebauer,Computer Science Master(TU Berlin matr.no.361095)
+
+///Include guard,see http://en.wikipedia.org/wiki/Include_guard
+/**Non-standard include guard:supported by many, but not all industry compilers:
+ * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
+//#pragma once
+///Include guard supported by (nearly) all industry compilers:
+#ifndef TU_Berlin361095cmnSrcBSDskt_socket_h
+#define TU_Berlin361095cmnSrcBSDskt_socket_h
+
 ///TU_Bln361095MicroSoftWindows
-#include <OperatingSystem/Windows/MicroSoftWindows.h>
+#include <OperatingSystem/Windows/MicrosoftWindows.h>
 
 /* Include this file in order to get OS-independent the socket(...)
  * declaration.*/
@@ -51,3 +60,4 @@ enum errorCodes{connRefused, inProgress, timedOut,
   #include <OperatingSystem/Windows/BSD_sockets/sockets.h>///InitSocket(...)
 #endif
 
+#endif///TU_Berlin361095cmnSrcBSDskt_socket_h
