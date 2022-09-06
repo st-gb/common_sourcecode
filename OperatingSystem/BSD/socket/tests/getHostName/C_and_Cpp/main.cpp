@@ -1,0 +1,1 @@
+#include "main.c"///Compile C source code as C++/with a C++ compiler
