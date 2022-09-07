@@ -1,5 +1,10 @@
+///(c)from 2022:Stefan Gebauer,Computer Science Master(TU Berlin,matric.#361095)
+
 ///Include guard, see http://en.wikipedia.org/wiki/Include_guard
-#pragma once
+/**Non-standard include guard:supported by many, but not all industry compilers:
+ * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
+//#pragma once
+///Include guard supported by (nearly) all industry compilers:
 #ifndef TU_Berlin361095MicroSoftWindows_h
 #define TU_Berlin361095MicroSoftWindows_h
 /** http://docs.microsoft.com/en-us/cpp/preprocessor/predefined-macros :

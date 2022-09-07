@@ -10,8 +10,8 @@
 
 ///Stefan Gebauer's(TU Berlin mat.#361095) "common_sourcecode" repository files:
 ///TU_Bln361095BSDsktDef,TU_Bln361095BSDsktNmSpcBgn,TU_Bln361095BSDsktNmSpcEnd
+#include "socket.h"
 #include <compiler/force_inline.h>///TU_Bln361095frcInln
-#include <socket.h>
 
 TU_Bln361095BSDsktNmSpcBgn
 
