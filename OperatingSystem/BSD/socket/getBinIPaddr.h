@@ -113,7 +113,7 @@ TU_Bln361095frcInln int TU_Bln361095BSDsktIPv4Def(GetBinIPaddr)(
       & p_hostDataBaseEntry);
   if( ! p_hostDataBaseEntry ){
 //    stage_ = getHostDBentry;
-    * p_rsltType = TU_Bln361095BSDsktUse(_herrno);
+    * p_rsltType = TU_Bln361095BSDsktUse(_h_errno);
     return /*getHostByNameFailed*/ /*getHostByNameFailed +*/ gethostbynameRslt;
   }
   /*return*/ hostentTo_sockaddr_in(

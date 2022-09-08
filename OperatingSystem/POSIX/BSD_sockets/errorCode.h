@@ -34,6 +34,11 @@ TU_Bln361095frcInln int
   return errno;
 }
 
+TU_Bln361095frcInln int TU_Bln361095BSDsktDef(GetLastHostError)()
+{
+  return h_errno;
+}
+
 /**Force inlining to avoid multiple definitions of this function when linking->
  * compiler error.*/
 /**Unifies the error code among different implementations (Microsoft Windows,
