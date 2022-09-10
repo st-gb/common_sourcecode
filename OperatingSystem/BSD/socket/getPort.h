@@ -15,7 +15,7 @@
  * TU_Bln361095BSDsktIPv4Def,TU_Bln361095BSDsktIPv4or6Def*/
 #include <OperatingSystem/BSD/socket/socket.h>
 
-#if TU_Bln361095IPv4 || TU_Bln361095autoIPv
+#if TU_Bln361095IPv4 || TU_Bln361095autoIPv || ! defined(TU_Bln361095IPv4or6)
 #include "sockaddr_in.h"///struct sockaddr_in
 
 /**Use C++ to take advantage of function overloading: depending on the
@@ -24,21 +24,24 @@ TU_Bln361095BSDsktNmSpcBgn
 
 ///@return client? port number
 TU_Bln361095frcInln TU_Bln361095CPUuse(FaststUint) TU_Bln361095BSDsktIPv4Def(
-  getPort)(
+  GetPort)(
   const struct sockaddr_in & sockAddr)
 {
   /**See http://www.steves-internet-guide.com/tcpip-ports-sockets :
    * This is the ephemeral/client port number.*/
   return sockAddr.sin_port;
 }
+TU_Bln361095BSDsktNmSpcEnd
 #endif///IPv 4 or auto
 
-#if TU_Bln361095IPv4or6 || TU_Bln361095autoIPv
+#if TU_Bln361095IPv4or6 || TU_Bln361095autoIPv || ! defined(TU_Bln361095IPv4)
 #include "addrinfo.h"///struct addrinfo
+
+TU_Bln361095BSDsktNmSpcBgn
 
 ///@return server port number
 TU_Bln361095frcInln TU_Bln361095CPUuse(FaststUint) TU_Bln361095BSDsktIPv4or6Def(
-  getPort)(
+  GetPort)(
   const struct addrinfo * const p_addrInfo)
 {
   TU_Bln361095CPUuse(FaststUint) port;
@@ -59,8 +62,7 @@ TU_Bln361095frcInln TU_Bln361095CPUuse(FaststUint) TU_Bln361095BSDsktIPv4or6Def(
   }
   return port;
 }
-#endif///IPv 4, 6 or auto
-
 TU_Bln361095BSDsktNmSpcEnd
+#endif///IPv 4, 6 or auto
 
 #endif///#ifndef TU_Berlin361095cmnSrcBSDskt_getPort_h

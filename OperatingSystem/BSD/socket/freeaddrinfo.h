@@ -20,9 +20,19 @@
 #endif
 
 #ifdef TU_Bln361095MicrosoftWindows
+/**"freeaddrinfo" is only available if _WIN32_WINNT >= 0x0501 in <ws2tcip.h>:
+ * -in TDM-GCC (for example version 9.2) 32 bit
+ * -MinGW (for example version 5.3.0-2) 32 bit
+ * "freeaddrinfo" is available in "ws2tcip.h" of (recent) MinGW w64
+ * independent of "_WIN32_WINNT"/in any case.*/
+///MinGW 32 bit and not MinGW 64 bit<=>32 bit MinGW installation
+#if __MINGW32__ && !__MINGW64__
+  #define freeaddrinfoNotDecl
+#else
 /** http://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-freeaddrinfo
  * "Header 	ws2tcpip.h" */
   #include <ws2tcpip.h>
+#endif///32 bit MinGW
 #endif
 
 #endif///#ifndef TU_Bln361095cmnSrcBSDskt_freeaddrinfo_h
