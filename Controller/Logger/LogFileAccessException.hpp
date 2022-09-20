@@ -1,13 +1,17 @@
-/*
- * LogFileAccessException.hpp
- *
- *  Created on: 19.02.2014
- *      Author: mr.sys
- */
+/**(c)from 2014 Stefan Gebauer,Computer Science Master(TU Berlin matr.no.361095)
+*Created 19.2.2014 by Stefan Gebauer(TU Berlin matriculation number 361095)*/
 
-#ifndef LOGFILEACCESSEXCEPTION_HPP_
-#define LOGFILEACCESSEXCEPTION_HPP_
+///Include guard,see http://en.wikipedia.org/wiki/Include_guard
+#ifdef TU_Bln361095usePrgmInclGrd
+/**Non-standard include guard:supported by many, but not all industry compilers:
+ * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
+#pragma once
+#endif
+///Include guard supported by (nearly) all compilers:
+#ifndef TU_Bln361095cmnSrcLoggerLogFileAccessException_hpp
+#define TU_Bln361095cmnSrcLoggerLogFileAccessException_hpp
 
+///Stefan Gebauer's(TU Berlin matr.#361095)"common_sourcecode" repository files:
 //::GetErrorMessageFromLastErrorCode()
 #include <OperatingSystem/GetErrorMessageFromErrorCode.h>
 
@@ -15,7 +19,7 @@
 //#include <InputOutput/FileAccessException.hpp> //base class
 #include <FileSystem/File/FileException.hpp> //base class
 #include <FileSystem/GetAbsolutePath.hpp> //GetAbsolutePathA
-#include <Controller/character_string/stdtstr.hpp>
+#include <dataType/charStr/stdtstr.hpp>
 
 class LogFileAccessException
   : public /*std::exception*/ /*FileAccessException*/ FileException
@@ -84,4 +88,4 @@ public:
   }
 };
 
-#endif /* LOGFILEACCESSEXCEPTION_HPP_ */
+#endif///TU_Bln361095cmnSrcLoggerLogFileAccessException_hpp

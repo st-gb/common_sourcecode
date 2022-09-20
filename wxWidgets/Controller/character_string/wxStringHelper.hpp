@@ -1,17 +1,24 @@
-/* 
- * File:   wxStringHelper.h
- * Author: sgebauer
- *
- * Created on 15. November 2009, 18:53
- */
+/**(c)from 2009 Stefan Gebauer,Computer Science Master(TU Berlin matr.no.361095)
+*Created 15Nov2009,18:53 by Stefan Gebauer(TU Berlin matriculat.number 361095)*/
 
-#ifndef _WXSTRINGHELPER_H
-#define	_WXSTRINGHELPER_H
+///Include guard,see http://en.wikipedia.org/wiki/Include_guard
+#ifdef TU_Bln361095usePrgmInclGrd
+/**Non-standard include guard:supported by many, but not all industry compilers:
+ * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
+#pragma once
+#endif
+///Include guard supported by (nearly) all compilers:
+#ifndef TU_Bln361095cmnSrcWxStringHelper_h
+#define TU_Bln361095cmnSrcWxStringHelper_h
 
+///Standard C(++) header files:
 #include <string> //class std::string
-#include <wx/string.h> //wxString
-#include <Controller/character_string/stdtstr.hpp> //class std::tstring
-//#include <winnt.h> //LPCSTR
+
+///wxWidgets header files:
+#include <wx/string.h>///class wxString
+
+///Stefan Gebauer's(TU Berlin matr.#361095)"common_sourcecode" repository files:
+#include <dataType/charStr/stdtstr.hpp>///class std::tstring
 #include <preprocessor_macros/string_typedefs.h> //LPCSTR
 
 namespace wxWidgets
@@ -78,5 +85,4 @@ namespace wxWidgets
   }
 }
 
-#endif	/* _WXSTRINGHELPER_H */
-
+#endif///#ifndef TU_Bln361095cmnSrcWxStringHelper_h

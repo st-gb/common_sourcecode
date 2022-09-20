@@ -1,13 +1,24 @@
-#pragma once //Include guard
+/**(c)from 2011 Stefan Gebauer,Computer Science Master(TU Berlin matr.no.361095)
+*Created ca.25.9.2011 by Stefan Gebauer(TU Berlin matriculation number 361095)*/
 
-#ifndef CONVERTFROMANDTOSTDSTRING_HPP_ //Include guard
-  #define CONVERTFROMANDTOSTDSTRING_HPP_
+///Include guard,see http://en.wikipedia.org/wiki/Include_guard
+#ifdef TU_Bln361095usePrgmInclGrd
+/**Non-standard include guard:supported by many, but not all industry compilers:
+ * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
+#pragma once
+#endif
+///Include guard supported by (nearly) all compilers:
+#ifndef TU_Bln361095cmnSrcConvertFromAndToStdString_hpp
+#define TU_Bln361095cmnSrcConvertFromAndToStdString_hpp
 
 //idea from http://www.codeguru.com/forum/showthread.php?t=231056 /
 //  http://www.cplusplus.com/forum/general/12754/  "computerquip" Jul 18, 2009 at 4:22am
+///Standard C(++) header files:
 #include <string> //class std::string
 #include <sstream> //for class std::istringstream
 //#include <iostream>
+
+///Stefan Gebauer's(TU Berlin matr.#361095)"common_sourcecode" repository files:
 #include "stdtstr.hpp" //GetStdWstring
 
 //  #include <exception> //for class std::exception
@@ -42,6 +53,7 @@
 
 #include "ConvertStdStringToTypename.hpp"
 
+namespace TU_Bln361095{namespace charStr{
 //Another idea see also http://www.codeguru.com/forum/showthread.php?t=231056
 // for a version that can pass a " std::ios_base" function
 // (can format as hex digit etc.)
@@ -113,4 +125,6 @@ void ConvertStdTStringToTypename(
   //  //str ;
   //  pv ;
 }
-#endif //CONVERTFROMANDTOSTDSTRING_HPP_
+}}///End namespaces
+
+#endif///#ifndef TU_Bln361095cmnSrcConvertFromAndToStdString_hpp

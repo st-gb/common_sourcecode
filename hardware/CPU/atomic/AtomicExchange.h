@@ -1,7 +1,24 @@
-#pragma once
+///(c)from 2014 Stefan Gebauer,Computer Science Master(TU Berlin matr.no.361095)
+///Created ca.05Aug2014 by Stefan Gebauer(TU Berlin matriculation number 361095)
 
-#ifdef _WIN32
-  #include <windows.h> //InterlockedExchange
+///Include guard,see http://en.wikipedia.org/wiki/Include_guard
+#ifdef TU_Bln361095usePrgmInclGrd
+/**Non-standard include guard:supported by many, but not all industry compilers:
+ * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
+#pragma once
+#endif
+///Include guard supported by (nearly) all compilers:
+#ifndef TU_Bln361095cmnSrcCPUatomicExchg_h
+#define TU_Bln361095cmnSrcCPUatomicExchg_h
+
+///Stefan Gebauer's(TU Berlin matr.#361095)"common_sourcecode" repository files:
+///TU_Bln361095MicroSoftWindows
+#include <OperatingSystem/Windows/MicrosoftWindows.h>
+
+#ifdef TU_Bln361095MicroSoftWindows
+/**http://learn.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-interlockedexchange
+ * :"Header winnt.h (include Windows.h)"*/
+  #include <windows.h>///InterlockedExchange(...)
 #endif
 
 /** Compare-And-Swap operations have max. pointer size (aligned at multiple of
@@ -10,10 +27,16 @@
  * int has at least 2 or 4 byte, long
  * "The type int should be the integer type that the target processor is most
  *  efficiently working with." */
+///Exch=EXCHange:http://www.allacronyms.com/exchange/abbreviated
 typedef long AtomicExchType;
 
-/** Writes value @param val into address of @param Target as 1 atomic operation. 
-    -> thread-safe */
+///Xchg=eXCHanGe:http://www.allacronyms.com/exchange/abbreviated
+///Typ=TYPe:http://www.abbreviations.com/abbreviation/Type
+typedef long TU_Bln361095AtomicXchgTyp;
+
+/**@brief Writes value @param val into address of @see Target as 1 atomic
+ *  operation->thread-safe
+ * @param Target may be 32 bit on MSVC Windows: */
 inline long AtomicExchange(
   /** https://gcc.gnu.org/onlinedocs/gcc-4.1.1/gcc/Atomic-Builtins.html :
    * "The definition given in the Intel documentation allows only for the use of
@@ -22,7 +45,7 @@ inline long AtomicExchange(
    * in length." */
   long * Target, long val)
 {
-#ifdef _WIN32
+#ifdef TU_Bln361095MicroSoftWindows
   /** http://msdn.microsoft.com/en-us/library/windows/desktop/ms683590%28v=vs.85%29.aspx
    * "The function returns the initial value of the Target parameter." 
    * "This function generates a full memory barrier (or fence) to ensure that 
@@ -48,3 +71,5 @@ inline long AtomicExchange(
 #endif
 #endif
 }
+
+#endif///#ifndef TU_Bln361095cmnSrcCPUatomicExchg_h

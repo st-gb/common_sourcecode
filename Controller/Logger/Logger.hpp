@@ -1,17 +1,21 @@
-/* Do not remove this header/ copyright information.
- *
- * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
- * ("Trilobyte SE") 2010-at least 2012.
- * You are allowed to modify and use the source code from Trilobyte SE for free
- * if you are not making profit directly or indirectly with it or its adaption.
- * Else you may contact Trilobyte SE. */
-#ifndef LOGGER_HPP
-  #define LOGGER_HPP
+/**(c)from 2010 Stefan Gebauer,Computer Science Master(TU Berlin matr.no.361095)
+*Created ca.19Aug2010 18:37 by Stefan Gebauer,TU Berlin matricul.number 361095*/
+
+///Include guard,see http://en.wikipedia.org/wiki/Include_guard
+#ifdef TU_Bln361095usePrgmInclGrd
+/**Non-standard include guard:supported by many, but not all industry compilers:
+ * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
+#pragma once
+#endif
+///Include guard supported by (nearly) all compilers:
+#ifndef TU_Bln361095cmnSrcLogger_hpp
+#define TU_Bln361095cmnSrcLogger_hpp
 
 //  #define COMPILE_LOGGER_MULTITHREAD_SAFE
 //  #define COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
   #define COMPILE_LOGGER_WITH_TSTRING_SUPPORT
 
+///Standard C++ header files:
   #include <fstream> //for class std::ofstream ;
   //#include <strstream> //for class std::ostrstream
   #include <set> //for class std::set
@@ -26,7 +30,7 @@
 #endif //#ifndef COMPILE_LOGGER_MULTITHREAD_SAFE
 
   //for std::tstring
-  #include <Controller/character_string/stdtstr.hpp>
+  #include <dataType/charStr/stdtstr.hpp>
   #include <compiler/GCC/enable_disable_warning.h> //GCC_DIAG_OFF(...)
 
 //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
@@ -426,4 +430,4 @@
     }
   };
 
-#endif //LOGGER_HPP
+#endif///#ifndef TU_Bln361095cmnSrcLogger_hpp
