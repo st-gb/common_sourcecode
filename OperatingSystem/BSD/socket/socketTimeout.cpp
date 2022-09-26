@@ -1,12 +1,13 @@
+///(c)from 2020:Stefan Gebauer,Computer Science Master(TU Berlin,matric.#361095)
+///Created ca.01May2020 by Stefan Gebauer(TU Berlin matriculation number 361095)
+
 #include <unistd.h>///socklen_t
 
+///Stefan Gebauer's(TU Berlin matr.#361095)"common_sourcecode" repository files:
 #include "socket.h"///SOL_SOCKET,setsockopt(...),getsockopt(...)
 #include "socketTimeout.h"///enum GetSocketTimeoutRslt
 
-#ifdef __cplusplus///enable both C and C++ 
-namespace OperatingSystem{namespace BSD{namespace sockets{
-//using namespace OperatingSystem::BSD::sockets;
-#endif
+TU_Bln361095BSDsktNmSpcBgn
 
 int setSocketTimeout(
   const int socketFileDesc,
@@ -98,25 +99,39 @@ enum GetSocketTimeoutRslt GetSocketTimeoutInS(const int socketFileDesc,
   else
     if(sndToutRetVal == -1)
       getSocketTimeoutRslt = getSndTimeoutError;
-  if(getSocketTimeoutRslt == success){
-	///If *receive* timeout time < *send* timeout time.
-    if( ( rcvSocketTimeout.tv_sec < sendSocketTimeout.tv_sec ||
-       (rcvSocketTimeout.tv_sec == sendSocketTimeout.tv_sec &&
-       rcvSocketTimeout.tv_usec < sendSocketTimeout.tv_usec) ) &&
-    /** https://linux.die.net/man/7/socket :"If the timeout is set to zero (the
-      * default) then the operation will never timeout."*/
-       ///Linux Mint:If sec and usec are 0 then timeout after ca. 90 s.
-       rcvSocketTimeout.tv_sec != 0 && rcvSocketTimeout.tv_usec != 0)
+  if(getSocketTimeoutRslt == success)
+  {
+    if(/** http://linux.die.net/man/7/socket :"If the timeout is set to zero
+      * (the default) then the operation will never timeout."
+      * <=>If not default timeout.
+      * Linux Mint:If "tv_sec" and "tv_usec" = 0 then timeout after ca. 90 s.*/
+      rcvSocketTimeout.tv_sec != 0 && rcvSocketTimeout.tv_usec != 0)
     {
-      *p_timeoutInS = rcvSocketTimeout.tv_sec;
-      *p_timeoutInS += (double) rcvSocketTimeout.tv_usec/1000000.0;
+      ///If *receive* timeout time < *send* timeout time.
+      if(rcvSocketTimeout.tv_sec < sendSocketTimeout.tv_sec ||
+         (rcvSocketTimeout.tv_sec == sendSocketTimeout.tv_sec &&
+         rcvSocketTimeout.tv_usec < sendSocketTimeout.tv_usec)
+        )
+        /**=>receive timeout < send timeout */
+        assign(p_timeoutInS, &rcvSocketTimeout);
+      else
+        /**<=>receive timeout >= send timeout if send timeout:
+         * - <> 0 or
+         * - == 0 AND receive timeout >= real send timeout (ca. 90 s)*/
+        assign(p_timeoutInS, &sendSocketTimeout);
     }
+    /** http://linux.die.net/man/7/socket :"If the timeout is set to zero
+     * (the default) then the operation will never timeout."
+     * <=>If default timeout.*/
+    else
+/**Send timeout <= receive timeout only if default receive timeout <> endless
+ * and send timeout <= default receive timeout*/
+      assign(p_timeoutInS, &sendSocketTimeout);
   }else if(getSocketTimeoutRslt == getRcvTimeoutError)
     assign(p_timeoutInS, &sendSocketTimeout);
-  }else if(getSocketTimeoutRslt == getSndTimeoutError)
+  else if(getSocketTimeoutRslt == getSndTimeoutError)
     assign(p_timeoutInS, &rcvSocketTimeout);
   return getSocketTimeoutRslt;
 }
-#ifdef __cplusplus///enable both C and C++ 
-}}}///end namespaces
-#endif
+
+TU_Bln361095BSDsktNmSpcEnd

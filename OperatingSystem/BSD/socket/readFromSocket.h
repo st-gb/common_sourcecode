@@ -1,18 +1,33 @@
-///Include guard, see http://en.wikipedia.org/wiki/Include_guard
-#pragma once
-#ifndef TU_Bln361095BSDsktReadFromSocket_h
-#define TU_Bln361095BSDsktReadFromSocket_h
+///(c)from 2022:Stefan Gebauer,Computer Science Master(TU Berlin,matric.#361095)
+///Created ca.02Apr2022 by Stefan Gebauer(TU Berlin matriculation number 361095)
+
+///Include guard,see http://en.wikipedia.org/wiki/Include_guard
+/**Bln=BerLiN
+ * Prgm=PRaGMa
+ * Incl=INCLude:http://www.abbreviations.com/abbreviation/include
+ * Grd=GuaRD:http://www.abbreviations.com/abbreviation/Guard*/
+#ifdef TU_Bln361095usePrgmInclGrd
+/**Non-standard include guard:supported by many, but not all industry compilers:
+ * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
+  #pragma once
+#else
+///Include guard supported by (nearly) all industry compilers:
+  #ifndef TU_Bln361095BSDsktReadFromSocket_h
+  #define TU_Bln361095BSDsktReadFromSocket_h
+#endif
 
 ///Standard C(++) header files:
 #include <inttypes.h>///uint8_t
 
-///Stefan Gebauer's(TU Berlin mat.#361095) "common_sourcecode" repository files:
+///Stefan Gebauer's(TU Berlin matr.#361095)"common_sourcecode" repository files:
 #include "recv_function.h"///recv(...)
-#include <compiler/force_inline.h>///"force_inline" preprocessor macro
+#include <compiler/force_inline.h>///"TU_Bln361095frcInln" preprocessor macro
 #include <hardware/CPU/fastest_data_type.h>///typedef fastestUnsignedDataType
 ///"TU_Bln361095MicrosoftWindows" preprocessor macro
 #include <OperatingSystem/Windows/MicrosoftWindows.h>
-#include "socket.h"///TU_Bln361095BSDsktNmSpcBgn
+///includes header files for "errno" and "WSAGetLastError()"
+#include "GetLastError.h"
+#include "socket.h"///TU_Bln361095BSDsktNmSpcBgn,TU_Bln361095BSDsktNmSpcEnd
 
 /** For Microsoft Windows only "recv(...)" works (-1 as return value for
  *  "read(...)" ) */
@@ -22,7 +37,11 @@
  * : In contrast to "recv(...)" "_read(...)" sets only a little error codes:
  *  sets "errno" to EBADF, EINVAL.
  *  => So use recv(...) at least under MicroSoft Windows.*/
-#define use_recv
+#define TU_Bln361095use_recv///Use "TU_Bln361095" prefix to ensure uniqueness.
+
+#if defined TU_Bln361095MicroSoftWindows && ! defined TU_Bln361095use_recv
+  #include <errno.h>///errno
+#endif
 
 #ifdef __cplusplus
 TU_Bln361095BSDsktNmSpcBgn
@@ -40,18 +59,24 @@ TU_Bln361095BSDsktNmSpcBgn
  #endif
 #endif
 
-/** @return > 0 on success:the number of received bytes
+/**@brief read from socket identified by {@link socketFileDesc}
+ * @param socketFileDesc socket file descriptor. Should have been created by a
+ *  call to socket(...) before, for example (indirectly) via
+ *  "TU_Bln361095BSDsktUse(createSkt)".
+ * @return > 0 on success:the number of received bytes
  *          < 0 on error */
 #ifdef __cplusplus
 ///To enable both Windows and non-Windows version of recv(...).
 template <typename bufferType>
 #endif
-force_inline///Make inline because only 1 function call.
-int readFromSocket(const int socketFileDesc, bufferType buffer,
+TU_Bln361095frcInln///Make inline because only 1 function call.
+int TU_Bln361095BSDsktDef(readFromSkt)(
+  const int socketFileDesc,
+  bufferType buffer,
   const int numBytesToRead)
 {
   return
-#ifdef use_recv
+#ifdef TU_Bln361095use_recv
   /** http://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-recv
    * "If no error occurs, recv returns the number of bytes received and the
    * buffer pointed to by the buf parameter will contain this data received. If
@@ -69,30 +94,34 @@ int readFromSocket(const int socketFileDesc, bufferType buffer,
     read
 #endif
       (socketFileDesc,
-#if defined TU_Bln361095MicroSoftWindows && defined use_recv
+#if defined TU_Bln361095MicroSoftWindows && defined TU_Bln361095use_recv
       (char*)
 #endif
       buffer,
       numBytesToRead
-#ifdef use_recv///Parameter only for recv(...)
+#ifdef TU_Bln361095use_recv///Parameter only for recv(...)
       ,0/**flags*/
 #endif
       );
 }
 
+/**@brief read from socket identified by {@link socketFileDesc}*/
 #ifdef __cplusplus
 ///To enable both Windows and non-Windows version of recv(...).
 template <typename bufferType>
 #endif
 inline
-int readFromSocket2(const int socketFileDesc, bufferType buffer,
+int ///skt=socket
+TU_Bln361095BSDsktDef(readFromSkt2)(const int socketFileDesc, bufferType buffer,
   const int numBytesToRead, unsigned * p_numBytesRead, int * const p_readError)
 {
   fastestUnsignedDataType currNumB_read = 0;
   int i;
   do{///Read multiple times because the (internal) buffer used by "read(...)"
     /// may store less bytes than the ones that have been sent.
-    i = readFromSocket(socketFileDesc, ( (uint8_t *) buffer) + currNumB_read,
+    i = TU_Bln361095BSDsktUse(readFromSkt)(
+      socketFileDesc,
+      ((uint8_t *) buffer) + currNumB_read,
       numBytesToRead);
   
     if(i > - 1)
@@ -100,7 +129,7 @@ int readFromSocket2(const int socketFileDesc, bufferType buffer,
     else
     {
       * p_numBytesRead = 0;
- #if defined TU_Bln361095MicroSoftWindows && defined use_recv
+ #if defined TU_Bln361095MicroSoftWindows && defined TU_Bln361095use_recv
   /**Microsoft Windows' recv(...) uses "WSAGetLastError()" :
    * http://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/read
    *  "If no error occurs, recv returns the number of bytes received [...]
@@ -117,14 +146,15 @@ int readFromSocket2(const int socketFileDesc, bufferType buffer,
    * "set errno to [EAGAIN] or [EWOULDBLOCK]", [...] */
       * p_readError = errno;
  #endif
-      return i;
+      break;
     }
   }while(currNumB_read < numBytesToRead);
   * p_numBytesRead = currNumB_read;
-  * p_readErrno = errno;
   return i;
 }
 
 TU_Bln361095BSDsktNmSpcEnd
 
+#ifndef TU_Bln361095usePrgmInclGrd
 #endif///TU_Bln361095BSDsktReadFromSocket_h
+#endif
