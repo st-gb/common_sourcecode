@@ -119,7 +119,7 @@ I_LogFormatter * FormattedLogEntryProcessor::CreateFormatter(//BYTE type = 1
     m_p_log_formatter = new HTMLlogFormatter(//m_p_std_ofstream
       this);
   else if(strcmp("log4j", c_p_chType) == 0)
-    m_p_log_formatter = new CSS::LogFormatter::Log4jFormatter(//m_p_std_ofstream
+    m_p_log_formatter = new TU_Bln361095::Logger::Log4jFormatter(//m_p_std_ofstream
       this);
   else
     m_p_log_formatter = new I_LogFormatter(//m_p_std_ofstream

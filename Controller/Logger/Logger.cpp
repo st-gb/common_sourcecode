@@ -13,7 +13,6 @@
 #include "LogLevel.hpp" //LogLevel::MessageType
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 //#include "Appender/AppendingFileOutput.hpp"
-#include "Formatter/Log4jFormatter.hpp"
 
 //#if DEFINED USE_STD_OFSTREAM_WRITER
 #if defined(_WIN32) && !defined(USE_STD_OFSTREAM_WRITER)
@@ -31,7 +30,6 @@
 #include <Controller/Logger/Appender/RollingFileOutput.hpp>
 #include "Appender/RollingFileOutput.hpp"
 
-using namespace CSS::LogFormatter;
 //If MS compiler etc.
 #if defined(_MSC_VER) || defined(__MINGW32__) || defined(__CYGWIN__)
   //#include <Windows.h> //for SYSTEMTIME
