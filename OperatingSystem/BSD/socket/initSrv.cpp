@@ -9,17 +9,33 @@
 
 using namespace OperatingSystem::BSD::sockets;
 
-namespace OperatingSystem{ namespace BSD { namespace sockets
-{
-///Can be used for TCP and UDP.
-enum InitSrvRslt initSrv(
+TU_Bln361095BSDsktNmSpcBgn
+
+/** Initializes BSD sockets server. Can be used for TCP and UDP.
+ *  1.creates socket
+ *  2.assigns socket address to socket
+ *  "Init"=Initialize:http://www.abbreviations.com/abbreviation/Initialize 
+ *  "Srv"=server:http://www.abbreviations.com/abbreviation/server*/
+enum TU_Bln361095BSDsktInitSrvUse(Rslt) TU_Bln361095BSDsktIPv4Def(InitSrv)(
   struct sockaddr_in & srvAddr,
   const int port,
   const int protoFam,///e.g. AF_INIT for IPv4
   const int type,///e.g. SOCK_STREAM for TCP
   int & socketFileDesc)
 {
-  enum InitSrvRslt retCode;
+  enum TU_Bln361095BSDsktInitSrvUse(Rslt) retCode;
+  
+//  int errorCode;
+  * p_sktFileDesc = OperatingSystem::BSD::sockets::CreateSkt(
+    addrFam,
+    socketType,
+    0/**protocol*/,
+    p_errorCode);
+  
+  if(* p_sktFileDesc == -1){
+    retCode = TU_Bln361095BSDsktInitSrvUse(createSktFailed);
+    return retCode;
+  }
   //Code adapted from http://www.linuxhowtos.org/data/6/server.c
   memset(&srvAddr, 0, sizeof(srvAddr)); /* Clear structure */
 
@@ -33,14 +49,6 @@ enum InitSrvRslt initSrv(
   srvAddr.sin_addr.s_addr = INADDR_ANY;///Accept any incoming messages
   srvAddr.sin_port = htons(port);
 
-  socketFileDesc = GetSocketFileDesc(
-    protoFam,
-    type,
-    0/**protocol*/);
-
-  if(socketFileDesc == -1)
-    retCode = createSocketFailed;
-  else{
   /** see/from 
   * http://stackoverflow.com/questions/10619952/how-to-completely-destroy-a-socket-connection-in-c
   *  : Avoid bind problems (errno = EADDRINUSE) */
@@ -55,9 +63,9 @@ enum InitSrvRslt initSrv(
   *  the file descriptor sockfd."
   * "On error, -1 is returned, and errno is set appropriately." */
   if(bind(socketFileDesc, (struct sockaddr *) & srvAddr, sizeof(srvAddr) ) < 0)
-    retCode = failedToBindToSocket;
+    retCode = TU_Bln361095BSDsktInitSrvUse(failedToBindToSkt);
   else
-    retCode = boundToSocket;
+    retCode = TU_Bln361095BSDsktInitSrvUse(boundToSkt);
   return retCode;
   }
 }

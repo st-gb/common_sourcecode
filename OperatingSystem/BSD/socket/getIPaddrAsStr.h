@@ -1,12 +1,12 @@
 ///(c)from 2022 Stefan Gebauer,Computer Science Master(TU Berlin matr.no.361095)
 
 ///Include guard,see http://en.wikipedia.org/wiki/Include_guard
+#ifdef TU_Bln361095usePrgmInclGrd
 /**Non-standard include guard:supported by many, but not all industry compilers:
  * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
-#ifndef TU_Bln361095usePrgmInclGuard
   #pragma once
 #endif
-#if ! defined TU_Bln361095usePrgmInclGuard &&\
+#if defined TU_Bln361095usePrgmInclGrd ||\
 /**Include guard supported by (nearly) all industry compilers:*/\
   ! defined TU_Bln361095cmnSrcBSDskt_getIPaddrAsStr_h
   #define TU_Bln361095cmnSrcBSDskt_getIPaddrAsStr_h
@@ -111,8 +111,10 @@ http://learn.microsoft.com/en-us/windows/win32/api/wsipv6ok/nf-wsipv6ok-inet_nto
     /**struct in_addr in*/ ///"in_addr": 4 byte
      p_sockaddr_in->sin_addr
      );
-  if( p_chInetStdDotNotatedAddr == inet_ntoaFailureRetCode)
-    return TU_Bln361095BSDsktGetIPaddrAsStrUse(inet_ntoaFailed)
+  if( p_chInetStdDotNotatedAddr == /**Needs to be casted to avoid g++ error
+    * "ISO C++ forbids comparison between pointer and integer [-fpermissive]"*/
+    (char *) inet_ntoaFailureRetCode)
+    return TU_Bln361095BSDsktGetIPaddrAsStrUse(inet_ntoaFailed);
   if(numAddrCharStrChars <= strlen(p_chInetStdDotNotatedAddr) )
     return TU_Bln361095BSDsktGetIPaddrAsStrUse(InsuffBuf);
 /**

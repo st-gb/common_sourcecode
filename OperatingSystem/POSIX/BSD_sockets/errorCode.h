@@ -3,23 +3,24 @@
  * http://linux.die.net/man/3/errno */
 
 ///Include guard, see http://en.wikipedia.org/wiki/Include_guard
+#ifndef TU_Bln361095usePrgmInclGrd
 /**Non-standard include guard:supported by many, but not all industry compilers:
  * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
-//#pragma once
-///Include guard supported by (nearly) all industry compilers:
-#ifndef TU_Bln361095cmnSrcOpSysPOSIX_BSDskt_errorCode_h
-#define TU_Bln361095cmnSrcOpSysPOSIX_BSDskt_errorCode_h
+  #pragma once
+#endif
+#if defined TU_Bln361095usePrgmInclGrd ||\
+/**Include guard supported by (nearly) all industry compilers:*/\
+  ! defined TU_Bln361095cmnSrcOpSysPOSIX_BSDskt_errorCode_h
+  #define TU_Bln361095cmnSrcOpSysPOSIX_BSDskt_errorCode_h
 
 ///Standard C header files:
-#include <errno.h>///errno
-
-#include <netdb.h>///gai_strerror(...), hstrerror(...)
+#include <errno.h>///errno, ECONNREFUSED etc.
 
 ///Stefan Gebauer's(TU Berlin mat.#361095) "common_sourcecode" repository files:
 #include <compiler/force_inline.h>///TU_Bln361095frcInln
 ///TU_Bln361095BSDsktNmSpcBgn,TU_Bln361095BSDsktNmSpcEnd
 #include <OperatingSystem/BSD/socket/socket.h>
-//enum TU_Bln361095BSDsktUse(errorCodes)
+//enum TU_Bln361095BSDsktUse(ErrorCodes)
 #include <OperatingSystem/BSD/socket/GetLastError.h>
 
 TU_Bln361095BSDsktNmSpcBgn

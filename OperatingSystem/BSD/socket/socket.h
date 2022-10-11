@@ -5,7 +5,8 @@
  * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
 #ifdef TU_Berlin361095usePrgmInclGrd
   #pragma once
-#if ! defined TU_Berlin361095usePrgmInclGrd && \
+#endif
+#if defined TU_Berlin361095usePrgmInclGrd ||\
   /**Include guard supported by (nearly) all industry compilers:*/\
   ! defined TU_Berlin361095cmnSrcBSDskt_socket_h
   #define TU_Berlin361095cmnSrcBSDskt_socket_h
@@ -41,7 +42,7 @@ sockets::
  #define TU_Bln361095BSDsktIPv4Use(suffix) TU_Bln361095BSDsktUse(suffix)
  ///Don't need to add "IPv4or6" because C++ can do function overloading.
  #define TU_Bln361095BSDsktIPv4or6Def(suffix)\
-  TU_Bln361095BSDsktPrfx(suffix)
+  TU_Bln361095BSDsktDef(suffix)
 
 #else///#ifdef __cplusplus
 /**http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html#Concatenation : "The ‘##’

@@ -1,7 +1,18 @@
-#pragma once///Include guard.
+///(c)from 2020 Stefan Gebauer,Computer Science Master(TU Berlin matr.no.361095)
+
+///Include guard,see http://en.wikipedia.org/wiki/Include_guard
+#ifdef TU_Bln361095usePrgmInclGrd
+/**Non-standard include guard:supported by many, but not all industry compilers:
+ * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
+  #pragma once
+#endif
+#if defined TU_Bln361095usePrgmInclGrd ||\
+/**Include guard supported by (nearly) all industry compilers:*/\
+  ! defined TU_Bln361095cmnSrcBSDskt_createSkt_h
+  #define TU_Bln361095cmnSrcBSDskt_createSkt_h
 
 ///Stefan Gebauer's(TU Berlin mat.#361095) "common_sourcecode" repository files:
-#include <compiler/force_inline.h>///"force_inline" preprocessor macro
+#include <compiler/force_inline.h>///"TU_Bln361095frcInln" preprocessor macro
 ///TU_Bln361095MicrosoftWindows
 #include <OperatingSystem/Windows/MicrosoftWindows.h>
 ///TU_Bln361095BSDsktDef,TU_Bln361095BSDsktNmSpcBgn,TU_Bln361095BSDsktNmSpcEnd
@@ -24,7 +35,7 @@ http://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-wsagetlaste
  *  and strerror_l(...) for Linux:
  *  http://man7.org/linux/man-pages/man3/strerror.3.html */
 ///Make inline because only 1 function call inside->no size benefit.
-force_inline int TU_Bln361095BSDsktDef(GetSocketFileDesc)(
+TU_Bln361095frcInln int TU_Bln361095BSDsktDef(CreateSkt)(
   const int protoFam,
   const int socketType,
   const int proto,
@@ -33,7 +44,12 @@ force_inline int TU_Bln361095BSDsktDef(GetSocketFileDesc)(
   /** http://pubs.opengroup.org/onlinepubs/009695399/functions/socket.html :
    * "Upon successful completion, socket() shall return a non-negative integer, 
    * the socket file descriptor." */
-  /*const int*/ * p_socketFileDesc = socket(
+  const int sktFileDesc =
+/** http://pubs.opengroup.org/onlinepubs/009695399/functions/socket.html :"The
+ * socket() function shall create an unbound socket in a communications domain,
+ * and return a file descriptor that can be used in later function calls that
+ * operate on sockets."*/
+    socket(
     /**http://man7.org/linux/man-pages/man2/socket.2.html:
     * AF_INET for IPv4 Internet protocols */protoFam,
     socketType,///e.g. UDP oder TCP
@@ -60,3 +76,5 @@ force_inline int TU_Bln361095BSDsktDef(GetSocketFileDesc)(
 }
 
 TU_Bln361095BSDsktNmSpcEnd
+
+#endif///! defined TU_Bln361095cmnSrcBSDskt_createSkt_h
