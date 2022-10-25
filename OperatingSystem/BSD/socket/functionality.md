@@ -1,20 +1,51 @@
 # Functionality of this Repository's BSD sockets Files
 
-Ease of use of/unified ([cross-Operating System](
+Ease of use of/unified ([Cross-Operating System](
 http://en.wikipedia.org/wiki/Cross-platform_software#Software), currently
 [Linux](
 http://en.wikipedia.org/wiki/Linux)/[POSIX](http://en.wikipedia.org/wiki/POSIX)
 and [Microsoft Windows](http://en.wikipedia.org/wiki/Microsoft_Windows)) access
-to [BSD sockets](http://en.wikipedia.org/wiki/Berkeley_sockets) functions. If
-these files are included into a [C++](http://en.wikipedia.org/wiki/C%2B%2B)
-source file then often the file content (functions, enums, ...) is enclosed into
-the [namespace](http://en.wikipedia.org/wiki/Namespace#Use_in_common_languages) "OperatingSystem::BSD::sockets" as [conditional compilation](
-http://en.wikipedia.org/wiki/Conditional_compilation) ("#ifdef __cplusplus").\
-(State: 08 Aug 2021):
+to [BSD sockets](http://en.wikipedia.org/wiki/Berkeley_sockets) functions.
+
+State: Oct 2022:
+
+- both [Internet Protocol version **4**](
+  http://en.wikipedia.org/wiki/IPv4) and [Internet Protocol version **6**](
+  http://en.wikipedia.org/wiki/IPv6) by using macros like:
+  - TU\_Bln361095BSDsktIPv**4**Def(...), TU\_Bln361095BSDsktIPv**4or6**Def(...)
+  - TU_Bln361095BSDsktIPvUse(...)
+  - automatic selection of Internet Protocol version 4 or 4 and 6 functions if
+    using "sktAddrType" (from file system file "sktAddrType.h") and including
+    BSD socket header files with IP version 4 and of IP version 4 or 6 versions
+    of this repository above of/before including file system file
+    "sktAddrType.h". This is especially useful for MinGW where 32 bit
+    (tested/verfified: until ca. version 9.2) version does not fully support IP
+    version 6.
+- For both C and C++
+  - => for the **C** programming language 2 ways are possible, here function
+    GetBinIPaddr(...) as example:
+    - with [preprocessor](http://en.wikipedia.org/wiki/Preprocessor) macro:
+      TU_Bln361095BSDsktIPvUse(GetBinIPaddr)(...)
+    - as expanded/substituted preprocessor macro:
+      TU_Bln361095BSDsktGetBinIPaddr(...)
+  - => for **C++** 2 ways are possible:
+    - with preprocessor macro: TU_Bln361095BSDsktIPvUse(GetBinIPaddr)(...)
+    - as expanded/substituted preprocessor macro (usually with namespace(s)):
+      ~ TU_Bln361095::cmnSrc::BSD::sockets::getBinIPaddr(...)
+    - If these files are included into a [C++](
+      http://en.wikipedia.org/wiki/C%2B%2B) source file then often the file
+      content (functions, enums, ...) is enclosed into the [namespace](
+      http://en.wikipedia.org/wiki/Namespace#Use_in_common_languages)
+      "TU\_Bln361095BSDsktNmSpc", which is replaced by
+      "\[TU_Bln361095::\]\[cmnSrc::\]OperatingSystem::BSD::sockets" as
+      [conditional compilation](
+      http://en.wikipedia.org/wiki/Conditional_compilation)
+      ("#ifdef __cplusplus").
+- often [header-only](http://en.wikipedia.org/wiki/Header-only) for easier
+  linking (no need to specify C or C++ source files to the linker)
 
 - [/OperatingSystem/BSD/socket/](/OperatingSystem/BSD/socket) :
-  - [**blckngCnnctErrMsg**.hpp](
-    OperatingSystem/BSD/socket/blckngCnnctErrMsg.hpp) :
+  - [**blckngCnnctErrMsg**.hpp](blckngCnnctErrMsg.hpp) :
     - inline std::string **GetPossibleCause**_inl(const enum errorCodes errCode,
 const int port) :\
       Gets description for possible error cause for errors [connecting (via TCP)
@@ -22,7 +53,7 @@ const int port) :\
       http://en.wikipedia.org/wiki/Berkeley_sockets#Client) in [blocking mode](
     http://en.wikipedia.org/wiki/Berkeley_sockets#Blocking_and_non-blocking_mode
       ) in English language.
-  - [**gethostbyname**.h](OperatingSystem/BSD/socket/gethostbyname.h) :
+  - [**gethostbyname**.h](gethostbyname.h) :
     - includes header files for BSD sockets API's "[gethostbyname](
       http://linux.die.net/man/3/gethostbyname)(...)"
       function specific to Linux & Microsoft Windows

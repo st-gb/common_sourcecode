@@ -10,11 +10,11 @@
 /**Non-standard include guard:supported by many, but not all industry compilers:
  * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
   #pragma once
-#else
-///Include guard supported by (nearly) all industry compilers:
-  #ifndef TU_Bln361095cmnSrcBSDskt_cxxopts_handleCmdLineOpts_hpp
-  #define TU_Bln361095cmnSrcBSDskt_cxxopts_handleCmdLineOpts_hpp
 #endif
+#if defined TU_Bln361095usePrgmInclGrd ||\
+/**Include guard supported by (nearly) all industry compilers:*/\
+  ! defined TU_Bln361095cmnSrcBSDskt_cxxopts_handleCmdLineOpts_hpp
+  #define TU_Bln361095cmnSrcBSDskt_cxxopts_handleCmdLineOpts_hpp
 
 ///Standard C(++) header files:
 #include <iostream>///std::cout
@@ -100,6 +100,6 @@ void initCmdLineOpts(cxxopts::Options & cmdLineOpts, const char portAction[]){
 }
 
 }}///namespaces end
-#ifndef TU_Bln361095usePrgmInclGrd
-#endif///#ifndef TU_Bln361095cmnSrcBSDskt_cxxopts_handleCmdLineOpts_hpp
+/**if defined TU_Bln361095usePrgmInclGrd || ! defined
+ * TU_Bln361095cmnSrcBSDskt_cxxopts_handleCmdLineOpts_hpp*/
 #endif

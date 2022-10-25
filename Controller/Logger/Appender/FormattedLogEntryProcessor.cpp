@@ -2,10 +2,15 @@
  *  Created on: 07.02.2013
  *  Author: Stefan Gebauer, M.Sc. Comp.Sc.*/
 
+///Stefan Gebauer's(TU Berlin matr.#362095)"common_sourcecode" repository files:
 #include "FormattedLogEntryProcessor.hpp"
-#include "../Formatter/HTMLlogFormatter.hpp" //class HTMLlogFormatter::HTMLlogFormatter(...)
-#include "../Formatter/Log4jFormatter.hpp" //class Log4jFormatter::(...)
+///class HTMLlogFormatter::HTMLlogFormatter(...)
+#include "../Formatter/HTMLlogFormatter.hpp"
+///class Log4jFormatter::Log4jFormatter(...)
+#include "../Formatter/Log4jFormatter.hpp"
 #include "../Logger.hpp"
+///TU_Bln361095::CstdLib::Strcmp::EqlStrs
+#include <C_standard_library/string_compare_return_codes.h>
 
 FormattedLogEntryProcessor::FormattedLogEntryProcessor(
   Logger & logger,
@@ -118,7 +123,7 @@ I_LogFormatter * FormattedLogEntryProcessor::CreateFormatter(//BYTE type = 1
     )
     m_p_log_formatter = new HTMLlogFormatter(//m_p_std_ofstream
       this);
-  else if(strcmp("log4j", c_p_chType) == 0)
+  else if(strcmp("log4j", c_p_chType) == TU_Bln361095::CstdLib::strcmp::EqlStrs)
     m_p_log_formatter = new TU_Bln361095::Logger::Log4jFormatter(//m_p_std_ofstream
       this);
   else
