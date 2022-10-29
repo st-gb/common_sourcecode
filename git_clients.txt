@@ -1,0 +1,3 @@
+Text User Interface (TUI):
+https://makandracards.com/makandra/28067-git-diff-per-word-or-character :
+Use "git diff --color-words=."

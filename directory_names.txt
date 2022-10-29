@@ -1,0 +1,5 @@
+File name of _this_ file:"directory[...]" because directory<>folder:see
+Wikipedia.
+Directory names are written out to avoid ambiguity.
+E.g. "OperatingSystem" instead of "OS" because the abbreviation "OS" is
+ambiguous (may also mean "Open Source").

@@ -1,3 +1,0 @@
-Folder names are written out to avoid ambiguity.
-E.g. "OperatingSystem" instead of "OS" because the abbreviation "OS" is
-ambiguous (may also mean "Open Source").

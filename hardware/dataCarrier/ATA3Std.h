@@ -32,6 +32,11 @@
  * "The initial default value of attributes is 100 but can vary between
  * manufacturer.[17]" Default normalized value is 100:*/
 #define ATA3Std_DfltNrmlzdVal 100
+/**For 40 GB HDD model "WDC WD400EB-00CPF0", firmware "06.04G06" (,serial number
+ * "WD-WCAAT4328734" at Power-On Time raw value "5667") for S.M.A.R.T. attribute
+ * IDs 1, 5, 7, 196-200 the normalized current value was 200. So the maximum
+ * current value >= 200.*/
+#define ATA3Std_GtrDfltNrmlzdVal 200
 
 /** http://en.wikipedia.org/wiki/S.M.A.R.T.#ATA_S.M.A.R.T._attributes : "[...]
  * normalized value, which ranges from 1 to 253"-> 1 byte is sufficient*/
