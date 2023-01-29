@@ -1,0 +1,9 @@
+Add a shell/"make" command for building a C(++) program
+=======================================================
+
+Shells/"make" commands are included in these software distributions:
+-MSYS2 (for building 32 and 64 bit executables under Microsoft Windows operating
+ system beginning with Windows version "Vista")
+ For its installation and configuration see file "compiler/building/MSYS2.txt"
+ of Stefan Gebauer's(TU Berlin matriculation number 361095) ~"common sourcecode"
+ repository(may be located online in http://github.com/st-gb/common_sourcecode )

@@ -1,0 +1,5 @@
+Install MSYS2's MinGW 64bit compiler (suite)
+============================================
+1. install MSYS2
+2. see https://packages.msys2.org/package/mingw-w64-x86_64-gcc :
+ execute "pacman -S mingw-w64-x86_64-gcc"? (in MSYS2 shell?)

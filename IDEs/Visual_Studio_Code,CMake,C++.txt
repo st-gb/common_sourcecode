@@ -1,0 +1,31 @@
+1 Configure Microsoft's "Visual Studio Code" for C(++) and CMake
+================================================================
+
+in "Extensions" window (menu "View", menu item "Extensions"):
+-install "C/C++" from Microsoft
+-install "CMake Tools" from Microsoft
+
+1.1 Linux
+---------
+Follow this guide: https://code.visualstudio.com/docs/cpp/cmake-linux
+
+2 Build with Microsoft's "Visual Studio Code"
+=============================================
+Click "Build" in status bar at bottom of "Visual Studio Code"'s main frame.
+
+2.1 No shell available
+----------------------
+If building with CMake and 
+"The command: ninja --version failed with error: Error: spawn ninja ENOENT"
+appears in "OUTPUT" tab of "Panel" Window and "CMake/Build" output then probably
+no shell is available.
+In this case ensure a shell for building an executable/target with the IDE is
+installed and added to "Path" environment variable.
+See file "IDEs/shell.txt" of Stefan Gebauer's(TU Berlin matriculation number
+361095) ~"common sourcecode" repository (may be located online in
+https://github.com/st-gb/common_sourcecode) to do this.
+
+
+3 Weblinks
+==========
+- https://nvdungx.github.io/vscode-cmake/

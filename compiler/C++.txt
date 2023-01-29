@@ -1,0 +1,6 @@
+Install a C(++) compiler (suite)
+================================
+
+Microsoft Windows operating system
+----------------------------------
+see file "compiler/C++/Microsoft_Windows.txt"

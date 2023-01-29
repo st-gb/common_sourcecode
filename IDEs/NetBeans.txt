@@ -1,0 +1,80 @@
+Configure "NetBeans" Integrated Development Environment
+=======================================================
+
+1 run "NetBeans"
+------------------
+NetBeans IDE needs a Java Virtual Machine (JVM) to start.
+A missing Java Runtime Environment (JRE) installation was not shown after
+installing NetBeans in Ubuntu Desktop 64 bit 22.4.1.
+So install for example OpenJDK JRE.
+
+2 Add C++ support
+----------------
+ 1. menu "Tools", menu item "Plugins"
+ 
+ 2.1 NetBeans > version 8.2
+ ----------------------
+ 1.1 in "Plugins" window, "Settings" tab
+ 1.2 activate "NetBeans 8.2 Plugin Portal"
+
+2.2 NetBeans version 8.2 and later
+------------------------------------
+ 2. in "Plugins" window, "Available Plugins" tab:
+  1. mark checkbox in column "Install" for line "C/C++"
+  2. press "Install" button
+
+  Microsoft Windows operating system, Java > version 14
+  -----------------------------------------------------
+  C/C++ installation needs "unpack200.exe"
+  
+  To get "unpack200.exe":
+   -from Java 8-14
+    For "unpack200" for NetBeans 8.2 C++ plugin in higher NetBeans versions:
+    Install Java Development Kit(JDK) ?:
+    : http://docs.oracle.com/en/java/javase/11/tools/unpack200.htmls
+   -from another source like
+    https://www.exefiles.com/en/exe/unpack200-exe/
+	
+2.3 C++ compiler suite
+----------------------
+In order to build a C(++) program a compiler (suite) is needed.
+For installation of a C(++) compiler (suite) see file "compiler/C++.txt" of
+Stefan Gebauer's(TU Berlin matriculation number 361095) ~"common sourcecode"
+repository(may be located online in http://github.com/st-gb/common_sourcecode ).
+
+3 "make" command
+------------------
+For building the target (executable) NetBeans needs "make".
+Under Microsoft Windows operating system this might not be installed.
+
+3.1 change "make" command
+--------------------------------------
+ 1. menu "Tools", menu item "Options": 
+ 2. "Options" windows:
+  1. select "C/C++" tool
+  2. "Build Tools" tab
+  3. "Make Command:" for a "Tool Collection"
+
+3.2 Microsoft Windows operating system
+--------------------------------------
+"mingw32-make.exe" from (some) "MinGW" installations can't be used.
+See file "compiler/building/shell.txt" of Stefan Gebauer's(TU Berlin
+matriculation number 361095) ~"common sourcecode" repository (may be located
+online in http://github.com/st-gb/common_sourcecode ).
+
+4 shell in Microsoft Windows operating system
+-----------------------------------------------
+NetBeans/CMake needs a Linux-like? shell ("sh.exe"?) to build.
+
+If no shell can be found then the following error may happen:
+"No shell found. Cannot proceed.
+Please install either Cygwin or MSys."
+when building (menu "Run", menu item "Build Project")
+
+To add a shell see file "compiler/building/shell.txt" of Stefan Gebauer's (TU
+Berlin matriculation number 361095) ~"common sourcecode" repository(may be
+located online in http://github.com/st-gb/common_sourcecode ).
+
+
+author:Stefan Gebauer(TU Berlin matriculation number 361095,it-gebauer.de)
+creation/change date:Jan 2023

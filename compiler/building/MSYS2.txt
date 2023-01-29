@@ -1,0 +1,23 @@
+Installing and configuring "MSYS2" software development/building platform
+=========================================================================
+
+1 Install MSYS2
+---------------
+1. Visit official website: https://www.msys2.org/
+2. Download the installer executable program
+
+2 Install "make" command
+------------------------
+If ">>MSYS2 root directory<<usr\bin\make.exe" does not exist, to add "make":
+1. start MSYS2 shell: run file >>MSYS2 root directory<<\msys2.exe
+2. execute "pacman -S make" in the MSYS2 shell
+Then file ">>MSYS2 root directory<<\usr\bin\make.exe" should be added.
+
+3 Add shell to "Path" environment variable
+------------------------------------------
+1. add >>MSYS2 root directory<<\usr\bin to "Path" environment variable
+ One can use an editor like "Rapid Environment Editor" for easier adding
+ a value to "Path" environment variable.
+2. if the software/IDE that needs the shell is already running, then restart
+ this software thats needs the shell for the changed environment variable to
+ take effect
