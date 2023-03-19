@@ -33,13 +33,15 @@ enum TU_Bln361095BSDsktUse(errorCodes) TU_Bln361095BSDsktDef(UnifyErrorCode)(
 /**Error codes < 10035 are the same as for "errno" under Linux except they are
  * shifted by WSABASEERR (10000L) MinGW/TDM-GCC:include/winerror.h /
 http://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
- * , Linux: "errno-base.h":
- * WSAEINTR  10004 EINTR   4
- * WSAEBADF  10009 EBADF   9
- * WSAEACCES 10013 EACCES 13
- * WSAEFAULT 10014 EFAULT 14
- * WSAEINVAL 10022 EINVAL 22
- * WSAEMFILE 10024 EMFILE 24
+ * Microsoft Windows: | Linux:
+ * include/winerror.h | "errno-base.h"
+ * -------------------+------------
+ * WSAEINTR  10004    | EINTR   4
+ * WSAEBADF  10009    | EBADF   9
+ * WSAEACCES 10013    | EACCES 13
+ * WSAEFAULT 10014    | EFAULT 14
+ * WSAEINVAL 10022    | EINVAL 22
+ * WSAEMFILE 10024    | EMFILE 24
  * "#define WSAECONNREFUSED 			__WSA_ERRNO(   61 )"
  * "#define WSAEINPROGRESS				__WSA_ERRNO(   36 )"
  * "#define __WSA_ERRNO(N)  		 	 (WSABASEERR + (N))

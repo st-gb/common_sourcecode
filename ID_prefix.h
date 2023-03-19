@@ -23,7 +23,7 @@
 
 /**Use these preprocessor macros in source code for example to enable both C and
  * C++. */
-#ifdef __cpluplus
+#ifdef __cplusplus
 /**cmn=CoMmoN:http://www.abbreviations.com/abbreviation/common
  * Src=SouRCe(code):http://www.abbreviations.com/abbreviation/Source
  *   "common sourcecode" is the git repository these files are/should be in.
