@@ -18,8 +18,8 @@
  * OpSys=OPerating SYStem: http://www.abbreviations.com/OpSys 
  * MS=MicroSoft: http://www.abbreviations.com/abbreviation/MicroSoft
  * Win=WINdows: http://www.abbreviations.com/abbreviation/Windows */\
- ! defined TU_Bln361095OpSys_MS_Win_hardware_dataCarrier_SMART_openDataCarrier_h
-   #define TU_Bln361095OpSys_MS_Win_hardware_dataCarrier_SMART_openDataCarrier_h
+ ! defined TU_Bln361095OpSys_MS_Win_hardware_dataCarrier_openDataCarrier_h
+   #define TU_Bln361095OpSys_MS_Win_hardware_dataCarrier_openDataCarrier_h
 
 ///MicroSoft Windows'/Visual Studio's/MinGW's header files:
 #include <tchar.h>///_tcscpy_s(...)
@@ -27,7 +27,7 @@
 ///Stefan Gebauer's(TU Berlin matr.#361095)"common_sourcecode" repository files:
 #include <compiler/force_inline.h>///TU_Bln361095frcInln
 ///TU_Bln361095OpSysDataCarrierSMART_Def
-#include <hardware/dataCarrier/SMART/SMART_ID_prefix.h>
+#include <hardware/dataCarrier/dataCarrier_ID_prefix.h>
 
 /**http://learn.microsoft.com/en-us/windows/win32/api/ioapiset/nf-ioapiset-deviceiocontrol
  * : "To specify a device name, use the following format:
@@ -36,10 +36,10 @@
 ///ANSI/ASCII version
 #define TU_Bln361095OpsSysMS_WinDataCarrierPathPrefixA "\\\\.\\PhysicalDrive"
 
-TU_Bln361095hardwareDataCarrierSMART_NmSpcBgn
+TU_Bln361095hardwareDataCarrierNmSpcBgn
 
 TU_Bln361095frcInln void
- TU_Bln361095hardwareDataCarrierSMART_Def(getDataCarrierPath)(
+ TU_Bln361095hardwareDataCarrierDef(GetPath)(
   const TCHAR dataCarrierID[],
   TCHAR dataCarrierPath[])
 {
@@ -60,7 +60,7 @@ TU_Bln361095frcInln void
 /**@param dataCarrierID is appended to @ref
  *  TU_Bln361095OpsSysMS_WinDataCarrierPathPrefixA, for example "0" */
 TU_Bln361095frcInln HANDLE
- TU_Bln361095hardwareDataCarrierSMART_Def(openDataCarrier)(
+ TU_Bln361095hardwareDataCarrierDef(Open)(
   const TCHAR dataCarrierPath[])
 {
 /**http://learn.microsoft.com/en-us/windows/win32/api/ioapiset/nf-ioapiset-deviceiocontrol
@@ -101,6 +101,6 @@ TU_Bln361095frcInln HANDLE
   return dataCarrierHandle;
 }
 
-TU_Bln361095hardwareDataCarrierSMART_NmSpcEnd
+TU_Bln361095hardwareDataCarrierNmSpcEnd
 
 #endif///Include guard
