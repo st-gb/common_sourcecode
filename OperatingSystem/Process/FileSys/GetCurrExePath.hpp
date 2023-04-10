@@ -6,4 +6,6 @@
   #include "../Linux/Process/GetCurrExePath.hpp"
 #endif
 #ifdef _WIN32///Windows, also 64 bit
+  //#include <OperatingSystem/Windows/Process/GetCurrExePath.h>
+  #include <OperatingSystem/Windows/Process/FileSys/GetCurrProcessExeFileName.hpp>
 #endif

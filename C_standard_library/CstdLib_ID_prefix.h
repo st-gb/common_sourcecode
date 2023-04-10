@@ -1,6 +1,9 @@
-///(c)from 2022:Stefan Gebauer,Computer Science Master(TU Berlin,matric.#361095)
+/**(c)from 2022:Stefan Gebauer,Computer Science Master(TU Berlin,matric.#361095)
+ * @author Stefan Gebauer(TU Berlin matriculation number 361095)
+ * File name should contain "CstdLib" to easier chose the correct file if
+ * multiple "[...]ID_prefix.h" files are open in an application. */
 
-///Include guard,see http://en.wikipedia.org/wiki/Include_guard
+///Include guard,see http://en.wikipedia.org/wiki/Include_guard :
 
 /**Bln=BerLiN:http://www.acronymfinder.com/Berlin-(Bln).html
  * Prgm=PRaGMa
@@ -28,33 +31,36 @@
 /**Use these preprocessor macros in source code for example to enable both C and
  * C++. */
 #ifdef __cplusplus
-/**Def=definition: http://www.abbreviations.com/abbreviation/definition
+/**Def=DEFinition: http://www.abbreviations.com/abbreviation/definition
  * Put Definition between "[...]NmSpcBgn" and "[...]NmSpcEnd" #define'd below.*/
-  #define TU_Bln361095cmnSrcCstdLibDef(suffix) suffix
-/**Nm=name: http://www.abbreviations.com/abbreviation/name
- * Spc=space: http://www.abbreviations.com/abbreviation/Space */
-  #define TU_Bln361095cmnSrcCstdLibNmSpc TU_Bln361095cmnSrcNmSpc :: CstdLib
+  #define TU_Bln361095CstdLibDef(suffix) suffix
+/**Nm=NaMe: http://www.abbreviations.com/abbreviation/name
+ * Spc=SPaCe: http://www.abbreviations.com/abbreviation/Space
+ * Do not append "::" right of the rightmost namespace name to enable
+ * "using namespace [...]CstdLibNmSpc".*/
+  #define TU_Bln361095CstdLibNmSpc TU_Bln361095nmSpc :: CstdLib
 ///Bgn=BeGiN: http://www.allacronyms.com/begin/abbreviated
-  #define TU_Bln361095cmnSrcCstdLibNmSpcBgn TU_Bln361095cmnSrcNmSpcBgn\
+  #define TU_Bln361095CstdLibNmSpcBgn TU_Bln361095nmSpcBgn\
     namespace CstdLib{
-  #define TU_Bln361095cmnSrcCstdLibNmSpcEnd TU_Bln361095cmnSrcNmSpcEnd }
+  #define TU_Bln361095CstdLibNmSpcEnd TU_Bln361095nmSpcEnd }
+  #define TU_Bln361095CstdLibUse(suffix) TU_Bln361095CstdLibNmSpc :: suffix
 #else
 /**http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html#Concatenation :"The ‘##’
  * preprocessing operator performs token pasting. When a macro is expanded, the
  * two tokens on either side of each ‘##’ operator are combined into a single
  * token, which then replaces the ‘##’ and the two original tokens in the macro
  * expansion."*/
-///Def=definition: http://www.abbreviations.com/abbreviation/definition
-  #define TU_Bln361095cmnSrcCstdLibDef(suffix) TU_Bln361095cmnSrcCstdLib##suffix
-/**Nm=name: http://www.abbreviations.com/abbreviation/name
- * Spc=space: http://www.abbreviations.com/abbreviation/Space
+///Def=DEFinition: http://www.abbreviations.com/abbreviation/definition
+  #define TU_Bln361095CstdLibDef(suffix) TU_Bln361095def(CstdLib##suffix)
+/**Nm=NaMe: http://www.abbreviations.com/abbreviation/name
+ * Spc=SPaCe: http://www.abbreviations.com/abbreviation/Space
  * "C" language has no namespaces->Replace with empty character string. */
-  #define TU_Bln361095cmnSrcCstdLibNmSpc /**->empty*/
+  #define TU_Bln361095CstdLibNmSpc /**->empty*/
 ///Bgn=BeGiN: http://www.allacronyms.com/begin/abbreviated
-  #define TU_Bln361095cmnSrcCstdLibNmSpcBgn /**->empty*/
-  #define TU_Bln361095cmnSrcCstdLibNmSpcEnd /**->empty*/
-  #define TU_Bln361095cmnSrcCstdLibUse(suffix)\
-    TU_Bln361095cmnSrcCstdLibDef(suffix)
+  #define TU_Bln361095CstdLibNmSpcBgn /**->empty*/
+  #define TU_Bln361095CstdLibNmSpcEnd /**->empty*/
+  #define TU_Bln361095CstdLibUse(suffix)\
+    TU_Bln361095CstdLibDef(suffix)
 #endif
 
 #endif///Include guard

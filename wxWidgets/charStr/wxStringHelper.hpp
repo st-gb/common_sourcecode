@@ -1,18 +1,30 @@
 /**(c)from 2009 Stefan Gebauer,Computer Science Master(TU Berlin matr.no.361095)
-*Created 15Nov2009,18:53 by Stefan Gebauer(TU Berlin matriculat.number 361095)*/
+ * Created 15Nov2009,18:53
+ * @author Stefan Gebauer(TU Berlin matriculation number 361095)*/
 
-///Include guard,see http://en.wikipedia.org/wiki/Include_guard
+///Include guard,see http://en.wikipedia.org/wiki/Include_guard :
+
+/**Bln=BerLiN:http://www.acronymfinder.com/Berlin-(Bln).html
+ * Prgm=PRaGMa
+ * Incl=INCLude:http://www.abbreviations.com/abbreviation/include
+ * Grd=GuaRD:http://www.abbreviations.com/abbreviation/guard */
 #ifdef TU_Bln361095usePrgmInclGrd
 /**Non-standard include guard:supported by many, but not all industry compilers:
  * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
-#pragma once
+  #pragma once
 #endif
-///Include guard supported by (nearly) all compilers:
-#ifndef TU_Bln361095cmnSrcWxStringHelper_h
-#define TU_Bln361095cmnSrcWxStringHelper_h
+#if defined TU_Bln361095usePrgmInclGrd ||\
+/**Include guard supported by (nearly) all compilers*/\
+/**Bln=BerLiN:https://www.acronymfinder.com/Berlin-(Bln).html
+ * cmn=CoMmoN:http://www.abbreviations.com/abbreviation/common
+ * Src=SouRCe:http://www.abbreviations.com/abbreviation/Source
+ * char=CHARacter: http://www.abbreviations.com/abbreviation/CHARacter
+ * Str=STRing: http://www.abbreviations.com/abbreviation/string*/\
+ ! defined TU_Bln361095cmnSrc_wxWidgets_charStr_wxStringHelper_h
+   #define TU_Bln361095cmnSrc_wxWidgets_charStr_wxStringHelper_h
 
-///Standard C(++) header files:
-#include <string> //class std::string
+///Standard C(++) library header files:
+#include <string>///class std::string
 
 ///wxWidgets header files:
 #include <wx/string.h>///class wxString
@@ -21,14 +33,14 @@
 #include <dataType/charStr/stdtstr.hpp>///class std::tstring
 #include <preprocessor_macros/string_typedefs.h> //LPCSTR
 
-namespace wxWidgets
+namespace TU_Bln361095{namespace wxWidgets
 {
   wxString getwxString(const char * const str );
   wxString getwxString(const std::string & str );
 
   //wxString getwxString(std::tstring & tstr ) ;
   wxString getwxString(const std::wstring & stdwstr ) ;
-  inline wxString getwxString_inline(const std::wstring & cr_stdwstr)
+  inline wxString GetwxString_inln(const std::wstring & cr_stdwstr)
   {
     //#ifdef wxUSE_WCHAR_T
     //see wx/chartype.h:wxUSE_UNICODE_WCHAR->"typedef wchar_t wxStringCharType;"
@@ -43,25 +55,25 @@ namespace wxWidgets
     return wxstr;
   }
 
-  inline wxString GetwxString_Inline( LPCSTR lpcstr )
+  inline wxString GetwxString_inln( LPCSTR lpcstr )
   {
     //from http://wiki.wxwidgets.org/Converting_everything_to_and_from_wxString#
     // std::string_to_wxString
      wxString wxstr(lpcstr, wxConvUTF8);
     return wxstr ;
   }
-  inline wxString GetwxString_Inline( const std::string & str )
+  inline wxString GetwxString_inln(const std::string & str )
   {
-    return GetwxString_Inline(str.c_str() ) ;
+    return GetwxString_inln(str.c_str() ) ;
   }
 
   std::string GetStdString(const wxString & wxstr) ;
-  inline std::string GetStdString_Inline(const wxString & cr_wxstr)
+  inline std::string GetStdString_inln(const wxString & cr_wxstr)
   {
     std::string std_str = std::string( cr_wxstr.mb_str() );
     return std_str ;
   }
-  inline std::wstring GetStdWstring_Inline(const wxString & cr_wxstr)
+  inline std::wstring GetStdWstring_inln(const wxString & cr_wxstr)
   {
 #ifdef UNICODE
     std::wstring stdwstr = std::wstring( cr_wxstr.wc_str() ) ;
@@ -83,6 +95,6 @@ namespace wxWidgets
     return stdstr ;
   #endif
   }
-}
+}}
 
-#endif///#ifndef TU_Bln361095cmnSrcWxStringHelper_h
+#endif///include guard
