@@ -19,9 +19,16 @@
  ! defined TU_Bln361095OpSys_Windows_hardware_NVMe_getIdentity_h
    #define TU_Bln361095OpSys_Windows_hardware_NVMe_getIdentity_h
 
+///Standard C(++) library header files:
+#include <stdint.h>///uint8_t
+
 ///Stefan Gebauer's(TU Berlin matr.#361095)"common_sourcecode" repository files:
 ///TU_Bln361095hardwareDataCarrierNVMeUse
 #include "NVMe_ID_prefix.h"
+#include <compiler/force_inline.h>///TU_Bln361095frcInln
+ /**TU_Bln361095hardwareSMARTnumModelBytes, TU_Bln361095hardwareSMARTnumSNbytes,
+  * TU_Bln361095hardwareSMARTnumFWbytes */
+#include <hardware/dataCarrier/ATA3Std.h>
 
 //TODO What is the minimal Microsoft compiler version needed to compile?
 #if _MSC_VER > 1920
@@ -122,7 +129,7 @@ TU_Bln361095hardwareDataCarrierNVMeNmSpcBgn
  *   TU_Bln361095hardwareSMARTnumModelBytes bytes
  * @param serNo array with >= TU_Bln361095hardwareSMARTnumSNbytes bytes
  * @param firmWare array with >= TU_Bln361095hardwareSMARTnumFWbytes bytes*/
-enum TU_Bln361095hardwareDataCarrierNVMeGetIdentityUse(Rslt)
+TU_Bln361095frcInln enum TU_Bln361095hardwareDataCarrierNVMeGetIdentityUse(Rslt)
  TU_Bln361095hardwareDataCarrierNVMeDef(GetIdentity)(
   HANDLE deviceHandle,
   //void ** ppBuf

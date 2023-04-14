@@ -31,12 +31,16 @@
 #include <hardware/dataCarrier/SMART/SMART_ID_prefix.h>
 #include <compiler/force_inline.h>///TU_Bln361095frcInln
 
+/**Use these preprocessor macros in source code for example to enable both C and
+ * C++.*/
 #ifdef __cplusplus
 /**Def=definition: http://www.abbreviations.com/abbreviation/definition
  * Put definition between "[...]NmSpcBgn" and "[...]NmSpcEnd" #define'd below.*/
   #define TU_Bln361095hardwareDataCarrierSMART_getIdentityDef(suffix) suffix
 /**Nm=name: http://www.abbreviations.com/abbreviation/name
- * Spc=space: http://www.abbreviations.com/abbreviation/Space */
+ * Spc=space: http://www.abbreviations.com/abbreviation/Space
+ * Do not append "::" right of the rightmost namespace name to enable
+ * "using namespace [...]getIdentityNmSpc" */
   #define TU_Bln361095hardwareDataCarrierSMART_getIdentityNmSpc\
     TU_Bln361095hardwareDataCarrierSMART_NmSpc :: getIdentity
 ///Bgn=BeGiN :http://www.allacronyms.com/begin/abbreviated
@@ -47,14 +51,15 @@
   #define TU_Bln361095hardwareDataCarrierSMART_getIdentityUse(suffix)\
     TU_Bln361095hardwareDataCarrierSMART_Use( getIdentity :: suffix)
 #else
+///Def=definition: http://www.abbreviations.com/abbreviation/definition
+  #define TU_Bln361095hardwareDataCarrierSMART_getIdentityDef(suffix)\
+    TU_Bln361095hardwareDataCarrierSMART_Def(\
 /**http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html#Concatenation :"The ‘##’
  * preprocessing operator performs token pasting. When a macro is expanded, the
  * two tokens on either side of each ‘##’ operator are combined into a single
  * token, which then replaces the ‘##’ and the two original tokens in the macro
- * expansion."*/
-///Def=definition: http://www.abbreviations.com/abbreviation/definition
-  #define TU_Bln361095hardwareDataCarrierSMART_getIdentityDef(suffix)\
-    TU_Bln361095hardwareDataCarrierSMART_Def(getIdentity ## suffix)
+ * expansion." */\
+      getIdentity ## suffix)
 /**Nm=name: http://www.abbreviations.com/abbreviation/name
  * Spc=space: http://www.abbreviations.com/abbreviation/Space */
 ///"C" language has no namespaces->Replace with empty character string.
