@@ -35,14 +35,14 @@
 /**Nm=name: http://www.abbreviations.com/abbreviation/name
  * Spc=space: http://www.abbreviations.com/abbreviation/Space */
   #define TU_Bln361095hardwareDataCarrierNmSpc\
-    TU_Bln361095hardwareNmSpc :: DataCarrier
+    TU_Bln361095hardwareNmSpc :: dataCarrier
 ///Bgn=BeGiN :http://www.allacronyms.com/begin/abbreviated
   #define TU_Bln361095hardwareDataCarrierNmSpcBgn\
-    TU_Bln361095hardwareNmSpcBgn namespace DataCarrier{
+    TU_Bln361095hardwareNmSpcBgn namespace dataCarrier{
   /**"}" times >>number of namespaces<<*/
   #define TU_Bln361095hardwareDataCarrierNmSpcEnd\
     TU_Bln361095hardwareNmSpcEnd }
-  #define TU_Bln361095hardwareDataCarrier_Use(suffix)\
+  #define TU_Bln361095hardwareDataCarrierUse(suffix)\
     TU_Bln361095hardwareDataCarrierNmSpc :: suffix
 #else
 /**http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html#Concatenation :"The ‘##’

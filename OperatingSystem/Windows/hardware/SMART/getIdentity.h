@@ -34,34 +34,40 @@
 /**Use these preprocessor macros in source code for example to enable both C and
  * C++.*/
 #ifdef __cplusplus
-/**Def=definition: http://www.abbreviations.com/abbreviation/definition
+/**Def=DEFinition: http://www.abbreviations.com/abbreviation/definition
  * Put definition between "[...]NmSpcBgn" and "[...]NmSpcEnd" #define'd below.*/
   #define TU_Bln361095hardwareDataCarrierSMART_getIdentityDef(suffix) suffix
-/**Nm=name: http://www.abbreviations.com/abbreviation/name
- * Spc=space: http://www.abbreviations.com/abbreviation/Space
+/**Nm=NaMe: http://www.abbreviations.com/abbreviation/name
+ * Spc=SPaCe: http://www.abbreviations.com/abbreviation/Space
  * Do not append "::" right of the rightmost namespace name to enable
  * "using namespace [...]getIdentityNmSpc" */
   #define TU_Bln361095hardwareDataCarrierSMART_getIdentityNmSpc\
-    TU_Bln361095hardwareDataCarrierSMART_NmSpc :: getIdentity
+    TU_Bln361095hardwareDataCarrierSMART_NmSpc ::\
+/**Begin with lowercase letter to avoid name clash with function of same name
+ * with uppercase letter. */\
+      getIdentity
 ///Bgn=BeGiN :http://www.allacronyms.com/begin/abbreviated
-  #define TU_Bln361095hardwareDataCarrierSMART_getIdentityNmSpcBgn
-    TU_Bln361095hardwareDataCarrierSMART_NmSpcBgn namespace getIdentity{
-  #define TU_Bln361095hardwareDataCarrierSMART_getIdentityNmSpcEnd
+  #define TU_Bln361095hardwareDataCarrierSMART_getIdentityNmSpcBgn\
+    TU_Bln361095hardwareDataCarrierSMART_NmSpcBgn namespace\
+/**Begin with lowercase letter to avoid name clash with function of same name
+ * with uppercase letter. */\
+      getIdentity{
+  #define TU_Bln361095hardwareDataCarrierSMART_getIdentityNmSpcEnd\
     TU_Bln361095hardwareDataCarrierSMART_NmSpcEnd }
   #define TU_Bln361095hardwareDataCarrierSMART_getIdentityUse(suffix)\
-    TU_Bln361095hardwareDataCarrierSMART_Use( getIdentity :: suffix)
+    TU_Bln361095hardwareDataCarrierSMART_getIdentityNmSpc ::suffix
 #else
-///Def=definition: http://www.abbreviations.com/abbreviation/definition
+///Def=DEFinition: http://www.abbreviations.com/abbreviation/definition
   #define TU_Bln361095hardwareDataCarrierSMART_getIdentityDef(suffix)\
-    TU_Bln361095hardwareDataCarrierSMART_Def(\
+    TU_Bln361095hardwareDataCarrierSMART_Def(GetIdentity\
 /**http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html#Concatenation :"The ‘##’
  * preprocessing operator performs token pasting. When a macro is expanded, the
  * two tokens on either side of each ‘##’ operator are combined into a single
  * token, which then replaces the ‘##’ and the two original tokens in the macro
  * expansion." */\
-      getIdentity ## suffix)
-/**Nm=name: http://www.abbreviations.com/abbreviation/name
- * Spc=space: http://www.abbreviations.com/abbreviation/Space */
+      ## suffix)
+/**Nm=NaMe: http://www.abbreviations.com/abbreviation/name
+ * Spc=SPaCe: http://www.abbreviations.com/abbreviation/Space */
 ///"C" language has no namespaces->Replace with empty character string.
   #define TU_Bln361095hardwareDataCarrierSMART_getIdentityNmSpc /** ->empty*/
 ///Bgn=BeGiN :http://www.allacronyms.com/begin/abbreviated
@@ -86,8 +92,8 @@ TU_Bln361095hardwareDataCarrierSMART_NmSpcBgn
 ///Make function inline to avoid multiple definitions of it.
 TU_Bln361095frcInln
  enum TU_Bln361095hardwareDataCarrierSMART_getIdentityUse(Rslt)
-  TU_Bln361095hardwareDataCarrierSMART_Def(getIdentity)(
   const HANDLE dataCarrierHandle)
+  TU_Bln361095hardwareDataCarrierSMART_Def(GetIdentity)(
 {
   DWORD bytesReturned;
 
@@ -127,7 +133,11 @@ TU_Bln361095frcInln
   memcpy(outBuffer, & sENDCMDOUTPARAMS, sizeof(SENDCMDOUTPARAMS));
   
   ///https://learn.microsoft.com/en-us/windows/win32/api/ioapiset/nf-ioapiset-deviceiocontrol
-  const WINBOOL dvcIoCtrlRslt = DeviceIoControl(
+  const BOOL dvcIoCtrlRslt =
+/**
+http://learn.microsoft.com/en-us/windows/win32/api/ioapiset/nf-ioapiset-deviceiocontrol
+ * "BOOL DeviceIoControl(" */
+   DeviceIoControl(
 ///see https://learn.microsoft.com/en-us/windows/win32/devio/calling-deviceiocontrol
     dataCarrierHandle,///[in] HANDLE hDevice,
 /**http://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntdddisk/ns-ntdddisk-_sendcmdinparams

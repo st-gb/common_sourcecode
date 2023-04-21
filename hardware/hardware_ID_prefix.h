@@ -38,7 +38,7 @@
  * Spc=SPaCe: http://www.abbreviations.com/abbreviation/Space
  * Do not append "::" right of the rightmost namespace name to enable
  * "using namespace [...]hardwareNmSpc" */
-  #define TU_Bln361095hardwareNmSpc TU_Bln361095NmSpc :: hardware
+  #define TU_Bln361095hardwareNmSpc TU_Bln361095nmSpc :: hardware
 ///Bgn=BeGiN: http://www.allacronyms.com/begin/abbreviated
   #define TU_Bln361095hardwareNmSpcBgn\
     TU_Bln361095nmSpcBgn namespace hardware{

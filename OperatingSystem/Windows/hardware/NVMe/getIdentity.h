@@ -23,7 +23,7 @@
 #include <stdint.h>///uint8_t
 
 ///Stefan Gebauer's(TU Berlin matr.#361095)"common_sourcecode" repository files:
-///TU_Bln361095hardwareDataCarrierNVMeUse
+ ///TU_Bln361095hardwareDataCarrierNVMeUse
 #include "NVMe_ID_prefix.h"
 #include <compiler/force_inline.h>///TU_Bln361095frcInln
  /**TU_Bln361095hardwareSMARTnumModelBytes, TU_Bln361095hardwareSMARTnumSNbytes,
@@ -73,31 +73,40 @@ http://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddstor/ns-ntddst
 #endif
 
 #ifdef __cplusplus
-/**Def=definition: http://www.abbreviations.com/abbreviation/definition
+/**Def=DEFinition: http://www.abbreviations.com/abbreviation/definition
  * Put definition between "[...]NmSpcBgn" and "[...]NmSpcEnd" #define'd below.*/
   #define TU_Bln361095hardwareDataCarrierNVMeGetIdentityDef(suffix) suffix
-/**Nm=name: http://www.abbreviations.com/abbreviation/name
- * Spc=space: http://www.abbreviations.com/abbreviation/Space */
+/**Nm=NaMe: http://www.abbreviations.com/abbreviation/name
+ * Spc=SPaCe: http://www.abbreviations.com/abbreviation/Space */
   #define TU_Bln361095hardwareDataCarrierNVMeGetIdentityNmSpc\
-    TU_Bln361095hardwareDataCarrierNVMeNmSpc GetIdentity ::
+    TU_Bln361095hardwareDataCarrierNVMeNmSpc ::\
+/**Begin with lowercase letter to avoid name clash with function of same name
+ * with uppercase letter. 
+ * Do not append "::" right of the rightmost namespace name to enable
+ * "using namespace [...]NVMeGetIdentityNmSpc" */\
+      getIdentity
 ///Bgn=BeGiN :http://www.allacronyms.com/begin/abbreviated
   #define TU_Bln361095hardwareDataCarrierNVMeGetIdentityNmSpcBgn\
-    TU_Bln361095hardwareDataCarrierNVMeNmSpcBgn namespace GetIdentity{
+    TU_Bln361095hardwareDataCarrierNVMeNmSpcBgn namespace\
+/**Begin with lowercase letter to avoid name clash with function of same name
+ * with uppercase letter. */\
+      getIdentity{
   #define TU_Bln361095hardwareDataCarrierNVMeGetIdentityNmSpcEnd\
     TU_Bln361095hardwareDataCarrierNVMeNmSpcEnd }
   #define TU_Bln361095hardwareDataCarrierNVMeGetIdentityUse(suffix)\
-    TU_Bln361095hardwareDataCarrierNVMeGetIdentityDef(suffix)
+    TU_Bln361095hardwareDataCarrierNVMeGetIdentityNmSpc :: suffix
 #else
+///Def=DEFinition: http://www.abbreviations.com/abbreviation/definition
+  #define TU_Bln361095hardwareDataCarrierNVMeGetIdentityDef(suffix)\
+    TU_Bln361095hardwareDataCarrierNVMeDef(GetIdentity\
 /**http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html#Concatenation :"The ‘##’
  * preprocessing operator performs token pasting. When a macro is expanded, the
  * two tokens on either side of each ‘##’ operator are combined into a single
  * token, which then replaces the ‘##’ and the two original tokens in the macro
- * expansion."*/
-///Def=definition: http://www.abbreviations.com/abbreviation/definition
-  #define TU_Bln361095hardwareDataCarrierNVMeGetIdentityDef(suffix)\
-    TU_Bln361095hardwareDataCarrierNVMeDef(GetIdentity ## suffix)
-/**Nm=name: http://www.abbreviations.com/abbreviation/name
- * Spc=space: http://www.abbreviations.com/abbreviation/Space */
+ * expansion."*/\
+      ## suffix)
+/**Nm=NaMe: http://www.abbreviations.com/abbreviation/name
+ * Spc=SPaCe: http://www.abbreviations.com/abbreviation/Space */
 ///"C" language has no namespaces->Replace with empty character string.
   #define TU_Bln361095hardwareDataCarrierNVMeGetIdentityNmSpc
 ///Bgn=BeGiN :http://www.allacronyms.com/begin/abbreviated
@@ -122,6 +131,18 @@ enum TU_Bln361095hardwareDataCarrierNVMeGetIdentityDef(Rslt){
 TU_Bln361095hardwareDataCarrierNVMeGetIdentityNmSpcEnd
 
 TU_Bln361095hardwareDataCarrierNVMeNmSpcBgn
+
+TU_Bln361095frcInln void copy(
+  uint8_t * dest,
+  const uint8_t* const src,
+  const unsigned numB
+  )
+{
+  memcpy(dest, src, numB);
+  dest[numB] = 0;///character string terminating \0 character
+  /////strcpy([...]) also sets character string terminating \0 character.
+  //strcpy_s( (char*) dest, numB, (const char*) src);
+}
 
 /**@param  deviceHandle Handle to the data carrier to get identity information
  *  for. Should have been successfully opened before.
@@ -176,8 +197,11 @@ http://learn.microsoft.com/en-us/windows/win32/fileio/working-with-nvme-devices
   p_protocolData->ProtocolDataOffset = sizeof(STORAGE_PROTOCOL_SPECIFIC_DATA);
   p_protocolData->ProtocolDataLength = NVME_MAX_LOG_SIZE;
 
-  ///Send request down.
-  dvcIOctrlRslt = DeviceIoControl(
+  dvcIOctrlRslt =
+/**
+http://learn.microsoft.com/en-us/windows/win32/api/ioapiset/nf-ioapiset-deviceiocontrol
+ * "BOOL DeviceIoControl(" */
+   DeviceIoControl(
     deviceHandle,
     IOCTL_STORAGE_QUERY_PROPERTY,
     pBuf,
@@ -212,11 +236,16 @@ http://learn.microsoft.com/en-us/windows/win32/fileio/working-with-nvme-devices
   if( (pNMVeIdentifyCtrllrData->VID == 0) ||
       (pNMVeIdentifyCtrllrData->NN == 0) )
     return TU_Bln361095hardwareDataCarrierNVMeGetIdentityUse(IDinvalid);
-  memcpy(manufacturer, &pNMVeIdentifyCtrllrData->MN,
-    TU_Bln361095hardwareSMARTnumModelBytes);
-  memcpy(serNo, &pNMVeIdentifyCtrllrData->SN,
-    TU_Bln361095hardwareSMARTnumSNbytes);
-  memcpy(firmWare, &pNMVeIdentifyCtrllrData->FR,
+  copy(manufacturer,
+    (uint8_t*) &pNMVeIdentifyCtrllrData->MN,
+    TU_Bln361095hardwareSMARTnumModelBytes
+    );
+  copy(serNo,
+    (uint8_t*) &pNMVeIdentifyCtrllrData->SN,
+    TU_Bln361095hardwareSMARTnumSNbytes
+    );
+  copy(firmWare,
+    (uint8_t*) & pNMVeIdentifyCtrllrData->FR,
     TU_Bln361095hardwareSMARTnumFWbytes);
   
   free(pBuf);

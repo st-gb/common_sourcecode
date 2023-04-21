@@ -41,7 +41,7 @@
   #define TU_Bln361095hardwareDataCarrierNVMeNmSpcEnd\
     TU_Bln361095hardwareDataCarrierNmSpcEnd }
   #define TU_Bln361095hardwareDataCarrierNVMeUse(suffix)\
-    TU_Bln361095hardwareDataCarrierNVMeNmSpc ## suffix
+    TU_Bln361095hardwareDataCarrierNVMeNmSpc :: suffix
 #else
 /**http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html#Concatenation :"The ‘##’
  * preprocessing operator performs token pasting. When a macro is expanded, the

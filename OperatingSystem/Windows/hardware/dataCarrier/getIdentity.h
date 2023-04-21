@@ -48,10 +48,16 @@
  * Do not append "::" right of the rightmost namespace name to enable
  * "using namespace [...]GetIdentityNmSpc" */
   #define TU_Bln361095hardwareDataCarrierGetIdentityNmSpc \
-    TU_Bln361095hardwareDataCarrierNmSpc :: GetIdentity
+    TU_Bln361095hardwareDataCarrierNmSpc :: \
+/**Begin with lowercase letter to avoid name clash with function of same name
+ * with uppercase letter. */\
+      getIdentity
 ///Bgn=BeGiN :http://www.allacronyms.com/begin/abbreviated
   #define TU_Bln361095hardwareDataCarrierGetIdentityNmSpcBgn \
-    TU_Bln361095hardwareDataCarrierNmSpcBgn namespace GetIdentity{
+    TU_Bln361095hardwareDataCarrierNmSpcBgn namespace\
+/**Begin with lowercase letter to avoid name clash with function of same name
+ * with uppercase letter. */\
+      getIdentity{
   #define TU_Bln361095hardwareDataCarrierGetIdentityNmSpcEnd \
     TU_Bln361095hardwareDataCarrierNmSpcEnd }
   #define TU_Bln361095hardwareDataCarrierGetIdentityUse(suffix)\
@@ -59,7 +65,13 @@
 #else
 ///Def=definition: http://www.abbreviations.com/abbreviation/definition
   #define TU_Bln361095hardwareDataCarrierGetIdentityDef(suffix)\
-    TU_Bln361095hardwareDataCarrierDef(GetIdentity##suffix)
+    TU_Bln361095hardwareDataCarrierDef(GetIdentity\
+/**http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html#Concatenation :"The ‘##’
+ * preprocessing operator performs token pasting. When a macro is expanded, the
+ * two tokens on either side of each ‘##’ operator are combined into a single
+ * token, which then replaces the ‘##’ and the two original tokens in the macro
+ * expansion."*/\
+      ##suffix)
 /**Nm=name: http://www.abbreviations.com/abbreviation/name
  * Spc=space: http://www.abbreviations.com/abbreviation/Space */
 ///"C" language has no namespaces->Replace with empty character string.
@@ -130,7 +142,7 @@ TU_Bln361095frcInln enum TU_Bln361095hardwareDataCarrierGetIdentityUse(Rslt)
      {
       enum TU_Bln361095hardwareDataCarrierSMART_getIdentityUse(Rslt)
        SMARTgetIdentityRslt = TU_Bln361095hardwareDataCarrierSMART_Use(
-        getIdentity)(
+        GetIdentity)(
   	     dataCarrierHandle);
       if(SMARTgetIdentityRslt !=
          TU_Bln361095hardwareDataCarrierSMART_getIdentityUse(Sccss) )

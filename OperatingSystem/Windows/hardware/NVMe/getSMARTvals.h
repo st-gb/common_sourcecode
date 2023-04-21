@@ -8,18 +8,21 @@
   * Incl=INCLude:http://www.abbreviations.com/abbreviation/include
   * Grd=GuaRD:http://www.abbreviations.com/abbreviation/guard */
 #ifdef TU_Bln361095usePrgmInclGrd
-  /**Non-standard include guard:supported by many, but not all industry compilers:
-   * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
-#pragma once
+/**Non-standard include guard:supported by many, but not all industry compilers:
+ * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
+  #pragma once
 #endif
 #if defined TU_Bln361095usePrgmInclGrd ||\
 /**Include guard supported by (nearly) all industry compilers:*/\
-/**Bln=Berlin: http://www.acronymfinder.com/Berlin-(Bln).html
+/**Bln=BerLiN: http://www.acronymfinder.com/Berlin-(Bln).html
  * OpSys=OPerating SYStem: http://www.abbreviations.com/OpSys
  * MS=MicroSoft: http://www.abbreviations.com/abbreviation/MicroSoft
  * Win=WINdows: http://www.abbreviations.com/abbreviation/Windows */\
  !defined TU_Bln361095OpSys_MS_Win_hardware_NVMe_GetSMARTvals_h
   #define TU_Bln361095OpSys_MS_Win_hardware_NVMe_GetSMARTvals_h
+
+///C standard library header files:
+#include <stdint.h>///uint8_t
 
 //TODO What is the minimal Microsoft compiler version needed to compile?
 #if _MSC_VER > 1920
@@ -80,32 +83,41 @@ http://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddstor/ns-ntddst
 #include <compiler/force_inline.h>///TU_Bln361095frcInln
 
 #ifdef __cplusplus
-/**Def=definition: http://www.abbreviations.com/abbreviation/definition
+/**Def=DEFinition: http://www.abbreviations.com/abbreviation/definition
  * Put definition between "[...]NmSpcBgn" and "[...]NmSpcEnd" #define'd below.*/
   #define TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsDef(suffix) suffix
- /**Nm=name: http://www.abbreviations.com/abbreviation/name
-  * Spc=space: http://www.abbreviations.com/abbreviation/Space */
+/**Nm=NaMe: http://www.abbreviations.com/abbreviation/name
+ * Spc=SPaCe: http://www.abbreviations.com/abbreviation/Space
+ * Do not append "::" right of the rightmost namespace name to enable
+ * "using namespace [...]NVMeGetSMARTvalsNmSpc" */
   #define TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsNmSpc\
-    TU_Bln361095hardwareDataCarrierNVMeNmSpc GetSMARTvals ::
-  ///Bgn=BeGiN :http://www.allacronyms.com/begin/abbreviated
+    TU_Bln361095hardwareDataCarrierNVMeNmSpc ::\
+/**Begin with lowercase letter to avoid name clash with function of same name
+ * with uppercase letter. */\
+      getSMARTvals
+///Bgn=BeGiN :http://www.allacronyms.com/begin/abbreviated
   #define TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsNmSpcBgn\
-    TU_Bln361095hardwareDataCarrierNVMeNmSpcBgn namespace GetSMARTvals{
+    TU_Bln361095hardwareDataCarrierNVMeNmSpcBgn namespace\
+/**Begin with lowercase letter to avoid name clash with function of same name
+ * with uppercase letter. */\
+      getSMARTvals{
   #define TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsNmSpcEnd\
     TU_Bln361095hardwareDataCarrierNVMeNmSpcEnd }
   #define TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsUse(suffix)\
-    TU_Bln361095hardwareDataCarrierNVMeNmSpc suffix
+    TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsNmSpc :: suffix
 #else
-/**http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html#Concatenation :"The �##�
- * preprocessing operator performs token pasting. When a macro is expanded, the
- * two tokens on either side of each �##� operator are combined into a single
- * token, which then replaces the �##� and the two original tokens in the macro
- * expansion."*/
- ///Def=definition: http://www.abbreviations.com/abbreviation/definition
+///Def=DEFinition: http://www.abbreviations.com/abbreviation/definition
   #define TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsDef(suffix)\
-    TU_Bln361095hardwareDataCarrierNVMeUse(GetSMARTvals##suffix)
-/**Nm=name: http://www.abbreviations.com/abbreviation/name
- * Spc=space: http://www.abbreviations.com/abbreviation/Space */
- /**"C" language has no namespaces->Replace with empty character string.*/
+    TU_Bln361095hardwareDataCarrierNVMeUse(GetSMARTvals\
+/**http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html#Concatenation :"The ‘##’
+ * preprocessing operator performs token pasting. When a macro is expanded, the
+ * two tokens on either side of each ‘##’ operator are combined into a single
+ * token, which then replaces the ‘##’ and the two original tokens in the macro
+ * expansion."*/\
+      ##suffix)
+/**Nm=NaMe: http://www.abbreviations.com/abbreviation/name
+ * Spc=SPaCe: http://www.abbreviations.com/abbreviation/Space */
+///"C" language has no namespaces->Replace with empty character string.
   #define TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsNmSpc
 ///Bgn=BeGiN :http://www.allacronyms.com/begin/abbreviated
   #define TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsNmSpcBgn
@@ -233,8 +245,8 @@ TU_Bln361095frcInln
   //memcpy(pNMVeHealthInfoLog, pNMVeHealthInfoLogBgnAddr,
   //  sizeof(NVME_HEALTH_INFO_LOG) );
   //free(pDvcIOctlBuf);
-  *ppDvcIOctlBuf = pDvcIOctlBuf;
-  return TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsDef(Sccss);
+  *ppDvcIOctlBuf = (uint8_t*) pDvcIOctlBuf;
+  return TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsUse(Sccss);
 }
 
 TU_Bln361095hardwareDataCarrierNVMeNmSpcEnd
