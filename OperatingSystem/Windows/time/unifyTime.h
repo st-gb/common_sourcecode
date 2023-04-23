@@ -20,25 +20,35 @@
  * OpSys=OPerating SYStem: http://www.abbreviations.com/OpSys 
  * MS=MicroSoft: http://www.abbreviations.com/abbreviation/MicroSoft
  * Win=WINdows: http://www.abbreviations.com/abbreviation/Windows */\
- ! defined TU_Bln361095cmnSrc_OpSys_time_getCurrTime_h
-   #define TU_Bln361095cmnSrc_OpSys_time_getCurrTime_h
+ ! defined TU_Bln361095cmnSrc_OpSys_MS_Win_time_unifyTime_h
+   #define TU_Bln361095cmnSrc_OpSys_MS_Win_time_unifyTime_h
 
-#ifdef _WIN32
-  #include <OperatingSystem/Windows/time/getCurrTime.h>
-#endif///Windows
+///C,C++ standard library header files:
+#include <time.h>///struct tm
 
-#if defined( __unix__) //|| defined (__ANDROID__)
-  #include <OperatingSystem/POSIX/time/getCurrTime.h>
-#endif
+///Microsoft Windows operating system header files:
+#include <windows.h>///struct SYSTEMTIME, GetLocalTime(SYSTEMTIME)
 
-#ifdef __cplusplus
+///Stefan Gebauer's(TU Berlin mat.#361095) ~"common_sourcecode"repository files:
+#include <compiler/force_inline.h>///TU_Bln361095frcInln
+ ///TU_Bln361095OpSysDef, TU_Bln361095OpSysNmSpcBgn, TU_Bln361095OpSysNmSpcEnd
+#include <OperatingSystem/OpSys_ID_prefix.h>
+
 TU_Bln361095OpSysNmSpcBgn
 
-inline void GetCurrTime(struct tm& tm_Current)
+TU_Bln361095frcInln void TU_Bln361095OpSysDef(UnifyTime)(
+  SYSTEMTIME * p_systemTime,
+  struct tm * p_tm)
 {
-  TU_Bln361095OpSysUse(GetCurrTime)(&tm_Current);
+  p_tm->tm_sec = p_systemTime->wSecond;
+  p_tm->tm_min = p_systemTime->wMinute;
+  p_tm->tm_hour = p_systemTime->wHour;
+  p_tm->tm_wday = p_systemTime->wDayOfWeek;
+  p_tm->tm_mday = p_systemTime->wDay;
+  p_tm->tm_mon = p_systemTime->wMonth;
+  p_tm->tm_yday = p_systemTime->wYear;
 }
+
 TU_Bln361095OpSysNmSpcEnd
-#endif
 
 #endif///include guard
