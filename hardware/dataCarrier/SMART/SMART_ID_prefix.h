@@ -1,5 +1,7 @@
 /**(c)from 2023 Stefan Gebauer,Computer Science Master(TU Berlin matr.no.361095)
- * @author Stefan Gebauer(TU Berlin matriculation number 361095)*/
+ * @author Stefan Gebauer(TU Berlin matriculation number 361095)
+ * Include "SMART_ID" into name of this file. So it is easer to choose the
+ * correct file if many "[...]ID_prefix.h" files are open in an application.*/
 
 ///Include guard,see http://en.wikipedia.org/wiki/Include_guard :
 
@@ -32,26 +34,41 @@
 /**Def=definition: http://www.abbreviations.com/abbreviation/definition
  * Put definition between "[...]NmSpcBgn" and "[...]NmSpcEnd" #define'd below.*/
   #define TU_Bln361095hardwareDataCarrierSMART_Def(suffix) suffix
+  ///Shorter than with including "hardware"
+  #define TU_Bln361095dataCarrierSMARTdef(suffix) suffix
 /**Nm=name: http://www.abbreviations.com/abbreviation/name
  * Spc=space: http://www.abbreviations.com/abbreviation/Space */
   #define TU_Bln361095hardwareDataCarrierSMART_NmSpc\
+/**Do not append "::" right of the rightmost namespace name to enable
+ * "using namespace [...]DataCarrierSMART_NmSpc" */\
     TU_Bln361095hardwareDataCarrierNmSpc :: SMART
+  ///Shorter than with including "hardware"
+  #define TU_Bln361095dataCarrierSMARTnmSpc\
+/**Do not append "::" right of the rightmost namespace name to enable
+ * "using namespace [...]dataCarrierSMARTnmSpc" */\
+    TU_Bln361095dataCarrierNmSpc :: SMART
 ///Bgn=BeGiN :http://www.allacronyms.com/begin/abbreviated
   #define TU_Bln361095hardwareDataCarrierSMART_NmSpcBgn\
     TU_Bln361095hardwareDataCarrierNmSpcBgn namespace SMART{
+  ///Shorter than with including "hardware"
+  #define TU_Bln361095dataCarrierSMARTnmSpcBgn\
+    TU_Bln361095dataCarrierNmSpcBgn namespace SMART{
   /**"}" times >>number of namespaces<<*/
   #define TU_Bln361095hardwareDataCarrierSMART_NmSpcEnd\
     TU_Bln361095hardwareDataCarrierNmSpcEnd }
+  ///Shorter than with including "hardware"
+  #define TU_Bln361095dataCarrierSMARTnmSpcEnd\
+    TU_Bln361095dataCarrierNmSpcEnd }
   #define TU_Bln361095hardwareDataCarrierSMART_Use(suffix)\
     TU_Bln361095hardwareDataCarrierSMART_NmSpc :: suffix
 #else
+///Def=definition: http://www.abbreviations.com/abbreviation/definition
+  #define TU_Bln361095hardwareDataCarrierSMART_Def(suffix)\
 /**http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html#Concatenation :"The ‘##’
  * preprocessing operator performs token pasting. When a macro is expanded, the
  * two tokens on either side of each ‘##’ operator are combined into a single
  * token, which then replaces the ‘##’ and the two original tokens in the macro
- * expansion."*/
-///Def=definition: http://www.abbreviations.com/abbreviation/definition
-  #define TU_Bln361095hardwareDataCarrierSMART_Def(suffix)\
+ * expansion."*/\
     TU_Bln361095hardwareDataCarrierSMART_ ## suffix
 /**"C" language has no namespaces->Replace with empty character string.*/
   #define TU_Bln361095hardwareDataCarrierSMART_NmSpc /** ->empty */

@@ -1,5 +1,7 @@
 /**(c)from 2023 Stefan Gebauer,Computer Science Master(TU Berlin matr.no.361095)
- * @author Stefan Gebauer(TU Berlin matriculation number 361095)*/
+ * @author Stefan Gebauer(TU Berlin matriculation number 361095)
+ * Include "dataCarrier" into name of this file. So it is easer to choose the
+ * correct file if many "[...]ID_prefix.h" files are open in an application.*/
 
 ///Include guard,see http://en.wikipedia.org/wiki/Include_guard :
 
@@ -35,23 +37,39 @@
 /**Nm=name: http://www.abbreviations.com/abbreviation/name
  * Spc=space: http://www.abbreviations.com/abbreviation/Space */
   #define TU_Bln361095hardwareDataCarrierNmSpc\
+/**Do not append "::" right of the rightmost namespace name to enable
+ * "using namespace [...]DataCarrierNmSpc" */\
     TU_Bln361095hardwareNmSpc :: dataCarrier
+  ///Shorter than with including "hardware"
+  #define TU_Bln361095dataCarrierNmSpc\
+/**Do not append "::" right of the rightmost namespace name to enable
+ * "using namespace [...]dataCarrierNmSpc" */\
+    TU_Bln361095nmSpc :: dataCarrier
 ///Bgn=BeGiN :http://www.allacronyms.com/begin/abbreviated
   #define TU_Bln361095hardwareDataCarrierNmSpcBgn\
     TU_Bln361095hardwareNmSpcBgn namespace dataCarrier{
+  ///Shorter than with including "hardware"
+  #define TU_Bln361095dataCarrierNmSpcBgn\
+    TU_Bln361095nmSpcBgn namespace dataCarrier{
   /**"}" times >>number of namespaces<<*/
   #define TU_Bln361095hardwareDataCarrierNmSpcEnd\
     TU_Bln361095hardwareNmSpcEnd }
+  ///Shorter than with including "hardware"
+  #define TU_Bln361095dataCarrierNmSpcEnd\
+    TU_Bln361095nmSpcEnd }
   #define TU_Bln361095hardwareDataCarrierUse(suffix)\
     TU_Bln361095hardwareDataCarrierNmSpc :: suffix
+  ///Shorter than with including "hardware"
+  #define TU_Bln361095dataCarrierUse(suffix)\
+    TU_Bln361095dataCarrierNmSpc :: suffix
 #else
+///Def=definition: http://www.abbreviations.com/abbreviation/definition
+  #define TU_Bln361095hardwareDataCarrierDef(suffix)\
 /**http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html#Concatenation :"The ‘##’
  * preprocessing operator performs token pasting. When a macro is expanded, the
  * two tokens on either side of each ‘##’ operator are combined into a single
  * token, which then replaces the ‘##’ and the two original tokens in the macro
- * expansion."*/
-///Def=definition: http://www.abbreviations.com/abbreviation/definition
-  #define TU_Bln361095hardwareDataCarrierDef(suffix)\
+ * expansion."*/\
     TU_Bln361095hardwareDataCarrier ## suffix
 /**Nm=name: http://www.abbreviations.com/abbreviation/name
  * Spc=space: http://www.abbreviations.com/abbreviation/Space */

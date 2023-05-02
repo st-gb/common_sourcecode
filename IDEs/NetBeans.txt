@@ -31,7 +31,7 @@ So install for example OpenJDK JRE.
    -from Java 8-14
     For "unpack200" for NetBeans 8.2 C++ plugin in higher NetBeans versions:
     Install Java Development Kit(JDK) ?:
-    : http://docs.oracle.com/en/java/javase/11/tools/unpack200.htmls
+    : http://docs.oracle.com/en/java/javase/11/tools/unpack200.html
    -from another source like
     https://www.exefiles.com/en/exe/unpack200-exe/
 	

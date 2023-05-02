@@ -1,15 +1,25 @@
 /**(c)from 2010 Stefan Gebauer,Computer Science Master(TU Berlin matr.no.361095)
-*Created ca.19Aug2010 18:37 by Stefan Gebauer,TU Berlin matricul.number 361095*/
+ * created ca. 19 Aug 2010 18:37
+ * @author Stefan Gebauer(TU Berlin matriculation number 361095)*/
 
-///Include guard,see http://en.wikipedia.org/wiki/Include_guard
+///Include guard,see http://en.wikipedia.org/wiki/Include_guard :
+
+/**Bln=BerLiN:http://www.acronymfinder.com/Berlin-(Bln).html
+ * Prgm=PRaGMa
+ * Incl=INCLude:http://www.abbreviations.com/abbreviation/include
+ * Grd=GuaRD:http://www.abbreviations.com/abbreviation/guard */
 #ifdef TU_Bln361095usePrgmInclGrd
 /**Non-standard include guard:supported by many, but not all industry compilers:
  * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
-#pragma once
+  #pragma once
 #endif
-///Include guard supported by (nearly) all compilers:
-#ifndef TU_Bln361095cmnSrcLogger_hpp
-#define TU_Bln361095cmnSrcLogger_hpp
+#if defined TU_Bln361095usePrgmInclGrd ||\
+/**Include guard supported by (nearly) all compilers:*/\
+/**Bln=BerLiN: http://www.acronymfinder.com/Berlin-(Bln).html
+ * cmn=CoMmoN: http://www.abbreviations.com/abbreviation/common
+ * Src=SouRCe: http://www.abbreviations.com/abbreviation/Source */\
+ !defined TU_Bln361095cmnSrc_Logger_Logger_hpp
+  #define TU_Bln361095cmnSrc_Logger_Logger_hpp
 
 //  #define COMPILE_LOGGER_MULTITHREAD_SAFE
 //  #define COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
@@ -25,31 +35,39 @@
 
 #ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
   //#include <wx/thread.h> //wxCriticalSection
+///Stefan Gebauer's(TU Berlin mat.#361095)~"common_sourcecode" repository files:
 //  #include <Windows/multithread/I_CriticalSection.hpp>
   #include <OperatingSystem/multithread/nativeCriticalSectionType.hpp>
 #endif //#ifndef COMPILE_LOGGER_MULTITHREAD_SAFE
 
-  //for std::tstring
-  #include <dataType/charStr/stdtstr.hpp>
+///Stefan Gebauer's(TU Berlin mat.#361095) ~"common_sourcecode"repository files:
+  #include <dataType/charStr/stdtstr.hpp>///for std::tstring
   #include <compiler/GCC/enable_disable_warning.h> //GCC_DIAG_OFF(...)
+  ///TU_Bln361095MicroSoftWindows
+  #include <OperatingSystem/Windows/MicrosoftWindows.h>
 
 //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 //  //#include <data_structures/Trie/byteTrie/Trie.hpp> //class Trie
 //  #include <data_structures/Trie/NodeTrie/NodeTrie.hpp> //class Trie
 //#endif //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 
+///Stefan Gebauer's(TU Berlin mat.#361095) ~"common_sourcecode"repository files:
   #include "log_file_prefix.hpp" // GetLogFilePrefix(LogFileEntry)
   #include <OperatingSystem/multithread/GetCurrentThreadNumber.hpp>
 //  #include "HTMLlogFormatter.hpp"
 //  #include "Formatter/I_LogFormatter.hpp" //class ILogFormatter::WriteLogFileEntry(...)
-
   //#include "LogLevel.hpp" //namespace LogLevel::MessageType
   //using namespace LogLevel;
-
   #include "LogFileEntry.hpp" //class LogFileEntry
 
-  #include <windef.h> //for WORD
-  //from http://stackoverflow.com/questions/3243454/what-is-the-linux-equivalent-to-maxdword
+#ifdef _MSC_VER///MicroSoft Compiler
+/**Microsoft Visual Studio has compile errors when including <windef.h>
+ * directly. So include <windows.h> for DWORD*/
+  #include <windows.h>///for DWORD
+#else
+  #include <windef.h>///for DWORD
+#endif
+//from http://stackoverflow.com/questions/3243454/what-is-the-linux-equivalent-to-maxdword
   #include <limits.h> //UINT_MAX
 
   //Forward decl. (faster than to #include a file)
@@ -71,14 +89,14 @@
     /*volatile*/ std::vector<FormattedLogEntryProcessor *> m_formattedLogEntryProcessors;
   public:
 #ifdef COMPILE_LOGGER_MULTITHREAD_SAFE
-  #ifdef _WIN32 //Built-in preprocessor macro for MSVC, MinGW (also for 64 bit)
-    //Use member variable: so it does not need to be created on stack for
-    //every call to "Log(...)".
+  #ifdef TU_Bln361095MicrosoftWindows
     typedef //OperatingSystem::Windows::I_CriticalSection
       nativeCriticalSection_type CriticalSection_type;
   #else
   #endif
-    //Make public because accessed from preprocessor macro.
+    /**Use member variable: so it does not need to be created on stack for
+     * every call to "Log(...)".
+     * Make public because accessed from preprocessor macro.*/
     //wxCriticalSection m_critical_section_typeLogging ;
     nativeCriticalSection_type m_critical_section_typeLogging ;
 #endif
@@ -347,6 +365,7 @@
     bool OpenFile( //std::string & r_stdstrFilePath
       std::tstring & r_stdtstrFilePath ) ;
 #endif //COMPILE_LOGGER_WITH_TSTRING_SUPPORT
+  ///@brief opens a file with 1 byte/8 bit ASCII file name
     bool OpenFileA(
       std::string & r_std_strFilePath,
       const char * const format = "log4j",
@@ -430,4 +449,4 @@
     }
   };
 
-#endif///#ifndef TU_Bln361095cmnSrcLogger_hpp
+#endif///include guard

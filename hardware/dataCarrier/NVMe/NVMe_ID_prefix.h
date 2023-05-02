@@ -34,22 +34,35 @@
 /**Nm=name: http://www.abbreviations.com/abbreviation/name
  * Spc=space: http://www.abbreviations.com/abbreviation/Space */
   #define TU_Bln361095hardwareDataCarrierNVMeNmSpc\
+/**Do not append "::" right of the rightmost namespace name to enable
+ * "using namespace [...]DataCarrierNVMeNmSpc" */\
     TU_Bln361095hardwareDataCarrierNmSpc :: NVMe
+  ///Shorter version without "hardware".
+  #define TU_Bln361095dataCarrierNVMeNmSpc\
+/**Do not append "::" right of the rightmost namespace name to enable
+ * "using namespace [...]dataCarrierNVMeNmSpc" */\
+    TU_Bln361095dataCarrierNmSpc :: NVMe
 ///Bgn=BeGiN :http://www.allacronyms.com/begin/abbreviated
   #define TU_Bln361095hardwareDataCarrierNVMeNmSpcBgn\
     TU_Bln361095hardwareDataCarrierNmSpcBgn namespace NVMe{
+  ///Shorter version without "hardware".
+  #define TU_Bln361095dataCarrierNVMeNmSpcBgn\
+    TU_Bln361095dataCarrierNmSpcBgn namespace NVMe{
   #define TU_Bln361095hardwareDataCarrierNVMeNmSpcEnd\
     TU_Bln361095hardwareDataCarrierNmSpcEnd }
+  ///Shorter version without "hardware".
+  #define TU_Bln361095dataCarrierNVMeNmSpcEnd\
+    TU_Bln361095dataCarrierNmSpcEnd }
   #define TU_Bln361095hardwareDataCarrierNVMeUse(suffix)\
     TU_Bln361095hardwareDataCarrierNVMeNmSpc :: suffix
 #else
+///Def=definition: http://www.abbreviations.com/abbreviation/definition
+  #define TU_Bln361095hardwareDataCarrierNVMeDef(suffix) \
 /**http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html#Concatenation :"The ‘##’
  * preprocessing operator performs token pasting. When a macro is expanded, the
  * two tokens on either side of each ‘##’ operator are combined into a single
  * token, which then replaces the ‘##’ and the two original tokens in the macro
- * expansion."*/
-///Def=definition: http://www.abbreviations.com/abbreviation/definition
-  #define TU_Bln361095hardwareDataCarrierNVMeDef(suffix) \
+ * expansion."*/\
     TU_Bln361095hardwareDataCarrierNVMe##suffix
   #define TU_Bln361095hardwareDataCarrierNVMeUse(suffix) \
     TU_Bln361095hardwareDataCarrierNVMeDef(suffix)
