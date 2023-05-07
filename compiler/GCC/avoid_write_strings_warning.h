@@ -4,6 +4,7 @@
  * converting a string constant to ‘char*’ [-Wwrite-strings" by converting to a
  * "char" pointer */
 #define CAST_TO_CHAR_POINTER (char *)
+#define TU_Bln361095castToCharPtr (char *)
 
 /** To avoid GCC (and "clang"?) compiler warning  "warning: deprecated
  * conversion from string constant to 'LPWSTR {aka wchar_t*}' [-Wwrite-strings]"

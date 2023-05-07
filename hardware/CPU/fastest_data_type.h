@@ -16,6 +16,7 @@
 
 //#include <stdint.h> //int_fast32_t
 
+//TODO This only applies to x86?
 /** "unsigned" has same bit width as CPU architecture a program is compiled 
  * for. -> this is maximum speed according to Dr. Ullrich Pohl because aligned to a CPU 
  * archicteture. */
