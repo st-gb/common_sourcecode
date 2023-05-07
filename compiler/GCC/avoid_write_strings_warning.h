@@ -6,7 +6,6 @@
 #define CAST_TO_CHAR_POINTER (char *)
 #define TU_Bln361095castToCharPtr (char *)
 
-/** To avoid GCC (and "clang"?) compiler warning  "warning: deprecated
- * conversion from string constant to 'LPWSTR {aka wchar_t*}' [-Wwrite-strings]"
- * */
-#define CAST_TO_WCHAR_POINTER (wchar_t *)
+/**To avoid GCC (and "clang"?) compiler warning ~"deprecated conversion from
+ * string constant to 'wchar_t*' [-Wwrite-strings]" */
+#define TU_Bln361095castToWchar_tPtr (wchar_t *)

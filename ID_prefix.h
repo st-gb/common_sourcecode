@@ -23,15 +23,30 @@
 
 /**Use these preprocessor macros in source code for example to enable both C and
  * C++. */
-#ifdef __cpluplus
+#ifdef __cplusplus
+///Without "cmnSrc" (shorter) for convenience.
+/**def=DEFinition: http://www.abbreviations.com/abbreviation/definition
+ * Put definition between "[...]nmSpcBgn" and "[...]nmSpcEnd" #define'd below.*/
+  #define TU_Bln361095def(suffix) suffix
+/**Nm=NaMe: http://www.abbreviations.com/abbreviation/name
+ * Spc=SPaCe: http://www.abbreviations.com/abbreviation/Space
+ * Do not append "::" right of the rightmost namespace name to enable
+ * "using namespace [...]TU_Bln361095nmSpc" */
+  #define TU_Bln361095nmSpc TU_Bln361095
+  ///Bgn=BeGiN :http://www.allacronyms.com/begin/abbreviated
+  #define TU_Bln361095nmSpcBgn namespace TU_Bln361095{
+  #define TU_Bln361095nmSpcEnd }
+  #define TU_Bln361095use(suffix) TU_Bln361095nmSpc :: suffix
 /**cmn=CoMmoN:http://www.abbreviations.com/abbreviation/common
  * Src=SouRCe(code):http://www.abbreviations.com/abbreviation/Source
  *   "common sourcecode" is the git repository these files are/should be in.
- * Def=definition: http://www.abbreviations.com/abbreviation/definition
+ * Def=DEFinition: http://www.abbreviations.com/abbreviation/definition
  * Put definition between "[...]NmSpcBgn" and "[...]NmSpcEnd" #define'd below.*/
   #define TU_Bln361095cmnSrcDef(suffix) suffix
-/**Nm=name: http://www.abbreviations.com/abbreviation/name
- * Spc=space: http://www.abbreviations.com/abbreviation/Space */
+/**Nm=NaMe: http://www.abbreviations.com/abbreviation/name
+ * Spc=SPaCe: http://www.abbreviations.com/abbreviation/Space
+ * Do not append "::" right of the rightmost namespace name to enable
+ * "using namespace [...]cmnSrcNmSpc" */
   #define TU_Bln361095cmnSrcNmSpc TU_Bln361095 :: cmnSrc
   ///Bgn=BeGiN :http://www.allacronyms.com/begin/abbreviated
   #define TU_Bln361095cmnSrcNmSpcBgn namespace TU_Bln361095{namespace cmnSrc{
@@ -39,10 +54,21 @@
   #define TU_Bln361095cmnSrcNmSpcEnd }}
   #define TU_Bln361095cmnSrcUse(suffix) TU_Bln361095cmnSrcNmSpc :: suffix
 #else
+///Without "cmnSrc" (shorter) for convenience.
+  #define TU_Bln361095def(suffix) TU_Bln361095##suffix
+/**Nm=NaMe: http://www.abbreviations.com/abbreviation/name
+ * Spc=SPaCe: http://www.abbreviations.com/abbreviation/Space
+ * "C" language has no namespaces->Replace with empty character string. */
+  #define TU_Bln361095nmSpc /** ->empty */
+///Bgn=BeGiN: http://www.allacronyms.com/begin/abbreviated
+  #define TU_Bln361095nmSpcBgn /** ->empty */
+  #define TU_Bln361095nmSpcEnd /** ->empty */
+  #define TU_Bln361095use(suffix) TU_Bln361095def(suffix)
+
 ///Def=definition: http://www.abbreviations.com/abbreviation/definition
   #define TU_Bln361095cmnSrcDef(suffix) TU_Bln361095cmnSrc ## suffix
-/**Nm=name: http://www.abbreviations.com/abbreviation/name
- * Spc=space: http://www.abbreviations.com/abbreviation/Space
+/**Nm=NaMe: http://www.abbreviations.com/abbreviation/name
+ * Spc=SPaCe: http://www.abbreviations.com/abbreviation/Space
  * "C" language has no namespaces->Replace with empty character string. */
   #define TU_Bln361095cmnSrcNmSpc /** ->empty */
   ///Bgn=BeGiN :http://www.allacronyms.com/begin/abbreviated

@@ -5,10 +5,20 @@
 #NetBeans IDE project files:
 **/nbproject
 
-#MicroSoft Visual Studio project files:
+#MicroSoft Visual Studio project files
+#-------------------------------------
+*Browse.VC.*
+*Solution.VC.*
+*.ipch
+*.pdb
+#compiled OBJect files:
+*.obj
+*.suo
 *.sln
+*.tlog
 *.vcxproj
 *.vcxproj.filters
+*.vsidx
 
 #eclipse IDE
 #-----------

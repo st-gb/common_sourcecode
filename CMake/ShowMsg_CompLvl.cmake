@@ -31,14 +31,3 @@ function(showMsg lvl msg)
     message("${msg}")
   endif()
 endfunction()
-
-function(showInclDirs lvl)
- if(${lvl} GREATER ${g_lvl})
-  #from
-  #https://stackoverflow.com/questions/6902149/listing-include-directories-in-cmake
-  get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
-  foreach(dir ${dirs})
-    message(STATUS "incl.dir='${dir}'")
-  endforeach()
- endif()
-endfunction()

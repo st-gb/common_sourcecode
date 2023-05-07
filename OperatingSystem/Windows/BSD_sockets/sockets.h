@@ -39,24 +39,6 @@ http://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-wsacleanup:
   return 0;
 }
 
-inline enum errorCodes
-#ifdef __cplusplus
-  GetLastError
-#else
-  GetLastBSDsockError
-#endif
-  (){
-  const int error = WSAGetLastError();
-  switch(error){
-   case WSAECONNREFUSED:
-     return connRefused;
-   case WSAEINPROGRESS:
-     return inProgress;
-   case WSAETIMEDOUT:
-     return timedOut;
-  }
-}
-
 /** @brief Without initializing the Windows sockets error WSANOTINITIALISED
  *   (error code 10093) occurred when using Windows/BSD socket functions.
  * @return 0:success, else error code equal to WSAGetLastError(). So it can be
@@ -65,7 +47,7 @@ inline enum errorCodes
 http://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-wsagetlasterror
  *  : "The FormatMessage function can be used to obtain the message string for
  *   the returned error." */
-force_inline int TU_Bln361095BSDsktDef(Init)(){
+TU_Bln361095frcInln int TU_Bln361095BSDsktDef(Bgn)(){
 /**
 http://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-wsastartup:
 * "The WSAStartup function initiates use of the Winsock DLL by a process."*/
