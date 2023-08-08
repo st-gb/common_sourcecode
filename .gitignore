@@ -20,6 +20,11 @@
 *.vcxproj.filters
 *.vsidx
 
+#eclipse IDE
+#-----------
+.cproject
+.project
+
 #Intermediate CMake files:
 **/CMakeFiles
 **/CMakeCache.txt
@@ -35,3 +40,7 @@
 *.exe
 #Default GCC executable file name: http://en.wikipedia.org/wiki/A.out
 a.out
+
+#Doxygen generated files
+**/html
+**/latex
