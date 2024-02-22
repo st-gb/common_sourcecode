@@ -1,3 +1,6 @@
+/**This file is specific to the C(++) compiler, not to its programming language.
+ * Because it uses non-standard C(++) preprocessor macros.
+ * So place it into file system directory ~"compiler/C,C++".*/
 /**(c)from 2023:Stefan Gebauer,Computer Science Master(TU Berlin,matric.#361095)
  * @author Stefan Gebauer(TU Berlin matriculation number 361095)
  * Created 08.8.2023*/
@@ -36,16 +39,25 @@
  * Use "progLang" prefix because "compiler" may also have other meanings:maker
  * of a compilation of sound etc.)*/
  #define TU_Bln361095progLangC_andCppCurrFnSig\
-/**see http://gcc.gnu.org/onlinedocs/gcc/Function-Names.html :
- *"__PRETTY_FUNCTION__" becomes (in Extended Backus-Naur form):
- * - >>return type<<
- * - " "
- * - {>>namespace name<< "::"}
- * - [>>class name<< "::"]
- * - >>function name<<
- * - "("
- * - >>parameters list (only data type, no identifiers)<<
- * - ")" */\
+/**see http://gcc.gnu.org/onlinedocs/gcc/Function-Names.html ,
+ * http://lists.llvm.org/pipermail/cfe-dev/2018-February/056766.html :
+ *"__PRETTY_FUNCTION__" becomes in Extended Backus-Naur form
+ *  (http://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form):
+ * -function signature = 
+ *   [>>return type<<
+ *   " "] (no return type in constructors),
+ *   {>>namespace name<< "::"},
+ *   [>>class/struct name<<
+ *    , template,
+ *    "::"],
+ *   >>function name<<
+ *   "("
+ *    {>>data type<<," "}[>>data type<<] (parameters list:no identifiers)
+ *   ")",
+ *   ["[with ">>template's typename<<" = ">>template's type<<<"]"];
+ *    for example: "[with T = void]"
+ * -template = ["<">>template's typename<<">"]
+ *    (for example "template <typename T> class C") */\
   __PRETTY_FUNCTION__
 #endif
 #ifdef _MSC_VER///Microsoft Visual Studio C(++) compiler("cl.exe")
@@ -53,12 +65,13 @@
  * Lang=LANGuage: http://www.abbreviations.com/abbreviation/language
  * Use "progLang" prefix because "compiler" may also have other meanings:maker
  * of a compilation of sound etc.)*/
- #define TU_Bln361095progLangC_andCppCurrFnSig \
+ #define TU_Bln361095progLangC_andCppCurrFnSig\
  /**see
 http://social.msdn.microsoft.com/Forums/vstudio/de-DE/02c69018-a182-48b3-94d1-250252aa00a7/prettyfunction?forum=vclanguage
-: "__FUNCSIG__" becomes (in Extended Backus-Naur form):
- * - >>return type<<
- * - " "
+ * : "__FUNCSIG__" becomes in Extended Backus-Naur form
+ *   (http://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form):
+ * - [>>return type<<
+ * - " "] (no return type in constructors)
  * - >>calling convention<<
  * - " "
  * - {>>namespace name<< "::"}
@@ -66,6 +79,7 @@ http://social.msdn.microsoft.com/Forums/vstudio/de-DE/02c69018-a182-48b3-94d1-25
  * - >>function name<<
  * - "("
  * - [>>parameter type<< {"," >>parameter type<<}]
+ *   >>parameter type<< may be "class >>class name<<"?
  * - ")"
  * for example:"void __thiscall A::A::Func(class std::basic_ostream<char,struct
  *  std::char_traits<char> > &)" */\

@@ -34,6 +34,7 @@
  /**TU_Bln361095compilerC_andCppNmSpc, TU_Bln361095compilerC_andCppNmSpcBgn,
   * TU_Bln361095compilerC_andCppNmSpcEnd */
  #include<compiler/C,C++/C,C++ID_prfx.h>
+ #include<compiler/force_inline.h>///TU_Bln361095frcInln
  ///TU_Bln361095numBforANSIstrTerm0char preprocessor macro
  #include<dataType/charStr/numBforStrTerm0char.h>
 
@@ -66,39 +67,47 @@
 #endif
 
 TU_Bln361095compilerC_andCppFnSigNmSpcBgn
-{
-  {
-  }
-
 
 //means : global scope (no namespame names)
 static const char TU_Bln361095progLangCandCppGlobSculpOper []= "::";
 
-/** GCC's __PRETTY_FUNCTION__ format is:
- * >>return type<< [namespace::]>>class name<< "::"
- * >>function name<< >>parameters list (only data type, no identifiers )<<
- * Works with GCC ("__PRETTY_FUNCTION__") and maybe with MSVC ("__FUNCSIG__").
- * @param fnNmBgn begin of function name
- * @param nmOfClAndOrNmSpcEnd end of class/namespace name
- * @return begin of class/namespace name
- Cl=CLass: http://www.allacronyms.com/class/abbreviated */
+/**@brief Gets the whole namespace&class name within function signature.
+ *  This may be the _current_ function signature (GNU C Compilers's
+ *  "__PRETTY_FUNCTION__", MicroSoft Visual C++'s "__FUNCSIG__", ...) or another
+ *  /previous function signature. See file ~"compiler/C,C++/currFuncSig.h" for
+ *  the format of "__PRETTY_FUNCTION__" and "__FUNCSIG__".
+ * @param fnNmBgn [in] pointer to begin(1st character) of function name
+ * @param nmOfClAndOrNmSpcEnd [out] address of pointer to end (last/rightmost
+ *  character) of class/namespace name
+ *  If for example "AAAA" is the address of the character string end and "BBBB"
+ *  is the address where "AAAA" should be stored, then "BBBB" is passed as value
+ *  here and dereferenced later for storing "AAAA" in it.
+ * @return pointer to 1st/leftmost character of class/namespace name */
 //TODO can't distiguish between class and namespace name only by signature
 // because all may be namespace names and classes may have inner classes.
-inline const char * const
- TU_Bln361095compilerC_andCppFnSigDef(/*GetClOrNmSpcNm*/GetNmOfClAndOrNmSpc)(
+TU_Bln361095frcInln const char * const
+ TU_Bln361095compilerC_andCppFnSigDef(/*GetClOrNmSpcNm*/
+/**Nm=NaMe: http://www.abbreviations.com/abbreviation/name
+ * Cl=CLass: http://www.abbreviations.com/abbreviation/class
+ * Spc=SPaCe: http://www.abbreviations.com/abbreviation/space */
+   GetNmOfClAndOrNmSpc)(
   const char * const fnNmBgn,
   char ** const nmOfClAndOrNmSpcEnd
   )
 {
-  /**Search backwards from the function name begin because searching from the begin
-   * is more difficult for __FUNCSIG__ because class constructors have no return type
-   * so only a character string comparison can determine if the first " "-delimited 
-   * string is the return type or the calling convention
-   * (http://en.wikipedia.org/wiki/Calling_convention). */
+/**Search backwards from the first/leftmost function name character because:
+ * -searching from the function signature begin is more difficult for Microsoft
+ *  Visual C++'s "__FUNCSIG__" preprocessor macro (see file
+ *  ~"compiler/C,C++/currFuncSig.h") because class constructors have no return
+ *  type so only a character string comparison can determine if the first " "-
+ *  delimited string is the return type or the calling convention(
+ *  http://en.wikipedia.org/wiki/Calling_convention) in order to skip them.
+ * -the return type may have namespace/class names/sculp operators */
   const char * spcChr1BfrFnNmBgn = fnNmBgn;
   while(*--spcChr1BfrFnNmBgn != ' ');
-  if(spcChr1BfrFnNmBgn == fnNmBgn - 1)
+  if(spcChr1BfrFnNmBgn == fnNmBgn - 1)///<=>No class/namespace name before.
   {
+    ///Derefer to store pointer to/address of character string end.
     *nmOfClAndOrNmSpcEnd = 
       /**Cast to "char *" to avoid MicroSoft Visual Studio "warning C4090: "=":
        * Different "const" qualifiers"*/
@@ -118,12 +127,21 @@ inline const char * const
     (char * const)
     fnNmBgn - 2;
   return spcChr1BfrFnNmBgn+1;
+}
 
 /**@brief Gets the begin of the function name.
- * @param p_fnNmEnd pointer to end of function name within function signature
- *  (via __FUNCSIG__ or __PRETTY_FUNCTION__ see file "currFuncSig.h"
+ * @param p_fnNmEnd pointer to the last/rightmost character of function name
+ *   within function signature.
+ *  May be the _current_ function signature (GNU C Compilers's
+ *  "__PRETTY_FUNCTION__", MicroSoft Visual C++'s "__FUNCSIG__", ...) or another
+ *  /previous function signature. See file ~"compiler/C,C++/currFuncSig.h" for
+ *  the format of "__PRETTY_FUNCTION__" and "__FUNCSIG__".
  * @return pointer to function name begin */
-inline const char * getFnNmBgn(
+TU_Bln361095frcInln const char *
+/**Fn=FuNction: http://www.abbreviations.com/abbreviation/function
+ * Nm=NaMe: http://www.abbreviations.com/abbreviation/name
+ * Bgn=BeGiN: http://www.allacronyms.com/begin/abbreviated */
+  getFnNmBgn(
   const char * const p_fnNmEnd)
 {
   const char * p_fnNmBgn = p_fnNmEnd - 1;
@@ -134,7 +152,7 @@ inline const char * getFnNmBgn(
   {
     switch(*p_fnNmBgn)
     {
-    case ':':
+    case ':':///sculp operator ("::") of class or namespace name
     case ' ':
       p_fnNmBgn = p_fnNmBgn + 1;
       return p_fnNmBgn;
@@ -143,19 +161,37 @@ inline const char * getFnNmBgn(
   return p_fnNmBgn;
 }
 
-/**@param fnSig : function signature. Works with GCC's __PRETTY_FUNCTION__ format:
- * >>return type<< [namespace::]>>class name<< "::"
- * >>function name<< >>parameters list (only data type, no identifiers )<<
- * Works with GCC ("__PRETTY_FUNCTION__") and with MSVC ("__FUNCSIG__").
+//TODO the identifier before a function name may also be a namespace name?!
+/**@brief gets the function via pointers to its 1st and last character
+ * @param fnSig : function signature. May be the _current_ function signature
+ *  (GNU C Compilers's "__PRETTY_FUNCTION__", MicroSoft Visual C++'s
+ *  "__FUNCSIG__", ...) or another/previous function signature. See file
+ *  ~"compiler/C,C++/currFuncSig.h" for the format of "__PRETTY_FUNCTION__" and
+ *  "__FUNCSIG__".
  * @param p_fnNmEnd
- *  out:address of/pointer to a pointer to the function name end
- *  character. The address of the pointer is changed inside this function
+ *  [out] address of/pointer to a pointer to the last/rightmost character of
+ *   function name. The address of the pointer to this character is changed
+ *   inside this function
+ *  A pointer to the last function name character needs to be provided to get
+ *   the end of function name because the character right of it can't be set to
+ *   '\0' to signalize string end (then pogram crash?) if for example \p fnSig
+ *   is "__FUNCSIG__" from Microsoft Visual C++.
  * @return pointer to the 1st character of the function name inside \p fnSig */
-inline const char * const TU_Bln361095compilerC_andCppFnSigDef(GetFnNm)(
+TU_Bln361095frcInln const char * const TU_Bln361095compilerC_andCppFnSigDef(
+  /**Fn=FuNction: http://www.abbreviations.com/abbreviation/function
+   * Nm=NaMe: http://www.abbreviations.com/abbreviation/name */
+  GetFnNm)(
   const char fnSig[],
   const char ** p_fnNmEnd)
 {
-  *p_fnNmEnd = strchr(fnSig,'(');///Search for 1st/leftmost '('
+  *p_fnNmEnd =
+/**http://pubs.opengroup.org/onlinepubs/9699919799.orig/functions/strchr.html
+ * "The strchr() function shall locate the first occurrence of c (converted to
+ * a char) in the string pointed to by s. The terminating NUL character is
+ * considered to be part of the string.
+ * RETURN VALUE : "Upon completion, strchr() shall return a pointer to the byte,
+ * or a null pointer if the byte was not found."*/
+    strchr(fnSig,'(');///Search for 1st/leftmost '('
   assert(*p_fnNmEnd != NULL);
   const char * p_fnNmBgn = getFnNmBgn(*p_fnNmEnd);
   return p_fnNmBgn;
