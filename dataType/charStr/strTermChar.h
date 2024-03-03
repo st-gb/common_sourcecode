@@ -33,5 +33,6 @@
  * Term=TERMinination : http://www.abbreviations.com/abbreviation/termination 
  * char=CHARacter : http://www.abbreviations.com/abbreviation/character */
 #define TU_Bln361095numBforANSIstrTerm0char 1
+#define TU_Bln361095ANSIstrTerm0char '\0'
 
 #endif///Include guard

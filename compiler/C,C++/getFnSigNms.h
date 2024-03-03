@@ -1,4 +1,8 @@
-/**Do not put these file's functions into "currFnSig.h" because _here_ also
+/**File name "getFnSigNms" comes from:
+ * -Fn=FuNction: http://www.allacronyms.com/function/abbreviated
+ * -Sig=SIGnature: http://www.abbreviations.com/abbreviation/signature
+ * -Nms=NaMeS: http://www.abbreviations.com/abbreviation/name
+ * Do not put these file's functions into "currFnSig.h" because _here_ also
  * function and class/namespace name from non-current function signatures should
  * be able to be exctracted.
  * Created on: 19.12.2012 */
@@ -24,8 +28,8 @@
  * Bln=BerLiN: http://www.acronymfinder.com/Berlin-(Bln).html
  * Fn/Fun/Func=FUNCtion: http://www.allacronyms.com/function/abbreviated
  * Sig=SIGnature: http://www.abbreviations.com/abbreviation/signature */\
- !defined TU_Bln361095compiler__C_andCpp__fnSig__getNames_h
-  #define TU_Bln361095compiler__C_andCpp__fnSig__getNames_h
+ !defined TU_Bln361095compiler__C_andCpp__getFnSigNms_h
+  #define TU_Bln361095compiler__C_andCpp__getFnSigNms_h
 
 ///C(++) standard library header files:
  #include <assert.h>//assert(...)
@@ -36,7 +40,7 @@
  #include<compiler/C,C++/C,C++ID_prfx.h>
  #include<compiler/force_inline.h>///TU_Bln361095frcInln
  ///TU_Bln361095numBforANSIstrTerm0char preprocessor macro
- #include<dataType/charStr/numBforStrTerm0char.h>
+ #include<dataType/charStr/strTermChar.h>
 
 /**Use these preprocessor macros in source code for example to enable both C and
  * C++.*/

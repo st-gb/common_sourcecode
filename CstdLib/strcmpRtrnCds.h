@@ -1,3 +1,6 @@
+/**File name "strcmpRtrnCds" comes from: 
+ * "Rtrn"=ReTuRN: http://www.abbreviations.com/abbreviation/return
+ * "Cds"=CoDeS: http://www.allacronyms.com/code/abbreviated */
 ///(c)from 2015:Stefan Gebauer,Computer Science Master(TU Berlin,matric.#361095)
 ///Created ca.15Feb2015 by Stefan Gebauer(TU Berlin,matriculation number 361095)
 
