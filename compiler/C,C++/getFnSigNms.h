@@ -75,6 +75,24 @@ TU_Bln361095compilerC_andCppFnSigNmSpcBgn
 //means : global scope (no namespame names)
 static const char TU_Bln361095progLangCandCppGlobSculpOper []= "::";
 
+TU_Bln361095frcSttcInln const char * useSculpOperator(
+  char ** const pp_nmOfClAndOrNmSpcEnd)
+{
+  ///Derefer to store pointer to/address of character string end.
+  *pp_nmOfClAndOrNmSpcEnd = 
+    /**Cast to "char *" to avoid MicroSoft Visual Studio "warning C4090: "=":
+     * Different "const" qualifiers"*/
+    (char*)
+    TU_Bln361095progLangCandCppGlobSculpOper + //(char *)
+    (///<=>number of characters
+    (sizeof(TU_Bln361095progLangCandCppGlobSculpOper)///"sizeof"=number of bytes
+      - TU_Bln361095numBforANSIstrTerm0char) /
+    sizeof(char)
+    )
+    ;
+  return TU_Bln361095progLangCandCppGlobSculpOper;
+}
+
 /**@brief Gets the whole namespace&class name within function signature.
  *  This may be the _current_ function signature (GNU C Compilers's
  *  "__PRETTY_FUNCTION__", MicroSoft Visual C++'s "__FUNCSIG__", ...) or another
@@ -89,7 +107,8 @@ static const char TU_Bln361095progLangCandCppGlobSculpOper []= "::";
  * @return pointer to 1st/leftmost character of class/namespace name */
 //TODO can't distiguish between class and namespace name only by signature
 // because all may be namespace names and classes may have inner classes.
-TU_Bln361095frcInln const char * const
+
+TU_Bln361095frcSttcInln const char * const
  TU_Bln361095compilerC_andCppFnSigDef(/*GetClOrNmSpcNm*/
 /**Nm=NaMe: http://www.abbreviations.com/abbreviation/name
  * Cl=CLass: http://www.abbreviations.com/abbreviation/class
@@ -99,6 +118,7 @@ TU_Bln361095frcInln const char * const
   char ** const nmOfClAndOrNmSpcEnd
   )
 {
+#if defined __cplusplus
 /**Search backwards from the first/leftmost function name character because:
  * -searching from the function signature begin is more difficult for Microsoft
  *  Visual C++'s "__FUNCSIG__" preprocessor macro (see file
@@ -111,19 +131,7 @@ TU_Bln361095frcInln const char * const
   while(*--spcChr1BfrFnNmBgn != ' ');
   if(spcChr1BfrFnNmBgn == fnNmBgn - 1)///<=>No class/namespace name before.
   {
-    ///Derefer to store pointer to/address of character string end.
-    *nmOfClAndOrNmSpcEnd = 
-      /**Cast to "char *" to avoid MicroSoft Visual Studio "warning C4090: "=":
-       * Different "const" qualifiers"*/
-      (char*)
-      TU_Bln361095progLangCandCppGlobSculpOper + //(char *)
-      (
-      (sizeof(TU_Bln361095progLangCandCppGlobSculpOper)-
-        TU_Bln361095numBforANSIstrTerm0char) /
-      sizeof(char)
-      )
-      ;
-    return TU_Bln361095progLangCandCppGlobSculpOper;
+    return useSculpOperator(nmOfClAndOrNmSpcEnd);
   }
   *nmOfClAndOrNmSpcEnd =
     /**Cast to "char *" to avoid MicroSoft Visual Studio "warning C4090: "=":
@@ -131,6 +139,9 @@ TU_Bln361095frcInln const char * const
     (char * const)
     fnNmBgn - 2;
   return spcChr1BfrFnNmBgn+1;
+#else///No namespace or class names because "C" programming language.
+  return useSculpOperator(nmOfClAndOrNmSpcEnd);
+#endif
 }
 
 /**@brief Gets the begin of the function name.
@@ -188,6 +199,14 @@ TU_Bln361095frcInln const char * const TU_Bln361095compilerC_andCppFnSigDef(
   const char fnSig[],
   const char ** p_fnNmEnd)
 {
+#if defined __cplusplus
+  #define TU_Bln361095compilerFnSigSearchForBracket
+#else
+  #ifndef __GNUC__
+    #define TU_Bln361095compilerFnSigSearchForBracket
+  #endif
+#endif
+#if defined TU_Bln361095compilerFnSigSearchForBracket
   *p_fnNmEnd =
 /**http://pubs.opengroup.org/onlinepubs/9699919799.orig/functions/strchr.html
  * "The strchr() function shall locate the first occurrence of c (converted to
@@ -198,6 +217,10 @@ TU_Bln361095frcInln const char * const TU_Bln361095compilerC_andCppFnSigDef(
     strchr(fnSig,'(');///Search for 1st/leftmost '('
   assert(*p_fnNmEnd != NULL);
   const char * p_fnNmBgn = getFnNmBgn(*p_fnNmEnd);
+#else///In GNU C the function signature is the same as the function name.
+  *p_fnNmEnd = fnSig + strlen(fnSig);
+  const char * p_fnNmBgn = fnSig;
+#endif
   return p_fnNmBgn;
 }
 

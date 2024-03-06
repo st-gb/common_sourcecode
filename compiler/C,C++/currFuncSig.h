@@ -41,7 +41,7 @@
  #define TU_Bln361095progLangC_andCppCurrFnSig\
 /**see http://gcc.gnu.org/onlinedocs/gcc/Function-Names.html ,
  * http://lists.llvm.org/pipermail/cfe-dev/2018-February/056766.html :
- *"__PRETTY_FUNCTION__" becomes in Extended Backus-Naur form
+ *-C++: "__PRETTY_FUNCTION__" becomes in Extended Backus-Naur form
  *  (http://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form):
  * -function signature = 
  *   [>>return type<<
@@ -57,7 +57,8 @@
  *   ["[with ">>template's typename<<" = ">>template's type<<<"]"];
  *    for example: "[with T = void]"
  * -template = ["<">>template's typename<<">"]
- *    (for example "template <typename T> class C") */\
+ *    (for example "template <typename T> class C")
+ *-C: only the function name! */\
   __PRETTY_FUNCTION__
 #endif
 #ifdef _MSC_VER///Microsoft Visual Studio C(++) compiler("cl.exe")

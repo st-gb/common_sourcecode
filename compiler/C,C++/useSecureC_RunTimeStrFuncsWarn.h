@@ -39,6 +39,9 @@
 /**http://learn.microsoft.com/en-us/cpp/preprocessor/compiler-warnings-that-are-off-by-default?view=msvc-170
  * "The specified warning (warning_number) is enabled at its default level." */
     _Pragma("warning(default:4996)")
+#else
+  #define TU_Bln361095enableUseSecC_RunTimeStrFnWarn/**empty*/
+  #define TU_Bln361095disableUseSecC_RunTimeStrFnWarn/**empty*/
 #endif
 
 #endif//Include guard
