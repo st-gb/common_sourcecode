@@ -25,13 +25,21 @@
 /**TU_Bln361095disableUseSecC_RunTimeStrFnWarn,
  * TU_Bln361095enableUseSecC_RunTimeStrFnWarn */
  #include <compiler/C,C++/useSecureC_RunTimeStrFuncsWarn.h>
+///TU_Bln361095castToCharPtr
+ #include <compiler/GCC/avoid_write_strings_warning.h>
  #include <CstdLib/strcmpRtrnCds.h>///TU_Bln361095CstdLibStrcmpEqlStrs
  /**TU_Bln361095numBforANSIstrTerm0char, TU_Bln361095numBforANSIstrTerm0char
   * preprocessor macro */
  #include <dataType/charStr/strTermChar.h>
+ #include <dataType/charStr/stringize.h>///TU_Bln361095expandAndStringize(...)
  #include <hardware/CPU/fastest_data_type.h>///TU_Bln361095CPUuse(FaststUint);
-///TU_Bln361095OpSysProcessProgPath
+///TU_Bln361095OpSysProcessCmdLneArgsUse(FirstIdx)
  #include <OperatingSystem/Process/cmdLineArgs.h>
+
+///chr=CHaRacter: http://www.abbreviations.com/abbreviation/character
+///Ptr=PoinTeR: http://www.abbreviations.com/abbreviation/pointer
+///Typ=TYPe: http://www.abbreviations.com/abbreviation/type
+typedef char * chrPtrTyp;///CHaRacter PoinTeR TYPe
 
 /**http://en.wikipedia.org/wiki/Static_variable#Scope :
  * "static":only visible in this compilation unit
@@ -71,19 +79,60 @@ struct fnSigAndNms{
  * SIGnature AND eXPeCTeD NaMeS of FunctioNS in DATA SEGment*/
 static const struct fnSigAndNms
   sigAndXpctdNmsOfFns_DataSeg [] = {
-  {"std::set<int> outrNmSpc::innrNmSpc::clss::fn(std::set<int> )",
-  "fn",
-  "outrNmSpc::innrNmSpc::clss"}
+  {TU_Bln361095castToCharPtr
+    "std::set<int> outrNmSpc::innrNmSpc::clss::fn(std::set<int> )",
+  TU_Bln361095castToCharPtr "fn",
+  TU_Bln361095castToCharPtr "outrNmSpc::innrNmSpc::clss"}
 };
 
 /**http://en.wikipedia.org/wiki/Static_variable#Scope :
  * "static":only visible in this compilation unit
  * FuNction SIGnature*/
-static char * s_fnSig;
+static chrPtrTyp s_fnSig;
+
+/**By making "static inline": avoid GNU (10.3.0) C compiler warning 
+ * "warning: '[...]' is static but used in inline function '[...]'
+ * which is not static"*/
+TU_Bln361095frcSttcInln void printCompilerAndVersion()
+{
+  printf("Using ");
+#ifdef _MSC_VER
+  //printf("MicroSoft ")
+#endif
+#ifdef __GNUC__
+  //printf("GNU ");
+#endif
+#ifdef __cplusplus
+  #ifdef CppCompiler
+  printf("%s",
+    TU_Bln361095expandAndStringize(CppCompiler) );
+    #ifdef CppCompilerVersion
+  printf(" %s",
+    TU_Bln361095expandAndStringize(CppCompilerVersion) );
+    #endif
+  #endif
+  printf(" C++ compiler to get the current function signature from a function "
+    "call.\n");
+#else///#ifdef __cplusplus
+  #ifdef C_compiler
+  printf("%s",
+    TU_Bln361095expandAndStringize(C_compiler) );
+    #ifdef C_compilerVersion
+  printf(" %s",
+    TU_Bln361095expandAndStringize(C_compilerVersion) );
+    #endif
+  printf(" C compiler to get the current function signature from a function "
+    "call.\n");
+  #endif
+#endif
+}
 
 void outputUsage()
 {
-  printf("command line arguments:\n"
+  printf("Program to test getting names for function and namespace/class from "
+    "function signatures.\n");
+  printCompilerAndVersion();
+  printf("Command line arguments:\n"
     "-[>>function signature<<"
 #ifdef oneCmdLneArgForFn
     ";"
@@ -111,14 +160,18 @@ void outputUsage()
 
 ///@param ppStorage pointer to/address of pointer to/address of storage
 TU_Bln361095frcInln void assignStr(
-  char ** ppStorage,
+  chrPtrTyp * ppStorage,
   const char strToCopy[]
   //const TU_Bln361095CPUuse() numChars
   )
 {
   if(*ppStorage !=NULL)
     free(*ppStorage);
-  *ppStorage = malloc(strlen(strToCopy) + TU_Bln361095numBforANSIstrTerm0char
+  *ppStorage =
+    /**Avoid MicroSoft Visual C++ compiler ~'error C2440: "=": "void *" can not
+     * be converted to "char *"' by casting.*/
+    (chrPtrTyp) malloc(strlen(strToCopy) +
+    TU_Bln361095numBforANSIstrTerm0char
     //numChars
     );
   ///Disable warning because array size is safe.
@@ -134,22 +187,25 @@ TU_Bln361095frcInln void assignStr(
 
 /**Make identifier names as character pointer for dynamic memory allocation or
  * as array with maximum identifier length.*/
-static char
+static chrPtrTyp
 ///xpcdFnNm=eXPeCteD FuNction NaMe
-  * s_xpcdFnNm = NULL,
+  s_xpcdFnNm = NULL;
 ///xpcdFnNm=eXPeCteD NaMe SPaCe AND OR CLass NaMe
-  * s_xpcdNmSpcNmAndOrClNm = NULL;
+static chrPtrTyp s_xpcdNmSpcNmAndOrClNm = NULL;
 
 #ifdef __cplusplus///If this file is included by a C++(.cpp,.cxx etc.) file.
+#include <set>///class std::set
 namespace outrNmSpc{namespace innrNmSpc{class clss{
+public:
 static std::set<int> fn(const std::set<int> & ints)
 {
-  assignStr(s_fnSig, TU_Bln361095progLangC_andCppCurrFnSig);
+  assignStr(& s_fnSig, TU_Bln361095progLangC_andCppCurrFnSig);
   assignStr(& s_xpcdFnNm, "fn");
   assignStr(& s_xpcdNmSpcNmAndOrClNm, "outrNmSpc::innrNmSpc::clss");
   return ints;
 }
-}}}
+};/**class end*/
+}}
 #endif
 void * fn(void * p)
 {
@@ -169,7 +225,10 @@ void * fn(void * p)
  * @param nmTyp function or class/namespace name
  * @param xpctdNm expected name
  * @param nmBgn name begin(1st character)*/
-TU_Bln361095frcInln int
+/**Make as "static" function to avoid GNU (version 10.3.0) C compiler warning
+ * "warning: '[...]' is static but used in inline function '[...]' which is not
+ *  static" */
+TU_Bln361095frcSttcInln TU_Bln361095CPUuse(faststUint)
 /**"cmp"=CoMPare
  * "Nms"=NaMeS */
   cmpNms(
@@ -195,13 +254,13 @@ TU_Bln361095frcInln int
 
   int strcmpRslt;
   strcmpRslt = strcmp(p_nm, xpctdNm);
-  if(strcmpRslt == TU_Bln361095CstdLibStrcmpEqlStrs)
+  if(strcmpRslt == TU_Bln361095CstdLibStrcmpUse(EqlStrs) )
     printf("%s name=\"%s\" matches expected %s name\n", nmTyp, p_nm, nmTyp);
   else
     printf("%s name=\"%s\" mismatches expected %s name \"%s\"\n", nmTyp, p_nm,
       nmTyp, xpctdNm);
   free(p_nm);
-  if(strcmpRslt == TU_Bln361095CstdLibStrcmpEqlStrs)
+  if(strcmpRslt == TU_Bln361095CstdLibStrcmpUse(EqlStrs) )
     return nmEqul;
   return nmUnEqul;
 }
@@ -213,7 +272,10 @@ TU_Bln361095frcInln int
  *  line, function call, data segment)
  *  FunctioN NaMe
  * @return name is expected or not */
-TU_Bln361095frcInln int extractFnSigNms(
+/**Make as "static" function to avoid GNU (version 10.3.0) C compiler warning
+ * "warning: '[...]' is static but used in inline function '[...]' which is not
+ *  static"*/
+TU_Bln361095frcSttcInln TU_Bln361095CPUuse(faststUint) extractFnSigNms(
   const char * fnSigOrignStr,///FuNction SIGnature ORIGiN STRing
   const struct fnSigAndNms *
     ///SIGnature AND eXPeCTeD NaMeS of FunctioN
@@ -260,27 +322,34 @@ static ///lit=LITeral: http://www.allacronyms.com/literal/abbreviated
   const char * fnSigOrignStrs[] = {///CoMmanD LiNE LITeral
    /*cmdLneLit = */"command line",
    ///INTERNal SToRaGE LITeral
-   /*internStrgeLit = */"internal storage",
+   /*internStrgeLit = */"data segment",
 /*const char fnCllLit[] = */"function call"};
 
 ///@brief Gets FuNction SIGnature AND NaMeS FROM DATA SEGment
-TU_Bln361095frcSttcInln enum exitCds getFnSigAndNmsFromDataSeg(
+/**Make as "static" function to avoid GNU (version 10.3.0) C compiler warning
+ * "warning: '[...]' is static but used in inline function '[...]' which is not
+ * static"*/
+TU_Bln361095frcSttcInln /*enum exitCds*/TU_Bln361095CPUuse(faststUint)
+ getFnSigAndNmsFromDataSeg(
   const char strFnSigOrign[],
-  const TU_Bln361095CPUuse(FaststUint) numFn
+  const TU_Bln361095CPUuse(faststUint) numFn
   )
 {
-  for(TU_Bln361095CPUuse(FaststUint) fnIdx=0; fnIdx < numFn; fnIdx++)
+  for(TU_Bln361095CPUuse(faststUint) fnIdx=0; fnIdx < numFn; fnIdx++)
   {
-    int rslt = extractFnSigNms(
+    TU_Bln361095CPUuse(faststUint) getFnSigNmsRslt = extractFnSigNms(
       strFnSigOrign,
       & sigAndXpctdNmsOfFns_DataSeg[fnIdx]
       );
-    if(rslt != nmUnEqul)
-      return rslt;
+    if(getFnSigNmsRslt != nmUnEqul)
+      return getFnSigNmsRslt;
   }
   return nmEqul;
 }
 
+/**Make as "static" function to avoid GNU (version 10.3.0) C compiler warning
+ * "warning: '[...]' is static but used in inline function '[...]' which is not
+ * static"*/
 TU_Bln361095frcSttcInln void assignPtrs(
   struct fnSigAndNms * p_fnSigAndNms)
 {
@@ -289,6 +358,9 @@ TU_Bln361095frcSttcInln void assignPtrs(
   p_fnSigAndNms->nmOfNmSpcAndOrCl = s_xpcdNmSpcNmAndOrClNm;
 }
 
+/**Make as "static" function to avoid GNU (version 10.3.0) C compiler warning
+ * "warning: '[...]' is static but used in inline function '[...]' which is not
+ * static"*/
 TU_Bln361095frcSttcInln void freeMemForAll()
 {
   free(s_fnSig);
@@ -297,43 +369,54 @@ TU_Bln361095frcSttcInln void freeMemForAll()
 }
 
 ///@brief Gets FuNction SIGnature AND NaMeS FROM FuNction CALL
-TU_Bln361095frcSttcInln enum exitCds getFnSigAndNmsFromFnCall(
+/**Make as "static" function to avoid GNU (version 10.3.0) C compiler warning
+ * "warning: '[...]' is static but used in inline function '[...]' which is not
+ * static"*/
+TU_Bln361095frcSttcInln /*enum exitCds*/TU_Bln361095CPUuse(faststUint)
+ getFnSigAndNmsFromFnCall(
   const char strFnSigOrign[])
 {
   struct fnSigAndNms sigAndXpctdNmsOfFns;
+  TU_Bln361095CPUuse(faststUint) getFnSigNmsRslt;
 #ifdef __cplusplus
-   assignPtrs(sigAndXpctdNmsOfFns);
+  std::set<int> set;
+  set.insert(0);
+  outrNmSpc::innrNmSpc::clss::fn(set);
+  assignPtrs(& sigAndXpctdNmsOfFns);
 /**Alternative to call each function in a loop: use static function in classes
  * and the same parameter lists in every function, make as function pointer
  * array and then iterate over it.*/
-  int rslt = extractFnSigNms(
-    strFnSigAndNmsOrign,
+  getFnSigNmsRslt = extractFnSigNms(
+    strFnSigOrign,
     & sigAndXpctdNmsOfFns);
-  if(rslt != nmEqul)///Break on first error.
-    return rslt;
+  if(getFnSigNmsRslt != nmEqul)///Break on first error.
+    return getFnSigNmsRslt;
 #endif
   fn(0);
   assignPtrs(& sigAndXpctdNmsOfFns);
-  int rslt = extractFnSigNms(
+  getFnSigNmsRslt = extractFnSigNms(
     strFnSigOrign,
     & sigAndXpctdNmsOfFns);
   freeMemForAll();
-  return rslt;
+  return getFnSigNmsRslt;
   //assignFnSigAndTest();
 }
 
 typedef const char * cmdLneArgTyp;
 /**Avoid GCC "warning: passing argument 2 of 'getFnSigAndNmsFromCmdLne' from
  * incompatible pointer type [-Wincompatible-pointer-types]"*/
-#define castToCmdLneArgssTyp (cmdLneArgTyp*)
+#define castToCmdLneArgsTyp (cmdLneArgTyp*)
 
 /**2 more command line arguments:
  * -expected function name
  * -expected namespace/class name*/
 #define numAdditionalCmdLneArgs 2
 
-///GETs FuNction SIGnature AND NaMeS FROM CoMmanD LiNE
-TU_Bln361095frcInln/*TU_Bln361095CPUuse(FaststUint)*/ enum exitCds
+///@brief GETs FuNction SIGnature AND NaMeS FROM CoMmanD LiNE
+/**Make as "static" function to avoid GNU (version 10.3.0) C compiler warning
+ * "warning: '[...]' is static but used in inline function '[...]' which is not
+ *  static"*/
+TU_Bln361095frcSttcInln TU_Bln361095CPUuse(faststUint) /*enum exitCds*/
   getFnSigAndNmsFromCmdLne(
   const int cmdLneArgsCnt,
   cmdLneArgTyp cmdLneArgs[],
@@ -408,25 +491,29 @@ int main(
 {
   outputUsage();
   char * strFnSigAndNmsOrign;
-  enum fnSigAndNmsOrign fnSigAndNmsOrign = fnSigAndNmsOrignUnset;
+  enum fnSigAndNmsOrign fnSigAndNmsOrign =
+/**By default solely call the functions and do not get name from command line or
+ * data segment because GCC C compiler can't get function name for C++ function
+ * signature in ~"TU_Bln361095compilerC_andCppFnSigUse(GetFnNm)(...)" because
+ * with GCC's C compiler "the "__PRETTY_FUNCTION__" does not have return value
+ * left of function name.*/
+    fnSigAndNmsOrignFnCll;
   TU_Bln361095CPUuse(FaststUint) numFn;///NUMber of FuNctions
   if(cmdLneArgsCnt > 1)
   {
     numFn = cmdLneArgsCnt - 1;
-    fnSigAndNmsOrign = fnSigAndNmsOrignCmdLne;
     if(strcmp(cmdLneArgs[TU_Bln361095OpSysProcessCmdLneArgsUse(FirstIdx)],
-      cllFnANSIlit) == TU_Bln361095CstdLibStrcmpEqlStrs)
+      cllFnANSIlit) == TU_Bln361095CstdLibStrcmpUse(EqlStrs) )
       fnSigAndNmsOrign = fnSigAndNmsOrignFnCll;
     else if(strcmp(cmdLneArgs[TU_Bln361095OpSysProcessCmdLneArgsUse(FirstIdx)],
-      dtSegANSIlit) == TU_Bln361095CstdLibStrcmpEqlStrs)
+      dtSegANSIlit) == TU_Bln361095CstdLibStrcmpUse(EqlStrs) )
       fnSigAndNmsOrign = fnSigAndNmsOrignDataSeg;
+    else
+      fnSigAndNmsOrign = fnSigAndNmsOrignCmdLne;
   }
-  else
-    fnSigAndNmsOrign = fnSigAndNmsOrignFnCll;
   if(fnSigAndNmsOrign == fnSigAndNmsOrignUnset)
   {
 #ifdef __cplusplus
-    outrNmSpc::innrNmSpc::clss::fn(0);
     fnSigAndNmsOrign = fnSigAndNmsOrignFnCll;
 #else
     /**C++ code can't be executed by a C compiler, so use the function signature
@@ -445,7 +532,7 @@ int main(
     return getFnSigAndNmsFromDataSeg(strFnSigAndNmsOrign, numFn);
   case fnSigAndNmsOrignCmdLne:
     return getFnSigAndNmsFromCmdLne(cmdLneArgsCnt,
-      castToCmdLneArgssTyp cmdLneArgs,
+      castToCmdLneArgsTyp cmdLneArgs,
       strFnSigAndNmsOrign);
   }
   return unDef;
