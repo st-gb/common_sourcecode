@@ -1,24 +1,11 @@
-project(readSMART_identity)
-
 cmake_minimum_required(VERSION 2.10)#TODO really min. ver.?
+project(readSMART_identityTestCandCpp)##TEST for C and C++
 
-set(cmnSrcDir ${PROJECT_SOURCE_DIR}/../../../../../../..)
+include(../C_and_C++/readSMART_IDtest_init.cmake)
 
-set(CmnSrcOS ${cmnSrcDir}/OperatingSystem)
 set(srcFilePaths
+  ${srcFilePaths}
   main.c
-  ${CmnSrcOS}/Windows/hardware/dataCarrier/getIdentityEnRsltMsgs.c
   )
 
-#include(${cmnSrcDir}/compiler/C,C++/staticStdC,StdC++.cmake)
-
-include_directories(${cmnSrcDir})
-
-include(${cmnSrcDir}/CMake/ShowMsg_CompLvl.cmake)
-#showInclDirs(6)
-
-include(${cmnSrcDir}/dataType/charStr/suffixCMakeBuildType.cmake)
-set(exeName ${PROJECT_NAME})
-suffixCMakeBuildType(exeName 1)
-
-add_executable(${exeName} ${srcFilePaths})
+include(../C_and_C++/readSMART_IDtest_buildExe.cmake)
