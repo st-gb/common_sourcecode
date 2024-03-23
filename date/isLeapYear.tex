@@ -1,0 +1,39 @@
+%%(c) Stefan Gebauer(Computer Science Master from TU Berlin)
+%%@author Stefan Gebauer(TU Berlin matriculation number 361095)
+
+%%http://de.wikipedia.org/wiki/Schaltjahr#Gregorianischer_Kalender
+\newcounter{leapYear}
+\newcounter{yearModFour}
+\newcounter{yearModOneHoundred}
+\newcounter{yearModFourHoundred}
+
+%% "#1": year
+\newcommand{\isLeapYear}[1]{
+  \setcounter{yearModFour}{
+  	%%Needs package "intcalc"->"\usepackage{intcalc}"
+    \intcalcMod{#1}{4} }
+  \setcounter{yearModOneHoundred}{
+  	%%Needs package "intcalc"->"\usepackage{intcalc}"
+    \intcalcMod{#1}{100} }
+  \setcounter{yearModFourHoundred}{
+  	%%Needs package "intcalc"->"\usepackage{intcalc}"
+    \intcalcMod{#1}{400} }
+  \ifthenelse%%if:
+    {
+     \theyearModFour=0
+%%http://tex.stackexchange.com/questions/136831/boolean-operators-can-i-use-and-or-in-ifthenelse-how
+     \AND
+		%%https://texdoc.org/serve/ifthen.pdf/0 : "parentheses \( \)"
+    \( \not \theyearModOneHoundred=0 \OR \theyearModFourHoundred=0\)
+    }
+    %%then:
+    {%is leap year
+%%http://tex.stackexchange.com/questions/37094/what-is-the-recommended-way-to-assign-a-value-to-a-variable-and-retrieve-it-for
+      \setcounter{leapYear}{1}
+    }
+    %%else:
+    {%no leap year
+%%http://tex.stackexchange.com/questions/37094/what-is-the-recommended-way-to-assign-a-value-to-a-variable-and-retrieve-it-for
+      \setcounter{leapYear}{0}
+    }
+}

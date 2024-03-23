@@ -1,0 +1,57 @@
+%%(c) Stefan Gebauer(Computer Science Master from TU Berlin)
+%%@author Stefan Gebauer(TU Berlin matriculation number 361095)
+
+\documentclass[]{article}
+
+%%https://riptutorial.com/latex/example/28656/if-statements
+\usepackage{ifthen}%%\ifthenelse
+%%http://tex.stackexchange.com/questions/87824/how-to-do-simple-calculation-in-latex
+\usepackage{intcalc}
+\usepackage{amsmath}%%"\implies"
+
+\title{"is leap year function" test}
+\author{Stefan Gebauer(TU Berlin matriculation number 361095)}
+
+\input{../isLeapYear.tex}
+
+\newcounter{year}
+  
+\newcommand{\testIfLeapYear}[1]{%%#1: year
+  \setcounter{year}{#1}
+  \isLeapYear{\theyear}
+ 
+  \theyear
+    \ifthenelse{\theleapYear=1}%%if
+      { \textbf{is} }%%then
+      { is \textbf{not} }%%else
+    a leap year:\newline
+%%Make comment to prevent a new paragraph on an empty new line.
+%%
+  year(\theyear) mod 4:\theyearModFour
+  \ifthenelse{
+  	\theyearModFour=0}%%if
+    { year mod 4 = 0 $\implies$ potential leap year}%%then
+    { $\implies$ \textbf{no} leap year}%%else
+  \newline
+  year(\theyear) mod 100:\theyearModOneHoundred
+  \ifthenelse{
+  	\theyearModOneHoundred=0}%%if
+    { year mod 100 = 0 $\implies$ potentially no leap year}%%then
+    {}%%else
+  \newline
+  year(\theyear) mod 400:\theyearModFourHoundred
+  \ifthenelse{
+  	\theyearModFourHoundred=0}%%if
+    { year mod 400 = 0 $\implies$ leap year}%%then
+    {}%%else
+  \newline
+}
+
+\begin{document}
+\maketitle
+
+\testIfLeapYear{1900}
+\testIfLeapYear{1999}
+\testIfLeapYear{2000}
+\testIfLeapYear{2024}  
+\end{document}
