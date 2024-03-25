@@ -56,8 +56,14 @@
 
 TU_Bln361095dataCarrierNVMeSMARTattrNmSpcBgn
 
+/**See T13 (t13.org: search for"SMART" result: "SMART Attribute Descriptions
+ * (SAD)" ) /
+http://media.kingston.com/support/downloads/MKP_521.6_SMART-DCP1000_attribute.pdf
+ : "Byte Index": "47:32" */
 #define TU_Bln361095dataCarrierNVMeSMARTattrNumRawValB 16
-
+#define TU_Bln361095dataCarrierNVMeSMARTattrNum1stAttrsRawValB 1
+  //"Byte Index": "2:1"
+#define TU_Bln361095dataCarrierNVMeSMARTattrNumCompTempRawValB 2
 /**See
 http://en.wikipedia.org/wiki/Self-Monitoring,_Analysis_and_Reporting_Technology#Known_NVMe_S.M.A.R.T._attributes
  */

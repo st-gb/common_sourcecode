@@ -42,6 +42,7 @@ TU_Bln361095CPUnmSpcBgn
 ///unprecisely scoped (not inside "hardware") for convenience(less typing):
 ///"CPU" in macro name because fastest unsigned int is related to CPU.
 typedef unsigned TU_Bln361095CPUdef(FaststUint);
+typedef unsigned int TU_Bln361095CPUdef(faststUint);
 typedef int TU_Bln361095CPUdef(FaststInt);
 
 TU_Bln361095CPUnmSpcEnd
