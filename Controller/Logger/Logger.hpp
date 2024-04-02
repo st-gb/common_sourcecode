@@ -25,7 +25,7 @@
 //  #define COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
   #define COMPILE_LOGGER_WITH_TSTRING_SUPPORT
 
-///Standard C++ header files:
+///C(++) standard library header files:
   #include <fstream> //for class std::ofstream ;
   //#include <strstream> //for class std::ostrstream
   #include <set> //for class std::set
@@ -41,10 +41,11 @@
 #endif //#ifndef COMPILE_LOGGER_MULTITHREAD_SAFE
 
 ///Stefan Gebauer's(TU Berlin mat.#361095) ~"common_sourcecode"repository files:
-  #include <dataType/charStr/stdtstr.hpp>///for std::tstring
-  #include <compiler/GCC/enable_disable_warning.h> //GCC_DIAG_OFF(...)
-  ///TU_Bln361095MicroSoftWindows
-  #include <OperatingSystem/Windows/MicrosoftWindows.h>
+ ///TU_Bln361095disableUnusedVarWarn,TU_Bln361095enableUnusedVarWarn
+ #include <compiler/C,C++/enableAndDisableWarn.h>
+ #include <dataType/charStr/stdtstr.hpp>///typedef std::tstring
+ ///TU_Bln361095MicroSoftWindows
+ #include <OperatingSystem/Windows/MicrosoftWindows.h>
 
 //#ifdef COMPILE_LOGGER_WITH_STRING_FILTER_SUPPORT
 //  //#include <data_structures/Trie/byteTrie/Trie.hpp> //class Trie
@@ -74,6 +75,7 @@
   //class std::ofstream ;
 //  class I_LogFormatter;
 
+///Stefan Gebauer's(TU Berlin matric. number 361095) ~"cmnSrc" repository files:
   #include "Appender/FormattedLogEntryProcessor.hpp"
   #include "LogLevel.hpp" //namespace LogLevel::MessageType
 
@@ -246,9 +248,12 @@
       c_iterFormattedLogEntryProcessors = m_formattedLogEntryProcessors.begin();
       static FormattedLogEntryProcessor * p_formattedlogentryprocessor;
 #ifdef _DEBUG
-      GCC_DIAG_OFF(unused-variable)
-      const int numFormattedLogEntryProcessors = m_formattedLogEntryProcessors.size();
-      GCC_DIAG_ON(unused-variable)
+      TU_Bln361095disableUnusedVarWarn
+      /**Use same data type as "std::vector::size()" to avoid MicroSoft
+       * Visual C compiler warning "C4267" (data loss possible).*/
+      const std::vector<FormattedLogEntryProcessor>::size_type
+        numFormattedLogEntryProcessors = m_formattedLogEntryProcessors.size();
+      TU_Bln361095enableUnusedVarWarn
 #endif
       while( c_iterFormattedLogEntryProcessors !=
           m_formattedLogEntryProcessors.end() )

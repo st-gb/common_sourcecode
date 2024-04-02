@@ -1,21 +1,22 @@
 /* Do not remove this header/ copyright information.
  *
- * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
- * ("Trilobyte SE") 2010-at least 2012.
- * You are allowed to modify and use the source code from Trilobyte SE for free
+ * Copyright © Stefan Gebauer(Computer Science Master from TU Berlin)
+ *  2010-at least 2012.
+ * You are allowed to modify and use the source code for free
  * if you are not making profit directly or indirectly with it or its adaption.
- * Else you may contact Trilobyte SE. */
+ * Else you may contact the author. */
 //#if defined( _MSC_VER) 
 //#include "StdAfx.h"
 //#endif //#ifdef _MSC_VER
 
+///Stefan Gebauer's(TU Berlin matric. number 361095) ~"cmnSrc" repository files:
 #include "Logger.hpp"  //important for wxWidgets 2.9: include windows.h AFTER
 #include "LogLevel.hpp" //LogLevel::MessageType
 #include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
 //#include "Appender/AppendingFileOutput.hpp"
 
 //#if DEFINED USE_STD_OFSTREAM_WRITER
-#if defined(_WIN32) && !defined(USE_STD_OFSTREAM_WRITER)
+#if defined(_WIN32) && !defined(TU_Bln361095LoggerUseStdOfstreamWriter)
   /** Use Windows API logger under Windows because this enables retrieving an
    *   system error code for failure in contrast to std::ofstream logger */
   #include <OperatingSystem/Windows/Logger/LogEntryOutputter.hpp>
@@ -26,9 +27,10 @@
 #endif
 //#endif
 
-#include <Controller/Logger/OutputHandler/StdCoutLogWriter.hpp> //class StdCoutLogWriter
-#include <Controller/Logger/Appender/RollingFileOutput.hpp>
-#include "Appender/RollingFileOutput.hpp"
+///Stefan Gebauer's(TU Berlin matric. number 361095) ~"cmnSrc" repository files:
+ #include <Controller/Logger/Appender/RollingFileOutput.hpp>
+ ///class StdCoutLogWriter
+ #include <Controller/Logger/OutputHandler/StdCoutLogWriter.hpp>
 
 //If MS compiler etc.
 #if defined(_MSC_VER) || defined(__MINGW32__) || defined(__CYGWIN__)
@@ -120,18 +122,19 @@ void Logger::AddConsoleLogEntryWriter()
 
 /** Do not call this method thread-unsafe -> enter a critical section before
  * calling it 
- * \param prettyFunctionFormattedFunctionName : expected to be in GCC's
+ * \param funcSig : expected to be in GCC's
  *  __PRETTY_FUNCTION__ format. Simply pass this __PRETTY_FUNCTION__ here.
  * See https://gcc.gnu.org/onlinedocs/gcc/Function-Names.html :
- *  >return type< [namespace names::]>function name<(>parameter type<) */
+ *  >return type< [namespace names::]>function name<(>parameter type<) 
+ *  @see file compiler/currFnSig.h */
 DWORD Logger::Log(//ostream & ostr
   const std::string & r_stdstrMessage,
   enum LogLevel::MessageType messageType /*= LogLevel::info*/,
-  const char * const prettyFunctionFormattedFunctionName /*= NULL*/
+  const char * const funcSig /*= NULL*/
   )
 {
   return Log_inline(r_stdstrMessage, messageType,
-    prettyFunctionFormattedFunctionName);
+    funcSig);
 }
 
 //void Logger::Log(//ostream & ostr

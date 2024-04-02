@@ -10,7 +10,7 @@
 #include "../Formatter/Log4jFormatter.hpp"
 #include "../Logger.hpp"
 ///TU_Bln361095::CstdLib::Strcmp::EqlStrs
-#include <C_standard_library/string_compare_return_codes.h>
+#include <CstdLib/strcmpRtrnCds.h>
 
 FormattedLogEntryProcessor::FormattedLogEntryProcessor(
   Logger & logger,

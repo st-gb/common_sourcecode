@@ -1,28 +1,37 @@
-/* Do not remove this header/ copyright information.
- *
- * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
- * ("Trilobyte SE") 2010-at least 2012.
- * You are allowed to modify and use the source code from Trilobyte SE for free
- * if you are not making profit directly or indirectly with it or its adaption.
- * Else you may contact Trilobyte SE. */
-/*
- * ILogFileWriter.hpp
- *
- *  Created on: 26.04.2012
- *      Author: Stefan
- */
+/**Created on: 26.04.2012
+ * @author Stefan Gebauer(TU Berlin matriculation number 361095)*/
 
-#ifndef ILOGFILEWRITER_HPP_
-#define ILOGFILEWRITER_HPP_
+///Include guard,see http://en.wikipedia.org/wiki/Include_guard :
 
-#include <fstream> //for class std::ofstream ;
-#include <sstream> //for class std::basic_stringstream ;
-#include <vector> //class std::vector
+/**Define on compiler command line,for example for GCC:
+ * (see http://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html :)
+ * "gcc -D TU_Bln361095UsePrgmInclGuard"*/
+/**Bln=BerLiN: http://www.acronymfinder.com/Berlin-(Bln).html
+ * Prgm=PRaGMa
+ * Incl=INCLude: http://www.abbreviations.com/abbreviation/include
+ * Grd=GuaRD: http://www.abbreviations.com/abbreviation/Guard */
+#ifdef TU_Bln361095usePrgmInclGrd
+/**Non-standard include guard:supported by many, but not all industry compilers:
+ * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
+  #pragma once
+#endif
+#if defined TU_Bln361095usePrgmInclGrd ||\
+/**Include guard supported by (nearly) all industry compilers:*/\
+/**Bln=BerLiN: http://www.acronymfinder.com/Berlin-(Bln).html
+ * cmn=CoMmoN: http://www.abbreviations.com/abbreviation/common
+ * Src=SouRCe: http://www.abbreviations.com/abbreviation/source */\
+ !defined TU_Bln361095cmnSrc__Logger__Formatter__I_LogFormatter_hpp
+  #define TU_Bln361095cmnSrc__Logger__Formatter__I_LogFormatter_hpp
 
-#include "../LogFileEntry.hpp" //class LogFileEntry
-#include <data_structures/Trie/NodeTrie/NodeTrie.hpp> //class NodeTrie
+///C(++) standard library header files:
+ #include <fstream>///class std::ofstream ;
+ #include <sstream>///class std::basic_stringstream ;
+ #include <vector>///class std::vector
 
-#include "../LogLevel.hpp" //namespace LogLevel::MessageType
+///Stefan Gebauer's(TU Berlin matricul. number 361095) ~"cmnSrc" repository files:
+ #include "../LogFileEntry.hpp"///class LogFileEntry
+ #include "../LogLevel.hpp"///namespace LogLevel::MessageType
+ #include <data_structures/Trie/NodeTrie/NodeTrie.hpp>///class NodeTrie
 //using namespace LogLevel;
 
 //typedef uint16_t WORD;
@@ -33,7 +42,7 @@ class FormattedLogEntryProcessor;
 
 struct PointerToLogFileEntryMemberAndNumFormatChars
 {
-  BYTE m_numCharsToFormat;
+  BYTE m_numCharsToFormat;///NUMber of CHARacter TO FORMAT 
   const void * m_p_logfileentrymember;
   PointerToLogFileEntryMemberAndNumFormatChars(BYTE numCharsToFormat,
     const void * p_logfileentrymember)
@@ -96,8 +105,9 @@ protected:
 //  NodeTrie<const uint16_t *> m_nodetrieTimePlaceHolderToLogFileEntryMember;
   NodeTrie<PointerToLogFileEntryMemberAndNumFormatChars *>
     m_nodetrieTimePlaceHolderToLogFileEntryMember;
-//  std::vector<uint16_tPointerAndBYTE> m_vecPointerToTimeElementFromLogFileEntry;
-  std::vector<uint16_tPointerAndBYTE> m_vecPointerToTimeElementFromLogFileEntry;
+  std::vector<uint16_tPointerAndBYTE>
+    ///VECtor of PoinTeR TO TiMe ELEment FROM LOG FILE ENTRY
+    m_vecPtrToTmEleFromLogFileEntry;
 public:
 
   I_LogFormatter(//std::ofstream * p_std_ofstream
@@ -180,4 +190,4 @@ public:
   }
 };
 
-#endif /* ILOGFILEWRITER_HPP_ */
+#endif///include guard

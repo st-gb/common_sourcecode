@@ -6,29 +6,45 @@
  * if you are not making profit directly or indirectly with it or its adaption.
  * Else you may contact Trilobyte SE. */
 /*
- * ILogFileWriter.cpp
- *
- *  Created on: 26.04.2012
- *      Author: Stefan
- */
+ * Created on 26.04.2012
+ * @author Stefan Gebauer(TU Berlin matriculation number 361095)*/
 
-#include "Controller/Logger/Formatter/I_LogFormatter.hpp"
-#include <preprocessor_macros/logging_preprocessor_macros.h> //LOGN(...)
-#include <limits.h> //SHRT_MAX
 //#include <Controller/Logger/Logger.hpp> //class Logger
-#include <Controller/Logger/OutputHandler/I_LogEntryOutputter.hpp>
-#include <Controller/Logger/Appender/FormattedLogEntryProcessor.hpp>
+///C standard library header files:
+ #include <limits.h>///SHRT_MAX
+
+///Stefan Gebauer's(TU Berlin matric. number 360195) ~"cmnSrc" repository files:
+ ///TU_Bln361095disablePossibleDataLossOnConversionWarn
+ #include <compiler/C,C++/enableAndDisableWarn.h>
+ #include <compiler/C,C++/useSecureC_RunTimeStrFuncsWarn.h>
+ #include <Controller/Logger/Appender/FormattedLogEntryProcessor.hpp>
+ #include <Controller/Logger/Formatter/I_LogFormatter.hpp>
+ #include <Controller/Logger/OutputHandler/I_LogEntryOutputter.hpp>
+ #include <dataType/charStr/strTermChar.h>///TU_Bln361095numCharsForStrTermChar
+ #include <preprocessor_macros/logging_preprocessor_macros.h>///LOGN(...)
 
 //I_LogFormatter::I_LogFormatter()
 //{
 //  // TODO Auto-generated constructor stub
 //
 //}
-//e.g. { -> '{'
+
+///For example { -> '{'
 #define MAKE_ANSI_CHAR(x) ' ## x ## '
 
-//32xxx = 5 characters
-#define NUMBER_OF_CHARS_FOR_MAX_2_BYTE_VALUE_IN_DEC 5
+/**Padding with "0": http://www.cplusplus.com/reference/cstdio/printf/
+ * "%%"->"%", "%d"->number  Entirely after "sprintf(...)" of C standard
+ * library's "<stdio.h>":->"%0>>number<<d"*/
+#define numberFormatStr "%%0%dd"
+/**For "%d" of @see numberFormatStr: maximum number of digits to format="4" (for
+ * a year as decimal number) =>1 digit/character to represent "4" as decimal
+ * number.=> 5 characters after formatting @see numberFormatStr in sprintf(...)
+ * of C standard library's "<stdio.h>" including character string terminating
+ * ('\0') character.*/
+#define numberFormatStrCharCount 5
+
+///2 byte=maximum 2^16= 65536(decimal)=5 characters/digits if unsigned integer
+#define TU_Bln361095numMaxDecDigitsFor2ByteUnsignedInt 5
 #define PLACE_HOLDER_BEGIN_SIGN /*'%'*/ {
 //#define PLACE_HOLDER_BEGIN_CHAR /*'%'*/ MAKE_ANSI_CHAR(PLACE_HOLDER_BEGIN_SIGN)
 #define PLACE_HOLDER_BEGIN_CHAR /*'%'*/ '{'
@@ -58,7 +74,7 @@ I_LogFormatter::I_LogFormatter(//std::ofstream * p_std_ofstream
   m_TimeFormatString =
     PLACE_HOLDER_BEGIN_STRING "year" PLACE_HOLDER_END_STRING
     "-" PLACE_HOLDER_BEGIN_STRING "month" PLACE_HOLDER_END_STRING "-"
-    PLACE_HOLDER_BEGIN_STRING "day" PLACE_HOLDER_END_STRING "&nbsp;"
+    PLACE_HOLDER_BEGIN_STRING "day" PLACE_HOLDER_END_STRING " "//"&nbsp;"
     PLACE_HOLDER_BEGIN_STRING "hour" PLACE_HOLDER_END_STRING ":"
     PLACE_HOLDER_BEGIN_STRING "minute" PLACE_HOLDER_END_STRING ":"
     PLACE_HOLDER_BEGIN_STRING "second" PLACE_HOLDER_END_STRING "s"
@@ -83,6 +99,7 @@ void I_LogFormatter::CreateTimePlaceHolderToLogFileEntryMemberMapping()
   std::string str = "year";
   try
   {
+    TU_Bln361095disablePossibleDataLossOnConversionWarn
   //for initalizing a struct:
   //http://stackoverflow.com/questions/330793/how-to-initialize-a-struct-in-ansi-c99
   m_nodetrieTimePlaceHolderToLogFileEntryMember.insert_inline(
@@ -124,6 +141,7 @@ void I_LogFormatter::CreateTimePlaceHolderToLogFileEntryMemberMapping()
     (BYTE *) str.c_str(), str.size(), //(const void *)
     new PointerToLogFileEntryMemberAndNumFormatChars(3,
       & m_p_logfileentry->nanosecond) );
+  TU_Bln361095enablePossibleDataLossOnConversionWarn
   }catch( const NS_NodeTrie::RootNodeNotInitalizedException & e)
   {
     LOGN_ERROR("NS_NodeTrie::RootNodeNotInitalizedException")
@@ -150,7 +168,7 @@ uint16_t I_LogFormatter::GetNeededArraySizeForTimeString(
   const char * c_p_chTimeFormatStringCurrentChar = timeFormatString.c_str();
 
   //Important, because it may be filled from a call from before.
-  m_vecPointerToTimeElementFromLogFileEntry.clear();
+  m_vecPtrToTmEleFromLogFileEntry.clear();
 
   while( * c_p_chTimeFormatStringCurrentChar )
   {
@@ -185,11 +203,11 @@ uint16_t I_LogFormatter::GetNeededArraySizeForTimeString(
 //              percentPairIndex
           charIndexOfPlaceholderBeginChar//,
           );
-        m_vecPointerToTimeElementFromLogFileEntry.push_back(
+        m_vecPtrToTmEleFromLogFileEntry.push_back(
           logFilePlaceHolder
           );
         arraySizeForTimeString +=
-          NUMBER_OF_CHARS_FOR_MAX_2_BYTE_VALUE_IN_DEC;
+          TU_Bln361095numMaxDecDigitsFor2ByteUnsignedInt;
       }
       else
         arraySizeForTimeString += numCharsInBetween;
@@ -321,18 +339,20 @@ void Insert(char * & p_chDestination,
 inline void FormatAsString(
   const PointerToLogFileEntryMemberAndNumFormatChars *
     p_p_logfileentrymember_and_num_formatchars,
-  char ar_chFormatString[5],
+  char ar_chFormatString[numberFormatStrCharCount],
   char *& p_chCurrentCharInFormattedTimeString
-    )
+  )
 {
   //    char ar_chNumCharsToFormat[2];
   //    itoa(p_p_logfileentrymember_and_num_formatchars->m_numCharsToFormat,
   //      ar_chNumCharsToFormat, 10);
-  //TODO SIGSEV here sometimes?! (because of multithreaded logging wout crit sec?)
-  sprintf(ar_chFormatString,
-    //padding with "0": http://www.cplusplus.com/reference/cstdio/printf/
-    // "%%"->"%", "%d"->number      entirely: ->"%0>>number<<d"
-    "%%0%dd",
+
+  /**Disable warning because the buffer size (@see
+   * GetNeededArraySizeForTimeString(...) ) should be sufficient*/
+  TU_Bln361095disableUseSecC_RunTimeStrFnWarn
+  //TODO SIGSEV here sometimes?! (because of multithreaded logging without
+  // critical section?)
+  sprintf(ar_chFormatString, numberFormatStr,
     p_p_logfileentrymember_and_num_formatchars->m_numCharsToFormat);
   if( p_p_logfileentrymember_and_num_formatchars->m_numCharsToFormat < 3)
     //see http://stackoverflow.com/questions/804288/creating-c-formatted-strings-not-printing-them
@@ -348,6 +368,7 @@ inline void FormatAsString(
       ar_chFormatString,
       * (uint16_t *) p_p_logfileentrymember_and_num_formatchars->
         m_p_logfileentrymember);
+  TU_Bln361095enableUseSecC_RunTimeStrFnWarn
 }
 
 //virtual void WriteTimeStamp(const std::ofstream & std::ofstream) {}
@@ -377,14 +398,15 @@ void I_LogFormatter::GetTimeAsString(const LogFileEntry & logfileentry//,
     c_iterTimeElementFromLogFileEntry;
 //  static bool bInsertedReplacement;
 
-  c_iterTimeElementFromLogFileEntry = m_vecPointerToTimeElementFromLogFileEntry.begin();
+  c_iterTimeElementFromLogFileEntry = m_vecPtrToTmEleFromLogFileEntry.
+    begin();
   //Init here and not in declaration because else the init. is only done once
   //for static variables.
   IndexOfCharRightOfRightPercentSign = 0;
 
-  char ar_chFormatString[5]; // '%','0',number,'d','\0' = 5 chars
+  char ar_chFormatString[numberFormatStrCharCount];
   while(c_iterTimeElementFromLogFileEntry !=
-      m_vecPointerToTimeElementFromLogFileEntry.end())
+      m_vecPtrToTmEleFromLogFileEntry.end() )
   {
     //Insert left from place holder until either
     // -right "%" of previous place holder: "place_holder%..%place_holder%"
