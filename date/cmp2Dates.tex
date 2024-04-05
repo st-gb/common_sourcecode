@@ -1,0 +1,52 @@
+%%(c) Stefan Gebauer(Computer Science Master from TU Berlin)
+%%@author Stefan Gebauer(TU Berlin matriculation number 361095)
+
+\input{
+%%File path is relative to the root .tex document?!
+%%"\currfiledir" needs package "currfile"
+  \currfiledir../LaTex/setVarVal.tex}%%\setVarVal{...}
+
+%\usepackage{ifthen}%%\ifthenelse
+
+%currfileDir: \currfiledir
+
+%%http://tex.stackexchange.com/questions/37094/what-is-the-recommended-way-to-assign-a-value-to-a-variable-and-retrieve-it-for
+\newcommand{\cmpTwoDates}[6]
+{
+  \setVarVal{\leftDay}{#1}
+  \setVarVal{\leftMon}{#2}
+  \setVarVal{\leftYear}{#3}
+  \setVarVal{\rightDay}{#4}
+  \setVarVal{\rightMon}{#5}
+  \setVarVal{\rightYear}{#6}
+
+  \setVarVal{\leftDateCmpRightDate}{0}
+
+  \ifthenelse{\leftYear < \rightYear }%%if
+  { \setVarVal{\leftDateCmpRightDate}{1} }%%then
+  { }%%else
+
+  \ifthenelse{\leftYear > \rightYear }%%if
+  { \setVarVal{\leftDateCmpRightDate}{2} }%%then
+  { }%%else
+
+  \ifthenelse{%%\leftDateCmpRightDate=0<=>same year
+  	\leftDateCmpRightDate=0 \and \leftMon < \rightMon }%%if
+  { \setVarVal{\leftDateCmpRightDate}{1} }%%then
+  { }%%else
+
+  \ifthenelse{%%\leftDateCmpRightDate=0<=>same year
+	\leftDateCmpRightDate=0 \and \leftMon > \rightMon }%%if
+  { \setVarVal{\leftDateCmpRightDate}{2} }%%then
+  { }%%else
+
+  \ifthenelse{%%\leftDateCmpRightDate=0<=>same year and month
+  	\leftDateCmpRightDate=0 \and \leftDay < \rightDay}%%if
+  { \setVarVal{\leftDateCmpRightDate}{1} }%%then
+  { }%%else
+  
+  \ifthenelse{%%\leftDateCmpRightDate=0<=>same year and month
+  	\leftDateCmpRightDate=0 \and \leftDay > \rightDay}%%if
+  { \setVarVal{\leftDateCmpRightDate}{2} }%%then
+  { }%%else
+}

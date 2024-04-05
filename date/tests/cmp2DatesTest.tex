@@ -1,0 +1,53 @@
+%%(c) Stefan Gebauer(Computer Science Master from TU Berlin)
+%%@author Stefan Gebauer(TU Berlin matriculation number 361095)
+
+\documentclass[]{article}
+
+%%https://riptutorial.com/latex/example/28656/if-statements
+\usepackage{ifthen}%%\ifthenelse
+%%http://miktex.org/packages/currfile/files
+%% "currfile" has 0 bytes in "MiKTeX Console"
+%% https://ftp.mpi-inf.mpg.de/pub/tex/mirror/ftp.dante.de/pub/tex/systems/win32/miktex/tm/packages/currfile.tar.lzma
+%% "currfile" had to be installed via "MiKTeX console"
+\usepackage{currfile}
+
+\title{"compare 2 dates function" test}
+\author{Stefan Gebauer(TU Berlin matriculation number 361095)}
+
+\input{../cmp2Dates.tex}
+
+%%#1:day of left date to compare
+%%#2:month of left date to compare
+%%#3:year of left date to compare
+%%#4:day of right date to compare
+%%#4:month of right date to compare
+%%#4:year of right date to compare
+\newcommand{\testIfBeforeDate}[6]{
+  \cmpTwoDates{#1}{#2}{#3}{#4}{#5}{#6}
+
+  {#1}.{#2}(month).{#3} is
+  %%package "ifthen"
+  \ifthenelse{\leftDateCmpRightDate=1}%%if
+    {\textbf{before} }%%then
+    {}%%else
+  %%package "ifthen"
+  \ifthenelse{\leftDateCmpRightDate=2}%%if
+    {\textbf{after} }%%then
+    {}%%else
+  %%package "ifthen"
+  \ifthenelse{\leftDateCmpRightDate=0}%%if
+    {\textbf{same as} }%%then
+    {}%%else
+   {#4}.{#5}(month).{#6}
+}
+
+\begin{document}
+  \maketitle
+
+  %currfileDir: \currfiledir
+  \testIfBeforeDate{1}{1}{2000}{2}{1}{2000}
+  \testIfBeforeDate{1}{1}{2000}{1}{1}{2000}
+  \testIfBeforeDate{1}{1}{2000}{1}{2}{2000}
+  \testIfBeforeDate{31}{12}{1999}{1}{1}{2000}
+  \testIfBeforeDate{1}{11}{1999}{1}{10}{1999}
+\end{document}
