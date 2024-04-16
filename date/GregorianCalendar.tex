@@ -1,0 +1,21 @@
+%%(c) Stefan Gebauer(Computer Science Master from TU Berlin)
+%%@author Stefan Gebauer(TU Berlin matriculation number 361095)
+
+%%idea/adapted from:
+%% http://tex.stackexchange.com/questions/443032/array-list-of-numbers
+%%The following code needs package "listofitems".
+%% =>see http://guides.lib.wayne.edu/latex/packages:
+%% put "\usepackage{package}" before "\begin{document}"
+%% in the document where _this_ file is (in-)directly included.
+
+%%See
+%% http://mirrors.ibiblio.org/CTAN/macros/generic/listofitems/listofitems-en.pdf
+%% for "\setsepchar" and "\readlist"
+%%Set parsing separator for "\readlist" to space(" ") character.
+\setsepchar{ }%%For/of package "listofitems"
+
+%%Number of days in each month of Gregorian calendar.
+\readlist\TUBlnThSiTenNiFiGregorianMonthDaysCount{
+%%@see http://en.wikipedia.org/wiki/Month#Roman_calendar
+%%@see http://en.wikipedia.org/wiki/Gregorian_calendar#Description
+  31 28 31 30 31 30 31 31 30 31 30 31}
