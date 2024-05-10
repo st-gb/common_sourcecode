@@ -2,38 +2,45 @@
 %%@author Stefan Gebauer(TU Berlin matriculation number 361095)
 
 %%http://de.wikipedia.org/wiki/Schaltjahr#Gregorianischer_Kalender
-\newcounter{leapYear}
-\newcounter{yearModFour}
-\newcounter{yearModOneHoundred}
-\newcounter{yearModFourHoundred}
+\newcounter{TUBlnThSiTenNiFiLeapYear}
+\newcounter{TUBlnThSiTenNiFiIsLeapYearYearModFour}
+\newcounter{TUBlnThSiTenNiFiIsLeapYearYearModOneHoundred}
+\newcounter{TUBlnThSiTenNiFiIsLeapYearYearModFourHoundred}
 
-%% "#1": year
-\newcommand{\isLeapYear}[1]{
-  \setcounter{yearModFour}{
+\input{%%Needs "currfile" package=>"\usepackage{currfile}" before
+   \currfiledir../LaTex/setVarVal.tex}%%\TUBlnThSiTenNiFiSetVarVal{}{}
+
+%%TUBlnThSiTenNiFi=TU Berlib THree SIx TEN NIne FIve
+\newcommand{\TUBlnThSiTenNiFiIsLeapYear}[
+ %%Parameter "#1":year to give result for if it is a leap year
+  1]
+{
+  \setcounter{TUBlnThSiTenNiFiIsLeapYearYearModFour}{
   	%%Needs package "intcalc"->"\usepackage{intcalc}"
     \intcalcMod{#1}{4} }
-  \setcounter{yearModOneHoundred}{
+  \setcounter{TUBlnThSiTenNiFiIsLeapYearYearModOneHoundred}{
   	%%Needs package "intcalc"->"\usepackage{intcalc}"
     \intcalcMod{#1}{100} }
-  \setcounter{yearModFourHoundred}{
+  \setcounter{TUBlnThSiTenNiFiIsLeapYearYearModFourHoundred}{
   	%%Needs package "intcalc"->"\usepackage{intcalc}"
     \intcalcMod{#1}{400} }
-  \ifthenelse%%if:
+  \ifthenelse%%"if" branch:
     {
-     \theyearModFour=0
+     \theTUBlnThSiTenNiFiIsLeapYearYearModFour=0
 %%http://tex.stackexchange.com/questions/136831/boolean-operators-can-i-use-and-or-in-ifthenelse-how
-     \AND
+     \and
 		%%https://texdoc.org/serve/ifthen.pdf/0 : "parentheses \( \)"
-    \( \not \theyearModOneHoundred=0 \OR \theyearModFourHoundred=0\)
+    \( \not \theTUBlnThSiTenNiFiIsLeapYearYearModOneHoundred=0 \or
+      \theTUBlnThSiTenNiFiIsLeapYearYearModFourHoundred=0\)
     }
-    %%then:
+    %%"then" branch:
     {%is leap year
 %%http://tex.stackexchange.com/questions/37094/what-is-the-recommended-way-to-assign-a-value-to-a-variable-and-retrieve-it-for
-      \setcounter{leapYear}{1}
+      \setcounter{TUBlnThSiTenNiFiLeapYear}{1}
     }
-    %%else:
+    %%"else" branch:
     {%no leap year
 %%http://tex.stackexchange.com/questions/37094/what-is-the-recommended-way-to-assign-a-value-to-a-variable-and-retrieve-it-for
-      \setcounter{leapYear}{0}
+      \setcounter{TUBlnThSiTenNiFiLeapYear}{0}
     }
 }

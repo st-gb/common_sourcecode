@@ -8,50 +8,76 @@
 %%http://tex.stackexchange.com/questions/87824/how-to-do-simple-calculation-in-latex
 \usepackage{intcalc}
 \usepackage{amsmath}%%"\implies"
+\usepackage{xcolor}%%\color{}
+
+%% https://ftp.mpi-inf.mpg.de/pub/tex/mirror/ftp.dante.de/pub/tex/systems/win32/miktex/tm/packages/currfile.tar.lzma
+%% "currfile" had to be installed via "MiKTeX console"
+\usepackage{currfile}
 
 \title{"is leap year function" test}
 \author{Stefan Gebauer(TU Berlin matriculation number 361095)}
 
-\input{../isLeapYear.tex}
-
-\newcounter{year}
+\input{../isLeapYear.tex}%%variable "TUBlnThSiTenNiFiLeapYear"
+\input{%%Needs "currfile" package=>"\usepackage{currfile}" before
+   \currfiledir../../LaTex/setVarVal.tex}%%\TUBlnThSiTenNiFiSetVarVal{}{}
   
-\newcommand{\testIfLeapYear}[1]{%%#1: year
-  \setcounter{year}{#1}
-  \isLeapYear{\theyear}
+\newcommand{\TUBlnThSiTenNiFiTestIfLeapYear}[
+%%Parameter #1:year to test if it is a leap year
+%%Parameter #2:1=expected result:leap year, 0=expected result:no leap
+  2]
+{
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiTestIfLeapYearYear}{#1}
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiTestIfLeapYearExpctdRslt}{#2}
+  \TUBlnThSiTenNiFiIsLeapYear{\TUBlnThSiTenNiFiTestIfLeapYearYear}
  
-  \theyear
-    \ifthenelse{\theleapYear=1}%%if
-      { \textbf{is} }%%then
-      { is \textbf{not} }%%else
+  \TUBlnThSiTenNiFiTestIfLeapYearYear
+    \ifthenelse{\value{TUBlnThSiTenNiFiLeapYear}=1}%%"if" branch
+      { \textbf{is} }%%"then" branch
+      { is \textbf{not} }%%"else" branch
     a leap year:\newline
 %%Make comment to prevent a new paragraph on an empty new line.
 %%
-  year(\theyear) mod 4:\theyearModFour
+  year(\TUBlnThSiTenNiFiTestIfLeapYearYear) mod 4:
+   \theTUBlnThSiTenNiFiIsLeapYearYearModFour
   \ifthenelse{
-  	\theyearModFour=0}%%if
-    { year mod 4 = 0 $\implies$ potential leap year}%%then
-    { $\implies$ \textbf{no} leap year}%%else
+  	\theTUBlnThSiTenNiFiIsLeapYearYearModFour=0}%%"if" branch
+    { year mod 4 = 0 $\implies$ potential leap year}%%"then" branch
+    { $\implies$ \textbf{no} leap year}%%"else" branch
   \newline
-  year(\theyear) mod 100:\theyearModOneHoundred
+  year(\TUBlnThSiTenNiFiTestIfLeapYearYear) mod 100:
+   \theTUBlnThSiTenNiFiIsLeapYearYearModOneHoundred
   \ifthenelse{
-  	\theyearModOneHoundred=0}%%if
-    { year mod 100 = 0 $\implies$ potentially no leap year}%%then
-    {}%%else
+  	\theTUBlnThSiTenNiFiIsLeapYearYearModOneHoundred=0}%%"if" branch
+    { year mod 100 = 0 $\implies$ potentially no leap year}%%"then" branch
+    {}%%"else" branch
   \newline
-  year(\theyear) mod 400:\theyearModFourHoundred
+  year(\TUBlnThSiTenNiFiTestIfLeapYearYear) mod 400:
+   \theTUBlnThSiTenNiFiIsLeapYearYearModFourHoundred
   \ifthenelse{
-  	\theyearModFourHoundred=0}%%if
-    { year mod 400 = 0 $\implies$ leap year}%%then
-    {}%%else
+  	\theTUBlnThSiTenNiFiIsLeapYearYearModFourHoundred=0}%%"if" branch
+    { year mod 400 = 0 $\implies$ leap year}%%"then" branch
+    {}%%"else" branch
   \newline
+  \ifthenelse{%%"if" branch
+    \TUBlnThSiTenNiFiTestIfLeapYearExpctdRslt=\value{TUBlnThSiTenNiFiLeapYear}
+   }
+   {%%"then" branch
+    \color{green}
+    result fits expected result
+    \color{black}
+   }
+   {%%"else" branch
+    \color{green}
+    result does not fit expected result
+    \color{black}
+   }
 }
 
 \begin{document}
 \maketitle
 
-\testIfLeapYear{1900}
-\testIfLeapYear{1999}
-\testIfLeapYear{2000}
-\testIfLeapYear{2024}  
+\TUBlnThSiTenNiFiTestIfLeapYear{1900}{0}
+\TUBlnThSiTenNiFiTestIfLeapYear{1999}{0}
+\TUBlnThSiTenNiFiTestIfLeapYear{2000}{1}
+\TUBlnThSiTenNiFiTestIfLeapYear{2024}{1}
 \end{document}

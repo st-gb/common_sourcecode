@@ -32,12 +32,13 @@
 %%See
 %% http://mirrors.ibiblio.org/CTAN/macros/generic/listofitems/listofitems-en.pdf
 %% for "\setsepchar" and "\readlist".
-%%Set parsing separator for "\readlist" to space(" ") character.
-\setsepchar{ }%%For/of package "listofitems"
+%%Set parsing separator for "\readlist" to comma(",") character. This is less
+%% error-prone than space character when using line break(s)/indentation(s).
+\setsepchar{,}%%For/of package "listofitems"
 
 %%German heating degree day promille per day with 2 decimal places.
 \readlist\TUBlnThSiTenNiFiGerHeatingDegDayPromillePerDayTwoDecPlaces{
-  5.48 5.35 4.19 2.66 1.29 0.44 0.43 0.43 1.0 2.58 4.00 5.16}
+  5.48,5.35,4.19,2.66,1.29,0.44,0.43,0.43,1.0,2.58,4.00,5.16}
 
 %%German heating degree day promille per month.
 \readlist\TUBlnThSiTenNiFiGerHeatingDegDayPromillePerMon{
