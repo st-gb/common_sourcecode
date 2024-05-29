@@ -1,9 +1,10 @@
+[//]: # (https://stackoverflow.com/questions/4823468/comments-in-markdown :)
+[//]: # "With an empty line before the comment."
+[//]: # "[//]: # (This may be the most platform independent comment)"
 
-[comment]: # https://stackoverflow.com/questions/4823468/comments-in-markdown
-[comment]: # "With an empty line before the comment."
-[comment]: # Line breaks are often after "(" for a link as this is the (only)
-[comment]: # possibility to break the line at 80 characters and avoid spaces in
-[comment]: # links.
+[//]: # "Line breaks are often after "(" for a hyperlink as this is the (only)"
+[//]: # "possibility to break the line at 80 characters and avoid spaces in"
+[//]: # "hyperlinks."
 
 this file is based on
 https://gist.github.com/PurpleBooth/109311bb0361f32d87a2#file-readme-template-md
@@ -14,7 +15,8 @@ Cross-platform ([Windows](https://en.wikipedia.org/wiki/Microsoft_Windows
 )/[Linux](http://en.wikipedia.org/wiki/Linux)/[Android](
 http://en.wikipedia.org/wiki/Android_(operating_system))/[POSIX](
 http://en.wikipedia.org/wiki/POSIX))
-[C++98](http://en.wikipedia.org/wiki/C%2B%2B#Standardization)/[C++03](
+[C](http://en.wikipedia.org/wiki/C_(programming_language)) and [C++98](
+http://en.wikipedia.org/wiki/C%2B%2B#Standardization)/[C++03](
 http://en.wikipedia.org/wiki/C%2B%2B03) (kind of) library.
 
 Some paths to source and header files don't seem be senseful and so may need to
@@ -26,7 +28,7 @@ Not all of the source code is on a high standard (from point of view of a
 quality-aware long-year software engineer with an Master of Science in Computer
 Science).
 
-the highest level code (Apr 2021) is:
+the highest level code (02 Apr 2024) is:
 
 * multithread-safe logger (/Controller/Logger)
   - able store file formats:
@@ -34,9 +36,18 @@ the highest level code (Apr 2021) is:
     * [HTML](http://en.wikipedia.org/wiki/HTML)
     * txt
   - able to output the following attributes in log entries:
-    * function name where the log output happens. Therefore it uses GCC's
+    * by using [GCC](
+http://de.wikipedia.org/wiki/GNU_Compiler_Collection)'s
       "[\_\_PRETTY_FUNCTION\_\_](
-https://gcc.gnu.org/onlinedocs/gcc/Function-Names.html)"
+https://gcc.gnu.org/onlinedocs/gcc/Function-Names.html)" and [MicroSoft Visual
+C(++)](
+http://en.wikipedia.org/wiki/Microsoft_Visual_C%2B%2B)'s "[\_\_FUNCSIG\_\_](
+http://learn.microsoft.com/de-de/cpp/preprocessor/predefined-macros?view=msvc-170)"
+(for C++:):
+      - [**namespace name(s)**](
+http://en.wikipedia.org/wiki/Namespace#Examples) and **class name(s)** where the
+log output happens
+      - **function name** where the log output happens
     * thread name (must be set via I_Thread::SetThreadName(...) from
       "OperatingSystem/multithread/I\_Thread.hpp" from the thread whose name is
       to set before)
@@ -92,7 +103,8 @@ https://gcc.gnu.org/onlinedocs/gcc/Function-Names.html)"
 
 ## Authors
 
-[Stefan Gebauer, M.Sc. Comp. Sc.](https://github.com/st-gb)
+[Stefan Gebauer, Computer Science Master (from TU Berlin)](
+http://github.com/st-gb)
 
 ## License
 
