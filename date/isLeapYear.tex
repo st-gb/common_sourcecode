@@ -1,46 +1,52 @@
 %%(c) Stefan Gebauer(Computer Science Master from TU Berlin)
 %%@author Stefan Gebauer(TU Berlin matriculation number 361095)
 
+%%Include guard(see http://en.wikipedia.org/wiki/Include_guard) to prevent
+%% defining(via "\newcommand") the command more than once.
+\ifdefined \TUBlnThSiTenNiFiIsLeapYear
+\else
+
 %%http://de.wikipedia.org/wiki/Schaltjahr#Gregorianischer_Kalender
 \newcounter{TUBlnThSiTenNiFiLeapYear}
 \newcounter{TUBlnThSiTenNiFiIsLeapYearYearModFour}
 \newcounter{TUBlnThSiTenNiFiIsLeapYearYearModOneHoundred}
 \newcounter{TUBlnThSiTenNiFiIsLeapYearYearModFourHoundred}
 
-\input{%%Needs "currfile" package=>"\usepackage{currfile}" before
-   \currfiledir../LaTex/setVarVal.tex}%%\TUBlnThSiTenNiFiSetVarVal{}{}
-
-%%TUBlnThSiTenNiFi=TU Berlib THree SIx TEN NIne FIve
-\newcommand{\TUBlnThSiTenNiFiIsLeapYear}[
+\newcommand{
+%%Prefix with author's TU Berlin matriculation number to avoid name clashes.
+%%TUBlnThSiTenNiFi=TU Berlin THree SIx TEN NIne FIve (36 10 95)
+  \TUBlnThSiTenNiFiIsLeapYear}[
  %%Parameter "#1":year to give result for if it is a leap year
   1]
 {
+  %%Use counters because using the result in variables (via "\(re)newcommand")
+  %% did not work(?)
   \setcounter{TUBlnThSiTenNiFiIsLeapYearYearModFour}{
-  	%%Needs package "intcalc"->"\usepackage{intcalc}"
+  %%Needs package "intcalc"->"\usepackage{intcalc}" before "\begin{document}".
     \intcalcMod{#1}{4} }
   \setcounter{TUBlnThSiTenNiFiIsLeapYearYearModOneHoundred}{
-  	%%Needs package "intcalc"->"\usepackage{intcalc}"
+  %%Needs package "intcalc"->"\usepackage{intcalc}" before "\begin{document}".
     \intcalcMod{#1}{100} }
   \setcounter{TUBlnThSiTenNiFiIsLeapYearYearModFourHoundred}{
-  	%%Needs package "intcalc"->"\usepackage{intcalc}"
+  %%Needs package "intcalc"->"\usepackage{intcalc}" before "\begin{document}".
     \intcalcMod{#1}{400} }
-  \ifthenelse%%"if" branch:
-    {
-     \theTUBlnThSiTenNiFiIsLeapYearYearModFour=0
+  \ifthenelse%%"if" branch of "\ifthenelse":
+  {
+    \theTUBlnThSiTenNiFiIsLeapYearYearModFour=0
 %%http://tex.stackexchange.com/questions/136831/boolean-operators-can-i-use-and-or-in-ifthenelse-how
-     \and
+    \and
 		%%https://texdoc.org/serve/ifthen.pdf/0 : "parentheses \( \)"
     \( \not \theTUBlnThSiTenNiFiIsLeapYearYearModOneHoundred=0 \or
       \theTUBlnThSiTenNiFiIsLeapYearYearModFourHoundred=0\)
-    }
-    %%"then" branch:
-    {%is leap year
+  }
+  {%%"then"(<=>is leap year) branch of "\ifthenelse":
 %%http://tex.stackexchange.com/questions/37094/what-is-the-recommended-way-to-assign-a-value-to-a-variable-and-retrieve-it-for
-      \setcounter{TUBlnThSiTenNiFiLeapYear}{1}
-    }
-    %%"else" branch:
-    {%no leap year
+    \setcounter{TUBlnThSiTenNiFiLeapYear}{1}
+  }
+  {%%"else"(<=>no leap year) branch of "\ifthenelse":
 %%http://tex.stackexchange.com/questions/37094/what-is-the-recommended-way-to-assign-a-value-to-a-variable-and-retrieve-it-for
-      \setcounter{TUBlnThSiTenNiFiLeapYear}{0}
-    }
+    \setcounter{TUBlnThSiTenNiFiLeapYear}{0}
+  }
 }
+
+\fi%%Include guard

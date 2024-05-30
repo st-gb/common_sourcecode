@@ -37,9 +37,20 @@
 \setsepchar{,}%%For/of package "listofitems"
 
 %%German heating degree day promille per day with 2 decimal places.
-\readlist\TUBlnThSiTenNiFiGerHeatingDegDayPromillePerDayTwoDecPlaces{
+\readlist
+%%Prefix with author's TU Berlin matriculation number to avoid name clashes.
+%%TUBlnThSiTenNiFi=TU Berlin THree SIx TEN NIne FIve (36 10 95)
+  \TUBlnThSiTenNiFiGerHeatingDegDayPromillePerDayTwoDecPlaces{
   5.48,5.35,4.19,2.66,1.29,0.44,0.43,0.43,1.0,2.58,4.00,5.16}
 
 %%German heating degree day promille per month.
-\readlist\TUBlnThSiTenNiFiGerHeatingDegDayPromillePerMon{
-  170 150 150 130 80 40 40/3 40/3 40/3 30 80 120 160}
+\readlist
+%%Prefix with author's TU Berlin matriculation number to avoid name clashes.
+%%TUBlnThSiTenNiFi=TU Berlin THree SIx TEN NIne FIve (36 10 95)
+  \TUBlnThSiTenNiFiGerHeatingDegDayPromillePerMon{
+  %%Months January-May in ascending order
+  170,150,130,80,40,
+  %%Months June-August in ascending order;40:3=13.period3
+  13.3,13.3,13.3,
+  %%Months September-December in ascending order
+  30,80,120,160}

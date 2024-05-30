@@ -1,0 +1,25 @@
+%%(c) Stefan Gebauer(Computer Science Master from TU Berlin)
+%%@author Stefan Gebauer(TU Berlin matriculation number 361095)
+
+%%from https://tex.stackexchange.com/questions/37094/what-is-the-recommended-way-to-assign-a-value-to-a-variable-and-retrieve-it-fors
+
+%%Include guard(see http://en.wikipedia.org/wiki/Include_guard) to prevent
+%% defining(via "\newcommand") a command more than once.
+\ifdefined \TUBlnThSiTenNiFiSetVarVal
+\else
+
+\newcommand
+%%Use unique prefix to avoid name clashes with other (La)Tex code (from other
+%% packages).
+%%TUBln=TU Berlin
+%% ThSiTenNiFi=THree SIx TEN NIne FIve(matriculation number 36 10 95)
+%%SetVarVal=SET VARiable VALue
+ {\TUBlnThSiTenNiFiSetVarVal}[2]{
+  \ifdefined #1%%Variable with name "#1" already exists/is already set.
+    \renewcommand{#1}{#2}
+  \else
+    \newcommand{#1}{#2}
+  \fi
+}
+
+\fi%%Include guard

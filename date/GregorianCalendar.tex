@@ -8,6 +8,27 @@
 %% put "\usepackage{package}" before "\begin{document}"
 %% in the document where _this_ file is (in-)directly included.
 
+%%Include guard(see http://en.wikipedia.org/wiki/Include_guard) to prevent
+%% defining(via "\newcommand") a command more than once.
+\ifdefined \TUBlnThSiTenNiFiGregorianMonthGetNumDays
+\else
+
+\input{
+  %%Needs "currfile" package=>"\usepackage{currfile}" before "\begin{document}".
+  \currfiledir./%%Add comment to prevent space character after newline.
+%%For \TUBlnThSiTenNiFiIsLeapYear{>>Gregorian year<<}, counter 
+%% "TUBlnThSiTenNiFiLeapYear".
+isLeapYear.tex}
+\input{
+  %%Needs "currfile" package=>"\usepackage{currfile}" before "\begin{document}".
+  \currfiledir../LaTex/%%Add comment to prevent space character after newline.
+%%For \TUBlnThSiTenNiFiSetVarVal{>>variable name<<}{>>variable value<<}
+setVarVal.tex}
+\input{
+  %%Needs "currfile" package=>"\usepackage{currfile}" before "\begin{document}".
+  \currfiledir../LaTex/%%Add comment to prevent space character after newline.
+log.tex}%%For \TUBlnThSiTenNiFiLog{>>text<<}
+
 %%See
 %% http://mirrors.ibiblio.org/CTAN/macros/generic/listofitems/listofitems-en.pdf
 %% for "\setsepchar" and "\readlist"
@@ -20,3 +41,38 @@
 %%@see http://en.wikipedia.org/wiki/Month#Roman_calendar
 %%@see http://en.wikipedia.org/wiki/Gregorian_calendar#Description
   31,28,31,30,31,30,31,31,30,31,30,31}
+
+%%@brief get number of days of month for \p #2
+%%@param #1: month as ordinal decimal 1-based(1=January) number
+\newcommand{
+%%Prefix with author's TU Berlin matriculation number to avoid name clashes.
+%%TUBlnThSiTenNiFi=TU Berlin THree SIx TEN NIne FIve (36 10 95)
+  \TUBlnThSiTenNiFiGregorianMonthGetNumDays}[
+   %%Number of parameters to this function
+   2]
+{
+  \TUBlnThSiTenNiFiLog{TUBlnThSiTenNiFiGregorianMonthGetNumDays begin--year:#1
+ month:#2}
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiGregorianMonthGetNumDaysYear}{#1}
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiGregorianMonthGetNumDaysMonth}{#2}
+
+  \TUBlnThSiTenNiFiIsLeapYear{\TUBlnThSiTenNiFiGregorianMonthGetNumDaysYear}
+  \ifthenelse
+  {%%"if" branch of "\ifthenelse"
+    \value{TUBlnThSiTenNiFiLeapYear}=1 \and
+    \TUBlnThSiTenNiFiGregorianMonthGetNumDaysMonth=2%%February
+  }
+  {%%"then" branch of "\ifthenelse"
+    \TUBlnThSiTenNiFiLog{TUBlnThSiTenNiFiGregorianMonthGetNumDays--leap year and
+ month=February}
+    \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiGregorianMonthNumDays}{29}
+  }
+  {%%"else" branch of "\ifthenelse"
+    \TUBlnThSiTenNiFiLog{TUBlnThSiTenNiFiGregorianMonthGetNumDays--not:leap year
+ and month=February}
+    \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiGregorianMonthNumDays}
+     {\TUBlnThSiTenNiFiGregorianMonthDaysCount[
+       \TUBlnThSiTenNiFiGregorianMonthGetNumDaysMonth]}
+  }
+}
+\fi%%Include guard

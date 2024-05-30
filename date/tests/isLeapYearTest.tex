@@ -12,16 +12,27 @@
 
 %% https://ftp.mpi-inf.mpg.de/pub/tex/mirror/ftp.dante.de/pub/tex/systems/win32/miktex/tm/packages/currfile.tar.lzma
 %% "currfile" had to be installed via "MiKTeX console"
-\usepackage{currfile}
+\usepackage{currfile}%%for "\currfiledir"
 
 \title{"is leap year function" test}
 \author{Stefan Gebauer(TU Berlin matriculation number 361095)}
 
-\input{../isLeapYear.tex}%%variable "TUBlnThSiTenNiFiLeapYear"
-\input{%%Needs "currfile" package=>"\usepackage{currfile}" before
-   \currfiledir../../LaTex/setVarVal.tex}%%\TUBlnThSiTenNiFiSetVarVal{}{}
-  
-\newcommand{\TUBlnThSiTenNiFiTestIfLeapYear}[
+%%Command "\TUBlnThSiTenNiFiIsLeapYear{>>Gregorian year<<}"; counter:
+%% "TUBlnThSiTenNiFiLeapYear",
+%% "TUBlnThSiTenNiFiIsLeapYearYearModFour",
+%% "TUBlnThSiTenNiFiIsLeapYearYearModOneHoundred",
+%% "TUBlnThSiTenNiFiIsLeapYearYearModFourHoundred"
+\input{../isLeapYear.tex}
+\input{
+  %%Needs "currfile" package=>"\usepackage{currfile}" before "\begin{document}".
+  \currfiledir../../LaTex/%%Add comment to prevent ' ' character after newline.
+%%\TUBlnThSiTenNiFiSetVarVal{>>variable name<<}{>>variable value<<}
+setVarVal.tex}
+
+\newcommand{
+%%Prefix with author's TU Berlin matriculation number to avoid name clashes.
+%%TUBlnThSiTenNiFi=TU Berlin THree SIx TEN NIne FIve
+  \TUBlnThSiTenNiFiTestIfLeapYear}[
 %%Parameter #1:year to test if it is a leap year
 %%Parameter #2:1=expected result:leap year, 0=expected result:no leap
   2]

@@ -1,0 +1,17 @@
+%%(c) Stefan Gebauer(Computer Science Master from TU Berlin)
+%%@author Stefan Gebauer(TU Berlin matriculation number 361095)
+
+%%Include guard(see http://en.wikipedia.org/wiki/Include_guard) to prevent
+%% defining(via "\newcommand") a command more than once.
+\ifdefined \TUBlnThSiTenNiFiLog
+\else
+
+%%Logs to (La)Tex output(for example visible inside "TeXstudio"'s "Log" window).
+\newcommand{
+%%Prefix with author's TU Berlin matriculation number to avoid name clashes.
+%%TUBlnThSiTenNiFi=TU Berlin THree SIx TEN NIne FIve (36 10 95)
+  \TUBlnThSiTenNiFiLog}[1]{
+  \wlog{#1}
+  }
+
+\fi%%Include guard
