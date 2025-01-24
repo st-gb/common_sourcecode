@@ -1,83 +1,116 @@
 /**(c)from 2023 Stefan Gebauer,Computer Science Master(TU Berlin matr.no.361095)
  * @author Stefan Gebauer(TU Berlin matriculation number 361095)
  * builds with:
- * -Microsoft Visual Studio Community 17.5.3 64 bit from year 2022
  * -Apache NetBeans IDE 16 with TDM-GCC 10.3.0-2 64 bit
- * But only shows correct data with Microsoft Visual Studio Community.*/
+ * -Microsoft Visual Studio Community 17.5.3 64 bit from year 2022 */
 
 ///C standard library header files:
-#include <stdint.h>///uint64_t
-#include <stdio.h>///printf([...])
+ #include <stdint.h>///uint64_t
+ #include <stdio.h>///printf([...])
+ #include <tchar.h>///_T(...)
 
-///Stefan Gebauer's(TU Berlin matr.#361095)"common_sourcecode" repository files:
- ///TU_Bln361095hardwareDataCarrierNVMeUse(GetSMARTvals)
-#include "../../../getSMARTvals.h"
- ///TU_Bln361095hardwareDataCarrierUse(Open)
-#include <OperatingSystem/Windows/hardware/dataCarrier/openDataCarrier.h>
+///Stefan Gebauer's(TU Berlin matric. number 361095) ~"cmnSrc" repository files:
+ ///TU_Bln361095castToCharPtr
+ #include <compiler/GCC/avoid_write_strings_warning.h>
+ ///TU_Bln361095_16B_uIntWriteAsDecNumToCharStr(...)
+ #include <dataType/bigUint/useMultiprecisionFromBoostOrGNU.h>
+ ///TU_Bln361095hardwareDataCarrierNVMeUse(GetSMARTvals),
+ // struct NVME_HEALTH_INFO_LOG
+ #include "../../../getSMARTvals.h"
+ #include <hardware/CPU/fastest_data_type.h>///TU_Bln361095CPUfaststUint
+ ///TU_Bln361095dataCarrierNVMeSMARTattrUse(GetTempInDegC)
+ #include <hardware/dataCarrier/NVMe/NVMe_SMART_attr.h>
+ ///TU_Bln361095OpSysProcessCmdLneArgsParseUse(ArgsUnset)
+ #include <OperatingSystem/Process/CmdLneArgs/parseCmdLneArgs.h>
+ /**TU_Bln361095hardwareDataCarrierUse(GetPath)<=>
+  * TU_Bln361095hardwareDataCarrierGetPath(...),
+  * TU_Bln361095::hardware::DataCarrier::GetPath(...) */
+ #include <OperatingSystem/Windows/hardware/dataCarrier/getDataCarrierPath.h>
+ /**TU_Bln361095hardwareDataCarrierUse(Open)(...)<=>
+  * TU_Bln361095hardwareDataCarrierOpen(...),
+  * TU_Bln361095::hardware::DataCarrier::Open(...) */
+ #include <OperatingSystem/Windows/hardware/dataCarrier/openDataCarrier.h>
+ ///struct NVME_HEALTH_INFO_LOG
+ #include <OperatingSystem/Windows/hardware/NVMe/NVME_HEALTH_INFO_LOG.h>
 
-/**2^64-1=18.446.744.073.709.551.615=20 digits * 2 + "*(2^64)+" + character
- * string terminating \0 character */
-#define maxNumCharsFor128bitDecUint 50
+/** Cast to number to not print as character */
+#define castToNumber (TU_Bln361095CPUuse(faststUint) ) 
 
-void get16B_decNumStr(char str[], const UCHAR val[16])
-{
-  uint64_t lowmost8B = *((uint64_t*)&val[0]);
-  uint64_t highmost8B = *((uint64_t*)&val[8]);
-  if(highmost8B == 0)
-    snprintf(str, maxNumCharsFor128bitDecUint, "%llu", lowmost8B);
-  else
-    ///max unsigned 64 bit number = 2^64-1=18.446.744.073.709.551.616
-    snprintf(str, maxNumCharsFor128bitDecUint, "%llu*(2^64)+%llu",
-      highmost8B,
-      lowmost8B);
-}
-
-enum TU_Bln361095progRtrnCodes{ sccss = 0, opnDataCarrierFaild,
+enum TU_Bln361095progRtrnCodes{sccss = 0, opnDataCarrierFaild,
   getSMARTvalsFaild
   };
 
-int main()
+static char * TU_Bln361095enProgExitMsgs///ENglish PROGram EXIT MeSsageS
+  [] = {
+  TU_Bln361095castToCharPtr "success",
+  TU_Bln361095castToCharPtr "opening data carrier failed",
+  TU_Bln361095castToCharPtr "getting S.M.A.R.T. values failed"
+  };
+
+/**Get data carrier ID from CoMmanD LiNE ARGuments.
+ * @param cmdLneArgCnt CoMmanD LiNE ARGument CouNT(=number)
+ * @param cmdLneArgArr coMmanD LiNE ARGument ARRay
+ * @param dataCarrierID filled either:
+ *  - from command line arguments to this program
+ *  - with 1st possible data carrier ID as default value in case of error in
+ *    processing the command line arguments passed to this function */
+static inline TU_Bln361095CPUuse(FaststUint) getDataCarrierIDfromCmdLneArgs(
+  const int cmdLneArgCnt,
+  const char * const cmdLneArgArr[],
+  char dataCarrierID[2]
+  )
 {
-  HANDLE deviceHandle;
-  TCHAR dataCarrierPath[MAX_PATH];
-   TU_Bln361095hardwareDataCarrierUse(GetPath)(
-    _T("0"),///const TCHAR dataCarrierID[],
-    dataCarrierPath);
-  deviceHandle = TU_Bln361095hardwareDataCarrierUse(Open)(
-    dataCarrierPath///const TCHAR dataCarrierPath[]
-    );
-  if(deviceHandle == INVALID_HANDLE_VALUE)
-    return opnDataCarrierFaild;
+#ifdef cxxoptsDir
+  #pragma message("\"cxxoptsDir\" set as preprocessor macro.")
+  //return getDataCarrierIDfromCxxopts(cmdLneArgCnt, cmdLneArgArr, dataCarrierID);
+  //cxxopts::exceptions::exception cxxoptsExc;
+  std::string cxxoptsExcMsg;
 
-  NVME_HEALTH_INFO_LOG * pNMVeHealthInfoLog;
-  uint8_t* pDvcIOctlBuf;
-  enum TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsUse(Rslt) 
-    nVMeGetSMARTvalsRslt = TU_Bln361095hardwareDataCarrierNVMeUse(GetSMARTvals)(
-      deviceHandle,
-      &pDvcIOctlBuf,
-      &pNMVeHealthInfoLog);
-  if(nVMeGetSMARTvalsRslt !=
-     TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsUse(Sccss) )
-    return getSMARTvalsFaild;
+  TU_Bln361095::CPU::faststUint getDataCarrierIDfromCxxoptsRslt =
+    /*TU_Bln361095::hardware::NVMe::*/cxxopts::getDataCarrierID(cmdLneArgCnt,
+      cmdLneArgArr, dataCarrierID, /*cxxoptsExc*/ cxxoptsExcMsg);
+  if (getDataCarrierIDfromCxxoptsRslt ==
+    TU_Bln361095::OpSys::Process::CmdLneArgs::Parse::Error)
+    printf("Getting command line option for \"dataCarrier\" failed:%s\n"
+      "->using default value \"%s\" for it.\n", //cxxoptsExc.what()
+      cxxoptsExcMsg.c_str(), dataCarrierID);
+  return getDataCarrierIDfromCxxoptsRslt;
+#else
+  #pragma message("\"cxxOptsDir\" NOT set as preprocessor macro.")
+#endif
+  return TU_Bln361095OpSysProcessCmdLneArgsParseUse(ArgsUnset);
+}
 
-  const unsigned tempInDegC = ((ULONG)pNMVeHealthInfoLog->Temperature[1] << 8 |
-    pNMVeHealthInfoLog->Temperature[0])
-    //*( (ULONG *)&NMVeHealthInfoLog.Temperature[0])
-    ///Kelvin to °C.
-    - 273;
+static TU_Bln361095frcInln void exitProg(
+  const enum TU_Bln361095progRtrnCodes rtrnCd)
+{
+  printf("%s:%d\n", TU_Bln361095enProgExitMsgs[rtrnCd], GetLastError() );
+  exit(rtrnCd);
+}
 
-  char mediaErrorsStr[maxNumCharsFor128bitDecUint];
-  char errorInfoLogEntryCountStr[maxNumCharsFor128bitDecUint];
-  char dataUnitsReadStr[maxNumCharsFor128bitDecUint];
-  char dataUnitsWrittnStr[maxNumCharsFor128bitDecUint];
-  get16B_decNumStr(mediaErrorsStr, pNMVeHealthInfoLog->MediaErrors);
-  get16B_decNumStr(errorInfoLogEntryCountStr, pNMVeHealthInfoLog->
-    ErrorInfoLogEntryCount);
-  get16B_decNumStr(dataUnitsReadStr, pNMVeHealthInfoLog->DataUnitRead);
-  get16B_decNumStr(dataUnitsWrittnStr, pNMVeHealthInfoLog->DataUnitWritten);
+static TU_Bln361095frcInln void printNVMeSMARTvals(
+  NVME_HEALTH_INFO_LOG * const pNMVeHealthInfoLog,
+  char dataCarrierPath[MAX_PATH]
+  )
+{
+  const TU_Bln361095hardwareCPUuse(FaststUint) tempInDegC =
+    TU_Bln361095dataCarrierNVMeSMARTattrUse(GetTempInDegC)(pNMVeHealthInfoLog);
+
+  char mediaErrorsStr[TU_Bln361095_16B_UintMaxNumCharsForDecNum];
+  char errorInfoLogEntryCountStr[TU_Bln361095_16B_UintMaxNumCharsForDecNum];
+  char dataUnitsReadStr[TU_Bln361095_16B_UintMaxNumCharsForDecNum];
+  char dataUnitsWrittnStr[TU_Bln361095_16B_UintMaxNumCharsForDecNum];
+  TU_Bln361095_16B_uIntUse(WriteAsDecNumToCharStr)(pNMVeHealthInfoLog->
+    MediaErrors, mediaErrorsStr);
+  TU_Bln361095_16B_uIntUse(WriteAsDecNumToCharStr)(pNMVeHealthInfoLog->
+    ErrorInfoLogEntryCount, errorInfoLogEntryCountStr);
+  TU_Bln361095_16B_uIntUse(WriteAsDecNumToCharStr)
+    (pNMVeHealthInfoLog->DataUnitRead, dataUnitsReadStr);
+  TU_Bln361095_16B_uIntUse(WriteAsDecNumToCharStr)
+    (pNMVeHealthInfoLog->DataUnitWritten, dataUnitsWrittnStr);
 
   printf("S.M.A.R.T. information for data carrier \"%s\" via NVMe:\n"
-    "-temperature:%d°C\n"
+    "-temperature:%dÂ°C\n"
     "-Available Spares:%d threshold:%d\n"
     "-percentage used:%d\n"
     "-data units read:%s\n"
@@ -86,14 +119,72 @@ int main()
     "-number of error log entries:%s\n",
     dataCarrierPath,
     tempInDegC,
-    (ULONG)pNMVeHealthInfoLog->AvailableSpare,
-    (ULONG)pNMVeHealthInfoLog->AvailableSpareThreshold,
-    (ULONG)pNMVeHealthInfoLog->PercentageUsed,
+    castToNumber pNMVeHealthInfoLog->AvailableSpare,
+    castToNumber pNMVeHealthInfoLog->AvailableSpareThreshold,
+    castToNumber pNMVeHealthInfoLog->PercentageUsed,
     dataUnitsReadStr,
     dataUnitsWrittnStr,
     mediaErrorsStr,
     errorInfoLogEntryCountStr
     );
+}
+
+/** @param cmdLneArgCnt CoMmanD LiNE ARGument CouNT
+ *  @param cmdLneArgs coMmanD LiNE ARGumentS */
+int main(int cmdLneArgCnt, char * cmdLneArgs[])
+{
+  printf("Software application to show NVMe S.M.A.R.T. attribute value "
+    "information.\n"
+    /**Outputting the date and time of day when building to console/terminal/
+     * standard output enables that the user to see which version is run(This
+     * improves quality assurance).*/
+    "Build date and time of day of this executable:%s %s\n", __DATE__,
+    __TIME__);
+  HANDLE deviceHandle;
+  /*TCHAR*/char dataCarrierPath[MAX_PATH];
+
+  char dataCarrierID[2] = "0";
+  TU_Bln361095CPUuse(faststUint) getDataCarrierIDfromCmdLneArgsRslt =
+    getDataCarrierIDfromCmdLneArgs(
+      cmdLneArgCnt,
+      /**Cast to function parameter type to avoid (g++/GNU C++) compiler
+       *  warning.*/
+      (const char * const *) cmdLneArgs,
+      dataCarrierID);
+  TU_Bln361095hardwareDataCarrierUse(//GetPath)(_T("0"),
+    GetPathA)(//"0",
+      dataCarrierID,
+      ///const TCHAR dataCarrierID[],
+      dataCarrierPath);
+  deviceHandle = TU_Bln361095hardwareDataCarrierUse(//Open)(
+    OpenA)(
+    dataCarrierPath///const TCHAR dataCarrierPath[]
+    );
+  if(//deviceHandle == INVALID_HANDLE_VALUE
+    TU_Bln361095hardwareDataCarrierUse(OpnFaild)(deviceHandle)
+    )
+  {
+    exitProg(opnDataCarrierFaild);
+  }
+
+  NVME_HEALTH_INFO_LOG * pNMVeHealthInfoLog;
+  uint8_t * pDvcIOctlBuf;
+  enum TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsUse(Rslt) 
+    nVMeGetSMARTvalsRslt = TU_Bln361095hardwareDataCarrierNVMeUse(GetSMARTvals)(
+      deviceHandle,
+      &pDvcIOctlBuf,
+      &pNMVeHealthInfoLog);
+  if(nVMeGetSMARTvalsRslt !=
+     TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsUse(Sccss) )
+  {
+    printf("%s\n", TU_Bln361095enProgExitMsgs[getSMARTvalsFaild]);
+    if(nVMeGetSMARTvalsRslt !=
+      TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsUse(AllocBufFaild) )
+      free(pDvcIOctlBuf);
+    return getSMARTvalsFaild;
+  }
+
+  printNVMeSMARTvals(pNMVeHealthInfoLog, dataCarrierPath);
   free(pDvcIOctlBuf);
   CloseHandle(deviceHandle);
   return sccss;

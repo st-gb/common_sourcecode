@@ -78,8 +78,10 @@ http://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddstor/ns-ntddst
   #define NVME_MAX_LOG_SIZE 0x1000
 #endif
 
+#include <stdio.h>
+
 ///Stefan Gebauer's(TU Berlin matr.#361095)"common_sourcecode" repository files:
-#include "NVMe_ID_prefix.h"
+#include <hardware/dataCarrier/NVMe/NVMe_ID_prefix.h>
 #include <compiler/force_inline.h>///TU_Bln361095frcInln
 
 #ifdef __cplusplus
@@ -161,7 +163,7 @@ TU_Bln361095hardwareDataCarrierNVMeNmSpcBgn
  *   [...]GetSMARTvals([...]&pNMVeHealthInfoLog[...]);"
  * @return TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsDef(Sccss) if
  *  successful */
-TU_Bln361095frcInln
+static TU_Bln361095frcInln
  enum TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsUse(Rslt)
   TU_Bln361095hardwareDataCarrierNVMeDef(GetSMARTvals)(
    HANDLE deviceHandle,
@@ -183,21 +185,25 @@ TU_Bln361095frcInln
     sizeof(STORAGE_PROTOCOL_SPECIFIC_DATA) + /*NVME_MAX_LOG_SIZE*/
     sizeof(NVME_HEALTH_INFO_LOG);
   pDvcIOctlBuf = malloc(dvcIOctlBufSizInB);
+  //printf("dvcIOctlBufSizInB:%u\n", dvcIOctlBufSizInB);
 
   if(pDvcIOctlBuf == NULL)
     return TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsUse(AllocBufFaild);
-  
+  *ppDvcIOctlBuf = (uint8_t*)pDvcIOctlBuf;
+
   ZeroMemory(pDvcIOctlBuf, dvcIOctlBufSizInB);
   p_storagePropQuery = (PSTORAGE_PROPERTY_QUERY)pDvcIOctlBuf;
   p_protoDataDescr = (PSTORAGE_PROTOCOL_DATA_DESCRIPTOR)pDvcIOctlBuf;
   p_protoData = (PSTORAGE_PROTOCOL_SPECIFIC_DATA)p_storagePropQuery->
     AdditionalParameters;
+  //printf("p_protoData-p_storagePropQuery:%p\n", (uint8_t*)p_protoData-(uint8_t*)p_storagePropQuery);
 
+  ///comverts enum _STORAGE_PROPERTY_ID to enum _STORAGE_PROPERTY_ID_fromVal9 for MinGW
   p_storagePropQuery->PropertyId = //StorageDeviceProtocolSpecificProperty;
 /**http://learn.microsoft.com/en-us/windows/win32/fileio/working-with-nvme-devices
  * "If ProtocolType = ProtocolTypeNvme and DataType = NVMeDataTypeLogPage,
  * callers should request 512 byte chunks of data."*/
-    StorageAdapterProtocolSpecificProperty;
+    (STORAGE_PROPERTY_ID) StorageAdapterProtocolSpecificProperty;
   p_storagePropQuery->QueryType = PropertyStandardQuery;
 
   p_protoData->ProtocolType = ProtocolTypeNvme;
@@ -205,11 +211,13 @@ TU_Bln361095frcInln
   p_protoData->ProtocolDataRequestValue = NVME_LOG_PAGE_HEALTH_INFO;
   p_protoData->ProtocolDataRequestSubValue = 0;
   ///https://github.com/MicrosoftDocs/win32/blob/docs/desktop-src/FileIO/working-with-nvme-devices.md :
-  p_protoData->ProtocolDataRequestSubValue2 = 0; // This will be passed as the higher 32 bit of log page offset if controller supports extended data for the Get Log Page.
-  p_protoData->ProtocolDataRequestSubValue3 = 0; // This will be passed as Log Specific Identifier in CDW11.
-  p_protoData->ProtocolDataRequestSubValue4 = 0; // This will map to STORAGE_PROTOCOL_DATA_SUBVALUE_GET_LOG_PAGE definition, then user can pass Retain Asynchronous Event, Log Specific Field.
+  //p_protoData->ProtocolDataRequestSubValue2 = 0; // This will be passed as the higher 32 bit of log page offset if controller supports extended data for the Get Log Page.
+  //p_protoData->ProtocolDataRequestSubValue3 = 0; // This will be passed as Log Specific Identifier in CDW11.
+  //p_protoData->ProtocolDataRequestSubValue4 = 0; // This will map to STORAGE_PROTOCOL_DATA_SUBVALUE_GET_LOG_PAGE definition, then user can pass Retain Asynchronous Event, Log Specific Field.
   p_protoData->ProtocolDataOffset = sizeof(STORAGE_PROTOCOL_SPECIFIC_DATA);
   p_protoData->ProtocolDataLength = sizeof(NVME_HEALTH_INFO_LOG);
+  //printf("p_protoData->ProtocolDataOffset:%u\n", p_protoData->ProtocolDataOffset);
+  //printf("p_protoData->ProtocolDataLength:%u\n", p_protoData->ProtocolDataLength);
 
   // Send request down.
   dvcIOctrlRslt = DeviceIoControl(
@@ -238,14 +246,13 @@ TU_Bln361095frcInln
       (p_protoData->ProtocolDataLength < sizeof(NVME_HEALTH_INFO_LOG) )
     )///ProtocolData Offset/Length not valid
     return TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsUse(OffsetInvalid);
-
+  ///As seen in memory view while debugging in NetBeans: the offset is correct
   PCHAR pNMVeHealthInfoLogBgnAddr = (PCHAR)p_protoData + p_protoData->
     ProtocolDataOffset;
   *ppNMVeHealthInfoLog = (NVME_HEALTH_INFO_LOG *) pNMVeHealthInfoLogBgnAddr;
   //memcpy(pNMVeHealthInfoLog, pNMVeHealthInfoLogBgnAddr,
   //  sizeof(NVME_HEALTH_INFO_LOG) );
   //free(pDvcIOctlBuf);
-  *ppDvcIOctlBuf = (uint8_t*) pDvcIOctlBuf;
   return TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsUse(Sccss);
 }
 

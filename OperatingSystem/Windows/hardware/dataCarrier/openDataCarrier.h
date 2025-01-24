@@ -31,11 +31,14 @@
   * TU_Bln361095hardwareDataCarrierNmSpcEnd */
 #include <hardware/dataCarrier/dataCarrier_ID_prefix.h>
 
+typedef HANDLE TU_Bln361095hardwareDataCarrierIDtyp;
+
 TU_Bln361095hardwareDataCarrierNmSpcBgn
 
+typedef HANDLE TU_Bln361095hardwareDataCarrierDef(IDtyp);
+
 ///TCHAR version
-TU_Bln361095frcInln HANDLE
- TU_Bln361095hardwareDataCarrierDef(Open)(
+TU_Bln361095frcInln HANDLE TU_Bln361095hardwareDataCarrierDef(Open)(
   const TCHAR dataCarrierPath[])
 {
 /**http://learn.microsoft.com/en-us/windows/win32/api/ioapiset/nf-ioapiset-deviceiocontrol
@@ -118,6 +121,13 @@ TU_Bln361095frcInln HANDLE TU_Bln361095hardwareDataCarrierDef(OpenA)(
   return dataCarrierHandle;
 }
 
+TU_Bln361095frcInln int TU_Bln361095hardwareDataCarrierDef(OpnFaild)(
+  const HANDLE dataCarrierID)
+{
+  if(dataCarrierID == INVALID_HANDLE_VALUE)
+   return 1;
+  return 0;
+}
 TU_Bln361095hardwareDataCarrierNmSpcEnd
 
 #endif///Include guard

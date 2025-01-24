@@ -23,12 +23,12 @@
 #include <stdint.h>///uint8_t
 
 ///Stefan Gebauer's(TU Berlin matr.#361095)"common_sourcecode" repository files:
- ///TU_Bln361095hardwareDataCarrierNVMeUse
-#include "NVMe_ID_prefix.h"
 #include <compiler/force_inline.h>///TU_Bln361095frcInln
  /**TU_Bln361095hardwareSMARTnumModelBytes, TU_Bln361095hardwareSMARTnumSNbytes,
   * TU_Bln361095hardwareSMARTnumFWbytes */
 #include <hardware/dataCarrier/ATA3Std.h>
+ ///TU_Bln361095hardwareDataCarrierNVMeUse
+#include <hardware/dataCarrier/NVMe/NVMe_ID_prefix.h>
 
 //TODO What is the minimal Microsoft compiler version needed to compile?
 #if _MSC_VER > 1920
@@ -139,7 +139,9 @@ TU_Bln361095frcInln void copy(
   )
 {
   memcpy(dest, src, numB);
-  dest[numB] = 0;///character string terminating \0 character
+  /**Overwrites the stack if the memory size is >>numB<< because the index
+   * 0-based!*/
+  //dest[numB] = 0;///character string terminating \0 character
   /////strcpy([...]) also sets character string terminating \0 character.
   //strcpy_s( (char*) dest, numB, (const char*) src);
 }

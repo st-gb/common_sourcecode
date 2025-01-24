@@ -1,6 +1,8 @@
 /**(c)from 2023 Stefan Gebauer,Computer Science Master(TU Berlin matr.no.361095)
  * @author Stefan Gebauer(TU Berlin matriculation number 361095)*/
 
+///NVME_HEALTH_INFO_LOG is in Windows SDK, so don't define it here again.
+#if ! defined _MSC_VER
 ///Include guard,see http://en.wikipedia.org/wiki/Include_guard :
 
 /**Bln=BerLiN:http://www.acronymfinder.com/Berlin-(Bln).html
@@ -66,3 +68,5 @@ typedef struct {
 } NVME_HEALTH_INFO_LOG, *PNVME_HEALTH_INFO_LOG;
 
 #endif///include guard
+
+#endif///#if ! defined _MSC_VER
