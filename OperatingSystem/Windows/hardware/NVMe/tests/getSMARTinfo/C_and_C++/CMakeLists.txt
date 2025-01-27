@@ -34,14 +34,16 @@ message("CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
 
 set(srcFilePaths "")
 set(NVMeReadSMARTattrValTestRootDir ${CMAKE_CURRENT_LIST_DIR}/..)
+message("${currFilePath}--NVMeReadSMARTattrValTestRootDir:"
+  "${NVMeReadSMARTattrValTestRootDir}")
 
 ##http://cmake.org/cmake/help/latest/command/list.html#length
 list(LENGTH srcFilePaths numSrcFilePathsBeforeGNU_C_Test)
 if(DEFINED GNUmultiPrecisionArithmLibRootDir)
 
-  include(GNU_C_compiler.cmake)##testUseGNU_C_compiler(...)
+  include(../C/GNU_C_compiler.cmake)##testUseGNU_C_compiler(...)
   testUseGNU_C_compiler(#"${srcFilePaths}"
-    ${inclDirs} "${srcFilePaths}" ${NVMeReadSMARTattrValTestRootDir}
+    ${inclDirs} "${srcFilePaths}" "${NVMeReadSMARTattrValTestRootDir}"
     ${GNUmultiPrecisionArithmLibRootDir} )
 
 endif()
@@ -55,7 +57,7 @@ message("${currFilePath}--Number of source files before and after GNU C "
 if(numSrcFilePathsAfterGNU_C_Test EQUAL numSrcFilePathsBeforeGNU_C_Test)
   message("${currFilePath}--Test if GNU C compiler failed--testing with C++")
   include(Cpp_compiler.cmake)##testUseCpp_compiler(...)
-  testUseCpp_compiler(${inclDirs} "${srcFilePaths}"
+  testUseCpp_compiler("${inclDirs}" "${srcFilePaths}"
     ${NVMeReadSMARTattrValTestRootDir} ${boostRootDir} ${cxxoptsDir})
 endif()
 

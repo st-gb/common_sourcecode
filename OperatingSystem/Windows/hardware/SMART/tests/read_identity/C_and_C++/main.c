@@ -81,8 +81,8 @@ int main(int prgArgCnt, char ** progArgs)
   printf("Program for showing data carrier identity(model, serial number, "
     "firmware revision) information.\n");
 #ifdef __cplusplus
-  TU_Bln361095cmnSrcNmSpc::cxxopts::handleCmdLineOpts(prgArgCnt, progArgs,
-    dataCarrierPath);
+  TU_Bln361095hardwareDataCarrierNmSpc::cxxopts::handleCmdLineOpts(prgArgCnt,
+    progArgs, dataCarrierPath);
 #else
   handleCmdLineOpts(prgArgCnt, progArgs, dataCarrierPath);
 #endif

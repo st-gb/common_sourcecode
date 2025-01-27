@@ -21,7 +21,7 @@
   #define TU_Bln361095cmnSrc__dataType__bigUnit__boostMultiPrecArithmLib_h
 
 ///C(++) standard header files:
- #include <strstream>///class std::ostringstream
+ #include <sstream>///class std::ostringstream
 
 ///Boost (working with version 1.8.1) header files:
  //https://www.boost.org/doc/libs/1_77_0/libs/multiprecision/doc/html/boost_multiprecision/tut/ints/cpp_int.html
@@ -29,6 +29,7 @@
 //#include "D:\Boost1.81.0\boost_1_81_0/boost/multiprecision/cpp_int.hpp"
 
 ///Stefan Gebauer's(TU Berlin matricul.numb.361095) ~ "cmnSrc" repository files:
+ ///TU_Bln361095_16B_uIntNmSpcBgn
  #include "bigUint_ID_prefix.h"//TU_Bln361095Uint16BtypDef()
 
  //TODO replace preprocessor macros with inline functions?!

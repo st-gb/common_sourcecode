@@ -32,7 +32,8 @@
    #define TU_Bln361095OpSysWinHW_SMARTtestsReadID_C_CppHandleCmdLnOpts_hpp
 
 #ifdef __cplusplus
-  #include "../C++/cxxopts/handCmdlineOpts.hpp"
+ ///TU_Bln361095hardwareDataCarrierNmSpc::cxxopts::handleCmdLineOpts(...)
+ #include <hardware/dataCarrier/cxxopts/handleCmdLineOpts.hpp>
   using namespace TU_Bln361095cmnSrcNmSpc::cxxopts;
 #else
 inline /*int*/ void handleCmdLineOpts(int argCount, char * args[],

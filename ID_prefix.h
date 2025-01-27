@@ -37,6 +37,7 @@
   #define TU_Bln361095nmSpcBgn namespace TU_Bln361095{
   #define TU_Bln361095nmSpcEnd }
   #define TU_Bln361095use(suffix) TU_Bln361095nmSpc :: suffix
+
 /**cmn=CoMmoN:http://www.abbreviations.com/abbreviation/common
  * Src=SouRCe(code):http://www.abbreviations.com/abbreviation/Source
  *   "common sourcecode" is the git repository these files are/should be in.
@@ -44,12 +45,19 @@
  * Put definition between "[...]NmSpcBgn" and "[...]NmSpcEnd" #define'd below.*/
   #define TU_Bln361095cmnSrcDef(suffix) suffix
 /**Nm=NaMe: http://www.abbreviations.com/abbreviation/name
- * Spc=SPaCe: http://www.abbreviations.com/abbreviation/Space
- * Do not append "::" right of the rightmost namespace name to enable
- * "using namespace [...]cmnSrcNmSpc" */
-  #define TU_Bln361095cmnSrcNmSpc TU_Bln361095 :: cmnSrc
+ * Spc=SPaCe: http://www.abbreviations.com/abbreviation/Space */
+  #define TU_Bln361095cmnSrcNmSpc\
+/** Do not append "::" right of the rightmost namespace name to enable
+ * "using namespace [...]cmnSrcNmSpc" */\
+    TU_Bln361095 :: cmnSrc
+  #if __cplusplus >= 201103 && defined  TU_Bln361095noCmnSrcScope
+    namespace TU_Bln361095 = TU_Bln361095::cmnSrc;
+  ///Bgn=BeGiN :http://www.allacronyms.com/begin/abbreviated
+    #define TU_Bln361095cmnSrcNmSpcBgn namespace TU_Bln361095{
+  #else
   ///Bgn=BeGiN :http://www.allacronyms.com/begin/abbreviated
   #define TU_Bln361095cmnSrcNmSpcBgn namespace TU_Bln361095{namespace cmnSrc{
+  #endif
   /**"}" times >>number of namespaces<<*/
   #define TU_Bln361095cmnSrcNmSpcEnd }}
   #define TU_Bln361095cmnSrcUse(suffix) TU_Bln361095cmnSrcNmSpc :: suffix

@@ -40,6 +40,12 @@ function(testUseCpp_compiler inclDirs srcFilePaths
     ##http://cmake.org/cmake/help/latest/command/add_compile_definitions.html :
     ## 
     add_compile_definitions(cxxoptsDir=${cxxoptsDir})
-    set(inclDirs ${inclDirs} ${cxxoptsDir}) 
+    ##Set the variable contents again without "PARENT_SCOPE", else outputting 
+    ## its values does not show changes.
+    set(inclDirs ${inclDirs} ${cxxoptsDir})
   endif()
+  message("${currFnNm} end:include directories:${inclDirs}")
+  ##Set the variable contents again with "PARENT_SCOPE" to propagate its
+  ## changes to the caller of this function.
+  set(inclDirs ${inclDirs} PARENT_SCOPE)
 endfunction()

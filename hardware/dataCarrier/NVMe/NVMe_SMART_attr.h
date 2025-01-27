@@ -21,8 +21,9 @@
   #define TU_Bln361095cmnSrc_hardware_dataCarrier_NVMe_NVMe_SMART_attr_h  
 
 ///Stefan Gebauer's(TU Berlin mat.#361095) ~"common_sourcecode"repository files:
+ #include <hardware/CPU/fastest_data_type.h>///TU_Bln361095FaststUint
  ///TU_Bln361095hardwareDataCarrierNVMeUse
-#include <hardware/dataCarrier/NVMe/NVMe_ID_prefix.h>
+ #include <hardware/dataCarrier/NVMe/NVMe_ID_prefix.h>
 
 /**Use these preprocessor macros in source code for example to enable both C and
  * C++.*/
@@ -48,10 +49,13 @@
       TU_Bln361095dataCarrierNVMeNmSpcEnd }}
   #define TU_Bln361095dataCarrierNVMeSMARTattrUse(suffix)\
     TU_Bln361095dataCarrierNVMeSMARTattrNmSpc :: suffix
-#else
+#else///Source code is compiled with a C compiler.
   #define TU_Bln361095dataCarrierNVMeSMARTattrDef(suffix) suffix
   #define TU_Bln361095dataCarrierNVMeSMARTattrUse(suffix)\
     TU_Bln361095dataCarrierNVMeSMARTattrDef(suffix)
+  #define TU_Bln361095dataCarrierNVMeSMARTattrNmSpcBgn /**->empty*/
+  #define TU_Bln361095hardwareDataCarrierNVMeSMARTattrNmSpcEnd /**->empty*/
+  #define TU_Bln361095dataCarrierNVMeSMARTattrNmSpcEnd /**->empty*/
 #endif
 
 TU_Bln361095dataCarrierNVMeSMARTattrNmSpcBgn
@@ -62,7 +66,7 @@ http://media.kingston.com/support/downloads/MKP_521.6_SMART-DCP1000_attribute.pd
  : "Byte Index": "47:32" */
 #define TU_Bln361095dataCarrierNVMeSMARTattrNumRawValB 16
 #define TU_Bln361095dataCarrierNVMeSMARTattrNum1stAttrsRawValB 1
-  //"Byte Index": "2:1"
+  //NUMber TEMPerature RAW VALue Bytes "Byte Index": "2:1"= 2 Bytes 
 #define TU_Bln361095dataCarrierNVMeSMARTattrNumCompTempRawValB 2
 /**See
 http://en.wikipedia.org/wiki/Self-Monitoring,_Analysis_and_Reporting_Technology#Known_NVMe_S.M.A.R.T._attributes
@@ -85,6 +89,18 @@ enum TU_Bln361095dataCarrierNVMeSMARTattrDef(ID){
   TU_Bln361095dataCarrierNVMeSMARTattrDef(ErrorInfoLogEntryCount)
   };
 
+ TU_Bln361095frcInln TU_Bln361095hardwareCPUuse(FaststUint)
+   TU_Bln361095dataCarrierNVMeSMARTattrDef(GetTempInDegC)(
+     const NVME_HEALTH_INFO_LOG * const pNMVeHealthInfoLog)
+{
+  const TU_Bln361095hardwareCPUuse(FaststUint) tempInDegC =
+    ((ULONG)pNMVeHealthInfoLog->Temperature[1] << 8 |
+      pNMVeHealthInfoLog->Temperature[0])
+    //*( (ULONG *)&NMVeHealthInfoLog.Temperature[0])
+    ///Kelvin to �C.
+    - 273;
+  return tempInDegC;
+}
 struct TU_Bln361095dataCarrierNVMeSMARTattrDef(Def){
   enum TU_Bln361095dataCarrierNVMeSMARTattrUse(ID) ID;
   const char * const name;

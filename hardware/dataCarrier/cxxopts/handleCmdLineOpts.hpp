@@ -42,7 +42,8 @@ http://en.wikipedia.org/wiki/Self-Monitoring,_Analysis_and_Reporting_Technology
  #include <compiler/C,C++/useSecureC_RunTimeStrFuncsWarn.h>
  ///TU_Bln361095cmnSrcNmSpc::cxxopts::handleArg(...)
  #include <libraries/cxxopts/handleArg.hpp>
- ///TU_Bln361095OpSysProcessCmdLneArgsUse(NoProcessArgs}
+ ///TU_Bln361095OpSysProcessCmdLneArgsUse(NoProcessArgs)
+ ///TU_Bln361095::OpSys::Process::CmdLneArgs::NoProcessArgs
  #include <OperatingSystem/Process/cmdLineArgs.h>
 
 #define dataCarrierOptASCII "data_carrier"
@@ -50,9 +51,13 @@ http://en.wikipedia.org/wiki/Self-Monitoring,_Analysis_and_Reporting_Technology
 TU_Bln361095hardwareDataCarrierNmSpcBgn
 
 namespace cxxopts{
-   /**@param cmdLneArgsCnt CoMmanD LiNE ARGuments CouNT
-    * @param cmdLneArgs CoMmanD LiNE ARGuments*/
-inline /*int*/ void handleCmdLineOpts(
+  enum handleCmdLneArgsRslt{success = 0, noProcessArgs, getDataCarrierPathFaild
+    };
+  /**@param cmdLneArgsCnt CoMmanD LiNE ARGuments CouNT
+   * @param cmdLneArgs CoMmanD LiNE ARGuments
+   * @param dataCarrierPath use array size with at least MAX_PATH before
+   *  calling this function. */
+inline /*int*/ handleCmdLneArgsRslt handleCmdLineOpts(
   int cmdLneArgsCnt,
   char * cmdLneArgs[],
   //std::string & dataCarrierPath
@@ -67,8 +72,10 @@ inline /*int*/ void handleCmdLineOpts(
     ///->calls options.options.emplace_back(
     ("d," dataCarrierOptASCII, "data carrier path", ::cxxopts::value<
       std::string>() );
-  if( cmdLneArgsCnt == TU_Bln361095OpSysProcessCmdLneArgsUse(NoProcessArgs) )
-    std::cout << cmdLineOpts.help() << std::endl;
+  if (cmdLneArgsCnt == //TU_Bln361095OpSysProcessCmdLneArgsUse(NoProcessArgs)
+    TU_Bln361095::OpSys::Process::CmdLneArgs::NoProcessArgs)
+    //std::cout << cmdLineOpts.help() << std::endl;
+    return noProcessArgs;
   else
   {
   //try{
@@ -77,16 +84,23 @@ inline /*int*/ void handleCmdLineOpts(
     const std::string errMsg = TU_Bln361095cmnSrcNmSpc::cxxopts::handleArg(
       cmdLineOptsParseRslt, dataCarrierOptASCII,
       stdStrDataCarrierPath);
-    /**Disable warning because \p dataCarrierPath should have enough space(array
-     * size set to "MAX_PATH").*/
-    TU_Bln361095disableUseSecC_RunTimeStrFnWarn
-    strcpy(dataCarrierPath, stdStrDataCarrierPath.c_str());
-    TU_Bln361095enableUseSecC_RunTimeStrFnWarn
-    if( ! errMsg.empty() )
+    if(errMsg.empty() )
+    {
+      /**Disable warning because \p dataCarrierPath should have enough space(
+       *  array size set at least to "MAX_PATH").*/
+      TU_Bln361095disableUseSecC_RunTimeStrFnWarn
+      strcpy(dataCarrierPath, stdStrDataCarrierPath.c_str());
+      TU_Bln361095enableUseSecC_RunTimeStrFnWarn
+    }
+    else
+    {
       std::cerr << "Error getting data carrier path from command line:" <<
         errMsg << std::endl;
+      return getDataCarrierPathFaild;
+    }
   //}catch(cxxopts::OptionException & e){}
   }
+  return success;
 }
 }///Namespace end
 
