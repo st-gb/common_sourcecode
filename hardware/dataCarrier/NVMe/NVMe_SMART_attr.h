@@ -20,11 +20,22 @@
  !defined TU_Bln361095cmnSrc_hardware_dataCarrier_NVMe_NVMe_SMART_attr_h
   #define TU_Bln361095cmnSrc_hardware_dataCarrier_NVMe_NVMe_SMART_attr_h  
 
+///Microsoft Windows header files:
+ #include <windows.h>///for data types in <nvme.h> like "ULONGLONG"
+#ifdef _MSC_VER///If compiled with MicroSoft Compiler/Microsoft Visual Studio
+ #include <nvme.h>///NVME_HEALTH_INFO_LOG
+#endif
+
 ///Stefan Gebauer's(TU Berlin mat.#361095) ~"common_sourcecode"repository files:
+ #include <compiler/force_inline.h>///TU_Bln361095frcInln
  #include <hardware/CPU/fastest_data_type.h>///TU_Bln361095FaststUint
  ///TU_Bln361095hardwareDataCarrierNVMeUse
  #include <hardware/dataCarrier/NVMe/NVMe_ID_prefix.h>
-
+///If NOT compiled with MicroSoft Compiler/Microsoft Visual Studio
+#ifndef _MSC_VER
+ ///struct NVME_HEALTH_INFO_LOG
+ #include <OperatingSystem/Windows/hardware/NVMe/NVME_HEALTH_INFO_LOG.h>
+#endif
 /**Use these preprocessor macros in source code for example to enable both C and
  * C++.*/
 #ifdef __cplusplus

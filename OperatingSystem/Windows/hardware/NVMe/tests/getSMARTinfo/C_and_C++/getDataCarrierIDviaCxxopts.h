@@ -34,22 +34,23 @@ inline TU_Bln361095::CPU::faststUint getDataCarrierID/*fromCxxopts*/(
   const char* const cmdLneArgArr[],
   char dataCarrierID[2],
   //cxxopts::exceptions::exception & cxxoptsExc
-  std::string & cxxoptsExcMsg
+  std::string & cxxoptsExcMsg,
+  cxxopts::Options & cxxoptions
   )
 {
   TU_Bln361095::CPU::faststUint exitVal =
     TU_Bln361095OpSysProcessCmdLneArgsParseUse(ArgsUnset);
   ///see http://github.com/jarro2783/cxxopts/blob/master/README.md#basics
-  cxxopts::Options options("getNVMeSMARTattrVals",
-    "Get NVMe S.M.A.R.T. attibute values"/**one-line program description*/);
+//  cxxopts::Options options("getNVMeSMARTattrVals",
+//    "Get NVMe S.M.A.R.T. attibute values"/**one-line program description*/);
 
-  options.add_options()
+  cxxoptions.add_options()
     ("d,dataCarrier", "set data carrier", cxxopts::value<std::string>())
     ;
-  auto result = options.parse(cmdLneArgCnt, cmdLneArgArr);
+  auto parseCxxOptionsRslt = cxxoptions.parse(cmdLneArgCnt, cmdLneArgArr);
   std::string strDataCarrier;
   try {
-    strDataCarrier = result["dataCarrier"].as<std::string>();
+    strDataCarrier = parseCxxOptionsRslt["dataCarrier"].as<std::string>();
     exitVal = TU_Bln361095OpSysProcessCmdLneArgsParseUse(Sccss);
   }
   ///http://github.com/jarro2783/cxxopts/blob/master/README.md#exceptions
@@ -57,11 +58,11 @@ inline TU_Bln361095::CPU::faststUint getDataCarrierID/*fromCxxopts*/(
   {
     strDataCarrier = "0";
     //options.show_positional_help();
-    const std::string cmdLneOptsHelp = options.help();
+    const std::string cmdLneOptsHelp = cxxoptions.help();
     exitVal = TU_Bln361095OpSysProcessCmdLneArgsParseUse(Error);
   }
-  //int dataCarrierNum = result["dataCarrier"].as<int>();
-  strcpy(dataCarrierID, strDataCarrier.c_str());
+  //int dataCarrierNum = parseCxxOptionsRslt["dataCarrier"].as<int>();
+  strcpy(dataCarrierID, strDataCarrier.c_str() );
   return exitVal;
 }
 }///Namespace end

@@ -66,14 +66,21 @@ static inline TU_Bln361095CPUuse(FaststUint) getDataCarrierIDfromCmdLneArgs(
   //cxxopts::exceptions::exception cxxoptsExc;
   std::string cxxoptsExcMsg;
 
+  cxxopts::Options cxxoptions("printNVMeSMARTattrVals",
+    "Print NVMe S.M.A.R.T. attibute values"/**one-line program description*/);
   TU_Bln361095::CPU::faststUint getDataCarrierIDfromCxxoptsRslt =
     /*TU_Bln361095::hardware::NVMe::*/cxxopts::getDataCarrierID(cmdLneArgCnt,
-      cmdLneArgArr, dataCarrierID, /*cxxoptsExc*/ cxxoptsExcMsg);
+      cmdLneArgArr, dataCarrierID, /*cxxoptsExc*/ cxxoptsExcMsg, cxxoptions);
   if (getDataCarrierIDfromCxxoptsRslt ==
     TU_Bln361095::OpSys::Process::CmdLneArgs::Parse::Error)
+  {
     printf("Getting command line option for \"dataCarrier\" failed:%s\n"
       "->using default value \"%s\" for it.\n", //cxxoptsExc.what()
       cxxoptsExcMsg.c_str(), dataCarrierID);
+    const std::string stdstrCxxOptionsHelp = cxxoptions.help();
+    printf("Here is the help/are the possible options for this application:\n%s",
+      stdstrCxxOptionsHelp.c_str() );
+  }
   return getDataCarrierIDfromCxxoptsRslt;
 #else
   #pragma message("\"cxxOptsDir\" NOT set as preprocessor macro.")
@@ -81,10 +88,17 @@ static inline TU_Bln361095CPUuse(FaststUint) getDataCarrierIDfromCmdLneArgs(
   return TU_Bln361095OpSysProcessCmdLneArgsParseUse(ArgsUnset);
 }
 
+/**"static"=Limit the scope/visibility to this compilation for more security.*/
+static /*TCHAR*/char dataCarrierPath[MAX_PATH];
+
 static TU_Bln361095frcInln void exitProg(
-  const enum TU_Bln361095progRtrnCodes rtrnCd)
+  const enum TU_Bln361095progRtrnCodes rtrnCd,
+  HANDLE deviceHandle)
 {
-  printf("%s:%d\n", TU_Bln361095enProgExitMsgs[rtrnCd], GetLastError() );
+  printf("%s (%s):%d\n", TU_Bln361095enProgExitMsgs[rtrnCd], dataCarrierPath,
+    GetLastError() );
+  if(rtrnCd != opnDataCarrierFaild)
+    CloseHandle(deviceHandle);
   exit(rtrnCd);
 }
 
@@ -141,7 +155,6 @@ int main(int cmdLneArgCnt, char * cmdLneArgs[])
     "Build date and time of day of this executable:%s %s\n", __DATE__,
     __TIME__);
   HANDLE deviceHandle;
-  /*TCHAR*/char dataCarrierPath[MAX_PATH];
 
   char dataCarrierID[2] = "0";
   TU_Bln361095CPUuse(faststUint) getDataCarrierIDfromCmdLneArgsRslt =
@@ -164,7 +177,7 @@ int main(int cmdLneArgCnt, char * cmdLneArgs[])
     TU_Bln361095hardwareDataCarrierUse(OpnFaild)(deviceHandle)
     )
   {
-    exitProg(opnDataCarrierFaild);
+    exitProg(opnDataCarrierFaild, deviceHandle);
   }
 
   NVME_HEALTH_INFO_LOG * pNMVeHealthInfoLog;
@@ -177,15 +190,18 @@ int main(int cmdLneArgCnt, char * cmdLneArgs[])
   if(nVMeGetSMARTvalsRslt !=
      TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsUse(Sccss) )
   {
-    printf("%s\n", TU_Bln361095enProgExitMsgs[getSMARTvalsFaild]);
+//    printf("%s\n", TU_Bln361095enProgExitMsgs[getSMARTvalsFaild]);
     if(nVMeGetSMARTvalsRslt !=
       TU_Bln361095hardwareDataCarrierNVMeGetSMARTvalsUse(AllocBufFaild) )
       free(pDvcIOctlBuf);
-    return getSMARTvalsFaild;
+    //CloseHandle(deviceHandle);
+    exitProg(getSMARTvalsFaild, deviceHandle);
+    //return getSMARTvalsFaild;
   }
 
   printNVMeSMARTvals(pNMVeHealthInfoLog, dataCarrierPath);
   free(pDvcIOctlBuf);
-  CloseHandle(deviceHandle);
-  return sccss;
+  //CloseHandle(deviceHandle);
+  exitProg(sccss, deviceHandle);
+  //return sccss;
 }
