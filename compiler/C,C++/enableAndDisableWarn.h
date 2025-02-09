@@ -69,6 +69,10 @@
       #define TU_Bln361095enableWarn(warning) TU_Bln361095GCCdiagPragma(warning\
         TU_Bln361095GCCdiagJoinStr(-W,warning))
     #endif
+    #define TU_Bln361095GCCdisableWarn(warning) TU_Bln361095disableWarn(
+      warning)
+    #define TU_Bln361095GCCenableWarn(warning) TU_Bln361095enableWarn(
+      warning)
   #endif
 
   #define TU_Bln361095disablePossibleDataLossOnConversionWarn
@@ -84,6 +88,11 @@
   #define TU_Bln361095ensablePossibleDataLossOnConversionWarn
   #define TU_Bln361095disableUnusedVarWarn
   #define TU_Bln361095enableUnusedVarWarn
+#endif
+
+#if !defined(__GNUC__) && !defined(__clang__)
+  #define TU_Bln361095GCCenableWarn(warning)
+  #define TU_Bln361095GCCdisableWarn(warning)
 #endif
 
 #endif///include guard
