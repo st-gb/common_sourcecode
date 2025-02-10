@@ -17,21 +17,28 @@
 /**Bln=BerLiN: http://www.acronymfinder.com/Berlin-(Bln).html
  * cmn=CoMmoN: http://www.abbreviations.com/abbreviation/common
  * Src=SouRCe: http://www.abbreviations.com/abbreviation/Source */\
- ! defined TU_Bln361095cmnSrc_Logger_LogFileAccessException_hpp
-   #define TU_Bln361095cmnSrc_Logger_LogFileAccessException_hpp
+ ! defined TU_Bln361095cmnSrc__Logger__LogFileAccessException_hpp
+   #define TU_Bln361095cmnSrc__Logger__LogFileAccessException_hpp
 
-///Stefan Gebauer's(TU Berlin matr.#361095)"common_sourcecode" repository files:
-#include <dataType/charStr/stdtstr.hpp>///GetStdString_Inline(...)
-#include <FileSystem/File/FileException.hpp>///base class
-#include <FileSystem/GetAbsolutePath.hpp>///TU_Bln361095::FileSys::GetAbsPathA
- //::GetErrorMessageFromLastErrorCode()
-#include <OperatingSystem/GetErrorMessageFromErrorCode.h>
+///Standard C(++) library header files:
+//#include <exception>///class std::exception
 
-//#include <exception> //class std::exception
+///Stefan Gebauer's(TU Berlin matricul. num. 361095) ~"cmnSrc" repository files:
+ ///TU_Bln361095LoggerNmSpcBgn, TU_Bln361095LoggerNmSpcEnd
+ #include <Controller/Logger/Logger_ID_prefix.hpp>
+ #include <dataType/charStr/stdtstr.hpp>///GetStdString_Inline(...)
+ ///Base class TU_Bln361095::FileSys::FileException
+ #include <FileSystem/File/FileException.hpp>
+ #include <FileSystem/GetAbsolutePath.hpp>///TU_Bln361095::FileSys::GetAbsPathA
+ ///TU_Bln361095::OpSys::GetErrorMessageFromErrorCodeA()
+ #include <OperatingSystem/GetErrorMessageFromErrorCode.h>
 //#include <InputOutput/FileAccessException.hpp> //base class
 
+TU_Bln361095LoggerNmSpcBgn
+
 class LogFileAccessException
-  : public /*std::exception*/ /*FileAccessException*/ FileException
+  : public /*std::exception*/ /*FileAccessException*/
+  TU_Bln361095FileSysNmSpc::FileException
 {
   std::string m_errorMessage;
 public:
@@ -55,7 +62,7 @@ public:
     //const wchar_t * const logFilePath
     const char * const logFilePath
 	)
-    : FileException(logFilePath)
+    : TU_Bln361095::FileSys::FileException(logFilePath)
   {
     m_action = action;
     m_operatingSystemErrorCode = operatingSystemErrorCode;
@@ -98,5 +105,7 @@ public:
     return std_strErrorMessage;
   }
 };
+
+TU_Bln361095FileSysNmSpcEnd
 
 #endif///include guard

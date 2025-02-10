@@ -1,6 +1,4 @@
-/**File name "numBforStrTerm0char" comes from:
- * -num=NUMber : http://www.abbreviations.com/abbreviation/number
- * -B=Bytes : http://www.abbreviations.com/abbreviation/bytes
+/**File name "strTermChar" comes from:
  * -Str=STRing : http://www.abbreviations.com/abbreviation/string
  * -Term=TERMinination : http://www.abbreviations.com/abbreviation/termination
  * -char=CHARacter : http://www.abbreviations.com/abbreviation/character
@@ -23,9 +21,11 @@
 /**Bln=Berlin:http://www.acronymfinder.com/Berlin-(Bln).html
  * cmn=CoMmoN:http://www.abbreviations.com/abbreviation/common
  * Src=SouRCe:http://www.abbreviations.com/abbreviation/Source
- * ID=identifier:http://www.abbreviations.com/abbreviation/identifier */\
- ! defined TU_Bln361095cmnSrc__dataType__charStr__numBforStrTerm0char_h
-   #define TU_Bln361095cmnSrc__dataType__charStr__numBforStrTerm0char_h
+ * char=CHARacter : http://www.abbreviations.com/abbreviation/character
+ * Str=STRing : http://www.abbreviations.com/abbreviation/string
+ * Term=TERMinination: http://www.abbreviations.com/abbreviation/termination */\
+ ! defined TU_Bln361095cmnSrc__dataType__charStr__strTermChar_h
+   #define TU_Bln361095cmnSrc__dataType__charStr__strTermChar_h
 
 /**num=NUMber : http://www.abbreviations.com/abbreviation/number
  * B=Bytes :
@@ -33,6 +33,7 @@
  * Term=TERMinination : http://www.abbreviations.com/abbreviation/termination 
  * char=CHARacter : http://www.abbreviations.com/abbreviation/character */
 #define TU_Bln361095numBforANSIstrTerm0char 1
+#define TU_Bln361095numCharsForStrTermChar 1
 #define TU_Bln361095ANSIstrTerm0char '\0'
 
 #endif///Include guard
