@@ -1,7 +1,32 @@
-#pragma once /** Include guard */
+/**(c) Stefan Gebauer,Computer Science Master(TU Berlin,matric.number 361095)
+ * @author Stefan Gebauer:TU Berlin matriculation number 361095*/
 
-#include <string.h> //::strlen(...)
-#include <hardware/CPU/fastest_data_type.h> //fastestUnsignedDataType
+///Include guard, see http://en.wikipedia.org/wiki/Include_guard :
+
+/**Bln=BerLiN:http://www.acronymfinder.com/Berlin-(Bln).html
+ * Prgm=PRaGMa
+ * Incl=INCLude:http://www.abbreviations.com/abbreviation/include
+ * Grd=GuaRD:http://www.abbreviations.com/abbreviation/guard */
+#ifdef TU_Bln361095usePrgmInclGrd
+/**Non-standard include guard:supported by many, but not all industry compilers:
+ * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
+  #pragma once
+#endif
+#if defined TU_Bln361095usePrgmInclGrd ||\
+/**Include guard supported by (nearly) all industry compilers:*/\
+/**Bln=BerLiN: https://www.acronymfinder.com/Berlin-(Bln).html
+ * cmn=CoMmoN: http://www.abbreviations.com/abbreviation/common
+ * Src=SouRCe: http://www.abbreviations.com/abbreviation/Source */\
+ ! defined TU_Bln361095cmnSrc__data_structures__ByteArray_hpp
+   #define TU_Bln361095cmnSrc__data_structures__ByteArray_hpp
+
+///C(++) standard header files:
+ #include <string.h>///strlen(),memcpy(...)
+
+///Stefan Gebauer's(TU Berlin matricul. num. 361095) ~"cmnSrc" repository files:
+ ///TU_Bln361095dataStructuresNmSpcBgn, TU_Bln361095dataStructuresNmSpcEnd
+ #include <data_structures/dataStructs_ID_prefix.h>
+ #include <hardware/CPU/fastest_data_type.h>///TU_Bln361095::CPU::faststUint
 
 /** This class may e.g. hold the bytes of an UTF-8 string. */
 class ByteArray
@@ -93,7 +118,9 @@ public:
 
   void add(const char * const string)
   {
-    const unsigned size = ::strlen(string);
-    add( (const unsigned char *) string, size);
+    const /*unsigned*/
+      ///Use the same return data type as in "strlen" to avoid compiler warning.
+      size_t numStrChars = ::strlen(string);
+    add( (const unsigned char *) string, numStrChars);
   }
 };

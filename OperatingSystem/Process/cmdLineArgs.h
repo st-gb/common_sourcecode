@@ -68,7 +68,9 @@ TU_Bln361095OpSysProcessCmdLneArgsNmSpcBgn
 enum TU_Bln361095OpSysProcessCmdLneArgsDef(Idxs){
 /**Not necessarily the absolute/full path: may also be a relative path.*/
   TU_Bln361095OpSysProcessCmdLneArgsDef(ProgPathIdx) = 0,
-	TU_Bln361095OpSysProcessCmdLneArgsDef(FirstIdx)
+  /**When equal to this value: only program path(not process arguments)*/
+	TU_Bln361095OpSysProcessCmdLneArgsDef(FirstIdx) = 1,
+	TU_Bln361095OpSysProcessCmdLneArgsDef(NoProcessArgs) = 1
   };
 
 TU_Bln361095OpSysProcessCmdLneArgsNmSpcEnd
@@ -77,6 +79,7 @@ TU_Bln361095OpSysProcessCmdLneArgsNmSpcEnd
 ///C(++) standard library header files:
  #include <limits.h>///UINT_MAX http://pubs.opengroup.org/onlinepubs/9699919799/
 //#include <>
+ #include <stddef.h>///NULL
 
 TU_Bln361095OpSysProcessNmSpcBgn
 
@@ -94,7 +97,7 @@ public:
   CmdLineArgs() {};
   /**@param argCnt number of command line arguments
    * @param cmdLneArgs as array(first "*") of character string(second "*") */
-  CmdLineArgs(const int argCnt, const charType const ** cmdLneArgs)
+  CmdLineArgs(const int argCnt, const charType ** const cmdLneArgs)
     : m_argCnt(argCnt), m_cmdLneArgs(cmdLneArgs)
   {
     m_fullProgPath = m_cmdLneArgs[TU_Bln361095OpSysProcessCmdLneArgsUse(
@@ -124,7 +127,7 @@ public:
 
   TU_Bln361095frcInln charType * getProgPath() const
   {
-    return fullProgPath;
+    return m_fullProgPath;
   }
 //  charType * GetExeFileName()
 //  {

@@ -1,13 +1,13 @@
-/*
- * I_Thread.cpp
- *
+/** I_Thread.cpp
  *  Created on: 10.02.2013
- *      Author: Stefan
- */
-#include <OperatingSystem/multithread/I_Thread.hpp>
-#include <OperatingSystem/multithread/GetCurrentThreadNumber.hpp>
+ * @author: Stefan Gebauer(TU Berlin matriculation number 361095) */
 
-//static var definitition:
+///Stefan Gebauer's(TU Berlin matric. number 361095) ~"cmnSrc" repository files:
+ #include <OperatingSystem/multithread/I_Thread.hpp>
+ ///TU_Bln361095::OpSys::GetCurrThreadNum()
+ #include <OperatingSystem/multithread/getCurrThreadNum.h>
+
+///static/class variable definition:
 I_Thread::threadNameMapType I_Thread::s_threadNumber2Name;
 I_Thread::cs_type I_Thread::s_critical_section_type;
 
@@ -17,7 +17,7 @@ I_Thread::cs_type I_Thread::s_critical_section_type;
 
 void I_Thread::SetCurrentThreadName(const char * const name)
 {
-  DWORD currentThreadNumber = OperatingSystem::GetCurrentThreadNumber();
+  DWORD currentThreadNumber = TU_Bln361095::OpSys::GetCurrThreadNum();
   //TODO idea use lock-free Compare-And-Swap operation (pointer to string)
   //Enter the critical section to guard against concurrent changing or reading 
   //from the thread name container.

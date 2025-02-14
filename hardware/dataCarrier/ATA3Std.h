@@ -33,7 +33,7 @@
 
 ///https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes :
 /// v. 23:34, 1. Jun. 2020 : "raw value [...] has 48 bits"
-#define numSMARTrawValB 6
+#define TU_Bln361095hardwareATA_SMARTnumSMARTrawValB 6
 ///https://en.wikipedia.org/wiki/S.M.A.R.T. :1 till 254 = 254 different
 #define TU_Bln361095dataCarrierNumSATA_SMARTattrIDs 254
 /**see

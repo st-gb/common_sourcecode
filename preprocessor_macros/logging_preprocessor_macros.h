@@ -1,20 +1,11 @@
-/* Do not remove this header/ copyright information.
- *
- * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
- * ("Trilobyte SE") 2010-at least 2012.
- * You are allowed to modify and use the source code from Trilobyte SE for free
- * if you are not making profit directly or indirectly with it or its adaption.
- * Else you may contact Trilobyte SE. */
-/*
- * logging_preprocessor_macros.h
- *
- *  Created on: Jul 15, 2010
- *      Author: Stefan
- */
+/**(c) Stefan Gebauer(Computer Science Master from TU Berlin)
+ * Created on: Jul 15, 2010(Berlin, Germany time zone)
+ * @author: Stefan Gebauer(TU Berlin matriculation number 361095)*/
 
-#ifndef LOGGING_PREPROCESSOR_MACROS_H_
-#define LOGGING_PREPROCESSOR_MACROS_H_
+#ifndef TU_Bln361095cmnSrc__Logger__Log_preprocessor_macros_h
+#define TU_Bln361095cmnSrc__Logger__Log_preprocessor_macros_h
 
+///Stefan Gebauer's(TU Berlin matric. number 361095) ~"cmnSrc" repository files:
 #ifndef _DEBUG
   #include "no_op_debug_output_macros.h"
 #endif
@@ -26,10 +17,10 @@
   #define USE_STD_WCOUT
 #endif
 
-    #if defined(USE_OWN_LOGGER)
-      #ifndef COMPILE_WITH_LOG
-        #define COMPILE_WITH_LOG
-      #endif //COMPILE_WITH_LOG
+    #if defined(TU_Bln361095useOwnLogger)
+      #ifndef TU_Bln361095buildWithLogging
+        #define TU_Bln361095buildWithLogging
+      #endif
     #endif
 
 //  //Keep away the dependency on Logger class for dyn libs.
@@ -104,17 +95,19 @@
     }
   #endif //#if LOGGING_CHARACTER_TYPE_ID == 0
 
-#ifdef COMPILE_WITH_LOG
+#ifdef TU_Bln361095buildWithLogging
+///Stefan Gebauer's(TU Berlin matric. number 361095) ~"cmnSrc" repository files:
   #include "css_basic_stringstream.hpp" //class css::basic_stringstream
 
 //  #define USE_OWN_LOGGER
-  #ifdef USE_OWN_LOGGER
+  #ifdef TU_Bln361095useOwnLogger
     #ifdef _WIN32
 //      #include <Windows/Logger/Logger.hpp> //for class Windows_API::Logger
 //    //Should have the same type as in the difintion.
 //    extern Windows_API::Logger g_logger ;
     #endif //#ifdef _WIN32
 //#else
+///Stefan Gebauer's(TU Berlin matric. number 361095) ~"cmnSrc" repository files:
     #include <Controller/Logger/Logger.hpp> //for class Logger
     #include <Controller/Logger/LogLevel.hpp> //for enum LogLevel::MessageType
 //    //Should have the same type as in the difintion.
@@ -398,4 +391,4 @@
   #define LOGN_VERBOSE(to_ostream) /*empty->do not log*/
 #endif
 
-#endif /* LOGGING_PREPROCESSOR_MACROS_H_ */
+#endif///include guard

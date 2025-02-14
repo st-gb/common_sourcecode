@@ -48,4 +48,5 @@ TU_Bln361095frcInln DWORD TU_Bln361095OpSysDef(GetCurrThreadNum)()
 }
 TU_Bln361095OpSysNmSpcEnd
 
+#endif///_WIN32
 #endif///Include guard

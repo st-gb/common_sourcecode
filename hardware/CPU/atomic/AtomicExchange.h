@@ -5,15 +5,21 @@
 #ifdef TU_Bln361095usePrgmInclGrd
 /**Non-standard include guard:supported by many, but not all industry compilers:
  * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
-#pragma once
+  #pragma once
 #endif
-///Include guard supported by (nearly) all compilers:
-#ifndef TU_Bln361095cmnSrcCPUatomicExchg_h
-#define TU_Bln361095cmnSrcCPUatomicExchg_h
+#if defined TU_Bln361095usePrgmInclGrd ||\
+/**Include guard supported by (nearly) all industry compilers:*/\
+/**Bln=BerLiN: http://www.acronymfinder.com/Berlin-(Bln).html
+ * cmn=CoMmoN: http://www.abbreviations.com/abbreviation/common
+ * Src=SouRCe: http://www.abbreviations.com/abbreviation/Source */\
+ ! defined TU_Bln361095cmnSrc__CPU__atomicExchg_h
+   #define TU_Bln361095cmnSrc__CPU__atomicExchg_h
 
-///Stefan Gebauer's(TU Berlin matr.#361095)"common_sourcecode" repository files:
-///TU_Bln361095MicroSoftWindows
-#include <OperatingSystem/Windows/MicrosoftWindows.h>
+///Stefan Gebauer's(TU Berlin matricul. num. 361095) ~"cmnSrc" repository files:
+ ///TU_Bln361095MicroSoftWindows
+ #include <OperatingSystem/Windows/MicrosoftWindows.h>
+ ///TU_Bln361095hardwareCPUdef(...)
+ #include <hardware/CPU/hardwareCPU_ID_prefix.h>
 
 #ifdef TU_Bln361095MicroSoftWindows
 /**http://learn.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-interlockedexchange
@@ -37,7 +43,7 @@ typedef long TU_Bln361095AtomicXchgTyp;
 /**@brief Writes value @param val into address of @see Target as 1 atomic
  *  operation->thread-safe
  * @param Target may be 32 bit on MSVC Windows: */
-inline long AtomicExchange(
+inline long TU_Bln361095hardwareCPUdef(atomicXchg)(
   /** https://gcc.gnu.org/onlinedocs/gcc-4.1.1/gcc/Atomic-Builtins.html :
    * "The definition given in the Intel documentation allows only for the use of
    * the types int, long, long long as well as their unsigned counterparts. GCC

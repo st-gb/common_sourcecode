@@ -1,16 +1,26 @@
-/* Do not remove this header/ copyright information.
- *
- * Copyright © Trilobyte Software Engineering GmbH, Berlin, Germany
- * ("Trilobyte SE") 2010-at least 2012.
- * You are allowed to modify and use the source code from Trilobyte SE for free
- * if you are not making profit directly or indirectly with it or its adaption.
- * Else you may contact Trilobyte SE. */
-/*
- * I_Thread.hpp
- *
- *  Created on: Jun 16, 2010
- *      Author: Stefan
- */
+/**(c) Stefan Gebauer(Computer Science Master from TU Berlin)
+ * Created on: Jun 16, 2010(Berlin, Germany time zone)
+ * @author: Stefan Gebauer(TU Berlin matriculation number 361095) */
+
+///Include guard, see http://en.wikipedia.org/wiki/Include_guard :
+
+/**Bln=BerLiN:http://www.acronymfinder.com/Berlin-(Bln).html
+ * Prgm=PRaGMa
+ * Incl=INCLude:http://www.abbreviations.com/abbreviation/include
+ * Grd=GuaRD:http://www.abbreviations.com/abbreviation/guard */
+#ifdef TU_Bln361095usePrgmInclGrd
+/**Non-standard include guard:supported by many, but not all industry compilers:
+ * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
+  #pragma once
+#endif
+#if defined TU_Bln361095usePrgmInclGrd ||\
+/**Include guard supported by (nearly) all industry compilers:*/\
+/**Bln=BerLiN: https://www.acronymfinder.com/Berlin-(Bln).html
+ * cmn=CoMmoN: http://www.abbreviations.com/abbreviation/common
+ * Src=SouRCe: http://www.abbreviations.com/abbreviation/Source
+ * OpSys=OPerating SYStem */\
+ ! defined TU_Bln361095cmnSrc__OpSys__multithread__I_Thread_hpp
+   #define TU_Bln361095cmnSrc__OpSys__multithread__I_Thread_hpp
 
 #ifndef I_THREAD_HPP_
 #define I_THREAD_HPP_
@@ -21,11 +31,14 @@ typedef unsigned long DWORD ;
 //Same function signature as for Win32 thread procedures.
 //DWORD (WINAPI *LPTHREAD_START_ROUTINE)(LPVOID);
 
-#include "thread_function_calling_convention.h"
-#include <OperatingSystem/multithread/nativeCriticalSectionType.hpp>
-#include <hardware/CPU/fastest_data_type.h> //typedef fastestUnsignedDataType
-#include <map> //class std::map
-#include <string> //class std::string
+///C(++) standard library header files:
+ #include <map>///class std::map
+ #include <string>///class std::string
+
+///Stefan Gebauer's(TU Berlin matric. number 361095) ~"cmnSrc" repository files:
+ #include "thread_function_calling_convention.h"
+ #include <OperatingSystem/multithread/nativeCriticalSectionType.hpp>
+ #include <hardware/CPU/fastest_data_type.h>///TU_Bln361095::CPU::faststUint
 
 /** Meets the thread procedure's signature for Windows API's
  * ::CreateThread(...) */
@@ -92,7 +105,7 @@ public:
   static void SetThreadName(const char * const, unsigned threadID);
 //  virtual I_Thread( BYTE byThreadType ) = 0 ;
   virtual //static
-    fastestUnsignedDataType start(
+    TU_Bln361095::CPU::faststUint start(
       pfnThreadFunc,
       void * p_vpfnThreadFuncParam,
       /*BYTE*/ enum priority prio = default_priority) = 0 ;
