@@ -1,0 +1,320 @@
+%%(c) Stefan Gebauer(Computer Science Master from TU Berlin)
+%%@author Stefan Gebauer(TU Berlin matriculation number 361095)
+
+\documentclass[]{article}
+
+%%https://latex.org/forum/viewtopic.php?t=14930
+\usepackage{titling}%%\droptitle
+%%Eliminate the default vertical space on top of the first page.
+\setlength{\droptitle}{-4em}
+
+\usepackage[a4paper, left=2.5 cm, right=2 cm, top=2 cm, bottom=3 cm]{geometry}
+
+\usepackage{longtable}%%\begin{longtable}, \end{longtable}
+
+%\usepackage[utf8]{inputenc}%%for ">"
+%%http://tex.stackexchange.com/questions/87824/how-to-do-simple-calculation-in-latex
+\usepackage{intcalc}
+\usepackage{listofitems}
+\usepackage{ifthen}%%\ifthenelse
+%%http://miktex.org/packages/currfile/files
+%% "currfile" has 0 bytes in "MiKTeX Console"
+%% https://ftp.mpi-inf.mpg.de/pub/tex/mirror/ftp.dante.de/pub/tex/systems/win32/miktex/tm/packages/currfile.tar.lzma
+%% "currfile" had to be installed via "MiKTeX console"
+\usepackage{currfile}
+\usepackage[debug]
+  {fp}%%"\FPeval"
+\usepackage{xcolor}%%"\color"
+
+\input{../calcDegreeDaySum.tex}
+%\input{../../../LaTex/setVarVal.tex}
+
+%\newcounter{currYear}
+%\newcounter{currMon}
+%\newcounter{currDay}
+
+%%The number of parameters to this function:
+%% from:year,month,day,
+%% to:year,month,day
+%%@param #7:expected heating degree promille sum
+\newcommand{\TUBlnThSiTenNiFiCalcHeatngDegDaySumTest}[8]
+{
+%	\setcounter{currYear}{#1}
+%	\setcounter{currMon}{#2}
+%	\setcounter{currDay}{#3}
+	%\setVarVal{\endYearl}{#4}
+%	\setVarVal{\ndyear}{#5}
+	
+%	\setVarVal{\endMon}{#5}
+%	\setVarVal{\endDay}{#6}
+	
+%    \isLeapYear{\thecurrYear}
+%	\ifthenelse{\theleapYear=1 \and
+%		%%Februar
+%		\thecurrMon=2}%%->29 Tage
+%	{%\addtocounter{\currMonInDays}{1}
+%		\thecurrYear is a leap year
+%	}%%then
+%	{\thecurrYear is not a leap year}%%else
+	
+%	%%Advance by 1 day
+%	\ifthenelse{\thecurrDay < \currMonInDays }
+%	{ \addtocounter{\currDay}{1} 
+%		%\stepcounter{\currDay}
+%	}%%then
+%	{ \setVarVal{\newMon}{1} }%%else
+%	
+%	\ifthenelse{\newMon=1 \and \currMon=12 }
+%	{ \setVarVal{\newYear}{1}
+%		\setVarVal{\currMon}{1} }
+%	{ }
+%	\ifthenelse{\nextMon=1 \and \currMon < 12 }
+%	{ \FPeval{\currMon}{\currMon+1} }
+%	{ }
+%	
+%	\ifthenelse{\thecurrYear < \endYear}
+%	{}
+%	{}
+
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegDaysSumNumNumExpctdDays}
+    {#8}
+
+  \TUBlnThSiTenNiFiCalcHeatngDegDaySum{#1}{#2}{#3}{#4}{#5}{#6}{#7}
+
+  Calculating heating degree day sum from \TUBlnThSiTenNiFiCalcDegreeDaySumStrtDay.
+  \TUBlnThSiTenNiFiCalcDegreeDaySumStrtMon(month).
+  \TUBlnThSiTenNiFiCalcDegreeDaySumStrtYear\ to \TUBlnThSiTenNiFiCalcDegreeDaySumEndDay.
+  \TUBlnThSiTenNiFiCalcDegreeDaySumEndMon(month).
+  \TUBlnThSiTenNiFiCalcDegreeDaySumEndYear \newline
+
+  Number of full years as integer:"%
+    %\value{TUBlnThSiTenNiFiCalcHeatngDegDayNumFullYears}
+    %%Use "the">>counter name<<to print representation
+    \theTUBlnThSiTenNiFiCalcHeatngDegDayNumFullYears
+    "
+  %Heating degree days promille for \textbf{full years} of time span:
+%  \TUBlnThSiTenNiFiCalcHeatngDegDayPromilleFullYears
+  %\TUBlnThSiTenNiFiCalcDegreeDaySumPromille
+
+   Heating degree days promille for
+   \color{blue}
+   \textbf{first }
+    \TUBlnThSiTenNiFiCalcDegreeDaySumNumDaysTillMonEnd
+   \textbf{ days}
+   \color{black}
+   (=last days of first non-full month) of time span:
+   \color{blue}
+     \TUBlnThSiTenNiFiHeatngDegFirstDaysOfFirstMonthPromille
+   \color{black}
+
+      \ifthenelse
+      {\TUBlnThSiTenNiFiCalcDegreeDaySumEndDay<
+        \TUBlnThSiTenNiFiCalcHeatngDegNumEndMonthDays
+      }%%"
+      {
+        Last day(\TUBlnThSiTenNiFiCalcDegreeDaySumEndDay) of last month of time span is not the last day of this month(\TUBlnThSiTenNiFiCalcHeatngDegNumEndMonthDays).
+      }{}
+    Heating degree days promille for
+    \color{blue}
+    \textbf{first full months}
+    \color{black}\
+    of non-full years %in non-full years
+   of time span:
+   \color{blue}
+    \TUBlnThSiTenNiFiHeatngDegFirstFullMonthsPromille
+   \color{black}
+
+  Heating degree day promille
+  \color{blue}
+  \textbf{last full months}
+  \color{black}
+  of non-full years of time span:
+  \color{blue}
+    \TUBlnThSiTenNiFiGerHeatngDegDayLastMonthsPromille
+  \color{black}
+
+  Heating degree day promille for
+  \color{blue}
+  \textbf{last days}
+  \color{black}
+  (of last non-full month) of time span:
+  \color{blue}
+    \TUBlnThSiTenNiFiCalcHeatngDegreeDayLastDaysPromille
+  \color{black}
+
+  %current year: \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrYear
+  \TUBlnThSiTenNiFiIsLeapYear{\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrYear}
+  \ifthenelse
+  {\theTUBlnThSiTenNiFiLeapYear=1 \and
+    %%Februar
+    \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon=2
+  }%%->29 Tage
+  {%\addtocounter{%\TUBlnThSiTenNiFiCalcDegreeDaySumCurrMonDaysCount
+    % \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonthDaysCount}{1}
+    \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrYear is a leap year and February
+  }%%then
+  {\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrYear is not:a leap year and February}%%else
+
+  \color{blue}
+  \TUBlnThSiTenNiFiHeatngDegFirstDaysOfFirstMonthPromille(\textbf{first days}
+  \color{black}
+  of first non-full month of time span)
+  + \color{blue}
+  \TUBlnThSiTenNiFiHeatngDegFirstFullMonthsPromille(\textbf{first full months}
+  \color{black}
+  of first non-full year of time span)=%%
+  \TUBlnThSiTenNiFiHeatngDegFirstDaysAndMonthsPromille %\TUBlnThSiTenNiFiCalcDegreeDaySumPromille
+
+  \color{blue}
+  \TUBlnThSiTenNiFiCalcHeatngDegreeDayLastDaysPromille(\textbf{last days}
+  \color{black}
+  of last non-full month of time span) +
+  \color{blue}
+    \TUBlnThSiTenNiFiGerHeatngDegDayLastMonthsPromille(\textbf{last full months}
+  \color{black}
+  of last non-full year of time span)
+  =\TUBlnThSiTenNiFiHeatngDegLastDaysAndMonthsPromille
+
+  \textbf{Overall} promille:\newline
+  \color{blue}
+  \TUBlnThSiTenNiFiHeatngDegFirstDaysAndMonthsPromille(first days and months
+  \color{black}
+  promille of time span)+\newline
+  \color{blue}
+  %\TUBlnThSiTenNiFiHeatngDegFullYearsPromille
+  \TUBlnThSiTenNiFiCalcHeatngDegDayPromilleFullYears
+  (full years
+  \color{black}
+  promille of time span)+\newline
+  \color{blue}
+  \TUBlnThSiTenNiFiHeatngDegLastDaysAndMonthsPromille(last days and months
+  \color{black}
+  promille of time span)=\newline
+   \TUBlnThSiTenNiFiHeatngDegOverallPromille\newline
+
+  \FPeval\TUBlnThSiTenNiFiHeatngDegOverallPromilleError{
+    \TUBlnThSiTenNiFiHeatngDegOverallPromille/\TUBlnThSiTenNiFiCalcDegDaySumExpctdRslt}
+  Deviation from expected value(result/expected result):
+   \TUBlnThSiTenNiFiHeatngDegOverallPromilleError
+  \newline
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiHeatngDegOverallPromilleOutOftRng}{0}
+  \FPifgt{\TUBlnThSiTenNiFiHeatngDegOverallPromilleError}{1.01}
+    %%"then" branch?
+    \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiHeatngDegOverallPromilleOutOftRng}{1}
+  \else
+  \fi
+  \FPifgt{0.99}{\TUBlnThSiTenNiFiHeatngDegOverallPromilleError}
+    %%"then" branch?
+    \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiHeatngDegOverallPromilleOutOftRng}{1}
+  \else
+  \fi
+  \ifthenelse
+  {
+    \TUBlnThSiTenNiFiHeatngDegOverallPromilleOutOftRng=1
+  }%%"if" branch
+  {%%"then" branch
+    \color{red}Result does not match expected result
+      "\TUBlnThSiTenNiFiCalcDegDaySumExpctdRslt"+-1\%.
+     \color{black}
+  }%%"then" branch
+  {
+    \color{green}Result matches expected result +-1\%.\color{black}
+  }%%"else" branch
+
+  date difference: %\TUBlnThSiTenNiFiSubtractTwoDatesYearDiff
+   %years
+   \theTUBlnThSiTenNiFiCalcDegDaysSumNumDays\ days
+
+  \ifthenelse
+  {
+    \theTUBlnThSiTenNiFiCalcDegDaysSumNumDays=\TUBlnThSiTenNiFiCalcDegDaysSumNumNumExpctdDays
+  }%%"if" branch
+  {%%"then" branch
+    \color{green}Number of days matches expected result.\color{black}
+  }%%"then" branch
+  {
+    \color{red}Number of days does not match expected result
+     "\TUBlnThSiTenNiFiCalcDegDaysSumNumNumExpctdDays".
+     \color{black}
+  }%%"else" branch
+}
+
+\title{"degree day sum function" test}
+\author{Stefan Gebauer(TU Berlin matriculation number 361095)}
+
+%% \calcDegreeDaySum
+
+\newcommand\testTwntyFourNovTwoThsdTwntyThrTillFrstMayTwoThsdTwntyFour{
+ \TUBlnThSiTenNiFiCalcHeatngDegDaySumTest
+  {2023}{11}{24}{2024}{5}{1}{
+  %%Expected promille sum:
+  %%  28=120(heating degree promille per day in November)*7 days=120/30*7
+  %%+160(heating degree promille per month in December)
+  %%=188(first days and first months of time span)
+%
+  %% 170(heating degree promille per month in January)
+  %%+150(heating degree promille per month in February)
+  %%+130(heating degree promille per month in March)
+  %%+ 80(heating degree promille per month in April)
+  %%=530(last days and last months of time span)
+%
+  %%718=first days and first months plus last days and last months
+  718.0}{157}
+}
+\newcommand\testXXIVNovMMXXIIItillIMayMMXXIV{
+ \testTwntyFourNovTwoThsdTwntyThrTillFrstMayTwoThsdTwntyFour
+}
+\begin{document}
+\maketitle
+
+\color{orange}
+Use "debug" option for "fp" package if "fp" calculation errors exist to see the cause.
+\newline
+
+%Number of days for each month in Gregorian calendar:
+% \showitems\TUBlnThSiTenNiFiGregorianMonthDaysCount .
+
+%%https://mirrors.ibiblio.org/CTAN/macros/generic/listofitems/listofitems-en.pdf :
+%% "\readlist\phrase{One phrase to test.}
+%%  \foreachitem\word\in\phrase{List item number \wordcnt{}: \word\par}"
+%\foreachitem\GregorianMonthDaysCount\in\TUBlnThSiTenNiFiGregorianMonthDaysCount⟩{ \GregorianMonthDaysCountcnt{}: \GregorianMonthDaysCount\par }
+
+\input{../operatingCosts/printMonthNumsAsTabCells.tex}
+\input{../operatingCosts/printMonthDaysCntsAsTabCells.tex}
+\input{../operatingCosts/printGerHeatngDegPromillesPerDayAsTabCells.tex}
+\input{../operatingCosts/printGerHeatngDegPromillesPerMonthAsTabCells.tex}
+
+\begin{longtable}{c|c|c|c|c|c|c|c|c|c|c|c|c|c}
+ \hline
+ month index: & \printMonthNumsAsTabCells
+ \hline
+ \# month days: & \printMonthDaysCntAsTabCells
+ \hline
+ promille/mon & \printGerHeatngDegPromillePerMonthAsTabCells
+ \hline
+ promille/day & \printGerHeatngDegPromillePerDayAsTabCells
+ \hline
+\end{longtable}
+
+%Heating degree promille per day for each month:
+%\showitems\TUBlnThSiTenNiFiGerHeatingDegDayPromillePerDayTwoDecPlaces .
+%%
+%Heating degree promille per month for each month:
+%\showitems\TUBlnThSiTenNiFiGerHeatingDegDayPromillePerMon
+
+%
+ \TUBlnThSiTenNiFiCalcHeatngDegDaySumTest{2023}{10}{03}{2023}{10}{31}{%%28*2,581}
+  72.268}{28}
+%\TUBlnThSiTenNiFiCalcDegreeDaySum{2004}{10}{30}{2006}{11}{30}{2242.48}
+\color{black}%\newline
+%\TUBlnThSiTenNiFiCalcHeatngDegDaySumTest{2023}{10}{31}{2023}{11}{23}{
+%  %%Expected promille sum: 120(heating degree promille per day in November)*23
+%  %% days=120/30*23=92,
+%  92.0}{23}
+
+ %\testTwntyFourNovTwoThsdTwntyThrTillFrstMayTwoThsdTwntyFour
+ \testXXIVNovMMXXIIItillIMayMMXXIV
+%\calcDegreeDaySum{1999}
+%\calcDegreeDaySum{2000}
+%\calcDegreeDaySum{2024}  
+\end{document}

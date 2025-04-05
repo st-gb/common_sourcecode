@@ -1,0 +1,809 @@
+%%(c) Stefan Gebauer(Computer Science Master from TU Berlin)
+%%@author Stefan Gebauer(TU Berlin matriculation number 361095)
+
+%\usepackage{fp}%%"\FPeval"
+
+\input{%%Needs "currfile" package=>"\usepackage{currfile}" before
+   \currfiledir../../date/cmp2Dates.tex}
+%%TUBlnThSiTenNiFiGregorianMonthDaysCount
+\input{\currfiledir../../date/GregorianCalendar.tex}
+\input{\currfiledir../../date/isLeapYear.tex}
+\input{\currfiledir../../date/subtract2Dates.tex}
+%%\TUBlnThSiTenNiFiGerHeatingDegDayPromillePerDayTwoDecPlaces
+\input{\currfiledir./heatingDegDay.tex}
+\input{\currfiledir../../LaTex/log.tex}%%"\TUBlnThSiTenNiFiLog{}"
+
+%\usepackage{fp}%%\FPeval
+%%https://riptutorial.com/latex/example/28656/if-statements
+%\usepackage{ifthen}%%\ifthenelse
+%\usepackage{listofitems}
+
+\readlist\EnglishMonthNames{"Jan", "Feb"}
+
+\newcounter{TUBlnThSiTenNiFiCalcDegreeDaySumCurrYear}
+\newcounter{TUBlnThSiTenNiFiCalcDegreeDaySumCurrMon}
+\newcounter{TUBlnThSiTenNiFiCalcDegreeDaySumCurrDay}
+
+%%http://tex.stackexchange.com/questions/74707/how-to-concatenate-strings-into-a-single-command
+
+%%https://tex.stackexchange.com/questions/34697/variable-name-newcommand-with-parameters-within-another-newcommand
+
+%% TU Berlin THree SIx TEN NIne FIve (361095)
+\def\TUBlnThSiTenNiFiPrfx{TUBlnThSiTenNiFi}
+%\def\TUBlnThSiTenNiFi#1#2{\TUBlnThSiTenNiFiPrfx#1}
+%\newcommand\TUBlnThSiTenNiFi[1]{%\textbackslash \TUBlnThSiTenNiFiPrfx#1
+%	\@namedef{\TUBlnThSiTenNiFiPrfx#1}
+%}
+\newcommand{\TUBlnThSiTenNiFiDef}[2]{%
+	\expandafter\newcommand\csname TUBlnThSiTenNiFi#1\endcsname{#2}%
+	\expandafter\newcommand\csname #1\endcsname[1]{\expandafter\renewcommand\csname TUBlnThSiTenNiFi#1\endcsname{##1}}%
+}
+%\newcommand{\TUBlnThSiTenNiFiDef}[1]{%
+%	\long\@namedef{#1}##1{\@namedef{TUBlnThSiTenNiFiDef#1}{##1}}}
+
+%\def\TUBlnThSiTenNiFiCtr#1#2{\the\TUBlnThSiTenNiFiPrfx#1}
+\newcommand{\TUBlnThSiTenNiFiCtr}[2]{\@namedef{\TUBlnThSiTenNiFiPrfx#1}{#2} }
+
+\newcounter{TUBlnThSiTenNiFiCalcDegDaysSumNumDays}
+
+%%Use counter because adding a value of newcommand with itself did not function.
+\newcounter{TUBlnThSiTenNiFiCalcHeatngDegDayNumFullYears}
+\newcommand{\TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullYears}[
+  %%The number of parameters to this function:
+  %% from:year,month,day,
+  %% to:year,month,day
+  6%4
+  ]
+{
+  \TUBlnThSiTenNiFiLog{TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullYears begin}
+  %%deg=DEGree:http://www.abbreviations.com/abbreviation/degree
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegDaySumStrtYear}{#1}
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegDaySumStrtMon}{#2}
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegDaySumStrtDay}{#3}
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegDaySumEndYear}{#4}
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegDaySumEndMon}{#5}
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegDaySumEndDay}{#6}
+
+  \setcounter{TUBlnThSiTenNiFiCalcHeatngDegDayNumFullYears}{0}
+
+    \ifthenelse{\TUBlnThSiTenNiFiCalcDegreeDaySumStrtDay=1 \and
+      \TUBlnThSiTenNiFiCalcDegreeDaySumStrtMon=1}
+    {
+      \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegreeDaySumFirstFullYear}{
+        \TUBlnThSiTenNiFiCalcDegreeDaySumStrtYear}
+    }
+    {%%Time span not starting at begin of year.
+      \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegreeDaySumFirstFullYear}{
+        \the\numexpr\TUBlnThSiTenNiFiCalcDegreeDaySumStrtYear+1\relax}
+    }
+    \TUBlnThSiTenNiFiLog{1st potential(depending on end date) full year from time span:
+      \TUBlnThSiTenNiFiCalcHeatngDegreeDaySumFirstFullYear% \newline
+      }
+
+  %%Basic/necessary condition for at least 1 full year.
+  \ifthenelse{\TUBlnThSiTenNiFiCalcDegreeDaySumEndYear >
+    \TUBlnThSiTenNiFiCalcDegreeDaySumStrtYear} %\or
+  {
+    \ifthenelse{\TUBlnThSiTenNiFiCalcDegreeDaySumEndDay=1 \and
+      \TUBlnThSiTenNiFiCalcDegreeDaySumEndMon=1}
+    {
+      \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegreeDaySumLastFullYear}{
+        \TUBlnThSiTenNiFiCalcDegreeDaySumEndYear}
+    }
+    {
+      \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegreeDaySumLastFullYear}{
+        \the\numexpr\TUBlnThSiTenNiFiCalcDegreeDaySumEndYear-1\relax}
+    }
+    \TUBlnThSiTenNiFiLog{last potential full year from time span:
+      \TUBlnThSiTenNiFiCalcHeatngDegreeDaySumLastFullYear}
+  }
+  {%%end year of time span <= start year of time span
+    %\TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegDayNumFullYears}{0}
+   \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegreeDaySumFirstFullYear}
+     {\TUBlnThSiTenNiFiCalcDegreeDaySumStrtYear}
+   \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegreeDaySumLastFullYear}
+     {\the\numexpr\TUBlnThSiTenNiFiCalcDegreeDaySumEndYear
+       %%Subtract 1 because "1" is added afterwards.
+       -1
+       \relax}
+    \setcounter{TUBlnThSiTenNiFiCalcHeatngDegDayNumFullYears}{0}
+  }
+%  \TUBlnThSiTenNiFiCalcHeatngDegreeDaySumFirstFullYear \TUBlnThSiTenNiFiCalcHeatngDegreeDaySumLastFullYear
+  %%"not >" <=> "<="
+  \ifthenelse{\not \TUBlnThSiTenNiFiCalcHeatngDegreeDaySumFirstFullYear >
+    \TUBlnThSiTenNiFiCalcHeatngDegreeDaySumLastFullYear}
+  {
+    %\TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegreeDaySumNumFullYears}
+    \setcounter{TUBlnThSiTenNiFiCalcHeatngDegDayNumFullYears}
+      %%If 1 year then add 1 because for example 2005-2005+1=1
+      {\the\numexpr\TUBlnThSiTenNiFiCalcHeatngDegreeDaySumLastFullYear-\TUBlnThSiTenNiFiCalcHeatngDegreeDaySumFirstFullYear+1\relax}
+  }
+  {}
+  \ifthenelse{\TUBlnThSiTenNiFiCalcHeatngDegreeDaySumFirstFullYear >
+    \TUBlnThSiTenNiFiCalcHeatngDegreeDaySumLastFullYear}
+  {
+%    \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegDayNumFullYears}{0}
+    \setcounter{TUBlnThSiTenNiFiCalcHeatngDegDayNumFullYears}{0}
+  }
+  {}
+
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegDaysYearsInNumDays}{\the\numexpr\value{TUBlnThSiTenNiFiCalcHeatngDegDayNumFullYears}*365\relax}
+  %%TODO regard leap years(366 days)
+  \setcounter{TUBlnThSiTenNiFiCalcDegDaysSumNumDays}
+    {\the\numexpr\value{TUBlnThSiTenNiFiCalcDegDaysSumNumDays}+\TUBlnThSiTenNiFiCalcDegDaysYearsInNumDays}
+
+  \TUBlnThSiTenNiFiLog{TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullYears end--
+    \# of days of time span till now:%\value{TUBlnThSiTenNiFiCalcDegDaysSumNumDays}
+  }
+}
+
+%%@brief Should be used by first and last days of time span and 
+\newcommand{\TUBlnThSiTenNiFiGetGerHeatngDegDayPromille}[2]
+{
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonth}
+    {#1}
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleYear}
+    {#2}
+
+  \TUBlnThSiTenNiFiIsLeapYear{\TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleYear}
+
+  \ifthenelse
+  %%If the first year of the time span is a leap year...
+  {\theTUBlnThSiTenNiFiLeapYear=1 \and
+    %% ...and month is February.
+    \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonth=2}
+  {
+    \TUBlnThSiTenNiFiSetVarVal
+      {\TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonthDaysCount}{29}
+  }
+  {%%else: not:leap year and February
+    \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonthDaysCount}
+      {\TUBlnThSiTenNiFiGregorianMonthDaysCount[
+        \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonth]}
+    \TUBlnThSiTenNiFiLog{
+     %Not:leap year AND February
+     %=
+     leap year and not February or
+     no leap year and February
+     :
+      \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonthDaysCount days}
+  }
+%  \TUBlnThSiTenNiFiLog{Number of days for
+%    \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonth. month:
+%    \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonthDaysCount}
+
+%  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiGetGerHeatngDegDayPromillePerMonth}
+%    {
+%      \TUBlnThSiTenNiFiGerHeatingDegDayPromillePerMon[
+%	    \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonth]}
+  %%http://mirrors.ibiblio.org/CTAN/macros/generic/listofitems/listofitems-en.pdf
+  %% chapter "2 Read a Simple List", "Assign an item to a macro"
+  %%Use "listofitems"'s "itemtomacro" to get value from array. Assigning
+  %% (indirectly) with "newcommand" did not work.
+  \itemtomacro\TUBlnThSiTenNiFiGerHeatingDegDayPromillePerMon
+    [\TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonth]
+    \TUBlnThSiTenNiFiGetGerHeatngDegDayPromillePerMonth
+
+%  \TUBlnThSiTenNiFiLog{promille per
+%    \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonth. month:
+%    "\TUBlnThSiTenNiFiGetGerHeatngDegDayPromillePerMonth"}
+
+  \FPeval\TUBlnThSiTenNiFiGetGerHeatngDegDayPromillePerDay
+    {\TUBlnThSiTenNiFiGetGerHeatngDegDayPromillePerMonth/\TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonthDaysCount}
+
+  \TUBlnThSiTenNiFiLog{%TUBlnThSiTenNiFiGetGerHeatngDegDayPromille end--
+    promille per day=%
+    \TUBlnThSiTenNiFiGetGerHeatngDegDayPromillePerMonth promille for
+    \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonth. month/%
+    \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonthDaysCount days for
+    \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonth. month=%
+    \TUBlnThSiTenNiFiGetGerHeatngDegDayPromillePerDay}
+}
+
+
+%%Define counter outside of function to not define it multiple times if calling this function more than once.
+\newcounter{TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonthsCurrMon}
+
+\newcommand{\TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonths}[
+  %% start month end month
+  2]
+{
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonthsStartMon}{#1}
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonthsEndMon}{#2}
+  %%Reset to zero for nexr call(for last month after first month of same time span or first month after last month of time span before)
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiGerHeatngDegDayFullMonthsPromille}{0}
+  %\TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegreeDaySumCurrMon}{1}
+%%https://www.matthiaspospiech.de/blog/2008/04/13/latex-variablen-if-abfragen-und-schleifen/
+  %% must use a counter??
+  \setcounter{TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonthsCurrMon}
+    {\TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonthsStartMon}
+
+  \TUBlnThSiTenNiFiLog{TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonths--current month:
+    \theTUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonthsCurrMon\ end month:
+    \TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonthsEndMon \newline}
+
+  \TUBlnThSiTenNiFiSetVarVal
+    {\TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonthsEndMon}
+    {\the\numexpr#2+1\relax}
+%  \TUBlnThSiTenNiFiLog{New end month(as `end loop` condition):
+%    \TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonthsEndMon}
+
+  \FPset{TUBlnThSiTenNiFiGerHeatngDegDayFullMonthsPromille}{0}
+  \whiledo{\theTUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonthsCurrMon <
+    \TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonthsEndMon}
+  {  %%TODO also leap year beachten
+%    \TUBlnThSiTenNiFiGetGerHeatngDegDayMonthPromille{
+%      \value{TUBlnThSiTenNiFiCalcHeatngDegreeDaySumCurrMon}}
+
+    \TUBlnThSiTenNiFiSetVarVal
+      {\TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromille}
+      {\TUBlnThSiTenNiFiGerHeatingDegDayPromillePerMon[
+       \value{TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonthsCurrMon} ]}
+
+    \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthDayCnt}
+      {\TUBlnThSiTenNiFiGregorianMonthDaysCount[
+      \value{TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonthsCurrMon}]
+      }
+    \TUBlnThSiTenNiFiGregorianMonthGetNumDays
+      {
+      \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrYear
+      }
+      {
+      \theTUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonthsCurrMon
+      }
+    \TUBlnThSiTenNiFiLog{TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonths
+      --Number of days in current month:
+      %\TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthDayCnt
+      \TUBlnThSiTenNiFiGregorianMonthNumDays
+      }
+%  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegDaysSumNumDays}
+    \setcounter{TUBlnThSiTenNiFiCalcDegDaysSumNumDays}
+      {\the\numexpr\value{TUBlnThSiTenNiFiCalcDegDaysSumNumDays}+
+       %\TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthDayCnt
+       \TUBlnThSiTenNiFiGregorianMonthNumDays
+      }
+
+    \FPset{TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromilleFP}
+      {\TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromille}
+
+    \TUBlnThSiTenNiFiLog{"\TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromille"
+       heating degree promille for current
+      \theTUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonthsCurrMon. month of year
+      }
+
+    %\FPeval\TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromilleFP
+    \FPeval\TUBlnThSiTenNiFiGerHeatngDegDayFullMonthsPromille
+      {\TUBlnThSiTenNiFiGerHeatngDegDayFullMonthsPromille+
+      \TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromille
+      }
+       %}
+%    \TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromilleFP
+
+    \TUBlnThSiTenNiFiLog{TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonths--
+      current sum:\TUBlnThSiTenNiFiGerHeatngDegDayFullMonthsPromille}
+
+    \stepcounter{TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonthsCurrMon}
+  }
+  \TUBlnThSiTenNiFiLog{Heating degree day promille sum for full months
+    \TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonthsStartMon - 
+    \TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonthsEndMon\ 
+    of time span:\TUBlnThSiTenNiFiGerHeatngDegDayFullMonthsPromille}
+}
+
+%%TODO replace by "\TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonths"
+\newcommand{\TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForLastMonths}[
+  %%The number of parameters to this function:
+  %% to:year,month,day
+  3
+  ]
+{
+%  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegreeDaySumEndYear}{#1}
+%  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon}{#2}
+%  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegreeDaySumEndDay}{#3}
+  
+  %\TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegreeDaySumCurrMon}{1}
+%%https://www.matthiaspospiech.de/blog/2008/04/13/latex-variablen-if-abfragen-und-schleifen/
+  %% must use a counter??
+  \newcounter{TUBlnThSiTenNiFiCalcHeatngDegreeDaySumCurrMon}
+  \setcounter{TUBlnThSiTenNiFiCalcHeatngDegreeDaySumCurrMon}{1}
+  \TUBlnThSiTenNiFiLog{current month:\theTUBlnThSiTenNiFiCalcHeatngDegreeDaySumCurrMon end mon:
+    \TUBlnThSiTenNiFiCalcDegreeDaySumEndMon \newline}
+
+  \FPset{TUBlnThSiTenNiFiGerHeatngDegDayLastMonthsPromille}{0}
+  \whiledo{\theTUBlnThSiTenNiFiCalcHeatngDegreeDaySumCurrMon <
+    \TUBlnThSiTenNiFiCalcDegreeDaySumEndMon}
+  {  %%TODO also leap year beachten
+%    \TUBlnThSiTenNiFiGetGerHeatngDegDayMonthPromille{
+%      \value{TUBlnThSiTenNiFiCalcHeatngDegreeDaySumCurrMon}}
+
+    \TUBlnThSiTenNiFiSetVarVal
+      {\TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromille}
+      {\TUBlnThSiTenNiFiGerHeatingDegDayPromillePerMon[
+       \value{TUBlnThSiTenNiFiCalcHeatngDegreeDaySumCurrMon} ]}
+
+    \FPset{TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromilleFP}
+      {\TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromille}
+
+    \TUBlnThSiTenNiFiLog{"\TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromille"
+       heating degree promille for current
+      \theTUBlnThSiTenNiFiCalcHeatngDegreeDaySumCurrMon. month of year
+      }
+
+    \FPeval\TUBlnThSiTenNiFiGerHeatngDegDayLastMonthsPromille
+      {\TUBlnThSiTenNiFiGerHeatngDegDayLastMonthsPromille+
+      \TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromille
+      }
+
+    \TUBlnThSiTenNiFiLog{TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForLastMonths--
+      current sum:\TUBlnThSiTenNiFiGerHeatngDegDayLastMonthsPromille}
+
+    \stepcounter{TUBlnThSiTenNiFiCalcHeatngDegreeDaySumCurrMon}
+  }
+  \TUBlnThSiTenNiFiLog{heating degree day promille sum for last months of time 
+    span:\TUBlnThSiTenNiFiGerHeatngDegDayLastMonthsPromille}
+}
+
+\newcommand{\TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForLastDays}[
+  %%The number of parameters to this function:
+  %% to:year,month,day
+  3
+  ]
+{
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon}
+    {#2}%%2nd parameter of this function
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegreeDaySumEndDay}
+    {#3}%%3rd parameter of this function
+
+  \ifthenelse{\TUBlnThSiTenNiFiCalcDegreeDaySumStrtMon=
+    \TUBlnThSiTenNiFiCalcDegreeDaySumEndMon \and
+    \TUBlnThSiTenNiFiCalcDegreeDaySumStrtYear=
+    \TUBlnThSiTenNiFiCalcDegreeDaySumEndYear
+    }%%if-block
+    {
+  \FPset\TUBlnThSiTenNiFiCalcHeatngDegreeDayLastDaysPromille
+    {0.0}
+  \FPset\TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromilleDayTwoDecPlaces{0.00}
+    }%%then-block
+    {%%else-block
+  %\TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegDaysSumNumDays}
+  \setcounter{TUBlnThSiTenNiFiCalcDegDaysSumNumDays}
+    {\the\numexpr\value{TUBlnThSiTenNiFiCalcDegDaysSumNumDays}+\TUBlnThSiTenNiFiCalcDegreeDaySumEndDay\relax}
+
+  \TUBlnThSiTenNiFiLog{TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForLastDays  begin--month:
+    \TUBlnThSiTenNiFiCalcDegreeDaySumEndMon}
+  
+  \TUBlnThSiTenNiFiGetGerHeatngDegDayPromille{
+    \TUBlnThSiTenNiFiCalcDegreeDaySumEndMon}
+    {\TUBlnThSiTenNiFiCalcDegreeDaySumEndYear}
+
+  \TUBlnThSiTenNiFiSetVarVal
+    {\TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromilleDayTwoDecPlaces}
+    {\TUBlnThSiTenNiFiGerHeatingDegDayPromillePerDayTwoDecPlaces[
+      \TUBlnThSiTenNiFiCalcDegreeDaySumEndMon]}
+  \TUBlnThSiTenNiFiLog{TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForLastDays
+    promille per day:
+    `\TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromilleDayTwoDecPlaces`
+    }
+
+  %%http://mirrors.ibiblio.org/CTAN/macros/generic/listofitems/listofitems-en.pdf
+  %% chapter "2 Read a Simple List", "Assign an item to a macro"
+  %%Use "listofitems"'s "itemtomacro" to get value from array. Assigning
+  %% (indirectly) with "newcommand" did not work.
+  \itemtomacro\TUBlnThSiTenNiFiGerHeatingDegDayPromillePerDayTwoDecPlaces
+    [\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon]
+    \TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromilleDayTwoDecPlacesFP
+  
+  %\TUBlnThSiTenNiFiLog{heating degree day for current month: "\TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromilleDayTwoDecPlacesFP"}
+
+  \FPeval\TUBlnThSiTenNiFiCalcHeatngDegreeDayLastDaysPromille
+    {\TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromilleDayTwoDecPlacesFP*
+     \TUBlnThSiTenNiFiCalcDegreeDaySumEndDay
+%     %%Promille
+%     /1000.0
+    }
+  }
+
+  \TUBlnThSiTenNiFiLog{"
+    \TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromilleDayTwoDecPlaces"(heating
+    degree day promille for month)*%%Use comment to avoid space character in
+    %% output.
+    "\TUBlnThSiTenNiFiCalcDegreeDaySumEndDay"(number of days)=%%Use comment to
+    %% avoid space character in output.
+    "\TUBlnThSiTenNiFiCalcHeatngDegreeDayLastDaysPromille`
+    }
+}
+
+%%frist days of of first (non-full) month of time span
+\newcommand{\CalcHeatngDegDays}[0]
+{
+  \TUBlnThSiTenNiFiLog{CalcHeatngDegDays begin}
+  %%Only multiply degree days if the first month of the time span is not a full
+  %% month.
+  %%The first month of the time span is not a full month if either(logical "or"):
+  %%-the first day of the first month of the time span is > 1
+  %%-the last day of the time span is < number of days of the same month
+  %% AND
+  %% the first month of the time span is the same as the last month of the time
+  %% span(<=>the first year of the time span is the same as the last year)
+  \ifthenelse
+  {%%"if" branch of "\ifthenelse"
+    %\theTUBlnThSiTenNiFiSubtractTwoDatesYearDiff > 0
+  	%%<=>1st year is no full year
+  	%\and
+  	%%First day of time span is not the first day of month.
+  	\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrDay>1
+     \or
+      \(
+      \TUBlnThSiTenNiFiCalcDegreeDaySumEndDay<\TUBlnThSiTenNiFiNumFirstMonthDays
+      \and \TUBlnThSiTenNiFiCalcDegreeDaySumStrtMon=\TUBlnThSiTenNiFiCalcDegreeDaySumStrtMon
+      \and \TUBlnThSiTenNiFiCalcDegreeDaySumStrtYear=\TUBlnThSiTenNiFiCalcDegreeDaySumStrtYear
+      \)
+    %\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon>1
+  }
+  %%First day of the time span is not the first day of month=>use heating degree
+  %% promille based on single days.
+  {%%"then" branch of "\ifthenelse"
+    %TUBlnThSiTenNiFiSetVarVal{\currYear}{\currYear+1}
+    \TUBlnThSiTenNiFiLog{1st month of time span is no full %year
+      month:1st day %>
+      greater 1 or:last day of time span < \# days of last month and 
+      last month=first month and last year=first year
+      % or first day\<\# days in month(\TUBlnThSiTenNiFiNumFirstMonthDays)
+    }
+
+    \TUBlnThSiTenNiFiGetGerHeatngDegDayPromille
+      {%\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon
+       \TUBlnThSiTenNiFiCalcDegreeDaySumStrtMon}
+      {\TUBlnThSiTenNiFiCalcDegreeDaySumStrtYear}
+
+    \FPset{TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleFirstDays}
+      {\TUBlnThSiTenNiFiGetGerHeatngDegDayPromillePerDay}
+
+    \TUBlnThSiTenNiFiLog{Number of days for %current
+      first (%
+      %\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon
+      \TUBlnThSiTenNiFiCalcDegreeDaySumStrtMon.)month of time span:%
+      %\TUBlnThSiTenNiFiCalcDegreeDaySumCurrMonDaysCount
+      \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonthDaysCount}
+
+    \ifthenelse%%If time span/duration < 1 month:
+    %%First month and last month of time span is the same...
+      {\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon=
+           \TUBlnThSiTenNiFiCalcDegreeDaySumEndMon
+    %%...and first year and the last year of time span is the same.
+         \and \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrYear=
+         \TUBlnThSiTenNiFiCalcDegreeDaySumEndYear
+      }%%if
+      {%%then
+        \TUBlnThSiTenNiFiSetVarVal{
+          \TUBlnThSiTenNiFiCalcDegreeDaySumNumDaysTillMonEnd}
+            %%Without "relax" multiplying with this number results in "0".
+        {%% https://tex.stackexchange.com/questions/245635/formal-syntax-rules-of-dimexpr-numexpr-glueexpr
+         %% : "numexpr" calculates integers
+         \the\numexpr\TUBlnThSiTenNiFiCalcDegreeDaySumEndDay-
+           \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrDay\relax
+        }
+      }
+      {%%else: time span > 1 month or time span > 1 year
+        \TUBlnThSiTenNiFiLog{Time span > 1 month or time span > 1 year.
+          \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonthDaysCount - 
+          \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrDay }
+        \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegreeDaySumNumDaysTillMonEnd}
+            %%Without "relax" multiplying with this number results in "0".
+            {\the\numexpr%\TUBlnThSiTenNiFiCalcDegreeDaySumCurrMonDaysCount
+            \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonthDaysCount-
+              \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrDay\relax}
+
+          \ifthenelse{\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon=12}{
+            \TUBlnThSiTenNiFiLog{Current month is december.}
+            \setcounter{TUBlnThSiTenNiFiCalcDegreeDaySumCurrMon}{1} }
+           { \TUBlnThSiTenNiFiLog{Current month is not december.}
+             \addtocounter{TUBlnThSiTenNiFiCalcDegreeDaySumCurrMon}{1} }%%else
+          \TUBlnThSiTenNiFiLog{next month:
+            \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon next day:
+            \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrDay}
+      }
+
+  %\TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegDaysSumNumDays}
+  \setcounter{TUBlnThSiTenNiFiCalcDegDaysSumNumDays}
+    {\TUBlnThSiTenNiFiCalcDegreeDaySumNumDaysTillMonEnd}
+
+    \TUBlnThSiTenNiFiLog{Number of days in first month of heating degree time
+      span:%%
+      "%\TUBlnThSiTenNiFiCalcDegreeDaySumCurrMonDaysCount
+       \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonthDaysCount-%%
+      first day of month of heating degree time span:
+      `\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrDay`%%
+      =\TUBlnThSiTenNiFiCalcDegreeDaySumNumDaysTillMonEnd
+    }
+
+    \FPeval\TUBlnThSiTenNiFiHeatngDegFirstDaysOfFirstMonthPromille{
+      \TUBlnThSiTenNiFiCalcDegreeDaySumNumDaysTillMonEnd*
+      	%\TUBlnThSiTenNiFiCalcHeatingDegDaySumCurrPromillePerDayTwoDecPlaces
+        \TUBlnThSiTenNiFiGetGerHeatngDegDayPromillePerDay
+      	}
+    \TUBlnThSiTenNiFiLog{
+      Heating degree promille for %first
+      last \TUBlnThSiTenNiFiCalcDegreeDaySumNumDaysTillMonEnd 
+      days of 1st month of time span:
+      "%\TUBlnThSiTenNiFiCalcHeatingDegDaySumCurrPromillePerDayTwoDecPlaces
+      \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleFirstDays" *
+      "\TUBlnThSiTenNiFiCalcDegreeDaySumNumDaysTillMonEnd"(number of days)=
+      `\TUBlnThSiTenNiFiHeatngDegFirstDaysOfFirstMonthPromille`% (current TUBlnThSiTenNiFiCalcDegreeDaySumPromille)
+      }
+  }
+  {}%%"else" branch of "\ifthenelse"
+  \TUBlnThSiTenNiFiLog{CalcHeatngDegDays end}
+}
+
+%%@brief calculates the first full heating degree months if:
+%% -first year of the time span is no full year
+\newcommand{\TUBlnThSiTenNiFiCalcFirstHeatngDegMonths}
+{
+  %%Sum up the first months till end of year or till .
+  \ifthenelse%%If time span/duration < 1 year.
+    %%If the first or second month(is advanced if first month of the time span
+    %% is no full month) of the time span is later than January...
+  {\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon>1
+    %%...if the first year of the time span is the same as the last year.
+	%\and \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrYear=
+	%\TUBlnThSiTenNiFiCalcDegreeDaySumEndYear
+    %\or    
+  }%%"if" branch
+  {%%"then" branch
+
+    %%TODO use \GregorianCalendarGetNumMonthDays
+    \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegNumEndMonthDays}
+      {\TUBlnThSiTenNiFiGregorianMonthDaysCount[
+        %\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon
+        \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon]}
+
+      %%If not 1 full year.
+    \ifthenelse
+    {%\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon>1 \and 
+     %  \TUBlnThSiTenNiFiCalcDegreeDaySumStrtDay>1
+      %%Current year may have been increased if the first month of the time span
+      %% is December and no full month.
+      \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrYear=
+        \TUBlnThSiTenNiFiCalcDegreeDaySumEndYear
+    }%%"if" branch of "\ifthenelse"
+    {%%"then" branch of "\ifthenelse"
+      \ifthenelse
+      {\TUBlnThSiTenNiFiCalcDegreeDaySumEndDay<
+        \TUBlnThSiTenNiFiCalcHeatngDegNumEndMonthDays
+      }%%"
+      {
+        \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegreeDaySumLastFullMonth}
+          {\the\numexpr\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon-1\relax}
+      }
+      {
+        \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegreeDaySumLastFullMonth}
+          {\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon}
+      }
+
+      \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegreeDaySumNumMonthsTillEnd}
+      %%Without "relax" multiplying with this number results in "0".
+            %%TODO
+        {\the\numexpr%\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon
+          \TUBlnThSiTenNiFiCalcDegreeDaySumLastFullMonth
+          -\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon+1\relax
+              %1
+        }
+      \ifthenelse
+        { \TUBlnThSiTenNiFiCalcDegreeDaySumStrtMon=
+            \TUBlnThSiTenNiFiCalcDegreeDaySumEndMon}
+        {
+          \FPset{TUBlnThSiTenNiFiHeatngDegFirstFullMonthsPromille}{0.0}
+        }%%"then" branch of "\ifthenelse"
+        {
+          \TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonths
+            {\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon}{
+              %\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon
+              \TUBlnThSiTenNiFiCalcDegreeDaySumLastFullMonth}
+          \TUBlnThSiTenNiFiLog{Number of full months of first year of time span=
+            \TUBlnThSiTenNiFiCalcDegreeDaySumEndMon-
+            \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon+1=
+            \TUBlnThSiTenNiFiCalcDegreeDaySumNumMonthsTillEnd}
+        \FPset{TUBlnThSiTenNiFiHeatngDegFirstFullMonthsPromille}
+          {\TUBlnThSiTenNiFiGerHeatngDegDayFullMonthsPromille}
+        }
+    }%%Ends "then" branch of "current year=end year of time span"
+%        {}
+%        \ifthenelse{\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrYear<
+%			\TUBlnThSiTenNiFiCalcDegreeDaySumEndYear}
+    {%%"else" branch: <=> current year of the time span is <> last year of the time span.
+      \FPset{TUBlnThSiTenNiFiHeatngDegFirstFullMonthsPromille}{0.0}
+      \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegreeDaySumNumMonthsTillEnd}
+      %%Without "relax" multiplying with this number results in "0".
+        {\the\numexpr12-
+				\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon+1\relax}
+         \TUBlnThSiTenNiFiLog{Number of full months of first year of time span=12-
+           \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon=
+           \TUBlnThSiTenNiFiCalcDegreeDaySumNumMonthsTillEnd}
+      \TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonths
+              {\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon}{12}
+      \FPset{TUBlnThSiTenNiFiHeatngDegFirstFullMonthsPromille}
+        {\TUBlnThSiTenNiFiGerHeatngDegDayFullMonthsPromille}
+
+    \setcounter{TUBlnThSiTenNiFiCalcDegreeDaySumCurrYear}
+      {\the\numexpr\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrYear+1\relax}
+    }
+
+%    \FPset{TUBlnThSiTenNiFiHeatngDegFirstFullMonthsPromille}
+%      {\TUBlnThSiTenNiFiGerHeatngDegDayFullMonthsPromille}
+% {\TUBlnThSiTenNiFiCalcDegreeDaySumCurrMonDaysCount-\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrDay}      
+  }%%"then" branch of: "current month is after January"
+  {
+    \FPset{TUBlnThSiTenNiFiHeatngDegFirstFullMonthsPromille}{0.0}
+  }%%"else" branch
+}
+
+%%@brief Calculates German heating degree day promille sum for time span between
+%% 2 dates.
+%%Calculation is faster if full years and full months are added than if every day is processed.
+\newcommand{\TUBlnThSiTenNiFiCalcHeatngDegDaySum}[
+%%Parameter #1-#3: from:year,month,day
+%%Parameter #3-#6: to:year,month,day
+%%Parameter #7:expected heating degree sum
+  7
+  ]
+{
+  \TUBlnThSiTenNiFiLog{TUBlnThSiTenNiFiCalcHeatngDegDaySum begin}
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegreeDaySumStrtYear}{#1}
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegreeDaySumStrtMon}{#2}
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegreeDaySumStrtDay}{#3}
+
+  \setcounter{TUBlnThSiTenNiFiCalcDegreeDaySumCurrYear}{#1}
+  %\setcounter{currMon}{#2}
+  \setcounter{TUBlnThSiTenNiFiCalcDegreeDaySumCurrMon}{#2}
+  \setcounter{TUBlnThSiTenNiFiCalcDegreeDaySumCurrDay}{#3}
+  %%Can't use "\end" as prefix (else errors) because this is a keyword in LaTex.
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegreeDaySumEndYear}{#4}
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon}{#5}
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegreeDaySumEndDay}{#6}
+
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegDaySumExpctdRslt}{#7}
+
+  %%Used to get the number of days for _exactly_ calculating the 
+  %% rental costs.
+  %\TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegDaysSumNumDays}{0}
+  \setcounter{TUBlnThSiTenNiFiCalcDegDaysSumNumDays}{0}
+  
+  \subtractTwoDates{\TUBlnThSiTenNiFiCalcDegreeDaySumEndDay}
+   {\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon}
+   {\TUBlnThSiTenNiFiCalcDegreeDaySumEndYear}
+   {\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrDay}
+   {\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon}
+   {\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrYear}
+
+	%%http://texfaq.org/FAQ-repeat-num : package "ifthen"
+
+%%https://tex.stackexchange.com/questions/587865/adding-a-number-to-command-parameter-and-outputting-it :
+%% "\number\numexpr#1 + 20\relax%"
+
+  %\TUBlnThSiTenNiFiIsLeapYear{\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrYear}
+
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiNumFirstMonthDays}{
+    \TUBlnThSiTenNiFiGregorianMonthDaysCount[
+      \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon]}
+
+  \TUBlnThSiTenNiFiLog{Number of days in first month of time span:\TUBlnThSiTenNiFiNumFirstMonthDays}
+
+  \CalcHeatngDegDays{}
+  \TUBlnThSiTenNiFiCalcFirstHeatngDegMonths{}
+
+  %%All days in 1st month processed/summed up.
+  \setcounter{TUBlnThSiTenNiFiCalcDegreeDaySumCurrMon}{1}
+
+  \TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullYears
+    {\TUBlnThSiTenNiFiCalcDegreeDaySumStrtYear}
+    {\TUBlnThSiTenNiFiCalcDegreeDaySumStrtMon}
+    {\TUBlnThSiTenNiFiCalcDegreeDaySumStrtDay}
+    {\TUBlnThSiTenNiFiCalcDegreeDaySumEndYear}
+    {\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon}
+    {\TUBlnThSiTenNiFiCalcDegreeDaySumEndDay}
+
+%  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegreeDayNumFullYears}
+%    {\the\numexpr\TUBlnThSiTenNiFiCalcHeatngDegreeDaySumLastFullYear-
+%      \TUBlnThSiTenNiFiCalcHeatngDegreeDaySumFirstFullYear+1\relax}
+%  \TUBlnThSiTenNiFiLog{number of full years:
+%    \TUBlnThSiTenNiFiCalcHeatngDegreeDaySumLastFullYear - 
+%    \TUBlnThSiTenNiFiCalcHeatngDegreeDaySumFirstFullYear+
+%    1=
+%    \TUBlnThSiTenNiFiCalcHeatngDegreeDayNumFullYears}
+
+  \FPeval\TUBlnThSiTenNiFiCalcHeatngDegDayPromilleFullYears{
+    %\value{TUBlnThSiTenNiFiCalcHeatngDegDayNumFullYears}
+    \theTUBlnThSiTenNiFiCalcHeatngDegDayNumFullYears*1000}
+
+  %%
+  \ifthenelse
+  {%\value{TUBlnThSiTenNiFiCalcHeatngDegDayNumFullYears}>0 \or
+    %\(
+    \TUBlnThSiTenNiFiCalcDegreeDaySumEndYear>\TUBlnThSiTenNiFiCalcDegreeDaySumStrtYear \and \TUBlnThSiTenNiFiCalcDegreeDaySumEndMon>1%\and \)
+  }
+  {
+%    \TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForLastMonths{#4}{#5}{#6}
+%    \FPeval\TUBlnThSiTenNiFiCalcDegreeDaySumPromille
+%       {%\TUBlnThSiTenNiFiCalcDegreeDaySumPromille+
+%        %\TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromilleFP
+%        %\TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthPromille
+%        \TUBlnThSiTenNiFiGerHeatngDegDayLastMonthsPromille
+%        %\TUBlnThSiTenNiFiCalcDegreeDaySumPromille
+%        }
+    \TUBlnThSiTenNiFiLog{End year(\TUBlnThSiTenNiFiCalcDegreeDaySumEndYear) >
+start year(\TUBlnThSiTenNiFiCalcDegreeDaySumStrtYear) and end month(
+\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon) after January.}
+
+    \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthDayCnt}
+      {\TUBlnThSiTenNiFiGregorianMonthDaysCount[
+        \TUBlnThSiTenNiFiCalcDegreeDaySumEndMon]
+      }
+
+    %\TUBlnThSiTenNiFiSetVarVal{\ooooo}{\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon}
+    \ifthenelse
+    {
+      \TUBlnThSiTenNiFiCalcDegreeDaySumEndDay=
+        \TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthDayCnt
+    }
+    {
+      \TUBlnThSiTenNiFiSetVarVal{\ooooo}{\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon}
+    }
+    {
+      %%Not a full month
+      \TUBlnThSiTenNiFiSetVarVal{\ooooo}{\the\numexpr\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon-1\relax}
+    }
+    \TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonths
+      {%%TODO
+       %\value{TUBlnThSiTenNiFiCalcHeatngDegreeDaySumCurrMon}
+       %\theTUBlnThSiTenNiFiCalcHeatngDegreeDaySumCurrMon
+       1
+       }
+      {%\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon
+       \ooooo}
+    \FPset{\TUBlnThSiTenNiFiGerHeatngDegDayLastMonthsPromille}
+      {\TUBlnThSiTenNiFiGerHeatngDegDayFullMonthsPromille}
+  }
+  {}
+  %%No full year inbetween
+  \ifthenelse
+  {
+    \TUBlnThSiTenNiFiCalcDegreeDaySumEndYear=
+      \TUBlnThSiTenNiFiCalcDegreeDaySumStrtYear
+  }
+  {
+    \TUBlnThSiTenNiFiLog{Start year=end year=>setting number of last months(already included in number of first months) to 0.}
+    \FPset{\TUBlnThSiTenNiFiGerHeatngDegDayLastMonthsPromille}{0.0}
+  }
+
+  \TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForLastDays{#4}{#5}{#6}
+%%http://tex.stackexchange.com/questions/222732/increment-display-the-content-of-a-variable-section-number-under-latex
+  %\endYear $\endYear+1 = \the\numexpr\endYear+1\relax$
+  
+			%%http://mirrors.ibiblio.org/CTAN/macros/generic/listofitems/listofitems-en.pdf :
+			%%Accessing list items : "\>>list name<<[>>index<<]"
+
+  \TUBlnThSiTenNiFiSetVarVal{%\TUBlnThSiTenNiFiCalcDegreeDaySumCurrMonDaysCount
+    \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonthDaysCount}{
+      \TUBlnThSiTenNiFiGregorianMonthDaysCount[
+      \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon]}
+
+  \TUBlnThSiTenNiFiLog{1st full months of time span promille:
+    \TUBlnThSiTenNiFiHeatngDegFirstFullMonthsPromille}
+
+  \FPeval{\TUBlnThSiTenNiFiHeatngDegFirstDaysAndMonthsPromille}
+   {\TUBlnThSiTenNiFiHeatngDegFirstDaysOfFirstMonthPromille +
+    \TUBlnThSiTenNiFiHeatngDegFirstFullMonthsPromille}
+
+  \FPeval\TUBlnThSiTenNiFiHeatngDegLastDaysAndMonthsPromille
+    {\TUBlnThSiTenNiFiCalcHeatngDegreeDayLastDaysPromille+
+     \TUBlnThSiTenNiFiGerHeatngDegDayLastMonthsPromille
+    }
+
+  \FPeval\TUBlnThSiTenNiFiHeatngDegOverallPromille
+   {\TUBlnThSiTenNiFiHeatngDegFirstDaysAndMonthsPromille+
+    %\TUBlnThSiTenNiFiHeatngDegFullYearsPromille+
+    \TUBlnThSiTenNiFiCalcHeatngDegDayPromilleFullYears+
+    \TUBlnThSiTenNiFiHeatngDegLastDaysAndMonthsPromille}
+}
+%}

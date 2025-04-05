@@ -1,0 +1,28 @@
+%%Following source code adapted from:
+%% https://tex.stackexchange.com/questions/7590/how-to-programmatically-make-tabular-rows-using-whiledo
+
+%%Create table cells from Gregorian month days count:
+\makeatletter
+\newtoks\@MonthDaysCntAsTabCells
+\newcommand\addMonthDaysCntAsTabCells[1]{
+ \@MonthDaysCntAsTabCells\expandafter{\the\@MonthDaysCntAsTabCells#1} }
+\newcommand*\resetMonthDaysCntAsTabCells{\@MonthDaysCntAsTabCells{}}
+\newcommand*\printMonthDaysCntAsTabCells{\the\@MonthDaysCntAsTabCells}
+\makeatother
+
+\setcounter{MonthIdx}{0}
+\resetMonthDaysCntAsTabCells
+\newcounter{monthDaysCntAsTabCellsCtr}
+\newcounter{MonthDaysCntAsTabCellsLoopCtr}
+\loop\ifnum\theMonthDaysCntAsTabCellsLoopCtr<
+ \TUBlnThSiTenNiFiGregorianMonthDaysCountlen\relax
+  \stepcounter{MonthDaysCntAsTabCellsLoopCtr}
+   \addMonthDaysCntAsTabCells{
+      \stepcounter{monthDaysCntAsTabCellsCtr}  
+      %\themonthDaysCntAsTabCellsCtr \ 
+      \TUBlnThSiTenNiFiGregorianMonthDaysCount[\themonthDaysCntAsTabCellsCtr] & 
+   }%
+\repeat
+\addMonthDaysCntAsTabCells{\\%\hline
+ }
+%%Create table cells from Gregorian month days end

@@ -1,0 +1,24 @@
+%%Following source code adapted from:
+%% https://tex.stackexchange.com/questions/7590/how-to-programmatically-make-tabular-rows-using-whiledo
+
+%%Create table cells with Gregorian month index:
+\newcounter{MonthIdx}\newcounter{AddMonthNumsAsTabCellsIdx}
+
+\makeatletter
+\newtoks\@MonthNumsAsTabCells
+\newcommand\addMonthNumsAsTabCells[1]{
+ \@MonthNumsAsTabCells\expandafter{\the\@MonthNumsAsTabCells#1} }
+\newcommand*\resetMonthNumsAsTabCells{\@MonthNumsAsTabCells{}}
+\newcommand*\printMonthNumsAsTabCells{\the\@MonthNumsAsTabCells}
+\makeatother
+
+\resetMonthNumsAsTabCells
+\loop\ifnum\theAddMonthNumsAsTabCellsIdx<
+ \TUBlnThSiTenNiFiGregorianMonthDaysCountlen\relax
+  \stepcounter{AddMonthNumsAsTabCellsIdx}
+  \addMonthNumsAsTabCells{\stepcounter{MonthIdx} \theMonthIdx & 
+   }
+\repeat
+\addMonthNumsAsTabCells{\\%\hline
+ }
+%%Create table cells with Gregorian month index end.

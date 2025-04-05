@@ -1,0 +1,27 @@
+%%Following source code adapted from:
+%% https://tex.stackexchange.com/questions/7590/how-to-programmatically-make-tabular-rows-using-whiledo
+
+%%Create table cells from Gregorian month days count:
+\makeatletter
+\newtoks\@GerHeatngDegPromillePerMonthAsTabCells
+\newcommand\addGerHeatngDegPromillePerMonthAsTabCells[1]{
+ \@GerHeatngDegPromillePerMonthAsTabCells\expandafter{\the\@GerHeatngDegPromillePerMonthAsTabCells#1} }
+\newcommand*\resetGerHeatngDegPromillePerMonthAsTabCells{\@GerHeatngDegPromillePerMonthAsTabCells{}}
+\newcommand*\printGerHeatngDegPromillePerMonthAsTabCells{\the\@GerHeatngDegPromillePerMonthAsTabCells}
+\makeatother
+
+\resetGerHeatngDegPromillePerMonthAsTabCells
+\newcounter{GerHeatngDegPromillePerMonthAsTabCellsCtr}
+\newcounter{GerHeatngDegPromillePerMonthAsTabCellsLoopCtr}
+\loop\ifnum\theGerHeatngDegPromillePerMonthAsTabCellsLoopCtr<
+ \TUBlnThSiTenNiFiGerHeatingDegDayPromillePerMonlen\relax
+  \stepcounter{GerHeatngDegPromillePerMonthAsTabCellsLoopCtr}
+   \addGerHeatngDegPromillePerMonthAsTabCells{
+      \stepcounter{GerHeatngDegPromillePerMonthAsTabCellsCtr}  
+      %\themonthDaysCntAsTabCellsCtr \ 
+      \TUBlnThSiTenNiFiGerHeatingDegDayPromillePerMon[\theGerHeatngDegPromillePerMonthAsTabCellsCtr] & 
+   }%
+\repeat
+\addGerHeatngDegPromillePerMonthAsTabCells{\\%\hline
+ }
+%%Create table cells from Gregorian month days end

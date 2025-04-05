@@ -14,6 +14,9 @@
 %%TUBln=TU Berlin
 %% ThSiTenNiFi=THree SIx TEN NIne FIve(matriculation number 36 10 95)
 %%SetVarVal=SET VARiable VALue
+%% @param 1: should only contain the variable name, no spaces, newlines etc.
+%%  (else errors) Mybe these characters can be eliminated with this function
+%%  With (La)Tex primitives/(library) functions. 
  {\TUBlnThSiTenNiFiSetVarVal}[2]{
   \ifdefined #1%%Variable with name "#1" already exists/is already set.
     \renewcommand{#1}{#2}
