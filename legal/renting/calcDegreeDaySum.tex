@@ -23,6 +23,10 @@
 \newcounter{TUBlnThSiTenNiFiCalcDegreeDaySumCurrYear}
 \newcounter{TUBlnThSiTenNiFiCalcDegreeDaySumCurrMon}
 \newcounter{TUBlnThSiTenNiFiCalcDegreeDaySumCurrDay}
+%%Number of days from heating time span begin(first month) to last day of first
+%% month of heating time span(> 0 if the first month is a non-full month).
+\newcounter{TUBlnThSiTenNiFiCalcDegDaysSumNumFrstMonLastDays}
+\newcounter{TUBlnThSiTenNiFiCalcGerHeatngDegDaysSumNumFirstFullMons}
 
 %%http://tex.stackexchange.com/questions/74707/how-to-concatenate-strings-into-a-single-command
 
@@ -127,8 +131,9 @@
   }
   {}
 
-  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegDaysYearsInNumDays}{\the\numexpr\value{TUBlnThSiTenNiFiCalcHeatngDegDayNumFullYears}*365\relax}
+  \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegDaysYearsInNumDays}
   %%TODO regard leap years(366 days)
+    {\the\numexpr\value{TUBlnThSiTenNiFiCalcHeatngDegDayNumFullYears}*365\relax}
   \setcounter{TUBlnThSiTenNiFiCalcDegDaysSumNumDays}
     {\the\numexpr\value{TUBlnThSiTenNiFiCalcDegDaysSumNumDays}+\TUBlnThSiTenNiFiCalcDegDaysYearsInNumDays}
 
@@ -414,9 +419,9 @@
 }
 
 %%frist days of of first (non-full) month of time span
-\newcommand{\CalcHeatngDegDays}[0]
+\newcommand{\TUBlnThSiTenNiFiCalcGerHeatngDegDays}[0]
 {
-  \TUBlnThSiTenNiFiLog{CalcHeatngDegDays begin}
+  \TUBlnThSiTenNiFiLog{TUBlnThSiTenNiFiCalcGerHeatngDegDays begin}
   %%Only multiply degree days if the first month of the time span is not a full
   %% month.
   %%The first month of the time span is not a full month if either(logical "or"):
@@ -480,21 +485,26 @@
             %%Without "relax" multiplying with this number results in "0".
         {%% https://tex.stackexchange.com/questions/245635/formal-syntax-rules-of-dimexpr-numexpr-glueexpr
          %% : "numexpr" calculates integers
-         \the\numexpr\TUBlnThSiTenNiFiCalcDegreeDaySumEndDay-
+         \the\numexpr\TUBlnThSiTenNiFiCalcDegreeDaySumEndDay -
            \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrDay\relax
         }
       }
       {%%else: time span > 1 month or time span > 1 year
         \TUBlnThSiTenNiFiLog{Time span > 1 month or time span > 1 year.
           \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonthDaysCount - 
-          \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrDay }
+          \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrDay
+           + 1(last day counts as 1 day)
+          }
         \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcDegreeDaySumNumDaysTillMonEnd}
             %%Without "relax" multiplying with this number results in "0".
-            {\the\numexpr%\TUBlnThSiTenNiFiCalcDegreeDaySumCurrMonDaysCount
-            \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonthDaysCount-
-              \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrDay\relax}
+            {%\the\numexpr\TUBlnThSiTenNiFiCalcDegreeDaySumCurrMonDaysCount
+            \the\numexpr\TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonthDaysCount -
+              \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrDay+1
+              \relax
+            }
 
-          \ifthenelse{\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon=12}{
+          \ifthenelse{\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon=12}%%If
+           {%%then
             \TUBlnThSiTenNiFiLog{Current month is december.}
             \setcounter{TUBlnThSiTenNiFiCalcDegreeDaySumCurrMon}{1} }
            { \TUBlnThSiTenNiFiLog{Current month is not december.}
@@ -514,17 +524,18 @@
        \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleMonthDaysCount-%%
       first day of month of heating degree time span:
       `\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrDay`%%
+      +1
       =\TUBlnThSiTenNiFiCalcDegreeDaySumNumDaysTillMonEnd
     }
 
     \FPeval\TUBlnThSiTenNiFiHeatngDegFirstDaysOfFirstMonthPromille{
-      \TUBlnThSiTenNiFiCalcDegreeDaySumNumDaysTillMonEnd*
+      \TUBlnThSiTenNiFiCalcDegreeDaySumNumDaysTillMonEnd *
       	%\TUBlnThSiTenNiFiCalcHeatingDegDaySumCurrPromillePerDayTwoDecPlaces
         \TUBlnThSiTenNiFiGetGerHeatngDegDayPromillePerDay
       	}
     \TUBlnThSiTenNiFiLog{
       Heating degree promille for %first
-      last \TUBlnThSiTenNiFiCalcDegreeDaySumNumDaysTillMonEnd 
+      last \TUBlnThSiTenNiFiCalcDegreeDaySumNumDaysTillMonEnd\ 
       days of 1st month of time span:
       "%\TUBlnThSiTenNiFiCalcHeatingDegDaySumCurrPromillePerDayTwoDecPlaces
       \TUBlnThSiTenNiFiGetGerHeatngDegDayPromilleFirstDays" *
@@ -533,7 +544,13 @@
       }
   }
   {}%%"else" branch of "\ifthenelse"
-  \TUBlnThSiTenNiFiLog{CalcHeatngDegDays end}
+
+  %%Store a copy of the value into the counter(and use it later) because the
+  %% original value variable increased by 1 later for some unknown reason.
+  \setcounter{TUBlnThSiTenNiFiCalcDegDaysSumNumFrstMonLastDays}
+    {\TUBlnThSiTenNiFiCalcDegreeDaySumNumDaysTillMonEnd}
+
+  \TUBlnThSiTenNiFiLog{TUBlnThSiTenNiFiCalcGerHeatngDegDays end}
 }
 
 %%@brief calculates the first full heating degree months if:
@@ -544,7 +561,8 @@
   \ifthenelse%%If time span/duration < 1 year.
     %%If the first or second month(is advanced if first month of the time span
     %% is no full month) of the time span is later than January...
-  {\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon>1
+  {%\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrMon
+    \value{TUBlnThSiTenNiFiCalcDegreeDaySumCurrMon} > 1
     %%...if the first year of the time span is the same as the last year.
 	%\and \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrYear=
 	%\TUBlnThSiTenNiFiCalcDegreeDaySumEndYear
@@ -552,7 +570,6 @@
   }%%"if" branch
   {%%"then" branch
 
-    %%TODO use \GregorianCalendarGetNumMonthDays
     \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcHeatngDegNumEndMonthDays}
       {\TUBlnThSiTenNiFiGregorianMonthDaysCount[
         %\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon
@@ -564,12 +581,13 @@
      %  \TUBlnThSiTenNiFiCalcDegreeDaySumStrtDay>1
       %%Current year may have been increased if the first month of the time span
       %% is December and no full month.
-      \theTUBlnThSiTenNiFiCalcDegreeDaySumCurrYear=
+      %\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrYear
+      \value{TUBlnThSiTenNiFiCalcDegreeDaySumCurrYear} =
         \TUBlnThSiTenNiFiCalcDegreeDaySumEndYear
     }%%"if" branch of "\ifthenelse"
     {%%"then" branch of "\ifthenelse"
-      \ifthenelse
-      {\TUBlnThSiTenNiFiCalcDegreeDaySumEndDay<
+      \ifthenelse %%If not the last day of the month
+      {\TUBlnThSiTenNiFiCalcDegreeDaySumEndDay <
         \TUBlnThSiTenNiFiCalcHeatngDegNumEndMonthDays
       }%%"
       {
@@ -590,7 +608,7 @@
               %1
         }
       \ifthenelse
-        { \TUBlnThSiTenNiFiCalcDegreeDaySumStrtMon=
+        { \TUBlnThSiTenNiFiCalcDegreeDaySumStrtMon =
             \TUBlnThSiTenNiFiCalcDegreeDaySumEndMon}
         {
           \FPset{TUBlnThSiTenNiFiHeatngDegFirstFullMonthsPromille}{0.0}
@@ -636,6 +654,9 @@
   {
     \FPset{TUBlnThSiTenNiFiHeatngDegFirstFullMonthsPromille}{0.0}
   }%%"else" branch
+  \setcounter{%TUBlnThSiTenNiFiGerHeatngCalcDegDaySumNumFirstFullMons
+    TUBlnThSiTenNiFiCalcGerHeatngDegDaysSumNumFirstFullMons}
+    {\TUBlnThSiTenNiFiCalcDegreeDaySumNumMonthsTillEnd}
 }
 
 %%@brief Calculates German heating degree day promille sum for time span between
@@ -689,7 +710,7 @@
 
   \TUBlnThSiTenNiFiLog{Number of days in first month of time span:\TUBlnThSiTenNiFiNumFirstMonthDays}
 
-  \CalcHeatngDegDays{}
+  \TUBlnThSiTenNiFiCalcGerHeatngDegDays{}
   \TUBlnThSiTenNiFiCalcFirstHeatngDegMonths{}
 
   %%All days in 1st month processed/summed up.
@@ -747,11 +768,13 @@ start year(\TUBlnThSiTenNiFiCalcDegreeDaySumStrtYear) and end month(
         \TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthDayCnt
     }
     {
-      \TUBlnThSiTenNiFiSetVarVal{\ooooo}{\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon}
+      \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcGerHeatngDegDaysSumNumFullEndMons}
+       {\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon}
     }
     {
       %%Not a full month
-      \TUBlnThSiTenNiFiSetVarVal{\ooooo}{\the\numexpr\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon-1\relax}
+      \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiCalcGerHeatngDegDaysSumNumFullEndMons}
+       {\the\numexpr\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon-1\relax}
     }
     \TUBlnThSiTenNiFiCalcHeatngDegDayPromilleForFullMonths
       {%%TODO
@@ -760,7 +783,7 @@ start year(\TUBlnThSiTenNiFiCalcDegreeDaySumStrtYear) and end month(
        1
        }
       {%\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon
-       \ooooo}
+       \TUBlnThSiTenNiFiCalcGerHeatngDegDaysSumNumFullEndMons}
     \FPset{\TUBlnThSiTenNiFiGerHeatngDegDayLastMonthsPromille}
       {\TUBlnThSiTenNiFiGerHeatngDegDayFullMonthsPromille}
   }

@@ -12,6 +12,9 @@
 
 \usepackage{longtable}%%\begin{longtable}, \end{longtable}
 
+\usepackage{enumitem}%%"topsep" as option in "\begin{itemize}"
+\newcommand\topsepDef{topsep=-10pt}
+
 %\usepackage[utf8]{inputenc}%%for ">"
 %%http://tex.stackexchange.com/questions/87824/how-to-do-simple-calculation-in-latex
 \usepackage{intcalc}
@@ -25,6 +28,9 @@
 \usepackage[debug]
   {fp}%%"\FPeval"
 \usepackage{xcolor}%%"\color"
+
+%%from https://www.heise.de/tipps-tricks/LaTeX-Anfuehrungszeichen-einfuegen-so-geht-s-4351643.html
+\usepackage[ngerman]{babel}%%deutsche Anführungszeichen
 
 \input{../calcDegreeDaySum.tex}
 %\input{../../../LaTex/setVarVal.tex}
@@ -96,27 +102,32 @@
 %  \TUBlnThSiTenNiFiCalcHeatngDegDayPromilleFullYears
   %\TUBlnThSiTenNiFiCalcDegreeDaySumPromille
 
-   Heating degree days promille for
+  \begin{itemize}[noitemsep, topsep=0pt]
+   \item Heating degree days promille for
    \color{blue}
    \textbf{first }
-    \TUBlnThSiTenNiFiCalcDegreeDaySumNumDaysTillMonEnd
-   \textbf{ days}
+    %\TUBlnThSiTenNiFiCalcDegreeDaySumNumDaysTillMonEnd 
+    \theTUBlnThSiTenNiFiCalcDegDaysSumNumFrstMonLastDays
+   \textbf{ day(s)}
    \color{black}
    (=last days of first non-full month) of time span:
    \color{blue}
      \TUBlnThSiTenNiFiHeatngDegFirstDaysOfFirstMonthPromille
    \color{black}
-
+   \item 
       \ifthenelse
       {\TUBlnThSiTenNiFiCalcDegreeDaySumEndDay<
         \TUBlnThSiTenNiFiCalcHeatngDegNumEndMonthDays
       }%%"
       {
         Last day(\TUBlnThSiTenNiFiCalcDegreeDaySumEndDay) of last month of time span is not the last day of this month(\TUBlnThSiTenNiFiCalcHeatngDegNumEndMonthDays).
-      }{}
-    Heating degree days promille for
+      }
+      {}
+    \item Heating degree days promille for
     \color{blue}
-    \textbf{first full months}
+    \textbf{first}
+      \theTUBlnThSiTenNiFiCalcGerHeatngDegDaysSumNumFirstFullMons\ 
+    \textbf{full month(s)}
     \color{black}\
     of non-full years %in non-full years
    of time span:
@@ -124,18 +135,19 @@
     \TUBlnThSiTenNiFiHeatngDegFirstFullMonthsPromille
    \color{black}
 
-  Heating degree day promille
+  \item Heating degree day promille
   \color{blue}
-  \textbf{last full months}
+  \textbf{last} \TUBlnThSiTenNiFiCalcGerHeatngDegDaysSumNumFullEndMons\
+  \textbf{full month(s)}
   \color{black}
   of non-full years of time span:
   \color{blue}
     \TUBlnThSiTenNiFiGerHeatngDegDayLastMonthsPromille
   \color{black}
 
-  Heating degree day promille for
+  \item Heating degree day promille for
   \color{blue}
-  \textbf{last days}
+  \textbf{last} \TUBlnThSiTenNiFiCalcDegreeDaySumEndDay \ \textbf{day(s)}
   \color{black}
   (of last non-full month) of time span:
   \color{blue}
@@ -155,6 +167,7 @@
   }%%then
   {\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrYear is not:a leap year and February}%%else
 
+ \item 
   \color{blue}
   \TUBlnThSiTenNiFiHeatngDegFirstDaysOfFirstMonthPromille(\textbf{first days}
   \color{black}
@@ -165,6 +178,7 @@
   of first non-full year of time span)=%%
   \TUBlnThSiTenNiFiHeatngDegFirstDaysAndMonthsPromille %\TUBlnThSiTenNiFiCalcDegreeDaySumPromille
 
+ \item 
   \color{blue}
   \TUBlnThSiTenNiFiCalcHeatngDegreeDayLastDaysPromille(\textbf{last days}
   \color{black}
@@ -175,6 +189,7 @@
   of last non-full year of time span)
   =\TUBlnThSiTenNiFiHeatngDegLastDaysAndMonthsPromille
 
+ \item 
   \textbf{Overall} promille:\newline
   \color{blue}
   \TUBlnThSiTenNiFiHeatngDegFirstDaysAndMonthsPromille(first days and months
@@ -191,9 +206,11 @@
   \color{black}
   promille of time span)=\newline
    \TUBlnThSiTenNiFiHeatngDegOverallPromille\newline
+ \end{itemize}
 
   \FPeval\TUBlnThSiTenNiFiHeatngDegOverallPromilleError{
-    \TUBlnThSiTenNiFiHeatngDegOverallPromille/\TUBlnThSiTenNiFiCalcDegDaySumExpctdRslt}
+    \TUBlnThSiTenNiFiHeatngDegOverallPromille/
+    \TUBlnThSiTenNiFiCalcDegDaySumExpctdRslt}
   Deviation from expected value(result/expected result):
    \TUBlnThSiTenNiFiHeatngDegOverallPromilleError
   \newline
@@ -218,7 +235,10 @@
      \color{black}
   }%%"then" branch
   {
-    \color{green}Result matches expected result +-1\%.\color{black}
+    \color{green}Result matches expected result
+      „%\textit{
+       \TUBlnThSiTenNiFiCalcDegDaySumExpctdRslt%}
+      “ +-1\%.\color{black}
   }%%"else" branch
 
   date difference: %\TUBlnThSiTenNiFiSubtractTwoDatesYearDiff
@@ -227,7 +247,8 @@
 
   \ifthenelse
   {
-    \theTUBlnThSiTenNiFiCalcDegDaysSumNumDays=\TUBlnThSiTenNiFiCalcDegDaysSumNumNumExpctdDays
+    \theTUBlnThSiTenNiFiCalcDegDaysSumNumDays =
+    \TUBlnThSiTenNiFiCalcDegDaysSumNumNumExpctdDays
   }%%"if" branch
   {%%"then" branch
     \color{green}Number of days matches expected result.\color{black}
@@ -239,7 +260,8 @@
   }%%"else" branch
 }
 
-\title{"degree day sum function" test}
+\title{„German heating degree day sum% function
+  “ test}
 \author{Stefan Gebauer(TU Berlin matriculation number 361095)}
 
 %% \calcDegreeDaySum
@@ -247,19 +269,22 @@
 \newcommand\testTwntyFourNovTwoThsdTwntyThrTillFrstMayTwoThsdTwntyFour{
  \TUBlnThSiTenNiFiCalcHeatngDegDaySumTest
   {2023}{11}{24}{2024}{5}{1}{
-  %%Expected promille sum:
-  %%  28=120(heating degree promille per day in November)*7 days=120/30*7
-  %%+160(heating degree promille per month in December)
-  %%=188(first days and first months of time span)
+  %%Expected promille sum and expected days count:
+  %%  28       7(heating degree promille per day in November)*7 days=120/30*7
+  %%+160     +31(heating degree promille per month in December)
+  %%=188     =38(first days and first months of time span)
 %
-  %% 170(heating degree promille per month in January)
-  %%+150(heating degree promille per month in February)
-  %%+130(heating degree promille per month in March)
-  %%+ 80(heating degree promille per month in April)
-  %%=530(last days and last months of time span)
+  %% 170      31(heating degree promille per month in January)
+  %%+150     +29(heating degree promille per month for 29 days in February)
+  %%+130     +31(heating degree promille per month in March)
+  %%+ 80     +30(heating degree promille per month in April)
+  %%+  1,29   +1(heating degree promille for 1 day in May)
+  %%=531,29 =122(last days and last months of time span)
 %
-  %%718=first days and first months plus last days and last months
-  718.0}{157}
+  %% 188      38(first days and first months)
+  %%+531,29 +122(last days and last months)
+  %%=719.29 =160=first days and first months plus last days and last months
+  719.29}{160}
 }
 \newcommand\testXXIVNovMMXXIIItillIMayMMXXIV{
  \testTwntyFourNovTwoThsdTwntyThrTillFrstMayTwoThsdTwntyFour
@@ -270,6 +295,9 @@
 \color{orange}
 Use "debug" option for "fp" package if "fp" calculation errors exist to see the cause.
 \newline
+
+All days are included, so the 01.May-02.May count as 2 days, 01.May-02.May as
+ only 1 day.
 
 %Number of days for each month in Gregorian calendar:
 % \showitems\TUBlnThSiTenNiFiGregorianMonthDaysCount .
