@@ -1,0 +1,62 @@
+%%(c) Stefan Gebauer(TU Berlin matriculation number 361095)
+
+%%Following source code adapted from:
+%% https://tex.stackexchange.com/questions/7590/how-to-programmatically-make-tabular-rows-using-whiledo
+
+%%Create itemization from unrented rooms:
+\makeatletter
+\newtoks\@UnrentedRoomsAsItems
+\newcommand\addUnrentedRoomsAsItems[1]{
+ \@UnrentedRoomsAsItems\expandafter{\the\@UnrentedRoomsAsItems#1} }
+\newcommand*\resetUnrentedRoomsAsItems{\@UnrentedRoomsAsItems{}}
+\newcommand*\printUnrentedRoomsAsItems{\the\@UnrentedRoomsAsItems}
+\makeatother
+
+\newcommand\ZiQm{}
+\FPset\EntireUnrentedRoomsQm{0.0}
+\resetUnrentedRoomsAsItems
+\newcounter{UnrentedRoomsAsItemsCtr}
+\newcounter{UnrentedRoomsAsItemsLoopCtr}
+
+%%The following code creates list items for unrented rooms in German language
+%% Therefore the array \TUBlnThSiTenNiFiAllRooms and the variable
+%% \TUBlnThSiTenNiFiRentedRoom must be defined.
+%%Can be used for shared flats amd normal flats where 1 or more rooms aren't
+%% rented.
+%%The items are finally printed/written with "\printUnrentedRoomsAsItems"
+
+%\newcommand\listUnrentedRooms%[1]
+%{
+%\addUnrentedRoomsAsItems{\begin{itemize}}
+ \loop\ifnum\theUnrentedRoomsAsItemsLoopCtr< \TUBlnThSiTenNiFiAllRoomslen\relax
+   \stepcounter{UnrentedRoomsAsItemsLoopCtr}
+   \addUnrentedRoomsAsItems
+   {
+     \stepcounter{UnrentedRoomsAsItemsCtr}  
+      %\themonthDaysCntAsTabCellsCtr \ 
+     \ifthenelse
+     {%%"if"-branch
+       \equal{\TUBlnThSiTenNiFiAllRooms[\theUnrentedRoomsAsItemsCtr]}
+        {\TUBlnThSiTenNiFiRentedRoom}
+     }
+     {%%"then"-branch
+     }
+     {%%"else"-branch
+       \item Zimmer \TUBlnThSiTenNiFiAllRooms[\theUnrentedRoomsAsItemsCtr] %:
+        %%from https://tex.stackexchange.com/questions/369104/how-to-declare-dynamic-variable-name-in-latex
+        \renewcommand\ZiQm{
+        %%The following code dynamically generates a variable name. The name is
+        %% something like "Zimmer">>name<<"Qm", for example "ZimmerWestQm".
+        %%This variable name (and its [floating point] value) must exist!
+          \expandafter\csname Zimmer\TUBlnThSiTenNiFiAllRooms[\theUnrentedRoomsAsItemsCtr]Qm\endcsname
+        }
+        \ZiQm%%Outputs the content (should be square meters) of variable "\ZiQm".
+        \space m$^2$
+       \FPeval\EntireUnrentedRoomsQm{
+         round(\EntireUnrentedRoomsQm+\ZiQm
+          :2%%Anzahl Nachkommastellen
+         )
+       }
+     }
+   }%
+\repeat

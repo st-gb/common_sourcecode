@@ -54,7 +54,7 @@ static char * TU_Bln361095enProgExitMsgs///ENglish PROGram EXIT MeSsageS
  *  - from command line arguments to this program
  *  - with 1st possible data carrier ID as default value in case of error in
  *    processing the command line arguments passed to this function */
-static inline TU_Bln361095CPUuse(FaststUint) getDataCarrierIDfromCmdLneArgs(
+static inline TU_Bln361095CPUuse(faststUint) getDataCarrierIDfromCmdLneArgs(
   const int cmdLneArgCnt,
   const char * const cmdLneArgArr[],
   char dataCarrierID[2]
@@ -66,6 +66,8 @@ static inline TU_Bln361095CPUuse(FaststUint) getDataCarrierIDfromCmdLneArgs(
   //cxxopts::exceptions::exception cxxoptsExc;
   std::string cxxoptsExcMsg;
 
+  std::string usageProgName(cmdLneArgArr[
+    TU_Bln361095::OpSys::Process:: CmdLneArgs::ProgPathIdx]);
   cxxopts::Options cxxoptions("printNVMeSMARTattrVals",
     "Print NVMe S.M.A.R.T. attibute values"/**one-line program description*/);
   TU_Bln361095::CPU::faststUint getDataCarrierIDfromCxxoptsRslt =
@@ -78,7 +80,8 @@ static inline TU_Bln361095CPUuse(FaststUint) getDataCarrierIDfromCmdLneArgs(
       "->using default value \"%s\" for it.\n", //cxxoptsExc.what()
       cxxoptsExcMsg.c_str(), dataCarrierID);
     const std::string stdstrCxxOptionsHelp = cxxoptions.help();
-    printf("Here is the help/are the possible options for this application:\n%s",
+    printf("Here is the help/are the possible options for this application:\n"
+      "\n%s\n",
       stdstrCxxOptionsHelp.c_str() );
   }
   return getDataCarrierIDfromCxxoptsRslt;
@@ -95,7 +98,12 @@ static TU_Bln361095frcInln void exitProg(
   const enum TU_Bln361095progRtrnCodes rtrnCd,
   HANDLE deviceHandle)
 {
-  printf("%s (%s):%d\n", TU_Bln361095enProgExitMsgs[rtrnCd], dataCarrierPath,
+  if(rtrnCd != sccss)
+  printf("%s (for data carrier %s):"
+    "Operating System error code="
+    "%d"
+    "\n",
+    TU_Bln361095enProgExitMsgs[rtrnCd], dataCarrierPath,
     GetLastError() );
   if(rtrnCd != opnDataCarrierFaild)
     CloseHandle(deviceHandle);
@@ -152,7 +160,7 @@ int main(int cmdLneArgCnt, char * cmdLneArgs[])
     /**Outputting the date and time of day when building to console/terminal/
      * standard output enables that the user to see which version is run(This
      * improves quality assurance).*/
-    "Build date and time of day of this executable:%s %s\n", __DATE__,
+    "Build date and time of day of this executable:%s %s\n\n", __DATE__,
     __TIME__);
   HANDLE deviceHandle;
 
