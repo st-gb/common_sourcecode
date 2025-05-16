@@ -13,7 +13,8 @@ rem http://en.wikibooks.org/wiki/Windows_Batch_Scripting#Command-line_arguments
 rem Do not use the "for"-loop version with "in (%*)" because for example passing
 rem  only 1 command line argument '*' leaded to a count of 14 command line
 rem  arguments.
-set cmdLneArgCnt=0 rem Without defining/initializing the count was not correct.
+rem Without defining/initializing the count was not correct.
+set cmdLneArgCnt=0
 
 :cntCmdLneArgsStart
 if -%1-==-- goto cntCmdLneArgsEnd

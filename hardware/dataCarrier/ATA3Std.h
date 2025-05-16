@@ -7,9 +7,13 @@
  * see http://en.wikipedia.org/wiki/Pragma_once#Portability */
   #pragma once
 #endif
-///Include guard supported by (nearly) all industry compilers:
-#ifndef TU_Berlin361095cmnSrcATA3Std_h
-#define TU_Berlin361095cmnSrcATA3Std_h
+#if defined TU_Bln361095usePrgmInclGrd ||\
+/**Include guard supported by (nearly) all industry compilers:*/\
+/**Bln=BerLiN: http://www.acronymfinder.com/Berlin-(Bln).html
+ * cmn=CoMmoN: http://www.abbreviations.com/abbreviation/common
+ * Src=SouRCe: http://www.abbreviations.com/abbreviation/Source */\
+ ! defined TU_Bln361095cmnSrc__hardware__dataCarrier__ATA3Std_h
+   #define TU_Bln361095cmnSrc__hardware__dataCarrier__ATA3Std_h
 
 ///Standard C header files:
 #include <stdint.h>///uint8_t
@@ -54,4 +58,13 @@ http://en.wikipedia.org/wiki/Self-Monitoring,_Analysis_and_Reporting_Technology
  * normalized value, which ranges from 1 to 253"-> 1 byte is sufficient*/
 typedef /*AtmcXchgTyp*/uint8_t ATA3Std_NrmlzdValTyp;
 
-#endif///#ifndef TU_Berlin361095cmnSrcATA3Std_h
+//TODO: make as inline function?(better type safety)
+///This does not apply to NVMe S.M.A.R.T.
+#define TU_Bln361095dataCarrierATA_SMARTgetCurrTemp(SMARTattrRawVal)\
+  (SMARTattrRawVal \
+  /**https://en.wikipedia.org/wiki/S.M.A.R.T.#Known_ATA_S.M.A.R.T._attributes:
+   * Current temperature of ATA S.M.A.R.T. attribute ID 194 (Device Temperature)
+   * is in the lowmost 2 bytes.*/\
+  & 0xFFFF)
+
+#endif///include guard

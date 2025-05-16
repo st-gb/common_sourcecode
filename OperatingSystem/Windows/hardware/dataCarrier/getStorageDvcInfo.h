@@ -14,7 +14,7 @@
 #endif
 #if defined TU_Bln361095usePrgmInclGrd ||\
 /**Include guard supported by (nearly) all industry compilers:*/\
-/**Bln=Berlin: http://www.acronymfinder.com/Berlin-(Bln).html
+/**Bln=BerLiN: http://www.acronymfinder.com/Berlin-(Bln).html
  * cmn=CoMmoN: http://www.abbreviations.com/abbreviation/common
  * Src=SouRCe: http://www.abbreviations.com/abbreviation/Source
  * OpSys=OPerating SYStem: http://www.abbreviations.com/OpSys

@@ -1,0 +1,19 @@
+%%(c) 2025 by Stefan Gebauer(TU Berlin matriculation number 361095)
+
+%%"\includepdf" needs package "pdfpages" -> "\usepackage{pdfpages}" before
+\newcommand\TUBlnThSxTnNnFvIncludepdfWithBoxAndFooter[2%%Anzahl der Parameter
+  ]{\includepdf[%%1ter Parameter
+    scale=0.85, offset=0in 0.2in, 
+    frame,%%Erzeugt einen Rahmen um die eingefügte PDF-Datei.
+    pagecommand={},%%Without "pagecommand={}" no footer is shown.
+    %pages=#1
+    #1
+  ]{
+    %%https://tex.stackexchange.com/questions/95900/includepdf-does-not-find-file-with-comma
+    %\string"
+    %%Does not work with colons(',') and dots('.') in file paths if the file
+    %% extension is included!
+    #2%%2ter Parameter:Dateipfad
+    %"
+   }
+  }

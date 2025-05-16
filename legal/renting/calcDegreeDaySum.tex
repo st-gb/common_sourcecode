@@ -5,7 +5,7 @@
 
 \input{%%Needs "currfile" package=>"\usepackage{currfile}" before
    \currfiledir../../date/cmp2Dates.tex}
-%%TUBlnThSiTenNiFiGregorianMonthDaysCount
+%%\TUBlnThSiTenNiFiGregorianMonthDaysCount
 \input{\currfiledir../../date/GregorianCalendar.tex}
 \input{\currfiledir../../date/isLeapYear.tex}
 \input{\currfiledir../../date/subtract2Dates.tex}
@@ -49,6 +49,8 @@
 \newcommand{\TUBlnThSiTenNiFiCtr}[2]{\@namedef{\TUBlnThSiTenNiFiPrfx#1}{#2} }
 
 \newcounter{TUBlnThSiTenNiFiCalcDegDaysSumNumDays}
+
+\FPset{TUBlnThSiTenNiFiGerHeatngDegDayLastMonthsPromille}{0}
 
 %%Use counter because adding a value of newcommand with itself did not function.
 \newcounter{TUBlnThSiTenNiFiCalcHeatngDegDayNumFullYears}
@@ -643,8 +645,8 @@
       \FPset{TUBlnThSiTenNiFiHeatngDegFirstFullMonthsPromille}
         {\TUBlnThSiTenNiFiGerHeatngDegDayFullMonthsPromille}
 
-    \setcounter{TUBlnThSiTenNiFiCalcDegreeDaySumCurrYear}
-      {\the\numexpr\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrYear+1\relax}
+      \setcounter{TUBlnThSiTenNiFiCalcDegreeDaySumCurrYear}
+        {\the\numexpr\theTUBlnThSiTenNiFiCalcDegreeDaySumCurrYear+1\relax}
     }
 
 %    \FPset{TUBlnThSiTenNiFiHeatngDegFirstFullMonthsPromille}
@@ -753,8 +755,8 @@
 %        %\TUBlnThSiTenNiFiCalcDegreeDaySumPromille
 %        }
     \TUBlnThSiTenNiFiLog{End year(\TUBlnThSiTenNiFiCalcDegreeDaySumEndYear) >
-start year(\TUBlnThSiTenNiFiCalcDegreeDaySumStrtYear) and end month(
-\TUBlnThSiTenNiFiCalcDegreeDaySumEndMon) after January.}
+      start year(\TUBlnThSiTenNiFiCalcDegreeDaySumStrtYear) and end month(
+      \TUBlnThSiTenNiFiCalcDegreeDaySumEndMon) after January.}
 
     \TUBlnThSiTenNiFiSetVarVal{\TUBlnThSiTenNiFiGerHeatingDegDayCurrMonthDayCnt}
       {\TUBlnThSiTenNiFiGregorianMonthDaysCount[

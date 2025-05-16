@@ -100,15 +100,16 @@ enum TU_Bln361095dataCarrierNVMeSMARTattrDef(ID){
   TU_Bln361095dataCarrierNVMeSMARTattrDef(ErrorInfoLogEntryCount)
   };
 
- TU_Bln361095frcInln TU_Bln361095hardwareCPUuse(FaststUint)
+ ///@param TempInK :May pass NVME_HEALTH_INFO_LOG.Temperature here
+ TU_Bln361095frcInln TU_Bln361095hardwareCPUuse(faststUint)
    TU_Bln361095dataCarrierNVMeSMARTattrDef(GetTempInDegC)(
-     const NVME_HEALTH_INFO_LOG * const pNMVeHealthInfoLog)
+   const uint8_t TempInK[2]
+  )
 {
-  const TU_Bln361095hardwareCPUuse(FaststUint) tempInDegC =
-    ((ULONG)pNMVeHealthInfoLog->Temperature[1] << 8 |
-      pNMVeHealthInfoLog->Temperature[0])
-    //*( (ULONG *)&NMVeHealthInfoLog.Temperature[0])
-    ///Kelvin to �C.
+  const TU_Bln361095hardwareCPUuse(faststUint) tempInDegC =
+    ( (ULONG) TempInK[1] << 8 | TempInK[0])
+    /**Convert Kelvin to degrees Celsius by subracting the difference to
+     * 0 °C (273.15 Kelvin). See http://en.wikipedia.org/wiki/Kelvin */ 
     - 273;
   return tempInDegC;
 }

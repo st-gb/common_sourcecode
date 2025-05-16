@@ -114,7 +114,9 @@ public:
   /** @return
    *   -NULL: array index out of range
    *   -else command line argument at index \p argIdx */
-  TU_Bln361095frcInln const charType * /*string_type*/ getArg(
+  TU_Bln361095frcInln const charType * /*string_type*/
+    ///"Arg"=ARGument: https://www.abbreviations.com/abbreviation/argument
+    getArg(
     const TU_Bln361095CPUuse(FaststUint) argIdx) const
   {
 //	  string_type string;
@@ -125,6 +127,7 @@ public:
     return NULL;
   }
 
+  ///https://www.abbreviations.com/PROG
   TU_Bln361095frcInln charType * getProgPath() const
   {
     return m_fullProgPath;
@@ -142,9 +145,12 @@ public:
     const charType * const cmdLneArgs[])
   {
     m_argCnt = argCnt;
-    m_cmdLneArgs = cmdLneArgs;
-    m_fullProgPath = cmdLneArgs[TU_Bln361095OpSysProcessCmdLneArgsUse(
-      ProgPathIdx)];
+    m_cmdLneArgs =
+      (charType **)///Cast to avoid compiler warnings/errors.
+      cmdLneArgs;
+    m_fullProgPath =
+      (charType *)///Cast to avoid compiler warnings/errors.
+      cmdLneArgs[TU_Bln361095OpSysProcessCmdLneArgsUse(ProgPathIdx)];
   }
 
   /**@strToCmp character string to look for within command line arguments

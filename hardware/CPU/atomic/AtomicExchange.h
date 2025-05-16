@@ -11,7 +11,8 @@
 /**Include guard supported by (nearly) all industry compilers:*/\
 /**Bln=BerLiN: http://www.acronymfinder.com/Berlin-(Bln).html
  * cmn=CoMmoN: http://www.abbreviations.com/abbreviation/common
- * Src=SouRCe: http://www.abbreviations.com/abbreviation/Source */\
+ * Src=SouRCe: http://www.abbreviations.com/abbreviation/Source
+ * Exchng=EXCHaNGe */\
  ! defined TU_Bln361095cmnSrc__CPU__atomicExchg_h
    #define TU_Bln361095cmnSrc__CPU__atomicExchg_h
 
@@ -27,6 +28,8 @@
   #include <windows.h>///InterlockedExchange(...)
 #endif
 
+TU_Bln361095CPUnmSpcBgn
+ 
 /** Compare-And-Swap operations have max. pointer size (aligned at multiple of
  * this size?).
  * https://en.wikipedia.org/wiki/C_data_types :
@@ -38,7 +41,8 @@ typedef long AtomicExchType;
 
 ///Xchg=eXCHanGe:http://www.allacronyms.com/exchange/abbreviated
 ///Typ=TYPe:http://www.abbreviations.com/abbreviation/Type
-typedef long TU_Bln361095AtomicXchgTyp;
+///Use precise type name because this (only) applies to CPU.
+typedef long TU_Bln361095hardwareCPUdef(atomicXchgTyp);
 
 /**@brief Writes value @param val into address of @see Target as 1 atomic
  *  operation->thread-safe
@@ -77,5 +81,7 @@ inline long TU_Bln361095hardwareCPUdef(atomicXchg)(
 #endif
 #endif
 }
+
+TU_Bln361095CPUnmSpcEnd
 
 #endif///#ifndef TU_Bln361095cmnSrcCPUatomicExchg_h

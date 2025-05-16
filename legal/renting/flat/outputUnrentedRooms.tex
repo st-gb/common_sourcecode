@@ -12,8 +12,9 @@
 \newcommand*\printUnrentedRoomsAsItems{\the\@UnrentedRoomsAsItems}
 \makeatother
 
-\newcommand\ZiQm{}
-\FPset\EntireUnrentedRoomsQm{0.0}
+%%Prefix with author's ID to avoid name clashed of same variable names
+\newcommand\TUBlnThSiTenNiFiZiQm{}
+\FPset\TUBlnThSiTenNiFiRoomsQmSum{0.0}
 \resetUnrentedRoomsAsItems
 \newcounter{UnrentedRoomsAsItemsCtr}
 \newcounter{UnrentedRoomsAsItemsLoopCtr}
@@ -44,16 +45,17 @@
      {%%"else"-branch
        \item Zimmer \TUBlnThSiTenNiFiAllRooms[\theUnrentedRoomsAsItemsCtr] %:
         %%from https://tex.stackexchange.com/questions/369104/how-to-declare-dynamic-variable-name-in-latex
-        \renewcommand\ZiQm{
+        \renewcommand\TUBlnThSiTenNiFiZiQm{
         %%The following code dynamically generates a variable name. The name is
         %% something like "Zimmer">>name<<"Qm", for example "ZimmerWestQm".
         %%This variable name (and its [floating point] value) must exist!
           \expandafter\csname Zimmer\TUBlnThSiTenNiFiAllRooms[\theUnrentedRoomsAsItemsCtr]Qm\endcsname
         }
-        \ZiQm%%Outputs the content (should be square meters) of variable "\ZiQm".
+        %%Outputs the content (should be square meters) of the variable.
+        \TUBlnThSiTenNiFiZiQm
         \space m$^2$
-       \FPeval\EntireUnrentedRoomsQm{
-         round(\EntireUnrentedRoomsQm+\ZiQm
+       \FPeval\TUBlnThSiTenNiFiRoomsQmSum{
+         round(\TUBlnThSiTenNiFiRoomsQmSum+\TUBlnThSiTenNiFiZiQm
           :2%%Anzahl Nachkommastellen
          )
        }

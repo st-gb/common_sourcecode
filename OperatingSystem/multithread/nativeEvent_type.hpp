@@ -26,6 +26,8 @@
 ///Stefan Gebauer's(TU Berlin matricul.numb.361095) ~"cmnSrc" repository files:
  ///TU_Bln361095OpSysNmSpcBgn, TU_Bln361095OpSysNmSpcEnd
  #include "../OpSys_ID_prefix.h"
+ ///TU_Bln361095MicroSoftWindows
+ #include <OperatingSystem/Windows/MicrosoftWindows.h>
 
 #ifdef __linux__ //TODO: change to ifdef POSIX
   #include <OperatingSystem/POSIX/multithread/Event.hpp>
@@ -36,7 +38,7 @@
   typedef pthread::Condition nativeEvntTyp;
   TU_Bln361095OpSysNmSpcEnd
 #endif
-#ifdef _WIN32
+#ifdef TU_Bln361095MicroSoftWindows
   #include <OperatingSystem/Windows/multithread/Win32EventBasedEvent.hpp>
   typedef Win32EventBasedEvent nativeEvent_type;
   TU_Bln361095OpSysNmSpcBgn
