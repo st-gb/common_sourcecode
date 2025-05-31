@@ -28,9 +28,11 @@
 
 ///Stefan Gebauer's(TU Berlin mat.#361095) ~"common_sourcecode"repository files:
  #include <compiler/force_inline.h>///TU_Bln361095frcInln
- #include <hardware/CPU/fastest_data_type.h>///TU_Bln361095FaststUint
+ #include <hardware/CPU/fastest_data_type.h>///TU_Bln361095CPUuse(faststUint)
  ///TU_Bln361095hardwareDataCarrierNVMeUse
  #include <hardware/dataCarrier/NVMe/NVMe_ID_prefix.h>
+ ///TU_Bln361095::KelvinToDegC(...)
+ #include <physics/temperature/convertTemperatureScales.h>
 ///If NOT compiled with MicroSoft Compiler/Microsoft Visual Studio
 #ifndef _MSC_VER
  ///struct NVME_HEALTH_INFO_LOG
@@ -101,16 +103,15 @@ enum TU_Bln361095dataCarrierNVMeSMARTattrDef(ID){
   };
 
  ///@param TempInK :May pass NVME_HEALTH_INFO_LOG.Temperature here
- TU_Bln361095frcInln TU_Bln361095hardwareCPUuse(faststUint)
+ TU_Bln361095frcInln TU_Bln361095CPUuse(faststUint)
    TU_Bln361095dataCarrierNVMeSMARTattrDef(GetTempInDegC)(
    const uint8_t TempInK[2]
   )
 {
-  const TU_Bln361095hardwareCPUuse(faststUint) tempInDegC =
-    ( (ULONG) TempInK[1] << 8 | TempInK[0])
-    /**Convert Kelvin to degrees Celsius by subracting the difference to
-     * 0 °C (273.15 Kelvin). See http://en.wikipedia.org/wiki/Kelvin */ 
-    - 273;
+  const TU_Bln361095CPUuse(faststUint) tempInKelvin =
+    ( (ULONG) TempInK[1] << 8 | TempInK[0]);
+  const TU_Bln361095CPUuse(faststUint) tempInDegC = TU_Bln361095::KelvinToDegC(
+    tempInKelvin);
   return tempInDegC;
 }
 struct TU_Bln361095dataCarrierNVMeSMARTattrDef(Def){

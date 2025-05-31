@@ -26,6 +26,9 @@
 #define TU_Bln361095timeSecsPerHour /*3600*/\
   /**Use brackets to use the macro in expression without side effects */\
   (TU_Bln361095timeSecsPerMin * 60)
+#define TU_Bln361095timeMilliSecsPerHour\
+  /**Use brackets to avoid side effects when using this preprocessor macro.*/\
+  (TU_Bln361095timeSecsPerHour * 1000)
 ///86400s=60s/min*60min/h*24h/d=3600s/h*24h=1 day
 #define TU_Bln361095timeSecsPerDay /*86400*/\
   /**Use brackets to use the macro in expression without side effects*/\
