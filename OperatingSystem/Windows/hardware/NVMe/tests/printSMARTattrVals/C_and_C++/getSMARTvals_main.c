@@ -115,8 +115,9 @@ static TU_Bln361095frcInln void printNVMeSMARTvals(
   char dataCarrierPath[MAX_PATH]
   )
 {
-  const TU_Bln361095hardwareCPUuse(FaststUint) tempInDegC =
-    TU_Bln361095dataCarrierNVMeSMARTattrUse(GetTempInDegC)(pNMVeHealthInfoLog);
+  const TU_Bln361095CPUuse(faststUint) tempInDegC =
+    TU_Bln361095dataCarrierNVMeSMARTattrUse(GetTempInDegC)(pNMVeHealthInfoLog->
+    Temperature);
 
   char mediaErrorsStr[TU_Bln361095_16B_UintMaxNumCharsForDecNum];
   char errorInfoLogEntryCountStr[TU_Bln361095_16B_UintMaxNumCharsForDecNum];
