@@ -11,15 +11,13 @@
 #ifndef TU_Bln361095cmnSrc__Logger__Log4jFormatter_hpp
 #define TU_Bln361095cmnSrc__Logger__Log4jFormatter_hpp
 
-///_This_ repository's header files:
- #include "I_LogFormatter.hpp"
-
 ///Stefan Gebauer's(TU Berlin matric. number 361095) ~"cmnSrc" repository files:
  /**TU_Bln361095compilerC_andCppFnSigUse(GetNmOfClAndOrNmSpc)(...),
   * TU_Bln361095compilerC_andCppFnSigUse(GetFnNm)(...) */
  #include <compiler/C,C++/getFnSigNms.h>
  //TU_Bln361095::charStr::convertToStdString(...)
  #include <dataType/charStr/convertFromAndToStdString.hpp>
+ #include "I_LogFormatter.hpp"///Base class I_LogFormatter
 //#include <Controller/character_string/getUTF8string.hpp>
 
 namespace TU_Bln361095{namespace Logger{
@@ -38,7 +36,7 @@ public:
   /** @see http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/Level.html
    * All strings must contain <= 5 characters for log file viewers? */
   //inline
-    char * GetLogLevelAsString(enum LogLevel::MessageType messageType);
+    const char * GetLogLevelAsString(enum LogLevel::MessageType messageType);
 
   /** Write log file in "%d{ISO8601} [%t] C M %m%n" format/ pattern
    * -"%d{ISO8601}" : current time in ISO8601 format

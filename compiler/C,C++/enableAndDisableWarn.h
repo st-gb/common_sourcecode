@@ -47,7 +47,7 @@
   /** from http://dbp-consulting.com/tutorials/SuppressingGCCWarnings.html */
   #if ((__GNUC__ * 100) + __GNUC_MINOR__) >= 402
     #define TU_Bln361095GCCdiagStr(s) #s
-    #define TU_Bln361095GCCdiagJoinStr(leftStr,rightStr)
+    #define TU_Bln361095GCCdiagJoinStr(leftStr,rightStr)\
       TU_Bln361095GCCdiagStr(leftStr ## rightStr)
     #define TU_Bln361095GCCdiagDoPragma(str) _Pragma (#str)
     #define TU_Bln361095GCCdiagPragma(str)\
@@ -59,19 +59,19 @@
        /*#pragma message "before TU_Bln361095GCCdiagPragma(ignored warning"*/ \
 /**TODO Gives GCC error:"pasting "W" and "-" does not give a valid preprocessing
    token"*/ \
-        TU_Bln361095GCCdiagPragma(ignored TU_Bln361095GCCdiagJoinStr(-W,warning)
+        TU_Bln361095GCCdiagPragma(ignored TU_Bln361095GCCdiagJoinStr(-W,warning)\
           )
        /*TU_Bln361095GCCdiagPragma(ignored warning)*/
       #define TU_Bln361095enableWarn(warning) TU_Bln361095GCCdiagPragma(pop)
     #else
-      #define TU_Bln361095disableWarn(warning) TU_Bln361095GCCdiagPragma(
+      #define TU_Bln361095disableWarn(warning) TU_Bln361095GCCdiagPragma(\
         ignored TU_Bln361095GCCdiagJoinStr(-W,warning) )
       #define TU_Bln361095enableWarn(warning) TU_Bln361095GCCdiagPragma(warning\
         TU_Bln361095GCCdiagJoinStr(-W,warning))
     #endif
-    #define TU_Bln361095GCCdisableWarn(warning) TU_Bln361095disableWarn(
+    #define TU_Bln361095GCCdisableWarn(warning) TU_Bln361095disableWarn(\
       warning)
-    #define TU_Bln361095GCCenableWarn(warning) TU_Bln361095enableWarn(
+    #define TU_Bln361095GCCenableWarn(warning) TU_Bln361095enableWarn(\
       warning)
   #endif
 

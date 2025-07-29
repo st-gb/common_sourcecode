@@ -1,9 +1,14 @@
 /**(c)from 2012:Stefan Gebauer,Computer Science Master(TU Berlin,matric.#361095)
 *Created 17.12.2012 by Stefan Gebauer(TU Berlin matriculation number 361095)*/
 
-#include "Log4jFormatter.hpp"
+///Stefan Gebauer's(TU Berlin matric. number 361095) ~"cmnSrc" repository files:
+ #include "Log4jFormatter.hpp"
+ //#include <compiler/castToChar.h>
+ #include <compiler/GCC/avoid_write_strings_warning.h>///TU_Bln361095castToCharPtr
 
 namespace TU_Bln361095{namespace Logger{
+//TODO TU_Bln361095LoggerNmSpcBgn
+
 Log4jFormatter::Log4jFormatter(const /*Logger * p_logger*/
 //      I_LogEntryOutputter * p_outputhandler
   FormattedLogEntryProcessor * appender
@@ -24,36 +29,30 @@ Log4jFormatter::~Log4jFormatter()
   // TODO Auto-generated destructor stub
 }
 
-inline char * Log4jFormatter::GetLogLevelAsString(
+/**@return use type "const char * const" because it has the same type as a
+ *  string literal, so no cast is needed.*/
+inline const char * Log4jFormatter::GetLogLevelAsString(
   enum LogLevel::MessageType messageType)
 {
   switch(messageType)
   {
     case LogLevel::debug:
-      //By "(char *)": avoid g++ warning "deprecated conversion from
-      //string constant to ‘char*’"
-      return (char *) "DEBUG";
+      return /*TU_Bln361095castToCharPtr*/ "DEBUG";
     case LogLevel::info:
-      //By "(char *)": avoid g++ warning "deprecated conversion from
-      //string constant to ‘char*’"
-      return (char *) "INFO";
+      return /*TU_Bln361095castToCharPtr*/ "INFO";
     case LogLevel::warning:
       //Must NOT be "WARNING" else it was shown as level "FINE" in Otros
       //log file viewer
-      //By "(char *)": avoid g++ warning "deprecated conversion from
-      //string constant to ‘char*’"
-      return (char *) "WARN";
+      return /*TU_Bln361095castToCharPtr*/ "WARN";
     case LogLevel::error:
-      //By "(char *)": avoid g++ warning "deprecated conversion from
-      //string constant to ‘char*’"
-      return (char *) "ERROR";
+      return /*TU_Bln361095castToCharPtr*/ "ERROR";
     //Unused, but if not handled: g++ warning
     case LogLevel::beyondLastLogMessageType:
     case LogLevel::success:
       break;
   }
-  //By "(char *)": avoid g++ warning "deprecated conversion from
-  //string constant to ‘char*’"
-  return (char *) "UNKNOWN";
+  return /*TU_Bln361095castToCharPtr*/ "UNKNOWN";
 }
+
 }}///namespaces end
+//TODO TU_Bln361095LoggerNmSpcEnd
