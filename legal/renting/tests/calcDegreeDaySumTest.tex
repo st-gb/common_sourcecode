@@ -30,7 +30,7 @@
 \usepackage{xcolor}%%"\color"
 
 %%from https://www.heise.de/tipps-tricks/LaTeX-Anfuehrungszeichen-einfuegen-so-geht-s-4351643.html
-\usepackage[ngerman]{babel}%%deutsche Anführungszeichen
+\usepackage[ngerman]{babel}%%für deutsche Anführungszeichen
 
 \input{../calcDegreeDaySum.tex}
 %\input{../../../LaTex/setVarVal.tex}
@@ -38,6 +38,25 @@
 %\newcounter{currYear}
 %\newcounter{currMon}
 %\newcounter{currDay}
+
+%%Outputs the parameter text in the colour that signals success.
+\newcommand\TUBlnThSiTenNiFiHighlightSuccess[1]
+{
+  \color{green}#1\color{black}
+}
+
+%%Outputs the parameter text in the colour that signals error.
+\newcommand\TUBlnThSiTenNiFiHighlightError[1]
+{
+  \color{red}#1\color{black}
+}
+
+%%Use this for each highlighting, so the highlight style (for example the color)
+%% can be exchanged at this central point.
+\newcommand\TUBlnThSiTenNiFiHighlightText[1]
+{
+  \color{blue}#1\color{black}
+}
 
 %%The number of parameters to this function:
 %% from:year,month,day,
@@ -251,7 +270,7 @@
     \TUBlnThSiTenNiFiCalcDegDaysSumNumNumExpctdDays
   }%%"if" branch
   {%%"then" branch
-    \color{green}Number of days matches expected result.\color{black}
+    \TUBlnThSiTenNiFiHighlightSuccess{Number of days matches expected number.}
   }%%"then" branch
   {
     \color{red}Number of days does not match expected result
@@ -292,47 +311,60 @@
 \newcommand\testXXIVNovMMXXIIItillIMayMMXXIV{
  \testTwntyFourNovTwoThsdTwntyThrTillFrstMayTwoThsdTwntyFour
 }
+
+\newcommand\testFirstOctTwoThsdTwntyFveTillThrtySepTwoThsdTwntySx{
+ \TUBlnThSiTenNiFiCalcHeatngDegDaySumTest
+  {2025}{10}{01}{2026}{09}{30}{
+   1000}{365}
+}
+
+\newcommand\outputGregCalAndGerHeatngDegPrmllTbl
+{
+  %Number of days for each month in Gregorian calendar:
+  % \showitems\TUBlnThSiTenNiFiGregorianMonthDaysCount .
+
+  %%https://mirrors.ibiblio.org/CTAN/macros/generic/listofitems/listofitems-en.pdf :
+  %% "\readlist\phrase{One phrase to test.}
+  %%  \foreachitem\word\in\phrase{List item number \wordcnt{}: \word\par}"
+  %\foreachitem\GregorianMonthDaysCnt\in\TUBlnThSiTenNiFiGregorianMonthDaysCnt⟩{
+  % \GregorianMonthDaysCountcnt{}: \GregorianMonthDaysCount\par }
+
+  \input{../operatingCosts/printMonthNumsAsTabCells.tex}
+  \input{../operatingCosts/printMonthDaysCntsAsTabCells.tex}
+  \input{../operatingCosts/printGerHeatngDegPromillesPerDayAsTabCells.tex}
+  \input{../operatingCosts/printGerHeatngDegPromillesPerMonthAsTabCells.tex}
+
+  \begin{longtable}{c|c|c|c|c|c|c|c|c|c|c|c|c|c}
+   \hline
+   month index: & \printMonthNumsAsTabCells
+   \hline
+   \# month days: & \printMonthDaysCntAsTabCells
+   \hline
+   promille/mon & \printGerHeatngDegPromillePerMonthAsTabCells
+   \hline
+   promille/day & \printGerHeatngDegPromillePerDayAsTabCells
+   \hline
+  \end{longtable}
+
+  %Heating degree promille per day for each month:
+  %\showitems\TUBlnThSiTenNiFiGerHeatingDegDayPromillePerDayTwoDecPlaces .
+  %%
+  %Heating degree promille per month for each month:
+  %\showitems\TUBlnThSiTenNiFiGerHeatingDegDayPromillePerMon
+}
+
 \begin{document}
 \maketitle
 
-\color{orange}
-Use "debug" option for "fp" package if "fp" calculation errors exist to see the cause.
+%\color{orange}
+Use „debug“ option for „fp“ package if „fp“ calculation errors exist to see the
+cause.
 \newline
 
-All days are included, so the 01.May-02.May count as 2 days, 01.May-02.May as
+All days are included, so the 01.May-02.May count as 2 days, 01.May-01.May as
  only 1 day.
 
-%Number of days for each month in Gregorian calendar:
-% \showitems\TUBlnThSiTenNiFiGregorianMonthDaysCount .
-
-%%https://mirrors.ibiblio.org/CTAN/macros/generic/listofitems/listofitems-en.pdf :
-%% "\readlist\phrase{One phrase to test.}
-%%  \foreachitem\word\in\phrase{List item number \wordcnt{}: \word\par}"
-%\foreachitem\GregorianMonthDaysCount\in\TUBlnThSiTenNiFiGregorianMonthDaysCount⟩{ \GregorianMonthDaysCountcnt{}: \GregorianMonthDaysCount\par }
-
-\input{../operatingCosts/printMonthNumsAsTabCells.tex}
-\input{../operatingCosts/printMonthDaysCntsAsTabCells.tex}
-\input{../operatingCosts/printGerHeatngDegPromillesPerDayAsTabCells.tex}
-\input{../operatingCosts/printGerHeatngDegPromillesPerMonthAsTabCells.tex}
-
-\begin{longtable}{c|c|c|c|c|c|c|c|c|c|c|c|c|c}
- \hline
- month index: & \printMonthNumsAsTabCells
- \hline
- \# month days: & \printMonthDaysCntAsTabCells
- \hline
- promille/mon & \printGerHeatngDegPromillePerMonthAsTabCells
- \hline
- promille/day & \printGerHeatngDegPromillePerDayAsTabCells
- \hline
-\end{longtable}
-
-%Heating degree promille per day for each month:
-%\showitems\TUBlnThSiTenNiFiGerHeatingDegDayPromillePerDayTwoDecPlaces .
-%%
-%Heating degree promille per month for each month:
-%\showitems\TUBlnThSiTenNiFiGerHeatingDegDayPromillePerMon
-
+\outputGregCalAndGerHeatngDegPrmllTbl
 %
  \TUBlnThSiTenNiFiCalcHeatngDegDaySumTest{2023}{10}{03}{2023}{10}{31}{%%28*2,581}
   72.268}{28}
@@ -345,6 +377,7 @@ All days are included, so the 01.May-02.May count as 2 days, 01.May-02.May as
 
  %\testTwntyFourNovTwoThsdTwntyThrTillFrstMayTwoThsdTwntyFour
  \testXXIVNovMMXXIIItillIMayMMXXIV
+ \testFirstOctTwoThsdTwntyFveTillThrtySepTwoThsdTwntySx
 %\calcDegreeDaySum{1999}
 %\calcDegreeDaySum{2000}
 %\calcDegreeDaySum{2024}  
